@@ -2,10 +2,12 @@
 
 ## Curso
 
-| Universidad | Universidad de Costa Rica 			  |
-| Sigla       | CI-0126 		        			  |
-| Año	       | 2023                      			  |
-| Semestre    | II                        			  |
+|  |  |
+|-------------|---------------------------------------------------|
+| Universidad | Universidad de Costa Rica 			  			  			  |
+| Sigla       | CI-0126 		        			        			  			  |
+| Año	        | 2023                      			  			  			  |
+| Semestre    | II                        			  			          |
 | Profesores  | Dra. Alexandra Martínez, Dr. Allan Berrocal Rojas |
 
 ## Equipo
@@ -24,16 +26,18 @@
 
 ## Estructura
 
+```
 ci0128_23b_all_stars/
 ├── design/
 │   ├─ database/
 │   └── mockups/
-│       ├─ sprint0/
+│       └── sprint0/
 ├── documents/
 │   ├── Artefacto de ceremonias.docx
 │   └── Definicion del proceso.docx
 ├── locompro/
-│   └── \[src\]
+│   └── [src]
 ├── .gitignore
 ├── ci0128_23b_all_stars.sln
 └── README.md
+```
