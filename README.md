@@ -20,38 +20,44 @@
 | Brandon Alonso Mora Umaña      | C15179 |
 | Joseph Stuart Valverde Kong    | C18100 |
 
-## Entregas
+## Problema
 
-### Sprint 0
-
-#### Avance 1
-Dentro de esta entrega se espere se entreguen un mockup, un diseño conceptual de la base de datos del proyecto y un product backlog.
-
-#### Mockup
-El mockup es una representación visual de las funcionalidades que se esperan del programa. Dentro de lo mostrado en esta entrega se encuentran un menú para acceder a las funcionalidades principales, una página de búsqueda junto a un filtro avanzado, la página para registrar un producto y su tienda, y una página para iniciar sesión. 
-
-Se planea desarrollar y cambiar la aplicación en la que se realiza el diseño, pero no el diseño de las páginas en sí mismas. Las imágenes para ver estas páginas se encuentran en el directorio dentro de la carpeta "design/mockups/sprint0".
-
-#### Diseño conceptual de la base de datos del proyecto
-El diseño en esta entrega es un modelo es un EER o "Enhanced Relationship Model" o en español, modelo de relación mejorado. Dentro de este modelo se da énfasis a las entidades USER (usuario), SUBMISSION (sugerencia), ITEM (articulo), STORE (tienda), PRODUCT (producto) y sus relaciones. El modelo se encuentra en el directorio "design/database".
-
-#### Product backlog en Jira
-Dentro del backlog se encuentran las historias de usuario, sus descripciones, condiciones de aceptación y sus tareas. En esta entrega se han completado 31 issues representando cada una de las historias de usuario realizadas y todos los componentes mencionados previamente.
+> Al comprar un producto en cualquier establecimiento, a menudo nos intriga saber si el precio que vamos a pagar es adecuado. Nos gustaría averiguar rápidamente si el mismo producto tiene un mejor precio en otro lugar que nos resulte igualmente conveniente visitar. Sin embargo, no hay maneras simples de saber el precio de un producto arbitrario en diferentes establecimientos, normalmente eso implica ir a visitar muchos establecimientos y comparar los precios del producto de interés. Por ende, es difícil tener esa información de manera rápida.
+>
+> _-Especificacion 'Localización y Consulta del Mejor Producto'_
 
 ## Estructura
 
-```
+<pre>
 ci0128_23b_all_stars/
-├── design/
-│   ├─ database/
-│   └── mockups/
-│       └── sprint0/
-├── documents/
-│   ├── Artefacto de ceremonias.docx
-│   └── Definicion del proceso.docx
-├── locompro/
-│   └── [src]
-├── .gitignore
-├── ci0128_23b_all_stars.sln
-└── README.md
-```
+│   ci0128_23b_all_stars.sln  
+│   README.md  
+│  
+├───<a href="./Design">Design</a>  
+│   ├───<a href="./Design/Database">Database</a>  
+│   │   └───<a href="./Design/Database/Sprint0">Sprint0</a>  
+│   │       ├───<a href="./Design/Database/Sprint0/Avance1">Avance1</a>  
+│   │       │       <a href="./Design/Database/Sprint0/Avance1/DiagramaER.jpg">DiagramaER.jpg</a>  
+│   │       │  
+│   │       └───<a href="./Design/Database/Sprint0/Avance2">Avance2</a>  
+│   │  
+│   └───<a href="./Design/Mockups">Mockups</a>  
+│       └───<a href="./Design/Mockups/Sprint0">Sprint0</a>  
+│           ├───<a href="./Design/Mockups/Sprint0/Avance1">Avance1</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance1/busqueda.png">busqueda.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance1/busqueda_avanzada.png">busqueda_avanzada.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance1/busqueda_llena.png">busqueda_llena.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance1/ingresar.png">ingresar.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance1/menu_principal.png">menu_principal.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance1/perfil_usuario.png">perfil_usuario.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance1/registro_producto.png">registro_producto.png</a>  
+│           │  
+│           └───<a href="./Design/Mockups/Sprint0/Avance2">Avance2</a>  
+│  
+├───Documents  
+│       Artefacto de ceremonias.docx  
+│       Definicion del proceso.docx  
+│  
+└───Locompro  
+    └───(Proyecto ASP.NET)
+</pre>
