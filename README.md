@@ -54,7 +54,18 @@ ci0128_23b_all_stars/
 │           │       <a href="./Design/Mockups/Sprint0/Avance1/registro_producto.png">registro_producto.png</a>  
 │           │  
 │           └───<a href="./Design/Mockups/Sprint0/Avance2">Avance2</a>   
-│  
+│           │       <a href="./Design/Mockups/Sprint0/Avance2/menu_principal.png">menu_principal.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance2/menu_principal_sin_iniciar_sesion.png">menu_principal_sin_iniciar_sesion.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance2/crear_cuenta.png">crear_cuenta.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance2/iniciar_sesion.png">iniciar_sesion.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance2/busqueda_resultados_producto.png">busqueda_resultados_producto.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance2/busqueda_resultados_producto_sin_iniciar_sesion.png">busqueda_resultados_producto_sin_iniciar_sesion.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance2/mi_perfil_de_usuario.png">mi_perfil_de_usuario.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance2/un_perfil_de_usuario.png">un_perfil_de_usuario.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance2/agregar_contribucion.png">agregar_contribucion.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance2/agregar_producto.png">agregar_producto.png</a>  
+│           │       <a href="./Design/Mockups/Sprint0/Avance2/agregar_tienda.png">agregar_tienda.png</a>  
+│           
 └───Locompro  
     └───(Proyecto ASP.NET)
 </pre>
