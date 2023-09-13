@@ -39,7 +39,8 @@ ci0128_23b_all_stars/
 │   │       ├───<a href="./Design/Database/Sprint0/Avance1">Avance1</a>  
 │   │       │       <a href="./Design/Database/Sprint0/Avance1/DiagramaER.jpg">DiagramaER.jpg</a>  
 │   │       │  
-│   │       └───<a href="./Design/Database/Sprint0/Avance2">Avance2</a>  
+│   │       ├───<a href="./Design/Database/Sprint0/Avance2">Avance2</a>  
+│   │       │       <a href="./Design/Database/Sprint0/Avance2/Mockup_Bases_de_Datos.pdf">Mockup_Bases_de_Datos.pdf</a>  
 │   │  
 │   └───<a href="./Design/Mockups">Mockups</a>  
 │       └───<a href="./Design/Mockups/Sprint0">Sprint0</a>  
@@ -52,11 +53,7 @@ ci0128_23b_all_stars/
 │           │       <a href="./Design/Mockups/Sprint0/Avance1/perfil_usuario.png">perfil_usuario.png</a>  
 │           │       <a href="./Design/Mockups/Sprint0/Avance1/registro_producto.png">registro_producto.png</a>  
 │           │  
-│           └───<a href="./Design/Mockups/Sprint0/Avance2">Avance2</a>  
-│  
-├───Documents  
-│       Artefacto de ceremonias.docx  
-│       Definicion del proceso.docx  
+│           └───<a href="./Design/Mockups/Sprint0/Avance2">Avance2</a>   
 │  
 └───Locompro  
     └───(Proyecto ASP.NET)
