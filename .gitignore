@@ -89,7 +89,6 @@ StyleCopReport.xml
 *.tmp
 *.tmp_proj
 *_wpftmp.csproj
-**.csproj*
 *.log
 *.tlog
 *.vspscc
@@ -397,5 +396,3 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-/laboratorio1/laboratorio1/laboratorio1.csproj.user
-/laboratorio1/.vs/laboratorio1/v17/.suo
