@@ -1,0 +1,45 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["mainMenu"] = true;
+}
+
+<h1 class="d-lg-flex justify-content-lg-center" style="padding-top: 0px;margin-top: 180px;margin-bottom: 55px;font-size: 75px;">LoCoMPro</h1>
+
+
+<div class="container d-lg-flex justify-content-lg-center align-items-lg-end pb-5 pt-5" style="padding-left: 0px;margin-bottom: 3px;margin-top: -42px;">
+    <div class="col-md-9 col-xl-8 ml-auto mr-auto">
+        <form>
+            <div class="align-items-center form-row">
+                <div class="col-sm form-group mb-3">
+                    <div class="input-group">
+                        <button class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" type="button" onclick="performSearch('normal')">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <input class="form-control form-control ps-4 pe-4 rounded-pill" type="text" name="search" placeholder="Buscar...." style="margin-left: 11px;margin-right: 6px; " id="searchInput">
+                        <button class="btn btn-primary ps-4 pe-4 rounded-pill" style="margin-left: 6px;" type="button" onclick="performSearch('advanced')">Búsqueda avanzada</button>
+                     </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // link to access the search results page for normal search
+    var normalSearchSite = 'normal_search';
+    // link to access the search results page for advanced search
+    var advancedSearchSite = 'advanced_search';
+
+    // will based on the type of search, redirect the user to the correct search results page
+    function performSearch(type) {
+        // get the value in the search bar
+        var searchResult = document.getElementById("searchInput").value;
+
+        // based on type of search, build the query string with correct address
+        var query = '?' + (type === 'normal' ? normalSearchSite : advancedSearchSite) + '=';
+
+        // write result on href
+        window.location.href = query + searchResult;
+    }
+</script>
