@@ -2,8 +2,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Cryptography.X509Certificates;
 
-namespace Locompro.Models {
-    public class User {
+namespace Locompro.Models
+{
+    public class User
+    {
         [Key]
         [Required]
         public string Username { get; set; }
