@@ -27,20 +27,13 @@ namespace Locompro.Models
 
         public float Rating { get; set; } = 0;
 
-        public UserStatus Status { get; set; } = UserStatus.Default;
+        public Status Status { get; set; } = Status.Active;
 
         public virtual ICollection<UserRole> Roles { get; set; }
         public User()
         {
             Roles = new HashSet<UserRole>();
         }
-    }
-
-    public enum UserStatus
-    {
-        Default,
-        Active,
-        Deleted
     }
 
     public enum Role
