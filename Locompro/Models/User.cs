@@ -1,15 +1,16 @@
-﻿using System.Runtime.InteropServices;
-using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.X509Certificates;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Locompro.Models {
-    public class User {
+namespace Locompro.Models
+{
+    public class User
+    {
         [Key]
         [Required]
+        [StringLength(50)]
         public string Username { get; set; }
 
         [Required]
-        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [Required]
@@ -23,11 +24,36 @@ namespace Locompro.Models {
         [Required]
         [StringLength(50, MinimumLength = 1)]
         public string Address { get; set; }
-        // default 0
-        public float Rating { get; set; } = 0;
-        public int Status { get; set; } = 0;
-        public int Roles { get; set; } = 0;
 
+        public float Rating { get; set; } = 0;
+
+        public UserStatus Status { get; set; } = UserStatus.Default;
+
+        public virtual ICollection<UserRole> Roles { get; set; }
+    }
+
+    public enum UserStatus
+    {
+        Default,
+        Active,
+        Deleted
+    }
+
+    public enum Role
+    {
+        Default,
+        Moderator
+    }
+
+    public class UserRole
+    {
+        [Key, Column(Order = 0)]
+        [ForeignKey("User")]
+        public string Username { get; set; }
+        public virtual User User { get; set; }
+
+        [Key, Column(Order = 1)]
+        public Role Role { get; set; }
     }
 }
 
