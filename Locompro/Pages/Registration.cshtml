@@ -1,5 +1,6 @@
 ﻿@page
-@model Locompro.Pages.RegistrationModel
+@using Locompro.Pages
+@model RegistrationModel
 @{
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
@@ -26,25 +27,30 @@
                     <form class="text-center" method="post">
                         <div class="mb-3">
                             <label class="form-label d-xl-flex justify-content-xl-start">Correo Electrónico</label>
-                            <input class="form-control" type="email" asp-for="user.Email" placeholder="Correo">
+                            <input class="form-control" type="email" asp-for="UserM.Email" placeholder="Correo">
+                            <span asp-validation-for="UserM.Email" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label d-xl-flex justify-content-xl-start">Nombre</label>
-                            <input class="form-control" type="email" asp-for="user.Username" placeholder="Nombre de Usuario">
+                            <label class="form-label d-xl-flex justify-content-xl-start">Nombre de Usuario</label>
+                            <input class="form-control" type="text" asp-for="UserM.Username" placeholder="Nombre de Usuario">
+                            <span asp-validation-for="UserM.Username" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
                             <label class="form-label d-xl-flex justify-content-xl-start">Contraseña</label>
-                            <input class="form-control" type="password" asp-for="user.Password" placeholder="Contraseña">
-                        </div>
+                            <input class="form-control" type="password" asp-for="UserM.Password" placeholder="Contraseña">
+                            <span asp-validation-for="UserM.Password" class="text-danger"></span>
+                            </div>
                         <div class="mb-3">
-                            <input class="form-control" type="password" asp-for="passwordConfirm" placeholder="Reingresar contraseña">
+                            <input class="form-control" type="password" asp-for="ConfirmPassword" placeholder="Reingresar contraseña">
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="formCheck-1" asp-for="acceptedTerms">
+                            <input class="form-check-input" type="checkbox" id="formCheck-1" asp-for="AcceptedTerms">
                             <label class="form-check-label fw-light" for="formCheck-1" style="margin-bottom: 15px;">Acepto los términos y condiciones</label>
                         </div>
                         <div class="mb-3">
-                            <a class="btn btn-primary d-block w-100" role="button" asp-page="/SignIn" style="margin-top: 20px;">Crear cuenta</a>
+                            <input class="btn btn-primary d-block w-100" type="submit" asp-page="/SignIn" style="margin-top: 20px;" value="Crear cuenta" />
                         </div>
                     </form>
                 </div>

@@ -1,7 +1,4 @@
-using Locompro.Models;
 using Locompro.Repositories;
-using Locompro.Services;
-using System.Xml;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +10,7 @@ builder.Services.AddRazorPages();
 //    options.UseSqlServer(builder.Configuration.GetConnectionString("laboratorio4Context") ?? throw new InvalidOperationException("Connection string 'laboratorio4Context' not found.")));
 
 // Register repositories and services
-builder.Services.AddScoped<UnitOfWork>();
+// builder.Services.AddScoped<UnitOfWork>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
