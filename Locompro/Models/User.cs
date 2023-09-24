@@ -30,6 +30,10 @@ namespace Locompro.Models
         public UserStatus Status { get; set; } = UserStatus.Default;
 
         public virtual ICollection<UserRole> Roles { get; set; }
+        public User()
+        {
+            Roles = new HashSet<UserRole>();
+        }
     }
 
     public enum UserStatus
