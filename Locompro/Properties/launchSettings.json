@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "locompro": {
+    "Locompro": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
