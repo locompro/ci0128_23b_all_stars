@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace locompro.Pages
+namespace Locompro.Pages
 {
     public class IndexModel : PageModel
     {
