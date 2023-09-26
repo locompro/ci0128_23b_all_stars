@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Locompro.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Repositories
 {
@@ -9,10 +10,10 @@ namespace Locompro.Repositories
     /// <typeparam name="I">Type of key used by entity.</typeparam>
     public abstract class AbstractRepository<T, I> : IRepository<T, I> where T : class
     {
-        protected readonly DbContext context;
+        protected readonly LocomproContext context;
         protected readonly DbSet<T> dbSet;
 
-        protected AbstractRepository(DbContext context)
+        protected AbstractRepository(LocomproContext context)
         {
             this.context = context;
             dbSet = this.context.Set<T>();
