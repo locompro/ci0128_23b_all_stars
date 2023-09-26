@@ -7,12 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddDbContext<LocomproContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
-
-// Add DbContext using SQL Server
-//builder.Services.AddDbContext<laboratorio4Context>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("laboratorio4Context") ?? throw new InvalidOperationException("Connection string 'laboratorio4Context' not found.")));
 
 // Register repositories and services
 builder.Services.AddScoped<UnitOfWork>();
