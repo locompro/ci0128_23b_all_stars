@@ -1,5 +1,11 @@
-﻿@{
-    ViewData["loggedIn"] = false;
+﻿@using Microsoft.AspNetCore.Identity
+@using Locompro.Data
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@{
+    var currentPage = Context.Request.Path.Value;
+    bool isLoggedIn = SignInManager.IsSignedIn(User);
 }
 
 <!DOCTYPE html>
@@ -10,7 +16,7 @@
     <title>LoCoMPro</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/locompro.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Locompro.styles.css" asp-append-version="true" />
 
     <!-- for the plus sign  -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -18,73 +24,55 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container"> 
-                @{
-                    // if it has not been declared it will throw exception and
-                    // means main menu has not been present, so make it false
-                    // to show the page name
-                    try
-                    {
-                        bool integrityCheckBait = (bool)ViewData["mainMenu"];
-                    }
-                    catch (Exception)
-                    {
-                        ViewData["mainMenu"] = false;
-                    }
-
-                    // if it is not displaying the main menu
-                    if (!(bool)ViewData["mainMenu"])
-                    {
-                        // show the title
-                        <a class="navbar-brand d-flex align-items-center" asp-area="" asp-page="/Index">LoCoMPro</a>
-                    }
-
-                    // if the user is logged in
-                    if ((bool)ViewData["loggedIn"]) 
-                    {
-                        <div class="collapse navbar-collapse flex-grow-0 order-md-first" id="navcol-4">
-                            <ul class="navbar-nav me-auto">
-                                <li class="nav-item">
-                                    <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" href="#">
+            <div class="container">
+                
+                <!-- if the current site is not the main menu  -->
+                @if (!currentPage.EndsWith("/"))
+                {
+                    // show the title
+                    <a class="navbar-brand d-flex align-items-center" asp-area="" asp-page="/Index">LoCoMPro</a>
+                }
+                
+                <!-- if logged in  -->
+                @if(isLoggedIn)
+                {
+                    <div class="collapse navbar-collapse flex-grow-0 order-md-first" id="navcol-4">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" href="#">
                                     <i class="fa fa-plus" style="margin-right: 8px;">
                                     </i>
                                     Aportar
-                                    </a>
-                                </li>
-                                <li class="nav-item"></li>
-                            </ul>
-                            <div class="d-md-none my-2">
-                                <button class="btn btn-light me-2" type="button">Button</button>
-                                <button class="btn btn-primary" type="button">Button</button>
-                            </div>
+                                </a>
+                            </li>
+                            <li class="nav-item"></li>
+                        </ul>
+                        <div class="d-md-none my-2">
+                            <button class="btn btn-light me-2" type="button">Button</button>
+                            <button class="btn btn-primary" type="button">Button</button>
                         </div>
-                        <div class="d-none d-md-block">
-                            <button class="btn btn-light me-2" type="button">Mi perfil</button>
-                            <a class="btn btn-primary" role="button" href="#">Cerrar sesión</a>
-                        </div>
-                    } 
-                    else // if the user is not logged in
-                    {  
-                        <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-3">
-                            <span class="visually-hidden">Toggle navigation</span>
-                            <span class="navbar-toggler-icon"></span>
-                        </button>
-                        <div class="collapse navbar-collapse" id="navcol-3">
-                            <ul class="navbar-nav mx-auto">
-                                <li class="nav-item"></li>
-                                <li class="nav-item"></li>
-                                <li class="nav-item"></li>
-                            </ul>
-                            <a class="btn btn-primary" role="button" href="#">Iniciar sesión</a>
-                        </div>
-                    }
-
-                    if ((bool)ViewData["mainMenu"])
-                    {
-                        // restore main menu value to previous state
-                        ViewData["mainMenu"] = false;
-                    }
+                    </div>
+                    <div class="d-none d-md-block">
+                        <button class="btn btn-light me-2" type="button">Mi perfil</button>
+                        <a class="btn btn-primary" role="button" href="#">Cerrar sesión</a>
+                    </div>
                 }
+                else // if not logged in
+                {
+                    <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-3">
+                        <span class="visually-hidden">Toggle navigation</span>
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navcol-3">
+                        <ul class="navbar-nav mx-auto">
+                            <li class="nav-item"></li>
+                            <li class="nav-item"></li>
+                            <li class="nav-item"></li>
+                        </ul>
+                        <a class="btn btn-primary" role="button" asp-area="Identity" asp-page="/Account/Login">Iniciar sesión</a>
+                    </div>
+                }
+ 
             </div>
         </nav>
     </header>
@@ -103,7 +91,7 @@
                 <li class="list-inline-item"><a class="link-secondary" href="/Privacy">Privacy Policy</a></li>
                 <li class="list-inline-item"><a class="link-secondary" href="#">Terms of Use</a></li>
             </ul>
-            
+
         </div>
     </footer>
 
