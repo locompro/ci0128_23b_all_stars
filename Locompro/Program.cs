@@ -1,16 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+
+using Locompro.Data;
 using Locompro.Repositories;
+using Locompro.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddRazorPages();
+registerServices(builder);
 
-// Add DbContext using SQL Server
-//builder.Services.AddDbContext<laboratorio4Context>(options =>
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("laboratorio4Context") ?? throw new InvalidOperationException("Connection string 'laboratorio4Context' not found.")));
-
-// Register repositories and services
-// builder.Services.AddScoped<UnitOfWork>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,3 +29,17 @@ app.MapRazorPages();
 
 app.Run();
 
+void registerServices(WebApplicationBuilder builder)
+{
+    // Add services to the container.
+    builder.Services.AddRazorPages();
+
+    // Add DbContext using SQL Server
+    builder.Services.AddDbContext<LocomproContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
+
+    // Register repositories and services
+    builder.Services.AddScoped<UnitOfWork>();
+    builder.Services.AddScoped<StoreRepository>();
+    builder.Services.AddScoped<StoreService>();
+}

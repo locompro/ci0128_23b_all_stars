@@ -9,7 +9,7 @@ namespace Locompro.Services
     /// <typeparam name="R">Type of repository used by service.</typeparam>
     public abstract class AbstractService<T, I, R> : IService<T, I>
         where T : class
-        where R: IRepository<T, I>
+        where R : IRepository<T, I>
     {
         protected readonly UnitOfWork unitOfWork;
         protected readonly R repository;

@@ -4,12 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Repositories
 {
-    public class UserRepository : AbstractRepository<User, string>
+    public class StoreRepository : AbstractRepository<Store, string>
     {
-        public UserRepository(LocomproContext context) : base(context)
+        public StoreRepository(LocomproContext context) : base(context)
         {
         }
-
-
     }
 }
