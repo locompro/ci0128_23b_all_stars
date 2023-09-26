@@ -4,6 +4,9 @@ using Locompro.Data;
 using Locompro.Repositories;
 using Locompro.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Components.Server;
+using System.Xml;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
