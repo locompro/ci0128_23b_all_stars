@@ -11,23 +11,23 @@
 
 <div class="container d-lg-flex justify-content-lg-center align-items-lg-end pb-5 pt-5" style="padding-left: 0px;margin-bottom: 3px;margin-top: -42px;">
     <div class="col-md-9 col-xl-8 ml-auto mr-auto">
-        <form asp-page ="./Index" method="post">
+        <form method="get">
             <div class="form-actions align-items-center form-row">
                 <div class="col-sm form-group mb-3" style="position: relative;">
                     <div class="form-actions input-group">
                         <div class="input-group-prepend"
                                 style="position: absolute; left: 0; top: 0; bottom: 0; display: flex; align-items: center; margin-right: 6px;">
-                            <button class="btn btn-primary ps-2 pe-2 rounded-pill" name="searchButton" value="normalSearchButton"  role="button" type="submit"
+                            <button class="btn btn-primary ps-2 pe-2 rounded-pill" role="button" type="submit" formaction="/Search"
                                     style="margin-left: 20px; height: 30px; font-size: 12px;">
                                 <i class="fa fa-search"></i>
                             </button>
                         </div>
                         <div class="search-box form-control pe-4 rounded-pill"; style="margin-left: 10px;">
-                            <input type="text" name="SearchString" class="form-control rounded-pill"
-                                   value="@Model.SearchQuery" placeholder="Buscar...."
-                                   style="margin-left: 30px; padding-right: 50px; border: none; width: 98%;" id="searchInput">
+                            <input type="text" class="form-control rounded-pill" name="query"
+                                   value="@Model.SearchQuery" placeholder="Buscar...." 
+                                   style="margin-left: 30px; padding-right: 50px; border: none; width: 98%;">
                         </div>
-                        <button class="btn btn-primary ps-4 pe-4 rounded-pill" name = "searchButton" value = "advancedSearchButton" style="margin-left: 6px;"
+                        <button class="btn btn-primary ps-4 pe-4 rounded-pill" style="margin-left: 6px;" formaction="/AdvancedSearch"
                                 type="submit">Búsqueda avanzada</button>
                      </div>
                 </div>
@@ -35,19 +35,3 @@
         </form>
     </div>
 </div>
-
-<!--
-Example for implementation
-
-// from here on out example on how use the parameters for normal and advanced search
- string searchString = Request.Query["normalSearch"];
-
-if (searchString == null)
-{
-    this.text = "advanced search: ";
-    searchString = Request.Query["advancedSearch"];
-} else
-{
-    this.text = "normal search: ";
-}
--->
