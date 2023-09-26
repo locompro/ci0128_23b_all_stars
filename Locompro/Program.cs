@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Locompro.Data;
 using Locompro.Repositories;
 using Locompro.Services;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication();;
 
 app.UseAuthorization();
 
@@ -41,9 +43,12 @@ void registerServices(WebApplicationBuilder builder)
     // Add DbContext using SQL Server
     builder.Services.AddDbContext<LocomproContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
-
+    builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+        .AddEntityFrameworkStores<LocomproContext>();
     // Register repositories and services
     builder.Services.AddScoped<UnitOfWork>();
     builder.Services.AddScoped<StoreRepository>();
     builder.Services.AddScoped<StoreService>();
 }
+
+
