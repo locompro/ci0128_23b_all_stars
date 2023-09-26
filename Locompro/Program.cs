@@ -3,11 +3,15 @@ using Microsoft.EntityFrameworkCore;
 using Locompro.Data;
 using Locompro.Repositories;
 using Locompro.Services;
+using Microsoft.AspNetCore.Components.Server;
+using System.Xml;
 
 var builder = WebApplication.CreateBuilder(args);
 
 registerServices(builder);
 
+// Register repositories and services
+// builder.Services.AddScoped<UnitOfWork>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
