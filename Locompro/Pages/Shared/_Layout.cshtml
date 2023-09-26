@@ -23,13 +23,15 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-
+                
+                <!-- if the current site is not the main menu  -->
                 @if (!currentPage.EndsWith("/"))
                 {
                     // show the title
                     <a class="navbar-brand d-flex align-items-center" asp-area="" asp-page="/Index">LoCoMPro</a>
                 }
                 
+                <!-- if logged in  -->
                 @if(isLoggedIn)
                 {
                     <div class="collapse navbar-collapse flex-grow-0 order-md-first" id="navcol-4">
@@ -53,6 +55,7 @@
                         <a class="btn btn-primary" role="button" href="#">Cerrar sesión</a>
                     </div>
                 }
+                <!-- if not logged in -->
                 else
                 {
                     <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-3">
