@@ -1,14 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Locompro.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Locompro.Repositories
 {
     public class UnitOfWork
     {
-        private readonly DbContext dbContext;
+        private readonly LocomproContext dbContext;
         private IDbContextTransaction transaction;
 
-        public UnitOfWork(DbContext dbContext)
+        public UnitOfWork(LocomproContext dbContext)
         {
             this.dbContext = dbContext;
         }

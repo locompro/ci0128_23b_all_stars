@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Device.Location;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Locompro.Models
 {
@@ -21,8 +21,12 @@ namespace Locompro.Models
         [StringLength(15, MinimumLength = 4)]
         public string Telephone { get; set; }
 
-        public GeoCoordinate Location { get; set; }
-        
+        [Precision(18, 2)]
+        public decimal Latitude { get; set; }
+
+        [Precision(18, 2)]
+        public decimal Longitude { get; set; }
+
         // TODO: Enum for automatic validation
         public int Status { get; set; }
     }

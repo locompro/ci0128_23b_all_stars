@@ -1,11 +1,12 @@
-﻿using Locompro.Models;
+﻿using Locompro.Data;
+using Locompro.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Repositories
 {
     public class StoreRepository : AbstractRepository<Store, string>
     {
-        public StoreRepository(DbContext context) : base(context)
+        public StoreRepository(LocomproContext context) : base(context)
         {
         }
     }
