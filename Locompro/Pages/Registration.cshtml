@@ -1,0 +1,76 @@
+﻿@page
+@using Locompro.Pages
+@model RegistrationModel
+@{
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Locompro</title>
+    <link rel="stylesheet" href="../assets/bootstrap/css/bootstrap.min.css">
+    <!-- Add other stylesheet links here -->
+</head>
+<body>
+    <div class="row d-flex justify-content-center">
+        <div class="col-md-6 col-xl-4">
+            <div class="card mb-5">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="bs-icon-xl bs-icon-circle bs-icon-primary bs-icon my-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-person">
+                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"></path>
+                        </svg>
+                    </div>
+                    <fieldset>
+                        <legend style="margin-bottom: 22px;">Crea tu cuenta</legend>
+                    </fieldset>
+                    <form class="text-center" method="post">
+                        <div class="mb-3">
+                            <label class="form-label d-xl-flex justify-content-xl-start">Correo Electrónico</label>
+                            <input class="form-control" type="email" asp-for="UserM.Email" placeholder="Correo">
+                            <span asp-validation-for="UserM.Email" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label d-xl-flex justify-content-xl-start">Nombre de Usuario</label>
+                            <input class="form-control" type="text" asp-for="UserM.UserName" placeholder="Nombre de Usuario">
+                            <span asp-validation-for="UserM.UserName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label d-xl-flex justify-content-xl-start">Contraseña</label>
+                            <input class="form-control" type="password" asp-for="UserM.PasswordHash" placeholder="Contraseña">
+                            <span asp-validation-for="UserM.PasswordHash" class="text-danger"></span>
+                            </div>
+                        <div class="mb-3">
+                            <input class="form-control" type="password" asp-for="ConfirmPassword" placeholder="Reingresar contraseña">
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="formCheck-1" asp-for="AcceptedTerms">
+                            <label class="form-check-label fw-light" for="formCheck-1" style="margin-bottom: 15px;">Acepto los términos y condiciones</label>
+                        </div>
+                        <div class="mb-3">
+                            <input class="btn btn-primary d-block w-100" type="submit" asp-page="/SignIn" style="margin-top: 20px;" value="Crear cuenta" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="text-center py-4" style="padding-top: 10px;margin-top: 0px;">
+        <div class="col">
+            <p class="text-muted my-2">Copyright&nbsp;© 2023 All Stars Co.</p>
+        </div>
+        <div class="container">
+            <ul class="list-inline my-2">
+                <li class="list-inline-item"><a class="link-secondary" href="#">Privacy Policy</a></li>
+                <li class="list-inline-item"><a class="link-secondary" href="#">Terms of Use</a></li>
+            </ul>
+        </div>
+    </footer>
+    <script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+    <!-- Add other script references here -->
+</body>
+</html>
+
+}
