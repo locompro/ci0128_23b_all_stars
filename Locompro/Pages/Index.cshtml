@@ -35,3 +35,19 @@
         </form>
     </div>
 </div>
+
+<!--
+Example for implementation
+
+// from here on out example on how use the parameters for normal and advanced search
+ string searchString = Request.Query["normalSearch"];
+
+if (searchString == null)
+{
+    this.text = "advanced search: ";
+    searchString = Request.Query["advancedSearch"];
+} else
+{
+    this.text = "normal search: ";
+}
+-->
