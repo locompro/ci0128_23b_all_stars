@@ -1,9 +1,11 @@
-﻿@{
-    var currentPage = Context.Request.Path.Value;
+﻿@using Microsoft.AspNetCore.Identity
+@using Locompro.Data
 
-    // TODO: change based on the state of wether the user is logged in or not
-    // TODO: add logic to accomplish this
-    bool isLoggedIn = true;
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+@{
+    var currentPage = Context.Request.Path.Value;
+    bool isLoggedIn = SignInManager.IsSignedIn(User);
 }
 
 <!DOCTYPE html>
@@ -67,7 +69,7 @@
                             <li class="nav-item"></li>
                             <li class="nav-item"></li>
                         </ul>
-                        <a class="btn btn-primary" role="button" href="#">Iniciar sesión</a>
+                        <a class="btn btn-primary" role="button" asp-area="Identity" asp-page="/Account/Login">Iniciar sesión</a>
                     </div>
                 }
  
