@@ -32,13 +32,13 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label d-xl-flex justify-content-xl-start">Nombre de Usuario</label>
-                            <input class="form-control" type="text" asp-for="UserM.Username" placeholder="Nombre de Usuario">
-                            <span asp-validation-for="UserM.Username" class="text-danger"></span>
+                            <input class="form-control" type="text" asp-for="UserM.UserName" placeholder="Nombre de Usuario">
+                            <span asp-validation-for="UserM.UserName" class="text-danger"></span>
                         </div>
                         <div class="mb-3">
                             <label class="form-label d-xl-flex justify-content-xl-start">Contraseña</label>
-                            <input class="form-control" type="password" asp-for="UserM.Password" placeholder="Contraseña">
-                            <span asp-validation-for="UserM.Password" class="text-danger"></span>
+                            <input class="form-control" type="password" asp-for="UserM.PasswordHash" placeholder="Contraseña">
+                            <span asp-validation-for="UserM.PasswordHash" class="text-danger"></span>
                             </div>
                         <div class="mb-3">
                             <input class="form-control" type="password" asp-for="ConfirmPassword" placeholder="Reingresar contraseña">
