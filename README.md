@@ -76,13 +76,11 @@ ci0128_23b_all_stars/
 │           │       <a href="./Design/Mockups/Sprint1/Avance2/busqueda_resultados_producto.png">busqueda_resultados_producto.png</a>  
 │           │       <a href="./Design/Mockups/Sprint1/Avance2/busqueda_resultados_producto_sin_iniciar_sesion.png">busqueda_resultados_producto_sin_iniciar_sesion.png</a>  
 │           │       <a href="./Design/Mockups/Sprint1/Avance2/busqueda_avanzada.png">busqueda_avanzada.png</a>  
-│           │       <a href="./Design/Mockups/Sprint1/Avance2/mi_perfil_de_usuario.png">mi_perfil_de_usuario.png</a>  
-│           │       <a href="./Design/Mockups/Sprint1/Avance2/un_perfil_de_usuario.png">un_perfil_de_usuario.png</a>  
 │           │       <a href="./Design/Mockups/Sprint1/Avance2/agregar_contribucion.png">agregar_contribucion.png</a>  
-│           │       <a href="./Design/Mockups/Sprint1/Avance2/agregar_producto.png">agregar_producto.png</a>  
+│           │       <a href="./Design/Mockups/Sprint1/Avance2/agregar_contribucion_autocompletado.png">agregar_contribucion_autocompletado.png</a>  
+│           │       <a href="./Design/Mockups/Sprint1/Avance2/agregar_producto.png">agregar_producto.png</a>
 │           │       <a href="./Design/Mockups/Sprint1/Avance2/agregar_tienda.png">agregar_tienda.png</a>  
 │           │       <a href="./Design/Mockups/Sprint1/Avance2/resultados_registros.png">resultados_registros.png</a>  
-│           │       <a href="./Design/Mockups/Sprint1/Avance2/resultados_registros_sin_iniciar_sesion.png">resultados_registros_sin_iniciar_sesion.png</a>  
 └───Locompro  
     └───(Proyecto ASP.NET)
 </pre>
