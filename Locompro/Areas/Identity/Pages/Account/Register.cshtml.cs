@@ -31,7 +31,7 @@ namespace Locompro.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             _ = returnUrl ?? Url.Content("~/");
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var registerSuccess = await userService.Register(Input);
                 if (registerSuccess.Succeeded)
