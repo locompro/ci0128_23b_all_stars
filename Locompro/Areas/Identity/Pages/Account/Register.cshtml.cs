@@ -44,6 +44,8 @@ namespace Locompro.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
+
+            Console.WriteLine("Model state is not valid");
             // If we got this far, something failed, redisplay form
             return Page();
         }
