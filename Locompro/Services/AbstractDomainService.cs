@@ -7,14 +7,14 @@ namespace Locompro.Services
     /// <typeparam name="T">Type of entity handled by service.</typeparam>
     /// <typeparam name="I">Type of key used by entity.</typeparam>
     /// <typeparam name="R">Type of repository used by service.</typeparam>
-    public abstract class AbstractService<T, I, R> : IService<T, I>
+    public abstract class AbstractDomainService<T, I, R> : IDomainService<T, I>
         where T : class
         where R : IRepository<T, I>
     {
         protected readonly UnitOfWork unitOfWork;
         protected readonly R repository;
 
-        protected AbstractService(UnitOfWork unitOfWork, R repository)
+        protected AbstractDomainService(UnitOfWork unitOfWork, R repository)
         {
             this.unitOfWork = unitOfWork;
             this.repository = repository;
