@@ -69,6 +69,14 @@ namespace Locompro.Services
             return (IUserEmailStore<User>)_userStore;
         }
 
-
+        public async Task<SignInResult> Login(LoginViewModel inputData)
+        {
+          var result = await _signInManager.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, lockoutOnFailure: false);
+          if (result.Succeeded)
+            {
+                _logger.LogInformation("User logged in.");
+            }
+           return result;
+        }
     }
 }

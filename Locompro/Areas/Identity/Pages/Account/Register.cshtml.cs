@@ -31,7 +31,7 @@ namespace Locompro.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             _ = returnUrl ?? Url.Content("~/");
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
                 var registerSuccess = await userService.Register(Input);
                 if (registerSuccess.Succeeded)
@@ -44,6 +44,8 @@ namespace Locompro.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
+
+            Console.WriteLine("Model state is not valid");
             // If we got this far, something failed, redisplay form
             return Page();
         }
