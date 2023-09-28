@@ -1,19 +1,22 @@
 @page
 @model Submissions.CreateModel
 
-@{
-    Layout = null;
-}
+<button id="openModalBtn">Add Store</button>
 
-<!DOCTYPE html>
+<!-- Modal Container -->
+<div id="modalContainer"></div>
 
-<html>
-<head>
-    <title></title>
-</head>
-<body>
-<div>
-    
-</div>
-</body>
-</html>
+@section Scripts{
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("openModalBtn").addEventListener("click", async function () {
+                // Properly form the URL with the handler name
+                const response = await fetch("/Submissions/Create?handler=AddStore");
+                if(response.ok) {
+                    document.getElementById("modalContainer").innerHTML = await response.text();
+                } else {
+                    console.error('Failed to load modal');
+                }
+            });
+        });
+    </script>}
