@@ -2,7 +2,7 @@
 namespace Locompro.Services
 {
     /// <summary>
-    /// Abstract class representing application services.
+    /// Abstract class representing domain services.
     /// </summary>
     /// <typeparam name="T">Type of entity handled by service.</typeparam>
     /// <typeparam name="I">Type of key used by entity.</typeparam>
