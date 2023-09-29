@@ -3,7 +3,7 @@ using Locompro.Models;
 
 namespace Locompro.Services
 {
-    public class AdministrativeUnitService : AbstractService<Province, string, ProvinceRepository>
+    public class AdministrativeUnitService : AbstractDomainService<Province, string, ProvinceRepository>
     {
 
         CantonRepository cantonRepository;

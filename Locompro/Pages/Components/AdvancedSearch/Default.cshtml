@@ -12,6 +12,7 @@
                                 type="submit"
                                 onchange="loadProvince(this)"
                                 style="font-family: Roboto, sans-serif;"
+                                name=Model.provinceSelected
                                 id="provinceDropdown">
                                 @foreach (var provincia in Model.provinces)
                                 {
@@ -31,7 +32,7 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-xl-3 d-xxl-flex justify-content-xxl-center" style="margin-top:25px">
+                <div class="col-xl-3 d-xxl-flex justify-content-xxl-center" style="margin-top:24px">
                     <div class="d-xl-flex justify-content-xl-start">
                         <div class="mb-3" style="margin-right: 10px;">
                             <label class="form-label d-lg-flex justify-content-lg-start justify-content-xxl-center">Precio Mínimo</label>

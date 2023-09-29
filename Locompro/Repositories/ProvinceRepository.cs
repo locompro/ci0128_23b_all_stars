@@ -12,7 +12,7 @@ namespace Locompro.Repositories
 
         public async Task<IEnumerable<Province>> GetAllProvinces()
         {
-            IQueryable<Province> querable = this.dbSet.Select(p => p);
+            IQueryable<Province> querable = this.DbSet.Select(p => p);
 
             return await querable.ToListAsync();
         }

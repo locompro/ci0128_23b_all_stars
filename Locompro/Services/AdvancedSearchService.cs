@@ -1,6 +1,4 @@
 ﻿using Locompro.Models;
-using Locompro.Repositories;
-using NuGet.Packaging;
 
 namespace Locompro.Services
 {
@@ -8,10 +6,10 @@ namespace Locompro.Services
     public class Category
     {
         public string Name { get; set; }
-        public Category(string name) { this.Name = name; }
+        public Category(string name) { Name = name; }
     };
 
-    public class AdvancedSearchService : AbstractService<Canton, string, CantonRepository>
+    public class AdvancedSearchService
     {
         private AdministrativeUnitService administrativeUnitService;
 
@@ -19,7 +17,9 @@ namespace Locompro.Services
 
         public List<Canton> cantons { get; set; }
 
-        public List<Category> categories { get; set; } = 
+        public string provinceSelected { get; set; }
+
+        public List<Category> categories { get; set; } =
             new List<Category>
             {
                 new Category("sombrero"),
@@ -28,10 +28,7 @@ namespace Locompro.Services
                 new Category("pantalones")
             };
 
-        public AdvancedSearchService(UnitOfWork unitOfWork,
-            CantonRepository cantonRepository,
-            AdministrativeUnitService administrativeUnitService)
-            : base(unitOfWork, cantonRepository)
+        public AdvancedSearchService(AdministrativeUnitService administrativeUnitService)
         {
             this.administrativeUnitService = administrativeUnitService;
         }
