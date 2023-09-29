@@ -6,6 +6,7 @@ using Locompro.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Server;
 using System.Xml;
+using Locompro.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,13 @@ registerServices(builder);
 // Register repositories and services
 builder.Services.AddScoped<UnitOfWork>();
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    SeedData.Initialize(services);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -48,10 +56,17 @@ void registerServices(WebApplicationBuilder builder)
         options.UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
     builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
         .AddEntityFrameworkStores<LocomproContext>();
+
     // Register repositories and services
     builder.Services.AddScoped<UnitOfWork>();
     builder.Services.AddScoped<StoreRepository>();
     builder.Services.AddScoped<StoreService>();
+
+    // for advanced search
+    builder.Services.AddScoped<ProvinceRepository>();
+    builder.Services.AddScoped<CantonRepository>();
+    builder.Services.AddScoped<AdministrativeUnitService>();
+    builder.Services.AddScoped<AdvancedSearchService>();
 }
 
 

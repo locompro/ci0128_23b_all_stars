@@ -1,20 +1,6 @@
-﻿/* Style the container for the search box */
-.search-container {
-    text-align: right; /* Align the text to the right within the container */
-}
-
-/* Style the search input field */
-.search-box {
-    width: 200px; /* Set the width of the input field */
-    padding: 5px; /* Add some padding for spacing */
-    /* padding-left: 10px;  /* Left-align the text inside the input field */
-    margin-right: 10px; /* Margin to shift the input to the right */
-}
-
-/* Style the search button (if you have one) */
-.search-button {
-    padding: 5px 10px; /* Add padding to make the button clickable */
-    background-color: #007bff; /* Example background color */
-    color: #fff; /* Example text color */
-    border: none; /* Remove the border */
+﻿.button-rounded-top {
+    border-top-left-radius: 20px; /* Rounded top-left corner */
+    border-top-right-radius: 20px; /* Rounded top-right corner */
+    border-bottom-left-radius: 0px; /* Rounded bottom-left corner */
+    border-bottom-right-radius: 0px; /* Rounded bottom-right corner */
 }

@@ -1,37 +1,180 @@
 ﻿@page
 @model IndexModel
-@{
-    ViewData["mainMenu"] = true;
-}
 
 <!-- get the css file with main menu formats -->
-<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/MainMenu.css" asp-append-version="true" />
 
-<h1 class="d-lg-flex justify-content-lg-center" style="padding-top: 0px;margin-top: 180px;margin-bottom: 55px;font-size: 75px;">LoCoMPro</h1>
+<h1 class="d-flex justify-content-center"
+    style="padding-top: 0px;margin-top: 180px;margin-bottom: 55px;font-size: 75px;">
+    LoCoMPro
+</h1>
 
-<div class="container d-lg-flex justify-content-lg-center align-items-lg-end pb-5 pt-5" style="padding-left: 0px;margin-bottom: 3px;margin-top: -42px;">
-    <div class="col-md-9 col-xl-8 ml-auto mr-auto">
+<div class="container  pt-5"
+     style="padding-left: 0px;margin-bottom: 3px;margin-top: -42px;">
+    <div class="row justify-content-center" >
         <form method="get">
-            <div class="form-actions align-items-center form-row">
-                <div class="col-sm form-group mb-3" style="position: relative;">
-                    <div class="form-actions input-group">
-                        <div class="input-group-prepend"
-                                style="position: absolute; left: 0; top: 0; bottom: 0; display: flex; align-items: center; margin-right: 6px;">
-                            <button class="btn btn-primary ps-2 pe-2 rounded-pill" role="button" type="submit" formaction="/Search"
-                                    style="margin-left: 20px; height: 30px; font-size: 12px;">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
-                        <div class="search-box form-control pe-4 rounded-pill"; style="margin-left: 10px;">
-                            <input type="text" class="form-control rounded-pill" name="query"
-                                   value="@Model.SearchQuery" placeholder="Buscar...." 
-                                   style="margin-left: 30px; padding-right: 50px; border: none; width: 98%;">
-                        </div>
-                        <button class="btn btn-primary ps-4 pe-4 rounded-pill" style="margin-left: 6px;" formaction="/AdvancedSearch"
-                                type="submit">Búsqueda avanzada</button>
-                     </div>
+            <div class="container">
+                <div class="justify-content-center form-actions input-group" style="max-width: 800px; margin: 0 auto;">
+                    <div class="input-group-prepend"
+                         style="position: absolute; left: 0; top: 0; bottom: 0; display: flex; align-items: center; margin-right: 6px;">
+                        <button class="btn btn-primary ps-2 pe-2 rounded-pill"
+                                role="button"
+                                type="submit"
+                                formaction="/SearchResults/SearchResults"
+                                style="margin-left: 20px; height: 30px; font-size: 12px;">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                    <div class="search-box form-control pe-4 rounded-pill"
+                         style="margin-left: 10px;">
+                        <input type="text"
+                               class="form-control rounded-pill"
+                               name="query"
+                               placeholder="Buscar...."
+                               style="margin-left: 30px; padding-right: 50px; border: none; width: 98%;"
+                               id="searchBox">
+                    </div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 20px">
+                <button class="btn btn-primary ps-4 pe-4 rounded-pill"
+                        style="margin-left: 6px; margin-top: 6px; margin-bottom: 0px; "
+                        id="advancedSearchButton"
+                        type="button">
+                    Búsqueda avanzada
+                </button>
+                <div id="modalContainer">
                 </div>
             </div>
         </form>
     </div>
 </div>
+
+
+@section Scripts{
+    <script>
+        // variable to store if the modal has been shown
+        var modalShown = false;
+
+        // event listener for the advanced search button
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("advancedSearchButton").addEventListener("click", async function () {
+                // if the modal is currently been shown, close it
+                if (modalShown == true) {
+                    // get the modal
+                    var modal = document.getElementById("modalContainer");
+                    // erase the contents
+                    modal.innerHTML = "";
+
+                    // reset the button
+                    button.classList.remove("button-rounded-top");
+                    button.classList.add("rounded-pill");
+
+                    // change state to modal not shown
+                    modalShown = false;
+                    return;
+                }
+
+                try {
+                    const response = await fetch("Index?handler=AdvancedSearch"); // Replace with the URL of your ViewComponent
+                    if (response.ok) {
+                        const modalContent = await response.text();
+
+                        // Append the modal content to the modal container
+                        const modalContainer = document.getElementById("modalContainer");
+                        modalContainer.innerHTML = modalContent;
+                    } else {
+                        console.error('Failed to load modal content.');
+                    }
+                } catch (error) {
+                    console.error('An error occurred:', error);
+                }
+
+                // change the button style
+                button = document.getElementById("advancedSearchButton");
+                button.classList.remove("rounded-pill");
+                button.classList.add("button-rounded-top");
+
+                // if the modal has been displayed, then store the state
+                modalShown = true;
+            });
+        });
+    </script>
+
+    <script>
+        // activated when province is changed in the dropdown menu
+        async function loadProvince(optionSelected) {
+            var content = optionSelected.value;
+
+            try {
+                // send server side the province selected by client and wait for response
+                const response = await fetch("Index?handler=UpdateProvince&province=" + content, {
+                    method: 'GET', // use get method
+                    headers: {
+                        'Accept': 'application/json', // acepting json files
+                    },
+                });
+
+                if (response.ok) {
+                    console.log("ok");
+                    // get the cantons that were sent
+                    loadCantons(response);
+                } else {
+                    console.log("not ok");
+                }
+            } catch (error) {
+                console.log("Error");
+            }
+        }
+
+        // get the cantons sent by the server side
+        async function loadCantons(response) {
+            try {
+                // wait for cantons json file to be received
+                const data = await response.json();
+
+                // Clear existing options in the optgroup
+                const optgroup = document.getElementById('cantonDropdown');
+                optgroup.innerHTML = '';
+
+                // Populate with new options based on fetched data
+                data.forEach(function (canton) {
+                    const option = document.createElement('option');
+                    option.textContent = canton.Name;
+                    optgroup.appendChild(option);
+                });
+            } catch (error) {
+                23
+                console.error('Error loading cantons:', error);
+            }
+        }
+    </script>
+
+    <script>
+        function performSearchButton() {
+            console.log("clicked")
+
+            var provinceValue = document.getElementById("provinceDropdown").value;
+            var cantonValue = document.getElementById("cantonDropdown").value;
+            var minValue = document.getElementById("minValue").value;
+            var maxValue = document.getElementById("maxValue").value;
+            var categoryValue = document.getElementById("categoryDropdown").value;
+            var searchValue = document.getElementById("searchBox").value;
+            var modelValue = "";
+            try {
+                var modelValue = document.getElementById("modelInput").value;
+            } catch (error) {
+            }
+
+            // redirect to search results page
+            window.location.href = "/SearchResults/SearchResults?query=" + searchValue +
+                    "&province=" + provinceValue +
+                    "&canton=" + cantonValue +
+                    "&minValue=" + minValue +
+                    "&maxValue=" + maxValue +
+                    "&category=" + categoryValue +
+                    "&model=" + modelValue;
+        }
+    </script>
+}
+

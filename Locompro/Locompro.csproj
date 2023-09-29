@@ -8,10 +8,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Pages\NewFolder\**" />
-	  <Content Remove="Pages\NewFolder\**" />
-	  <EmbeddedResource Remove="Pages\NewFolder\**" />
-	  <None Remove="Pages\NewFolder\**" />
+	  <Compile Remove="NewFolder\**" />
+	  <Compile Remove="Pages\NewFolder1\**" />
+	  <Content Remove="NewFolder\**" />
+	  <Content Remove="Pages\NewFolder1\**" />
+	  <EmbeddedResource Remove="NewFolder\**" />
+	  <EmbeddedResource Remove="Pages\NewFolder1\**" />
+	  <None Remove="NewFolder\**" />
+	  <None Remove="Pages\NewFolder1\**" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Remove="Pages\Modals\AdvancedSearch\CantonsDropDownPartialView.cshtml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -40,6 +48,14 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Areas\NewFolder\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\Modals\AdvancedSearch\CantonsDropDownPartialView.cshtml" />
   </ItemGroup>
 
 

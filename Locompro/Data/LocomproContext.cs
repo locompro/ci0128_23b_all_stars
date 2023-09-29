@@ -12,5 +12,8 @@ namespace Locompro.Data
         }
 
         public DbSet<Locompro.Models.Store> Store { get; set; } = default!;
+        public DbSet<Locompro.Models.Province> Province { get; set; } = default!;
+        public DbSet<Locompro.Models.Country> Country { get; set; } = default!;
+        public DbSet<Locompro.Models.Canton> Canton { get; set; } = default!;
     }
 }
