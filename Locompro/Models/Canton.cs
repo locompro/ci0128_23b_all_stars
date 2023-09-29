@@ -8,7 +8,7 @@ namespace Locompro.Models
         [Key]
         [Required]
         [Column(Order = 0)]
-        public Province Province { get; set; }
+        public virtual Province Province { get; set; }
 
         [Key]
         [Required]

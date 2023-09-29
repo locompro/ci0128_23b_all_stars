@@ -1,22 +1,24 @@
 @page
 @model Submissions.CreateModel
 
-<button id="openModalBtn">Add Store</button>
+@await Component.InvokeAsync("AddStore", new { storeVM = Model.StoreVm })
 
-<!-- Modal Container -->
-<div id="modalContainer"></div>
-
-@section Scripts{
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            document.getElementById("openModalBtn").addEventListener("click", async function () {
-                // Properly form the URL with the handler name
-                const response = await fetch("/Submissions/Create?handler=AddStore");
-                if(response.ok) {
-                    document.getElementById("modalContainer").innerHTML = await response.text();
-                } else {
-                    console.error('Failed to load modal');
-                }
-            });
-        });
-    </script>}
+@* <button id="openModalBtn">Add Store</button> *@
+@* *@
+@* <!-- Modal Container --> *@
+@* <div id="modalContainer"></div> *@
+@* *@
+@* @section Scripts{ *@
+@*     <script> *@
+@*         document.addEventListener("DOMContentLoaded", function () { *@
+@*             document.getElementById("openModalBtn").addEventListener("click", async function () { *@
+@*                 // Properly form the URL with the handler name *@
+@*                 const response = await fetch("/Submissions/Create?handler=CreateStore"); *@
+@*                 if(response.ok) { *@
+@*                     document.getElementById("modalContainer").innerHTML = await response.text(); *@
+@*                 } else { *@
+@*                     console.error('Failed to load modal'); *@
+@*                 } *@
+@*             }); *@
+@*         }); *@
+@*     </script>} *@

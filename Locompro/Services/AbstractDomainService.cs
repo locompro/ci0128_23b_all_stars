@@ -33,6 +33,10 @@ namespace Locompro.Services
                 await unitOfWork.Rollback();
                 throw;
             }
+            finally
+            {
+                await unitOfWork.Commit();
+            }
         }
 
         public async Task<IEnumerable<T>> GetAll()
@@ -47,6 +51,10 @@ namespace Locompro.Services
             {
                 await unitOfWork.Rollback();
                 throw;
+            }
+            finally
+            {
+                await unitOfWork.Commit();
             }
         }
 
@@ -63,6 +71,10 @@ namespace Locompro.Services
                 await unitOfWork.Rollback();
                 throw;
             }
+            finally
+            {
+                await unitOfWork.Commit();
+            }
         }
 
         public async Task Update(T entity)
@@ -78,6 +90,10 @@ namespace Locompro.Services
                 await unitOfWork.Rollback();
                 throw;
             }
+            finally
+            {
+                await unitOfWork.Commit();
+            }
         }
 
         public async Task Delete(I id)
@@ -92,6 +108,10 @@ namespace Locompro.Services
             {
                 await unitOfWork.Rollback();
                 throw;
+            }
+            finally
+            {
+                await unitOfWork.Commit();
             }
         }
     }

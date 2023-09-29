@@ -1,24 +1,16 @@
-using Locompro.Pages.Modals.Stores;
-using Microsoft.AspNetCore.Mvc;
+using Locompro.Models;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
 namespace Locompro.Pages.Submissions;
 
 public class CreateModel : PageModel
 {
+    public StoreViewModel StoreVm { get; set; }
+    
     public void OnGet()
     {
-        
-    }
-    
-    public PartialViewResult OnGetAddStore(string customerId)
-    {
-        return new PartialViewResult
-        {
-            ViewName = "Modals/Stores/Create",
-            ViewData = new ViewDataDictionary<StoreCreateModel>(ViewData, new StoreCreateModel())
-        };
-    }
-}
 
+    }
+
+    // public PartialViewResult OnGetCreateStore(string customerId) => Partial("Components/Stores/Create");
+}

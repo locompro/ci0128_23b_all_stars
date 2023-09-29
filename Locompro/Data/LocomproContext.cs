@@ -11,6 +11,6 @@ namespace Locompro.Data
         {
         }
 
-        public DbSet<Locompro.Models.Store> Store { get; set; } = default!;
+        public DbSet<Store> Store { get; set; } = default!;
     }
 }
