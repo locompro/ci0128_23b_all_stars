@@ -16,7 +16,6 @@ registerServices(builder);
 //    options.UseSqlServer(builder.Configuration.GetConnectionString("laboratorio4Context") ?? throw new InvalidOperationException("Connection string 'laboratorio4Context' not found.")));
 
 // Register repositories and services
-builder.Services.AddScoped<UnitOfWork>();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -50,10 +49,20 @@ void registerServices(WebApplicationBuilder builder)
 {
     // Add services to the container.
     builder.Services.AddRazorPages();
+    builder.Services.AddScoped<UnitOfWork>();
 
+    // Register repositories and services
+    builder.Services.AddScoped<UnitOfWork>();
+    builder.Services.AddScoped<StoreRepository>();
+    builder.Services.AddScoped<StoreService>();
+    
+    builder.Services.AddTransient<CountryRepository>();
+    builder.Services.AddTransient<CountryService>();
+    
     // Add DbContext using SQL Server
     builder.Services.AddDbContext<LocomproContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
+        options.UseLazyLoadingProxies()
+            .UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
     builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
         .AddEntityFrameworkStores<LocomproContext>();
 

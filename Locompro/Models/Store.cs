@@ -11,7 +11,7 @@ namespace Locompro.Models
         public string Name { get; set; }
 
         [Required]
-        public Canton Canton { get; set; }
+        public virtual Canton Canton { get; set; }
 
         [Required]
         [StringLength(35)]

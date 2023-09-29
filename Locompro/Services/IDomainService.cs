@@ -5,7 +5,7 @@
     /// </summary>
     /// <typeparam name="T">Type of entity handled by service.</typeparam>
     /// <typeparam name="I">Type of key used by entity.</typeparam>
-    public interface IService<T, I>
+    public interface IDomainService<T, I>
     {
         Task<T> Get(I id);
 

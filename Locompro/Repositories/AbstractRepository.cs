@@ -10,35 +10,35 @@ namespace Locompro.Repositories
     /// <typeparam name="I">Type of key used by entity.</typeparam>
     public abstract class AbstractRepository<T, I> : IRepository<T, I> where T : class
     {
-        protected readonly LocomproContext context;
-        protected readonly DbSet<T> dbSet;
+        protected readonly LocomproContext Context;
+        protected readonly DbSet<T> DbSet;
 
         protected AbstractRepository(LocomproContext context)
         {
-            this.context = context;
-            dbSet = this.context.Set<T>();
+            this.Context = context;
+            DbSet = this.Context.Set<T>();
         }
 
         public async Task<T> GetByIdAsync(I id)
         {
-            return await dbSet.FindAsync(id);
+            return await DbSet.FindAsync(id);
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await dbSet.ToListAsync();
+            return await DbSet.ToListAsync();
         }
 
         public async Task AddAsync(T entity)
         {
-            await dbSet.AddAsync(entity);
-            await context.SaveChangesAsync();
+            await DbSet.AddAsync(entity);
+            await Context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(T entity)
         {
-            dbSet.Update(entity);
-            await context.SaveChangesAsync();
+            DbSet.Update(entity);
+            await Context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(I id)
@@ -46,8 +46,8 @@ namespace Locompro.Repositories
             var entity = await GetByIdAsync(id);
             if (entity != null)
             {
-                dbSet.Remove(entity);
-                await context.SaveChangesAsync();
+                DbSet.Remove(entity);
+                await Context.SaveChangesAsync();
             }
         }
     }

@@ -11,6 +11,8 @@ namespace Locompro.Models
 
         [Key]
         [Required]
-        public Country Country { get; set; }
+        public virtual Country Country { get; set; }
+
+        public virtual ICollection<Canton> Cantons { get; set; }
     }
 }
