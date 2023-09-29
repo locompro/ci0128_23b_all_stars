@@ -11,6 +11,8 @@
     var provincesJson = JsonConvert.SerializeObject(provinces, settings);
 }
 
+<!-- TODO: Set initial value for Province select to empty -->
+
 <script>
     const provinces = JSON.parse('@Html.Raw(provincesJson)');
     
