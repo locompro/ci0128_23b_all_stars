@@ -59,6 +59,9 @@
         // event listener for the advanced search button
         document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("advancedSearchButton").addEventListener("click", async function () {
+                // get button for advanced search button
+                button = document.getElementById("advancedSearchButton");
+                
                 // if the modal is currently been shown, close it
                 if (modalShown == true) {
                     // get the modal
@@ -76,7 +79,7 @@
                 }
 
                 try {
-                    const response = await fetch("Index?handler=AdvancedSearch"); // Replace with the URL of your ViewComponent
+                    const response = await fetch("Index?handler=AdvancedSearch");                    
                     if (response.ok) {
                         const modalContent = await response.text();
 
@@ -91,7 +94,6 @@
                 }
 
                 // change the button style
-                button = document.getElementById("advancedSearchButton");
                 button.classList.remove("rounded-pill");
                 button.classList.add("button-rounded-top");
 
