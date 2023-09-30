@@ -51,10 +51,9 @@ void registerServices(WebApplicationBuilder builder)
 
     // Register repositories and services
     builder.Services.AddScoped<UnitOfWork>();
-    builder.Services.AddScoped<UserRepository>();
     builder.Services.AddScoped<StoreRepository>();
     builder.Services.AddScoped<StoreService>();
-    builder.Services.AddScoped<UserService>();
+    builder.Services.AddScoped<AuthService>();
 }
 
 

@@ -14,11 +14,11 @@ namespace Locompro.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        private readonly UserService userService;
+        private readonly AuthService authService;
 
-        public LoginModel(UserService userService)
+        public LoginModel(AuthService authService)
         {
-            this.userService = userService;
+            this.authService = authService;
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace Locompro.Areas.Identity.Pages.Account
             {
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await userService.Login(Input);
+                var result = await authService.Login(Input);
                 if (result.Succeeded)
                 {
                     return LocalRedirect(returnUrl);
