@@ -5,14 +5,14 @@ namespace Locompro.Repositories
     /// <summary>
     /// Interface representing application repositories.
     /// </summary>
-    /// <typeparam name="T">Type of entity handled by repository.</typeparam>
-    /// <typeparam name="I">Type of key used by entity.</typeparam>
-    public interface IRepository<T, I>
+    /// <typeparam name="TEntity">Type of entity handled by repository.</typeparam>
+    /// <typeparam name="TKey">Type of key used by entity.</typeparam>
+    public interface IRepository<TEntity, TKey>
     {
-        Task<T> GetByIdAsync(I id);
-        Task<IEnumerable<T>> GetAllAsync();
-        Task AddAsync(T entity);
-        Task UpdateAsync(T entity);
-        Task DeleteAsync(I id);
+        Task<TEntity> GetByIdAsync(TKey id);
+        Task<IEnumerable<TEntity>> GetAllAsync();
+        Task AddAsync(TEntity entity);
+        Task UpdateAsync(TEntity entity);
+        Task DeleteAsync(TKey id);
     }
 }

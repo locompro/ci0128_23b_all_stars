@@ -1,20 +1,19 @@
-﻿namespace Locompro.Services
+﻿namespace Locompro.Services;
+
+/// <summary>
+/// Interface representing domain services.
+/// </summary>
+/// <typeparam name="TEntity">Type of entity handled by service.</typeparam>
+/// <typeparam name="TKey">Type of key used by entity.</typeparam>
+public interface IDomainService<TEntity, in TKey>
 {
-    /// <summary>
-    /// Interface representing domain services.
-    /// </summary>
-    /// <typeparam name="T">Type of entity handled by service.</typeparam>
-    /// <typeparam name="I">Type of key used by entity.</typeparam>
-    public interface IDomainService<T, I>
-    {
-        Task<T> Get(I id);
+    Task<TEntity> Get(TKey id);
 
-        Task<IEnumerable<T>> GetAll();
+    Task<IEnumerable<TEntity>> GetAll();
 
-        Task Add(T entity);
+    Task Add(TEntity entity);
 
-        Task Update(T entity);
+    Task Update(TEntity entity);
 
-        Task Delete(I id);
-    }
+    Task Delete(TKey id);
 }

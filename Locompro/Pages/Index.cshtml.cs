@@ -4,62 +4,60 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using System.Text.Json;
 
-namespace Locompro.Pages
+namespace Locompro.Pages;
+
+public class IndexModel : PageModel
 {
-    public class IndexModel : PageModel
+    public string SearchQuery { get; set; }
+
+    AdministrativeUnitService administrativeUnitService;
+
+    AdvancedSearchService advancedSearchServiceHandler;
+
+    public IndexModel(AdministrativeUnitService administrativeUnitService,
+        AdvancedSearchService advancedSearchServiceHandler)
     {
-        public string SearchQuery { get; set; }
+        this.administrativeUnitService = administrativeUnitService;
+        this.advancedSearchServiceHandler = advancedSearchServiceHandler;
+    }
 
-        AdministrativeUnitService administrativeUnitService;
+    public void OnGet()
+    {
+    }
 
-        AdvancedSearchService advancedSearchServiceHandler;
+    public void OnPost()
+    {
+    }
 
-        public IndexModel(AdministrativeUnitService administrativeUnitService, AdvancedSearchService advancedSearchServiceHandler)
+    public IActionResult OnGetAdvancedSearch(string searchQuery)
+    {
+        this.SearchQuery = searchQuery;
+
+        // generate the view component
+        var viewComponentResult = ViewComponent("AdvancedSearch", this.advancedSearchServiceHandler);
+
+        // return it for it to be integrated
+        return viewComponentResult;
+    }
+
+    public async Task<IActionResult> OnGetUpdateProvince(string province)
+    {
+        // update the model with all cantons in the given province
+        await this.advancedSearchServiceHandler.fetchCantonsAsync(province);
+
+        // prevent the json serializer from looping infinitely
+        var settings = new JsonSerializerSettings
         {
-            this.administrativeUnitService = administrativeUnitService;
-            this.advancedSearchServiceHandler = advancedSearchServiceHandler;
-        }
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
 
-        public void OnGet()
-        {
+        // generate the json file with the cantons
+        var cantonsJson = JsonConvert.SerializeObject(this.advancedSearchServiceHandler.cantons, settings);
 
-        }
+        // specify the content type as a json file
+        Response.ContentType = "application/json";
 
-        public void OnPost()
-        {
-
-        }
-
-        public IActionResult OnGetAdvancedSearch(string searchQuery)
-        {
-            this.SearchQuery = searchQuery;
-
-            // generate the view component
-            var viewComponentResult = ViewComponent("AdvancedSearch", this.advancedSearchServiceHandler);
-
-            // return it for it to be integrated
-            return viewComponentResult;
-        }
-
-        public async Task<IActionResult> OnGetUpdateProvince(string province)
-        { 
-            // update the model with all cantons in the given province
-            await this.advancedSearchServiceHandler.fetchCantonsAsync(province);
-
-            // prevent the json serializer from looping infinitely
-            var settings = new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
-
-            // generate the json file with the cantons
-            var cantonsJson = JsonConvert.SerializeObject(this.advancedSearchServiceHandler.cantons, settings);
-
-            // specify the content type as a json file
-            Response.ContentType = "application/json";
-
-            // send to client
-            return Content(cantonsJson);
-        }
+        // send to client
+        return Content(cantonsJson);
     }
 }

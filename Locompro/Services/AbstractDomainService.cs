@@ -1,117 +1,116 @@
 ﻿using Locompro.Repositories;
-namespace Locompro.Services
+
+namespace Locompro.Services;
+
+/// <summary>
+/// Abstract class representing domain services.
+/// </summary>
+/// <typeparam name="TEntity">Type of entity handled by service.</typeparam>
+/// <typeparam name="TKey">Type of key used by entity.</typeparam>
+/// <typeparam name="TRepo">Type of repository used by service.</typeparam>
+public abstract class AbstractDomainService<TEntity, TKey, TRepo> : AbstractService, IDomainService<TEntity, TKey>
+    where TEntity : class
+    where TRepo : IRepository<TEntity, TKey>
 {
-    /// <summary>
-    /// Abstract class representing domain services.
-    /// </summary>
-    /// <typeparam name="T">Type of entity handled by service.</typeparam>
-    /// <typeparam name="I">Type of key used by entity.</typeparam>
-    /// <typeparam name="R">Type of repository used by service.</typeparam>
-    public abstract class AbstractDomainService<T, I, R> : AbstractService, IDomainService<T, I>
-        where T : class
-        where R : IRepository<T, I>
+    protected readonly TRepo Repository;
+
+    protected AbstractDomainService(UnitOfWork unitOfWork, TRepo repository) : base(unitOfWork)
     {
-        protected readonly UnitOfWork unitOfWork;
-        protected readonly R repository;
+        Repository = repository;
+    }
 
-        protected AbstractDomainService(UnitOfWork unitOfWork, R repository) : base(unitOfWork)
+    public async Task<TEntity> Get(TKey id)
+    {
+        await UnitOfWork.BeginTransaction();
+
+        try
         {
-            this.repository = repository;
+            return await Repository.GetByIdAsync(id);
         }
-
-        public async Task<T> Get(I id)
+        catch (Exception)
         {
-            await unitOfWork.BeginTransaction();
-
-            try
-            {
-                return await repository.GetByIdAsync(id);
-            }
-            catch (Exception)
-            {
-                await unitOfWork.Rollback();
-                throw;
-            }
-            finally
-            {
-                await unitOfWork.Commit();
-            }
+            await UnitOfWork.Rollback();
+            throw;
         }
-
-        public async Task<IEnumerable<T>> GetAll()
+        finally
         {
-            await unitOfWork.BeginTransaction();
-
-            try
-            {
-                return await repository.GetAllAsync();
-            }
-            catch (Exception)
-            {
-                await unitOfWork.Rollback();
-                throw;
-            }
-            finally
-            {
-                await unitOfWork.Commit();
-            }
+            await UnitOfWork.Commit();
         }
+    }
 
-        public async Task Add(T entity)
+    public async Task<IEnumerable<TEntity>> GetAll()
+    {
+        await UnitOfWork.BeginTransaction();
+
+        try
         {
-            await unitOfWork.BeginTransaction();
-
-            try
-            {
-                await repository.AddAsync(entity);
-            }
-            catch (Exception)
-            {
-                await unitOfWork.Rollback();
-                throw;
-            }
-            finally
-            {
-                await unitOfWork.Commit();
-            }
+            return await Repository.GetAllAsync();
         }
-
-        public async Task Update(T entity)
+        catch (Exception)
         {
-            await unitOfWork.BeginTransaction();
-
-            try
-            {
-                await repository.UpdateAsync(entity);
-            }
-            catch (Exception)
-            {
-                await unitOfWork.Rollback();
-                throw;
-            }
-            finally
-            {
-                await unitOfWork.Commit();
-            }
+            await UnitOfWork.Rollback();
+            throw;
         }
-
-        public async Task Delete(I id)
+        finally
         {
-            await unitOfWork.BeginTransaction();
+            await UnitOfWork.Commit();
+        }
+    }
 
-            try
-            {
-                await repository.DeleteAsync(id);
-            }
-            catch (Exception)
-            {
-                await unitOfWork.Rollback();
-                throw;
-            }
-            finally
-            {
-                await unitOfWork.Commit();
-            }
+    public async Task Add(TEntity entity)
+    {
+        await UnitOfWork.BeginTransaction();
+
+        try
+        {
+            await Repository.AddAsync(entity);
+        }
+        catch (Exception)
+        {
+            await UnitOfWork.Rollback();
+            throw;
+        }
+        finally
+        {
+            await UnitOfWork.Commit();
+        }
+    }
+
+    public async Task Update(TEntity entity)
+    {
+        await UnitOfWork.BeginTransaction();
+
+        try
+        {
+            await Repository.UpdateAsync(entity);
+        }
+        catch (Exception)
+        {
+            await UnitOfWork.Rollback();
+            throw;
+        }
+        finally
+        {
+            await UnitOfWork.Commit();
+        }
+    }
+
+    public async Task Delete(TKey id)
+    {
+        await UnitOfWork.BeginTransaction();
+
+        try
+        {
+            await Repository.DeleteAsync(id);
+        }
+        catch (Exception)
+        {
+            await UnitOfWork.Rollback();
+            throw;
+        }
+        finally
+        {
+            await UnitOfWork.Commit();
         }
     }
 }
