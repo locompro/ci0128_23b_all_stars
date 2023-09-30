@@ -58,8 +58,6 @@ namespace Locompro.Pages
             // specify the content type as a json file
             Response.ContentType = "application/json";
 
-            Console.WriteLine(">>>>>>>>>>>>>>>>>>>>>>>>>" + this.advancedSearchServiceHandler.provinceSelected);
-
             // send to client
             return Content(cantonsJson);
         }
