@@ -1,0 +1,245 @@
+﻿.button-rounded-top {
+    border-top-left-radius: 20px; /* Rounded top-left corner */
+    border-top-right-radius: 20px; /* Rounded top-right corner */
+    border-bottom-left-radius: 0px; /* Rounded bottom-left corner */
+    border-bottom-right-radius: 0px; /* Rounded bottom-right corner */
+   
+    background-color: lightgray;
+    border: 2px solid lightgray;
+    color: black;
+    
+    padding-bottom: 5px;
+    padding-top: 5px;
+    width: 100%;
+
+    animation-name: advanced-search-button-appears;
+    animation-duration: 0.15s;
+}
+
+.search-results-button-rounded-top {
+    border-top-left-radius: 20px; /* Rounded top-left corner */
+    border-top-right-radius: 20px; /* Rounded top-right corner */
+    border-bottom-left-radius: 0px; /* Rounded bottom-left corner */
+    border-bottom-right-radius: 0px; /* Rounded bottom-right corner */
+
+    background-color: lightgray;
+    border: 2px solid lightgray;
+    color: black;
+
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+.index-modal-advanced-search {
+    border-top-left-radius: 0px; /* Rounded top-left corner */
+    border-top-right-radius: 0px; /* Rounded top-right corner */
+    border-bottom-left-radius: 20px; /* Rounded bottom-left corner */
+    border-bottom-right-radius: 20px; /* Rounded bottom-right corner */
+    background-color: lightgray;
+    
+    margin-left: 0px;
+    margin-right: 0px;
+
+    animation-name: advanced-search-modal-appears;
+    animation-duration: 0.15s;
+}
+
+.modal-advanced-search {
+    border-top-left-radius: 20px; /* Rounded top-left corner */
+    border-top-right-radius: 20px; /* Rounded top-right corner */
+    border-bottom-left-radius: 20px; /* Rounded bottom-left corner */
+    border-bottom-right-radius: 20px; /* Rounded bottom-right corner */
+    background-color: lightgray;
+}
+
+.modal-search-results-on-advanced-search {
+    border-top-left-radius: 20px; /* Rounded top-left corner */
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 20px; /* Rounded bottom-left corner */
+    border-bottom-right-radius: 20px; /* Rounded bottom-right corner */
+    background-color: lightgray;
+}
+
+.index-advanced-search-button-initial {
+    background-color: #0d6efd;
+    color: white;
+    
+    padding-bottom: 5px;
+    padding-top: 5px;
+    padding-left: 30px;
+    padding-right: 30px;
+
+    height: 100%;  
+    
+    border-top-left-radius: 30px; /* Rounded top-left corner */
+    border-top-right-radius: 30px; /* Rounded top-right corner */
+    border-bottom-left-radius: 30px; /* Rounded bottom-left corner */
+    border-bottom-right-radius: 30px; /* Rounded bottom-right corner */
+    
+    border: 2px solid #0d6efd;
+}
+
+.search-results-advanced-search-button-initial {
+    border: 2px solid #0d6efd;
+}
+
+.index-advanced-search-button {
+    background-color: #0d6efd;
+    color: white;
+
+    padding-bottom: 5px;
+    padding-top: 5px;
+    padding-left: 30px;
+    padding-right: 30px;
+
+    height: 100%;
+
+    border-top-left-radius: 30px; /* Rounded top-left corner */
+    border-top-right-radius: 30px; /* Rounded top-right corner */
+    border-bottom-left-radius: 30px; /* Rounded bottom-left corner */
+    border-bottom-right-radius: 30px; /* Rounded bottom-right corner */
+
+    border: 2px solid #0d6efd;
+
+    animation-name: advanced-search-button-closes;
+    animation-duration: 0.15s;
+}
+
+.advanced-search-modal-default {
+    animation-name: advanced-search-modal-disappears;
+    animation-duration: 0.15s;
+}
+
+@keyframes advanced-search-button-appears {
+    0% {
+        width: 30%;
+    }
+    
+    100% {
+        width: 100%;
+    }
+}
+
+@keyframes advanced-search-modal-appears {
+    0% {
+        width: 30%;
+        height: 1%;
+    }
+
+    100% {
+        width: 100%;
+        height: 70%;
+    }
+}
+
+@keyframes advanced-search-button-closes {
+    0% {
+        width: 100%;
+        border-bottom-left-radius: 0px; /* Rounded bottom-left corner */
+        border-bottom-right-radius: 0px; /* Rounded bottom-right corner */
+
+        background-color: lightgray;
+        border: 2px solid lightgray;
+    }
+
+    50% {
+        width: 17%;
+        border-bottom-left-radius: 0px; /* Rounded bottom-left corner */
+        border-bottom-right-radius: 0px; /* Rounded bottom-right corner */
+
+        padding-left: 0px;
+        padding-right: 0px;
+
+        background-color: lightgray;
+        border: 2px solid lightgray;
+    }
+    
+    85% {
+        width: 17%;
+        border-bottom-left-radius: 0px; /* Rounded bottom-left corner */
+        border-bottom-right-radius: 0px; /* Rounded bottom-right corner */
+        border-bottom-left-radius: 10px; /* Rounded bottom-left corner */
+        border-bottom-right-radius: 10px; /* Rounded bottom-right corner */
+        
+        padding-left: 0px;
+        padding-right: 0px;
+
+        background-color: lightgray;
+        border: 2px solid lightgray;
+    }
+    
+    95% {
+        width: 17%;
+        border-top-left-radius: 20px; /* Rounded top-left corner */
+        border-top-right-radius: 20px; /* Rounded top-right corner */
+        border-bottom-left-radius: 20px; /* Rounded bottom-left corner */
+        border-bottom-right-radius: 20px; /* Rounded bottom-right corner */
+        
+        padding-left: 0px;
+        padding-right: 0px;
+
+        background-color: lightgray;
+        border: 2px solid lightgray;
+    }
+
+    100% {
+        width: 17%;
+        border-top-left-radius: 20px; /* Rounded top-left corner */
+        border-top-right-radius: 20px; /* Rounded top-right corner */
+        border-bottom-left-radius: 20px; /* Rounded bottom-left corner */
+        border-bottom-right-radius: 20px; /* Rounded bottom-right corner */
+        
+        padding-left: 0px;
+        padding-right: 0px;
+
+        background-color: lightgray;
+        border: 2px solid lightgray;
+    }
+}
+
+@keyframes advanced-search-modal-disappears {
+    0% {
+        border-top-left-radius: 0px; /* Rounded top-left corner */
+        border-top-right-radius: 0px; /* Rounded top-right corner */
+        border-bottom-left-radius: 20px; /* Rounded bottom-left corner */
+        border-bottom-right-radius: 20px; /* Rounded bottom-right corner */
+        background-color: lightgray;
+        
+        width: 100%;
+        height: 200%;
+    }
+    
+
+    50% {
+        border-top-left-radius: 0px; /* Rounded top-left corner */
+        border-top-right-radius: 0px; /* Rounded top-right corner */
+        border-bottom-left-radius: 20px; /* Rounded bottom-left corner */
+        border-bottom-right-radius: 20px; /* Rounded bottom-right corner */
+        background-color: lightgray;
+        
+        width: 17%;
+        height: 100%;
+    }
+    
+    70% {
+        border-top-left-radius: 0px; /* Rounded top-left corner */
+        border-top-right-radius: 0px; /* Rounded top-right corner */
+        border-bottom-left-radius: 50px; /* Rounded bottom-left corner */
+        border-bottom-right-radius: 50px; /* Rounded bottom-right corner */
+        background-color: lightgray;
+
+        width: 17%;
+        height: 1%;
+    }
+    
+    70.1% {
+        border-top-left-radius: 0px; /* Rounded top-left corner */
+        border-top-right-radius: 0px; /* Rounded top-right corner */
+        border-bottom-left-radius: 50px; /* Rounded bottom-left corner */
+        border-bottom-right-radius: 50px; /* Rounded bottom-right corner */
+        background-color: lightgray;
+
+        width: 0%;
+        height: 0%;
+    }
+}
