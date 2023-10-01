@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Locompro.Services
 {
-    public class UserService : AbstractService<User, string, UserRepository>
+    public class UserService : AbstractDomainService<User, string, UserRepository>
     {
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;

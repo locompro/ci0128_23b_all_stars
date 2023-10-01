@@ -1,6 +1,5 @@
 ﻿using Locompro.Data;
 using Locompro.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Repositories
 {

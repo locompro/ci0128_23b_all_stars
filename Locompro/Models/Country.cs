@@ -9,5 +9,7 @@ namespace Locompro.Models
         [Required]
         [StringLength(60)]
         public string Name { get; set; }
+
+        public virtual ICollection<Province> Provinces { get; set; }
     }
 }
