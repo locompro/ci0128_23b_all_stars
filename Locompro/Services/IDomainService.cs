@@ -1,7 +1,7 @@
 ﻿namespace Locompro.Services
 {
     /// <summary>
-    /// Interface representing application services.
+    /// Interface representing domain services.
     /// </summary>
     /// <typeparam name="T">Type of entity handled by service.</typeparam>
     /// <typeparam name="I">Type of key used by entity.</typeparam>
