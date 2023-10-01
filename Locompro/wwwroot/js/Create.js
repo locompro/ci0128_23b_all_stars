@@ -15,7 +15,7 @@ $(document).ready(function() {
     });
     
     // Event fired just before the modal is hidden
-    $('#addStoreModal').on('hide.bs.modal', function() {
+    $('#addStoreModal').on('hidden.bs.modal', function() {
         // Clear all input, select, and textarea elements within the modal
         $(this).find("input, select, textarea").each(function() {
             clearModalInputs($(this));

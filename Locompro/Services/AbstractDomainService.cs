@@ -11,7 +11,6 @@ namespace Locompro.Services
         where T : class
         where R : IRepository<T, I>
     {
-        protected readonly UnitOfWork unitOfWork;
         protected readonly R repository;
 
         protected AbstractDomainService(UnitOfWork unitOfWork, R repository) : base(unitOfWork)
