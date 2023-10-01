@@ -6,8 +6,7 @@
 
 @{
     var country = await CountryService.Get("Costa Rica");
-    ViewData["Provinces"] = country.Provinces;
-    var provinces = ViewData["Provinces"] as IEnumerable<Province>;
+    var provinces = country.Provinces;
 
     var settings = new JsonSerializerSettings
     {
@@ -18,81 +17,53 @@
 }
 
 <div class="row d-flex justify-content-center">
-    <div class="col-md-6 col-xl-4" style="margin-top: 20px;">
-        <div class="card mb-5">
-            <div class="card-body d-flex flex-column align-items-center" style="padding-bottom: 50px;">
-                <div class="bs-icon-xl bs-icon-circle bs-icon-primary bs-icon my-4">
-                    <i class="material-icons" style="font-size: 40px;">store</i>
-                </div>
-                <div class="mb-3">
-                    <fieldset>
-                        <legend style="padding-bottom: 0;margin-bottom: 20px;">Agregar Tienda</legend>
-                    </fieldset>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label d-lg-flex justify-content-lg-start">Nombre de la tienda</label>
-                    <input class="form-control" asp-for="Name" placeholder="Nombre" id="partialStoreName">
-                    <span class="text-danger field-validation-valid" asp-validation-for="Name"></span>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label d-lg-flex justify-content-lg-start">Provincia</label>
-                    <select class="form-select" style="font-family:Roboto, sans-serif; min-width: 210px;"
-                            asp-for="Province" id="partialStoreProvince" placeholder="Nombre"
-                            onchange="updateCantonDropdown()">
-                        <option value="" disabled selected hidden>Seleccionar</option>
-                        @foreach (var province in provinces)
-                        {
-                            <option value="@province.Name">@province.Name</option>
-                        }
-                    </select>
-                    <span class="text-danger field-validation-valid" asp-validation-for="Province"></span>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label d-lg-flex justify-content-lg-start">Cantón</label>
-                    <select class="form-select" style="font-family:Roboto, sans-serif; min-width: 210px;"
-                            asp-for="Canton" id="partialStoreCanton">
-                        <option value="" disabled selected hidden>Seleccionar</option>
-                        <!-- Options will be dynamically populated here -->
-                    </select>
-                    <span class="text-danger field-validation-valid" asp-validation-for="Canton"></span>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label d-lg-flex justify-content-lg-start">Teléfono</label>
-                    <input class="form-control" asp-for="Telephone" placeholder="Teléfono">
-                    <span class="text-danger field-validation-valid" asp-validation-for="Telephone"></span>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label d-lg-flex justify-content-lg-start">Dirección</label>
-                    <textarea class="form-control" style="margin-bottom: 0;padding-bottom: 94px;"
-                                    asp-for="Address"></textarea>
-                    <span class="text-danger field-validation-valid" asp-validation-for="Address"></span>
-                </div>
-                <button class="btn btn-primary d-block w-100" id="hideAddStoreBtn" type="button">Agregar tienda</button>
-            </div>
+    <div id="partialStore" class="card-body d-flex flex-column align-items-center" style="padding-bottom: 20px;">
+        <div class="bs-icon-xl bs-icon-circle bs-icon-primary bs-icon my-4">
+            <i class="material-icons" style="font-size: 20px;">store</i>
         </div>
+        <div class="mb-3">
+            <fieldset>
+                <legend style="padding-bottom: 0;margin-bottom: 20px;">Agregar Tienda</legend>
+            </fieldset>
+        </div>
+        <div class="mb-2">
+            <label asp-for="Name" class="form-label d-lg-flex justify-content-lg-start"></label>
+            <input asp-for="Name" class="form-control" placeholder="Nombre" id="partialStoreName">
+        </div>
+        <span class="text-danger field-validation-valid pb-2" asp-validation-for="Name"></span>
+        <div class="mb-2">
+            <label asp-for="Province" class="form-label d-lg-flex justify-content-lg-start"></label>
+            <select asp-for="Province" id="partialStoreProvince" placeholder="Nombre"
+                    class="form-select" style="font-family:Roboto, sans-serif; min-width: 210px;">
+                <option value="" disabled selected hidden>Seleccionar</option>
+                @foreach (var province in provinces)
+                {
+                    <option value="@province.Name">@province.Name</option>
+                }
+            </select>
+        </div>
+        <span class="text-danger field-validation-valid pb-2" asp-validation-for="Province"></span>
+        <div class="mb-2">
+            <label asp-for="Canton" class="form-label d-lg-flex justify-content-lg-start"></label>
+            <select asp-for="Canton" class="form-select" id="partialStoreCanton"
+                    style="font-family:Roboto, sans-serif; min-width: 210px;">
+                <option value="" disabled selected hidden>Seleccionar</option>
+                <!-- Options will be dynamically populated here -->
+            </select>
+        </div>
+        <span class="text-danger field-validation-valid pb-2" asp-validation-for="Canton"></span>
+        <div class="mb-2">
+            <label asp-for="Telephone" class="form-label d-lg-flex justify-content-lg-start"></label>
+            <input asp-for="Telephone" class="form-control" placeholder="Teléfono">
+        </div>
+        <span class="text-danger field-validation-valid pb-2" asp-validation-for="Telephone"></span>
+        <div class="mb-2">
+            <label class="form-label d-lg-flex justify-content-lg-start">Dirección</label>
+            <textarea asp-for="Address" class="form-control" placeholder="Dirección"
+                            style="margin-bottom: 0;padding-bottom: 94px;"></textarea>
+        </div>
+        <span class="text-danger field-validation-valid pb-2" asp-validation-for="Address"></span>
     </div>
 </div>
-<script>
-    const provinces = JSON.parse('@Html.Raw(provincesJson)');
-    
-    // Function to update the canton dropdown
-    function updateCantonDropdown() {
-        const selectedProvinceName = $("#partialStoreProvince").val();
-        const $cantonDropdown = $("#partialStoreCanton");
-        
-        // Clear existing options within the optgroup
-        $cantonDropdown.empty();
-        
-        const selectedProvince = provinces.find(p => p.Name === selectedProvinceName);
-        
-        // Populate canton dropdown based on selected province
-        if (selectedProvince) {
-            const cantons = selectedProvince.Cantons;
-            
-            cantons.forEach(cantonObj => {
-                const option = new Option(cantonObj.Name, cantonObj.Name);
-                $cantonDropdown.append(option);
-            });
-        }
-    }
-</script>
+
+<div id="provincesData" data-provinces='@Html.Raw(provincesJson)' style="display: none;"></div>

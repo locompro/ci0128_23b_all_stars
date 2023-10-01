@@ -13,6 +13,4 @@ public class CreateModel : PageModel
     public void OnGet()
     {
     }
-
-    // public PartialViewResult OnGetCreateStore(string customerId) => Partial("Components/Stores/Create");
 }
