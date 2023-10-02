@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Locompro.Data
+@using Locompro.Models
 
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
@@ -39,7 +40,7 @@
                     <div class="collapse navbar-collapse flex-grow-0 order-md-first" id="navcol-4">
                         <ul class="navbar-nav me-auto">
                             <li class="nav-item">
-                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" href="#">
+                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Submissions/Create">
                                     <i class="fa fa-plus" style="margin-right: 8px;">
                                     </i>
                                     Aportar
@@ -95,9 +96,11 @@
         </div>
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <partial name="_ValidationScriptsPartial" />
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

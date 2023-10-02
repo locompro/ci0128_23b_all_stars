@@ -6,16 +6,14 @@ using Locompro.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Server;
 using System.Xml;
+using Locompro.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 registerServices(builder);
 
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("laboratorio4Context") ?? throw new InvalidOperationException("Connection string 'laboratorio4Context' not found.")));
-
 // Register repositories and services
-builder.Services.AddScoped<UnitOfWork>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -41,17 +39,25 @@ app.Run();
 void registerServices(WebApplicationBuilder builder)
 {
     // Add services to the container.
+    builder.Services.AddLogging();
     builder.Services.AddRazorPages();
+    builder.Services.AddScoped<UnitOfWork>();
 
-    // Add DbContext using SQL Server
-    builder.Services.AddDbContext<LocomproContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
-    builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
-        .AddEntityFrameworkStores<LocomproContext>();
     // Register repositories and services
     builder.Services.AddScoped<UnitOfWork>();
     builder.Services.AddScoped<StoreRepository>();
     builder.Services.AddScoped<StoreService>();
+    builder.Services.AddScoped<AuthService>();
+    
+    builder.Services.AddTransient<CountryRepository>();
+    builder.Services.AddTransient<CountryService>();
+    
+    // Add DbContext using SQL Server
+    builder.Services.AddDbContext<LocomproContext>(options =>
+        options.UseLazyLoadingProxies()
+            .UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
+    builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
+        .AddEntityFrameworkStores<LocomproContext>();
 }
 
 
