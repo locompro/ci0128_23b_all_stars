@@ -11,11 +11,11 @@ namespace Locompro.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly UserService userService;
+        private readonly AuthService authService;
 
-        public RegisterModel(UserService userService)
+        public RegisterModel(AuthService authService)
         {
-            this.userService = userService;
+            this.authService = authService;
         }
 
         [BindProperty]
@@ -23,17 +23,18 @@ namespace Locompro.Areas.Identity.Pages.Account
 
         public string ReturnUrl { get; set; }
 
-        public async Task OnGetAsync(string returnUrl = null)
+        public Task OnGetAsync(string returnUrl = null)
         {
             ReturnUrl = returnUrl;
+            return Task.CompletedTask;
         }
 
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             _ = returnUrl ?? Url.Content("~/");
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                var registerSuccess = await userService.Register(Input);
+                var registerSuccess = await authService.Register(Input);
                 if (registerSuccess.Succeeded)
                 {
                     return RedirectToPage("/Index");
@@ -44,6 +45,8 @@ namespace Locompro.Areas.Identity.Pages.Account
                     ModelState.AddModelError(string.Empty, error.Description);
                 }
             }
+
+            Console.WriteLine("Model state is not valid");
             // If we got this far, something failed, redisplay form
             return Page();
         }

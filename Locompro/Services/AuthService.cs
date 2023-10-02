@@ -1,13 +1,12 @@
 ﻿#nullable disable
 
 using Locompro.Areas.Identity.ViewModels;
-using Locompro.Repositories;
 using Microsoft.AspNetCore.Identity;
 
 
 namespace Locompro.Services
 {
-    public class UserService : AbstractDomainService<User, string, UserRepository>
+    public class AuthService
     {
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
@@ -15,12 +14,11 @@ namespace Locompro.Services
         private readonly IUserEmailStore<User> _emailStore;
         private readonly ILogger<RegisterViewModel> _logger;
 
-        public UserService(UnitOfWork unitOfWork,
-            UserRepository userRepository,
+        public AuthService(
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             IUserStore<User> userStore,
-            ILogger<RegisterViewModel> logger) : base(unitOfWork, userRepository)
+            ILogger<RegisterViewModel> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -69,6 +67,15 @@ namespace Locompro.Services
             return (IUserEmailStore<User>)_userStore;
         }
 
+        public async Task<SignInResult> Login(LoginViewModel inputData)
+        {
+            var result = await _signInManager.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, lockoutOnFailure: false);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("User logged in.");
+            }
 
+            return result;
+        }
     }
 }
