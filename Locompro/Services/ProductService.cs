@@ -7,8 +7,8 @@ namespace Locompro.Services
 {
     public class ProductService : AbstractDomainService<Product, string, ProductRepository>
     {
-        public ProductService(UnitOfWork unitOfWork, ProductRepository productRepository)
-            : base(unitOfWork, productRepository)
+        public ProductService(UnitOfWork unitOfWork, ProductRepository productRepository, ILoggerFactory loggerFactory)
+            : base(unitOfWork, productRepository, loggerFactory)
         {
         }
     }

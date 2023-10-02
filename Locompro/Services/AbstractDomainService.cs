@@ -1,116 +1,128 @@
 ﻿using Locompro.Repositories;
-
-namespace Locompro.Services;
-
-/// <summary>
-/// Abstract class representing domain services.
-/// </summary>
-/// <typeparam name="TEntity">Type of entity handled by service.</typeparam>
-/// <typeparam name="TKey">Type of key used by entity.</typeparam>
-/// <typeparam name="TRepo">Type of repository used by service.</typeparam>
-public abstract class AbstractDomainService<TEntity, TKey, TRepo> : AbstractService, IDomainService<TEntity, TKey>
-    where TEntity : class
-    where TRepo : IRepository<TEntity, TKey>
+namespace Locompro.Services
 {
-    protected readonly TRepo Repository;
-
-    protected AbstractDomainService(UnitOfWork unitOfWork, TRepo repository) : base(unitOfWork)
+    /// <summary>
+    /// Generic domain service for an application entity type.
+    /// </summary>
+    /// <typeparam name="T">Type of entity handled by service.</typeparam>
+    /// <typeparam name="I">Type of key used by entity.</typeparam>
+    /// <typeparam name="R">Type of repository used by service.</typeparam>
+    public abstract class AbstractDomainService<T, I, R> : AbstractService, IDomainService<T, I>
+        where T : class
+        where R : IRepository<T, I>
     {
-        Repository = repository;
-    }
+        protected readonly R Repository;
 
-    public async Task<TEntity> Get(TKey id)
-    {
-        await UnitOfWork.BeginTransaction();
+        /// <summary>
+        /// Constructs a domain service for a given repository.
+        /// </summary>
+        /// <param name="unitOfWork">Unit of work to handle transactions.</param>
+        /// <param name="repository">Repository to base the service on.</param>
+        /// <param name="loggerFactory">Factory for service logger.</param>
+        protected AbstractDomainService(UnitOfWork unitOfWork, R repository, ILoggerFactory loggerFactory) 
+            : base(unitOfWork, loggerFactory)
+        {
+            this.Repository = repository;
+        }
 
-        try
+        /// <inheritdoc />
+        public async Task<T> Get(I id)
         {
-            return await Repository.GetByIdAsync(id);
-        }
-        catch (Exception)
-        {
-            await UnitOfWork.Rollback();
-            throw;
-        }
-        finally
-        {
-            await UnitOfWork.Commit();
-        }
-    }
+            await UnitOfWork.BeginTransaction();
 
-    public async Task<IEnumerable<TEntity>> GetAll()
-    {
-        await UnitOfWork.BeginTransaction();
+            try
+            {
+                return await Repository.GetByIdAsync(id);
+            }
+            catch (Exception)
+            {
+                await UnitOfWork.Rollback();
+                throw;
+            }
+            finally
+            {
+                await UnitOfWork.Commit();
+            }
+        }
 
-        try
+        /// <inheritdoc />
+        public async Task<IEnumerable<T>> GetAll()
         {
-            return await Repository.GetAllAsync();
-        }
-        catch (Exception)
-        {
-            await UnitOfWork.Rollback();
-            throw;
-        }
-        finally
-        {
-            await UnitOfWork.Commit();
-        }
-    }
+            await UnitOfWork.BeginTransaction();
 
-    public async Task Add(TEntity entity)
-    {
-        await UnitOfWork.BeginTransaction();
+            try
+            {
+                return await Repository.GetAllAsync();
+            }
+            catch (Exception)
+            {
+                await UnitOfWork.Rollback();
+                throw;
+            }
+            finally
+            {
+                await UnitOfWork.Commit();
+            }
+        }
 
-        try
+        /// <inheritdoc />
+        public async Task Add(T entity)
         {
-            await Repository.AddAsync(entity);
-        }
-        catch (Exception)
-        {
-            await UnitOfWork.Rollback();
-            throw;
-        }
-        finally
-        {
-            await UnitOfWork.Commit();
-        }
-    }
+            await UnitOfWork.BeginTransaction();
 
-    public async Task Update(TEntity entity)
-    {
-        await UnitOfWork.BeginTransaction();
+            try
+            {
+                await Repository.AddAsync(entity);
+            }
+            catch (Exception)
+            {
+                await UnitOfWork.Rollback();
+                throw;
+            }
+            finally
+            {
+                await UnitOfWork.Commit();
+            }
+        }
 
-        try
+        /// <inheritdoc />
+        public async Task Update(T entity)
         {
-            await Repository.UpdateAsync(entity);
-        }
-        catch (Exception)
-        {
-            await UnitOfWork.Rollback();
-            throw;
-        }
-        finally
-        {
-            await UnitOfWork.Commit();
-        }
-    }
+            await UnitOfWork.BeginTransaction();
 
-    public async Task Delete(TKey id)
-    {
-        await UnitOfWork.BeginTransaction();
+            try
+            {
+                await Repository.UpdateAsync(entity);
+            }
+            catch (Exception)
+            {
+                await UnitOfWork.Rollback();
+                throw;
+            }
+            finally
+            {
+                await UnitOfWork.Commit();
+            }
+        }
 
-        try
+        /// <inheritdoc />
+        public async Task Delete(I id)
         {
-            await Repository.DeleteAsync(id);
-        }
-        catch (Exception)
-        {
-            await UnitOfWork.Rollback();
-            throw;
-        }
-        finally
-        {
-            await UnitOfWork.Commit();
+            await UnitOfWork.BeginTransaction();
+
+            try
+            {
+                await Repository.DeleteAsync(id);
+            }
+            catch (Exception)
+            {
+                await UnitOfWork.Rollback();
+                throw;
+            }
+            finally
+            {
+                await UnitOfWork.Commit();
+            }
         }
     }
 }

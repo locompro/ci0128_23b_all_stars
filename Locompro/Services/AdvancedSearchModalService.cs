@@ -51,6 +51,11 @@ namespace Locompro.Services
         public async Task ObtainCategoriesAsync()
         {
             this.categories = (await this.categoryService.GetAll()).ToList();
+
+            foreach(Category category in this.categories)
+            {
+                Console.WriteLine(category.Name);
+            }
         }
     }
 }

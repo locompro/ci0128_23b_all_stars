@@ -2,6 +2,9 @@
 
 namespace Locompro.Models
 {
+    /// <summary>
+    /// A country with provinces.
+    /// </summary>
     public class Country
     {
         [Key]

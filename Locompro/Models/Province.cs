@@ -1,13 +1,23 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Locompro.Models;
-
-public class Province
+namespace Locompro.Models
 {
-    [Key] [Required] [Column(Order = 0)] public virtual Country Country { get; set; }
+    /// <summary>
+    /// A province with cantons in a country.
+    /// </summary>
+    public class Province
+    {
+        [Required]
+        public string CountryName { get; set; }
 
-    [Key] [Required] [Column(Order = 1)] public string Name { get; set; }
+        [Required]
+        [StringLength(60)]
+        public string Name { get; set; }
 
-    public virtual ICollection<Canton> Cantons { get; set; }
+        public virtual Country Country { get; set; }
+
+        public virtual ICollection<Canton> Cantons { get; set; }
+
+    }
 }

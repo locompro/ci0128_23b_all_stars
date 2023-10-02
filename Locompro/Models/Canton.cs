@@ -1,11 +1,24 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Locompro.Models;
-
-public class Canton
+namespace Locompro.Models
 {
-    [Key] [Required] [Column(Order = 0)] public virtual Province Province { get; set; }
+    /// <summary>
+    /// A canton for a province.
+    /// </summary>
+    public class Canton
+    {
+        [Required]
+        public string CountryName { get; set; }
+        
+        [Required]
+        public string ProvinceName { get; set; }
 
-    [Key] [Required] [Column(Order = 1)] public string Name { get; set; }
+        [Required]
+        [StringLength(60)]
+        public string Name { get; set; }
+        
+        public virtual Province Province { get; set; }
+    }
 }

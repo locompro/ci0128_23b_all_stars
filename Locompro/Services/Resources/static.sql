@@ -10,100 +10,100 @@ INSERT INTO Province (CountryName, Name) VALUES ('Costa Rica', 'Guanacaste');
 INSERT INTO Province (CountryName, Name) VALUES ('Costa Rica', 'Puntarenas');
 INSERT INTO Province (CountryName, Name) VALUES ('Costa Rica', 'Limón');
 
--- Insert Cantons for San José
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'San José');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Escazú');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Desamparados');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Puriscal');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Tarrazú');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Aserrí');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Mora');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Goicoechea');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Santa Ana');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Alajuelita');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Vázquez de Coronado');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Acosta');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Tibás');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Moravia');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Montes de Oca');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Turrubares');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Dota');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Curridabat');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'Pérez Zeledón');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('San José', 'León Cortés Castro');
+-- Insert Cantons for San José, Costa Rica
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'San José');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Escazú');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Desamparados');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Puriscal');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Tarrazú');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Aserrí');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Mora');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Goicoechea');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Santa Ana');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Alajuelita');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Vázquez de Coronado');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Acosta');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Tibás');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Moravia');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Montes de Oca');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Turrubares');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Dota');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Curridabat');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'Pérez Zeledón');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'San José', 'León Cortés Castro');
 
--- Insert Cantons for Alajuela
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Alajuela');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'San Ramón');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Grecia');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'San Mateo');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Atenas');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Naranjo');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Palmares');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Poás');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Orotina');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'San Carlos');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Zarcero');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Sarchí');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Upala');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Los Chiles');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Guatuso');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Alajuela', 'Río Cuarto');
+-- Insert Cantons for Alajuela, Costa Rica
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Alajuela');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'San Ramón');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Grecia');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'San Mateo');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Atenas');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Naranjo');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Palmares');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Poás');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Orotina');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'San Carlos');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Zarcero');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Sarchí');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Upala');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Los Chiles');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Guatuso');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Alajuela', 'Río Cuarto');
 
--- Insert Cantons for Heredia
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Heredia', 'Heredia');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Heredia', 'Barva');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Heredia', 'Santo Domingo');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Heredia', 'Santa Bárbara');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Heredia', 'San Rafael');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Heredia', 'San Isidro');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Heredia', 'Belén');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Heredia', 'Flores');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Heredia', 'San Pablo');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Heredia', 'Sarapiquí');
+-- Insert Cantons for Heredia, Costa Rica
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Heredia', 'Heredia');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Heredia', 'Barva');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Heredia', 'Santo Domingo');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Heredia', 'Santa Bárbara');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Heredia', 'San Rafael');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Heredia', 'San Isidro');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Heredia', 'Belén');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Heredia', 'Flores');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Heredia', 'San Pablo');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Heredia', 'Sarapiquí');
 
--- Insert Cantons for Cartago
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Cartago', 'Cartago');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Cartago', 'Paraíso');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Cartago', 'La Unión');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Cartago', 'Jiménez');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Cartago', 'Turrialba');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Cartago', 'Alvarado');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Cartago', 'Oreamuno');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Cartago', 'El Guarco');
+-- Insert Cantons for Cartago, Costa Rica
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Cartago', 'Cartago');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Cartago', 'Paraíso');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Cartago', 'La Unión');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Cartago', 'Jiménez');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Cartago', 'Turrialba');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Cartago', 'Alvarado');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Cartago', 'Oreamuno');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Cartago', 'El Guarco');
 
--- Insert Cantons for Guanacaste
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Guanacaste', 'Liberia');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Guanacaste', 'Nicoya');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Guanacaste', 'Santa Cruz');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Guanacaste', 'Bagaces');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Guanacaste', 'Carrillo');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Guanacaste', 'Cañas');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Guanacaste', 'Abangares');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Guanacaste', 'Tilarán');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Guanacaste', 'Nandayure');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Guanacaste', 'La Cruz');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Guanacaste', 'Hojancha');
+-- Insert Cantons for Guanacaste, Costa Rica
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Guanacaste', 'Liberia');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Guanacaste', 'Nicoya');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Guanacaste', 'Santa Cruz');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Guanacaste', 'Bagaces');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Guanacaste', 'Carrillo');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Guanacaste', 'Cañas');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Guanacaste', 'Abangares');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Guanacaste', 'Tilarán');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Guanacaste', 'Nandayure');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Guanacaste', 'La Cruz');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Guanacaste', 'Hojancha');
 
--- Insert Cantons for Limón
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Limón', 'Limón');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Limón', 'Pococí');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Limón', 'Siquirres');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Limón', 'Talamanca');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Limón', 'Matina');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Limón', 'Guácimo');
+-- Insert Cantons for Limón, Costa Rica
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Limón', 'Limón');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Limón', 'Pococí');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Limón', 'Siquirres');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Limón', 'Talamanca');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Limón', 'Matina');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Limón', 'Guácimo');
 
--- Insert Cantons for Puntarenas
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Buenos Aires');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Corredores');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Coto Brus');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Esparza');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Garabito');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Golfito');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Montes de Oro');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Osa');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Parrita');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Puntarenas');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Quepos');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Monteverde');
-INSERT INTO Canton (ProvinceName, Name) VALUES ('Puntarenas', 'Puerto Jiménez');
+-- Insert Cantons for Puntarenas, Costa Rica
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Buenos Aires');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Corredores');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Coto Brus');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Esparza');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Garabito');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Golfito');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Montes de Oro');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Osa');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Parrita');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Puntarenas');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Quepos');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Monteverde');
+INSERT INTO Canton (CountryName, ProvinceName, Name) VALUES ('Costa Rica', 'Puntarenas', 'Puerto Jiménez');

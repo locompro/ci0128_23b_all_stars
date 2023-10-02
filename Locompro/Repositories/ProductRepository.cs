@@ -6,7 +6,7 @@ namespace Locompro.Repositories
 {
     public class ProductRepository : AbstractRepository<Product, string>
     {
-        public ProductRepository(LocomproContext context) : base(context)
+        public ProductRepository(LocomproContext context, ILoggerFactory loggerFactory) : base(context, loggerFactory)
         {
         }
     }

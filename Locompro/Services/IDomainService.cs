@@ -1,19 +1,41 @@
-﻿namespace Locompro.Services;
-
-/// <summary>
-/// Interface representing domain services.
-/// </summary>
-/// <typeparam name="TEntity">Type of entity handled by service.</typeparam>
-/// <typeparam name="TKey">Type of key used by entity.</typeparam>
-public interface IDomainService<TEntity, in TKey>
+﻿namespace Locompro.Services
 {
-    Task<TEntity> Get(TKey id);
+    /// <summary>
+    /// An application domain service.
+    /// </summary>
+    /// <typeparam name="T">Type of entity handled by service.</typeparam>
+    /// <typeparam name="I">Type of key used by entity.</typeparam>
+    public interface IDomainService<T, I>
+    {
+        /// <summary>
+        /// Gets an entity through this service based on its ID.
+        /// </summary>
+        /// <param name="id">ID for the entity to return.</param>
+        /// <returns>Entity for the passed ID.</returns>
+        Task<T> Get(I id);
 
-    Task<IEnumerable<TEntity>> GetAll();
+        /// <summary>
+        /// Gets all entities through this service.
+        /// </summary>
+        /// <returns>All entities for this service.</returns>
+        Task<IEnumerable<T>> GetAll();
 
-    Task Add(TEntity entity);
+        /// <summary>
+        /// Adds an entity through the service.
+        /// </summary>
+        /// <param name="entity">Entity to add.</param>
+        Task Add(T entity);
 
-    Task Update(TEntity entity);
+        /// <summary>
+        /// Updates an entity through this service.
+        /// </summary>
+        /// <param name="entity">Entity to update.</param>
+        Task Update(T entity);
 
-    Task Delete(TKey id);
+        /// <summary>
+        /// Deletes an entity through this service based on its ID.
+        /// </summary>
+        /// <param name="id">ID for entity to delete.</param>
+        Task Delete(I id);
+    }
 }

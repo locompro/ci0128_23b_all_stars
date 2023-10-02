@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Locompro.Models
 {
+    /// <summary>
+    /// A store in a canton.
+    /// </summary>
     public class Store
     {
         [Key]
@@ -21,12 +24,13 @@ namespace Locompro.Models
         [StringLength(15, MinimumLength = 4)]
         public string Telephone { get; set; }
 
+        [Required]
+        public Status Status { get; set; } = Status.Active;
+
         [Precision(18, 2)]
         public decimal Latitude { get; set; }
 
         [Precision(18, 2)]
         public decimal Longitude { get; set; }
-
-        public Status Status { get; set; } = Status.Active;
     }
 }

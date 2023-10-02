@@ -11,20 +11,20 @@ namespace Locompro.Models
 
             // Check if the database is empty
             
-            if (context.Province.Any())
+            if (context.Canton.Any())
             {
                 // Database has been seeded
                 return;
             }
 
             // Read SQL script
-            string sqlScript = File.ReadAllText("Resources/static.sql");
+            string sqlScript = File.ReadAllText("Services/Resources/static.sql");
 
             // Execute SQL script
             context.Database.ExecuteSqlRaw(sqlScript);
 
             // Read SQL script
-            sqlScript = File.ReadAllText("Resources/dummy.sql");
+            sqlScript = File.ReadAllText("Services/Resources/dummy.sql");
 
             // Execute SQL script
             context.Database.ExecuteSqlRaw(sqlScript);

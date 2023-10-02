@@ -13,8 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 registerServices(builder);
 
-//    options.UseSqlServer(builder.Configuration.GetConnectionString("laboratorio4Context") ?? throw new InvalidOperationException("Connection string 'laboratorio4Context' not found.")));
-
 // Register repositories and services
 var app = builder.Build();
 
@@ -67,6 +65,7 @@ void registerServices(WebApplicationBuilder builder)
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
     // Add services to the container.
+    builder.Services.AddLogging();
     builder.Services.AddRazorPages();
     builder.Services.AddScoped<UnitOfWork>();
 
@@ -74,6 +73,7 @@ void registerServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<UnitOfWork>();
     builder.Services.AddScoped<StoreRepository>();
     builder.Services.AddScoped<StoreService>();
+    builder.Services.AddScoped<AuthService>();
     
     builder.Services.AddTransient<CountryRepository>();
     builder.Services.AddTransient<CountryService>();
@@ -82,7 +82,7 @@ void registerServices(WebApplicationBuilder builder)
     builder.Services.AddDbContext<LocomproContext>(options =>
         options.UseLazyLoadingProxies()
             .UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
-    builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+    builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
         .AddEntityFrameworkStores<LocomproContext>();
 
     // Register repositories and services
@@ -94,6 +94,8 @@ void registerServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<AdvancedSearchModalService>();
     builder.Services.AddScoped<CategoryRepository>();
     builder.Services.AddScoped<CategoryService>();
+    builder.Services.AddScoped<ProductRepository>();
+    builder.Services.AddScoped<ProductService>();
 }
 
 

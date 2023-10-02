@@ -1,16 +1,24 @@
 using Locompro.Repositories;
 
-namespace Locompro.Services;
-
-/// <summary>
-/// Abstract class representing services.
-/// </summary>
-public class AbstractService
+namespace Locompro.Services
 {
-    protected readonly UnitOfWork UnitOfWork;
-
-    protected AbstractService(UnitOfWork unitOfWork)
+    /// <summary>
+    /// Generic application service.
+    /// </summary>
+    public class AbstractService
     {
-        UnitOfWork = unitOfWork;
+        protected readonly ILogger Logger;
+        protected readonly UnitOfWork UnitOfWork;
+        
+        /// <summary>
+        /// Constructs a service.
+        /// </summary>
+        /// <param name="unitOfWork">Unit of work to handle transactions.</param>
+        /// <param name="loggerFactory">Factory for service logger.</param>
+        protected AbstractService(UnitOfWork unitOfWork, ILoggerFactory loggerFactory)
+        {
+            Logger = loggerFactory.CreateLogger(GetType());
+            UnitOfWork = unitOfWork;
+        }
     }
 }

@@ -7,7 +7,8 @@ namespace Locompro.Services
 {
     public class CategoryService : AbstractDomainService<Category, string, CategoryRepository>
     {
-        public CategoryService(UnitOfWork unitOfWork, CategoryRepository repository) : base(unitOfWork, repository)
+        public CategoryService(UnitOfWork unitOfWork, CategoryRepository repository, ILoggerFactory loggerFactory)
+            : base(unitOfWork, repository, loggerFactory)
         {
         }
     }
