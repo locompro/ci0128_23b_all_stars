@@ -35,9 +35,10 @@ public class AdvancedSearchModalModel
         this.provinces = this.advancedSearchService.provinces;
     }
 
-    public void ObtainCategoriesAsync()
+    public async Task ObtainCategoriesAsync()
     {
-        this.categories = this.advancedSearchService.categories;
+        await this.advancedSearchService.ObtainCategoriesAsync(); 
+        this.categories = this.advancedSearchService.categories; 
     }
 }
 

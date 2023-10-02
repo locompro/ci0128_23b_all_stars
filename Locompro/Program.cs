@@ -92,6 +92,8 @@ void registerServices(WebApplicationBuilder builder)
 
     // for advanced search
     builder.Services.AddScoped<AdvancedSearchModalService>();
+    builder.Services.AddScoped<CategoryRepository>();
+    builder.Services.AddScoped<CategoryService>();
 }
 
 

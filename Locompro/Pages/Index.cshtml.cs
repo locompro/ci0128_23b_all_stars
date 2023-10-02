@@ -29,10 +29,9 @@ namespace Locompro.Pages
             this.advancedSearchServiceHandler = advancedSearchServiceHandler;
         }
 
-        public void OnGet()
-        {
-
-        }
+    public void OnGet()
+    {
+    }
 
         public void OnPost()
         {
@@ -52,19 +51,19 @@ namespace Locompro.Pages
             RedirectToPage("/SearchResults/SearchResults", new {query, province, canton, minValue, maxValue, category, model });
         }
 
-        public IActionResult OnGetAdvancedSearch(string searchQuery)
-        {
-            this.SearchQuery = searchQuery;
+    public IActionResult OnGetAdvancedSearch(string searchQuery)
+    {
+        this.SearchQuery = searchQuery;
 
-            // generate the view component
-            var viewComponentResult = ViewComponent("AdvancedSearch", this.advancedSearchServiceHandler);
+        // generate the view component
+        var viewComponentResult = ViewComponent("AdvancedSearch", this.advancedSearchServiceHandler);
 
-            // return it for it to be integrated
-            return viewComponentResult;
-        }
+        // return it for it to be integrated
+        return viewComponentResult;
+    }
 
         public async Task<IActionResult> OnGetUpdateProvince(string province)
-        { 
+        {
             // update the model with all cantons in the given province
             await this.advancedSearchServiceHandler.ObtainCantonsAsync(province);
 

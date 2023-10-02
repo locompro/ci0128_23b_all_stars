@@ -101,6 +101,17 @@ namespace Locompro.Pages.SearchResults
 
             this.itemsAmount = items.Count;
 
+            /*
+           List<Product> products = (await this.productService.GetAll()).ToList();
+
+           foreach (Product product in products)
+           {
+               this.items.Add(new ItemDisplayInfo("0/0/0", product.Name, 1000, "Generic Store", "Generic Canton", "Generic Province", "Generic Description"));
+           }
+
+           this.itemsAmount = items.Count;
+           */
+
             this.displayItems = PaginatedList<ItemDisplayInfo>.Create(items, pageIndex ?? 1, pageSize);
         }
 

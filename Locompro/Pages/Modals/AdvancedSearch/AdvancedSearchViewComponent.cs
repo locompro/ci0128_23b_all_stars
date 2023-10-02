@@ -25,7 +25,7 @@ namespace Locompro.Pages.Modals.AdvancedSearchViewComponent
             this.pageModel.ObtainCantonsAsync(
                     this.advancedSearchServiceHandler.provinces[0].Name).Wait();
 
-            this.pageModel.ObtainCategoriesAsync();
+            this.pageModel.ObtainCategoriesAsync().Wait();
         }
 
         // function to return the view Component with the model

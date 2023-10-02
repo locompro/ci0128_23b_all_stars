@@ -7,14 +7,14 @@ namespace Locompro.Models
     {
         [Key]
         [Required]
-        [StringLength(60)]
+        [StringLength(60, MinimumLength = 1)]
         public string Name { get; set; }
 
         [Required]
         public virtual Canton Canton { get; set; }
 
         [Required]
-        [StringLength(35)]
+        [StringLength(35, MinimumLength = 1)]
         public string Address { get; set; }
 
         [Required]
@@ -27,7 +27,6 @@ namespace Locompro.Models
         [Precision(18, 2)]
         public decimal Longitude { get; set; }
 
-        // TODO: Enum for automatic validation
-        public int Status { get; set; }
+        public Status Status { get; set; } = Status.Active;
     }
 }

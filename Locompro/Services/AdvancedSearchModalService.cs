@@ -3,15 +3,12 @@
 namespace Locompro.Services
 {
     // placeholder until actual model exists
-    public class Category
-    {
-        public string Name { get; set; }
-        public Category(string name) { Name = name; }
-    };
 
     public class AdvancedSearchModalService
     {
         private CountryService countryService;
+
+        private CategoryService categoryService;
 
         public List<Province> provinces { get; set; }
 
@@ -19,18 +16,12 @@ namespace Locompro.Services
 
         public string provinceSelected { get; set; }
 
-        public List<Category> categories { get; set; } =
-            new List<Category>
-            {
-                new Category("sombrero"),
-                new Category("zapatos"),
-                new Category("camisas"),
-                new Category("pantalones")
-            };
+        public List<Category> categories { get; set; }
 
-        public AdvancedSearchModalService(CountryService countryService)
+        public AdvancedSearchModalService(CountryService countryService, CategoryService categoryService)
         {
             this.countryService = countryService;
+            this.categoryService = categoryService;
         }
 
         // set service provinces to all provinces
@@ -57,9 +48,9 @@ namespace Locompro.Services
         }
 
         // set service categories get all categories
-        public void ObtainCategories()
+        public async Task ObtainCategoriesAsync()
         {
-
+            this.categories = (await this.categoryService.GetAll()).ToList();
         }
     }
 }
