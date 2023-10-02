@@ -38,6 +38,7 @@ app.Run();
 void registerServices(WebApplicationBuilder builder)
 {
     // Add services to the container.
+    builder.Services.AddLogging();
     builder.Services.AddRazorPages();
     builder.Services.AddScoped<UnitOfWork>();
 
