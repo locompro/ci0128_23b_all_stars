@@ -10,6 +10,7 @@ namespace Locompro.Repositories
     /// <typeparam name="I">Type of key used by entity.</typeparam>
     public abstract class AbstractRepository<T, I> : IRepository<T, I> where T : class
     {
+        protected readonly ILogger Logger;
         protected readonly LocomproContext Context;
         protected readonly DbSet<T> DbSet;
 
@@ -17,10 +18,12 @@ namespace Locompro.Repositories
         /// Constructs a repository for a given context.
         /// </summary>
         /// <param name="context">Context to base the repository on.</param>
-        protected AbstractRepository(LocomproContext context)
+        /// <param name="loggerFactory">Factory for repository logger.</param>
+        protected AbstractRepository(LocomproContext context, ILoggerFactory loggerFactory)
         {
-            this.Context = context;
-            DbSet = this.Context.Set<T>();
+            Logger = loggerFactory.CreateLogger(GetType());
+            Context = context;
+            DbSet = Context.Set<T>();
         }
 
         /// <inheritdoc />

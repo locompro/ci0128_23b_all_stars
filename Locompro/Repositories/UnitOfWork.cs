@@ -9,16 +9,19 @@ namespace Locompro.Repositories
     /// </summary>
     public class UnitOfWork
     {
-        private readonly LocomproContext dbContext;
-        private IDbContextTransaction transaction;
+        private readonly ILogger<UnitOfWork> _logger;
+        private readonly LocomproContext _dbContext;
+        private IDbContextTransaction _transaction;
 
         /// <summary>
         /// Constructs a unit of work for a given context.
         /// </summary>
+        /// <param name="logger">Logger for unit of work.</param>
         /// <param name="dbContext">Context to base unit of work on.</param>
-        public UnitOfWork(LocomproContext dbContext)
+        public UnitOfWork(ILogger<UnitOfWork> logger, LocomproContext dbContext)
         {
-            this.dbContext = dbContext;
+            _logger = logger;
+            _dbContext = dbContext;
         }
 
         /// <summary>
@@ -26,7 +29,8 @@ namespace Locompro.Repositories
         /// </summary>
         public async Task BeginTransaction()
         {
-            this.transaction = await this.dbContext.Database.BeginTransactionAsync();
+            _transaction = await _dbContext.Database.BeginTransactionAsync();
+            _logger.Log(LogLevel.Information, "Beginning transaction {}", _transaction.TransactionId);
         }
 
         /// <summary>
@@ -38,20 +42,21 @@ namespace Locompro.Repositories
         {
             try
             {
-                await this.dbContext.SaveChangesAsync();
-                await this.transaction.CommitAsync();
+                await _dbContext.SaveChangesAsync();
+                await _transaction.CommitAsync();
             }
-            catch
+            catch(Exception e)
             {
+                _logger.Log(LogLevel.Error, e, "Commit failed for transaction {}", _transaction.TransactionId);
                 await Rollback();
                 throw;
             }
             finally
             {
-                if (this.transaction != null)
+                if (_transaction != null)
                 {
-                    await this.transaction.DisposeAsync();
-                    this.transaction = null;
+                    await _transaction.DisposeAsync();
+                    _transaction = null;
                 }
             }
         }
@@ -63,14 +68,14 @@ namespace Locompro.Repositories
         {
             try
             {
-                await this.transaction.RollbackAsync();
+                await _transaction.RollbackAsync();
             }
             finally
             {
-                if (this.transaction != null)
+                if (_transaction != null)
                 {
-                    await this.transaction.DisposeAsync();
-                    this.transaction = null;
+                    await _transaction.DisposeAsync();
+                    _transaction = null;
                 }
             }
         }
@@ -88,13 +93,13 @@ namespace Locompro.Repositories
         /// </summary>
         private async ValueTask DisposeAsync()
         {
-            if (this.transaction != null)
+            if (_transaction != null)
             {
-                await this.transaction.DisposeAsync();
-                this.transaction = null;
+                await _transaction.DisposeAsync();
+                _transaction = null;
             }
 
-            await this.dbContext.DisposeAsync();
+            await _dbContext.DisposeAsync();
         }
     }
 }

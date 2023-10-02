@@ -13,7 +13,9 @@ namespace Locompro.Services
         /// </summary>
         /// <param name="unitOfWork">Unit of work to handle transactions.</param>
         /// <param name="repository">Repository to base the service on.</param>
-        public StoreService(UnitOfWork unitOfWork, StoreRepository repository) : base(unitOfWork, repository)
+        /// <param name="loggerFactory">Factory for service logger.</param>
+        public StoreService(UnitOfWork unitOfWork, StoreRepository repository, ILoggerFactory loggerFactory) 
+            : base(unitOfWork, repository, loggerFactory)
         {
         }
     }

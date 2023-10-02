@@ -13,7 +13,8 @@ public class UserRepository : AbstractRepository<User, string>
     /// Constructs a Country repository for a given context.
     /// </summary>
     /// <param name="context">Context to base the repository on.</param>
-    public UserRepository(LocomproContext context) : base(context)
+    /// <param name="loggerFactory">Factory for repository logger.</param>
+    public UserRepository(LocomproContext context, ILoggerFactory loggerFactory) : base(context, loggerFactory)
     {
     }
 }

@@ -12,7 +12,8 @@ namespace Locompro.Repositories
         /// Constructs a Store repository for a given context.
         /// </summary>
         /// <param name="context">Context to base the repository on.</param>
-        public StoreRepository(LocomproContext context) : base(context)
+        /// <param name="loggerFactory">Factory for repository logger.</param>
+        public StoreRepository(LocomproContext context, ILoggerFactory loggerFactory) : base(context, loggerFactory)
         {
         }
     }

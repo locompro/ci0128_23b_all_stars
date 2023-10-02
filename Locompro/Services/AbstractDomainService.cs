@@ -11,115 +11,117 @@ namespace Locompro.Services
         where T : class
         where R : IRepository<T, I>
     {
-        protected readonly R repository;
+        protected readonly R Repository;
 
         /// <summary>
         /// Constructs a domain service for a given repository.
         /// </summary>
         /// <param name="unitOfWork">Unit of work to handle transactions.</param>
         /// <param name="repository">Repository to base the service on.</param>
-        protected AbstractDomainService(UnitOfWork unitOfWork, R repository) : base(unitOfWork)
+        /// <param name="loggerFactory">Factory for service logger.</param>
+        protected AbstractDomainService(UnitOfWork unitOfWork, R repository, ILoggerFactory loggerFactory) 
+            : base(unitOfWork, loggerFactory)
         {
-            this.repository = repository;
+            this.Repository = repository;
         }
 
         /// <inheritdoc />
         public async Task<T> Get(I id)
         {
-            await unitOfWork.BeginTransaction();
+            await UnitOfWork.BeginTransaction();
 
             try
             {
-                return await repository.GetByIdAsync(id);
+                return await Repository.GetByIdAsync(id);
             }
             catch (Exception)
             {
-                await unitOfWork.Rollback();
+                await UnitOfWork.Rollback();
                 throw;
             }
             finally
             {
-                await unitOfWork.Commit();
+                await UnitOfWork.Commit();
             }
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<T>> GetAll()
         {
-            await unitOfWork.BeginTransaction();
+            await UnitOfWork.BeginTransaction();
 
             try
             {
-                return await repository.GetAllAsync();
+                return await Repository.GetAllAsync();
             }
             catch (Exception)
             {
-                await unitOfWork.Rollback();
+                await UnitOfWork.Rollback();
                 throw;
             }
             finally
             {
-                await unitOfWork.Commit();
+                await UnitOfWork.Commit();
             }
         }
 
         /// <inheritdoc />
         public async Task Add(T entity)
         {
-            await unitOfWork.BeginTransaction();
+            await UnitOfWork.BeginTransaction();
 
             try
             {
-                await repository.AddAsync(entity);
+                await Repository.AddAsync(entity);
             }
             catch (Exception)
             {
-                await unitOfWork.Rollback();
+                await UnitOfWork.Rollback();
                 throw;
             }
             finally
             {
-                await unitOfWork.Commit();
+                await UnitOfWork.Commit();
             }
         }
 
         /// <inheritdoc />
         public async Task Update(T entity)
         {
-            await unitOfWork.BeginTransaction();
+            await UnitOfWork.BeginTransaction();
 
             try
             {
-                await repository.UpdateAsync(entity);
+                await Repository.UpdateAsync(entity);
             }
             catch (Exception)
             {
-                await unitOfWork.Rollback();
+                await UnitOfWork.Rollback();
                 throw;
             }
             finally
             {
-                await unitOfWork.Commit();
+                await UnitOfWork.Commit();
             }
         }
 
         /// <inheritdoc />
         public async Task Delete(I id)
         {
-            await unitOfWork.BeginTransaction();
+            await UnitOfWork.BeginTransaction();
 
             try
             {
-                await repository.DeleteAsync(id);
+                await Repository.DeleteAsync(id);
             }
             catch (Exception)
             {
-                await unitOfWork.Rollback();
+                await UnitOfWork.Rollback();
                 throw;
             }
             finally
             {
-                await unitOfWork.Commit();
+                await UnitOfWork.Commit();
             }
         }
     }

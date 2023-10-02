@@ -7,15 +7,18 @@ namespace Locompro.Services
     /// </summary>
     public class AbstractService
     {
-        protected readonly UnitOfWork unitOfWork;
+        protected readonly ILogger Logger;
+        protected readonly UnitOfWork UnitOfWork;
         
         /// <summary>
         /// Constructs a service.
         /// </summary>
         /// <param name="unitOfWork">Unit of work to handle transactions.</param>
-        protected AbstractService(UnitOfWork unitOfWork)
+        /// <param name="loggerFactory">Factory for service logger.</param>
+        protected AbstractService(UnitOfWork unitOfWork, ILoggerFactory loggerFactory)
         {
-            this.unitOfWork = unitOfWork;
+            Logger = loggerFactory.CreateLogger(GetType());
+            UnitOfWork = unitOfWork;
         }
     }
 }
