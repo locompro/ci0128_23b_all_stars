@@ -18,13 +18,6 @@ registerServices(builder);
 // Register repositories and services
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-
-    SeedData.Initialize(services);
-}
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -32,12 +25,36 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+else
+{
+    app.UseDeveloperExceptionPage();
+    app.UseMigrationsEndPoint();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<LocomproContext>();
+    if (context.Database.EnsureCreated())
+    {
+        Console.WriteLine("Database created");
+    } else
+    {
+        Console.WriteLine("Database already exists");
+    }
+
+    SeedData.Initialize(context);
+}
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 app.UseAuthentication();;
+
+//app.UseHttpLogging();
 
 app.UseAuthorization();
 
@@ -47,6 +64,8 @@ app.Run();
 
 void registerServices(WebApplicationBuilder builder)
 {
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
     // Add services to the container.
     builder.Services.AddRazorPages();
     builder.Services.AddScoped<UnitOfWork>();
@@ -72,10 +91,7 @@ void registerServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<StoreService>();
 
     // for advanced search
-    builder.Services.AddScoped<ProvinceRepository>();
-    builder.Services.AddScoped<CantonRepository>();
-    builder.Services.AddScoped<AdministrativeUnitService>();
-    builder.Services.AddScoped<AdvancedSearchService>();
+    builder.Services.AddScoped<AdvancedSearchModalService>();
 }
 
 

@@ -11,36 +11,6 @@
     var provincesJson = JsonConvert.SerializeObject(provinces, settings);
 }
 
-<script>
-    const provinces = JSON.parse('@Html.Raw(provincesJson)');
-    
-    // Function to update the canton dropdown
-    function updateCantonDropdown() {
-        const selectedProvinceName = document.querySelector("[name='ProvinceSelect']").value;
-        const cantonDropdown = document.querySelector("[name='CantonSelect']");
-        const cantonDropdownOptGroup = cantonDropdown.querySelector('optgroup');
-        
-        // Clear existing options within the optgroup
-        while (cantonDropdownOptGroup.firstChild) {
-            cantonDropdownOptGroup.removeChild(cantonDropdownOptGroup.firstChild);
-        }
-        
-        const selectedProvince = provinces.find(p => p.Name === selectedProvinceName);
-        
-        // Populate canton dropdown based on selected province
-        if (selectedProvince) {
-            const cantons = selectedProvince.Cantons;
-                    
-            cantons.forEach(cantonObj => {
-                const option = document.createElement("option");
-                option.value = cantonObj.Name;
-                option.text = cantonObj.Name;
-                cantonDropdownOptGroup.appendChild(option);
-            });
-        }
-    }
-</script>
-
 <body>
 <div class="row d-flex justify-content-center">
     <div class="col-md-6 col-xl-4" style="margin-top: 20px;">

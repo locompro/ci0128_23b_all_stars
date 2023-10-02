@@ -1,18 +1,20 @@
-﻿@using Locompro.Services;
-@model AdvancedSearchService
+﻿@using Locompro.Pages.Modals.AdvancedSearch;
+@using Locompro.Services;
+@model AdvancedSearchModalModel;
 
-<div class="container">
-    <div class="card border" style="margin-top: 0px;padding-top: 0px;padding-bottom: 0px;border-radius: 20px;" border="5px solid black;">
-        <div class="card-body" style="padding-top: 0px;margin-top: 0px;padding-bottom: 0px;padding-left: 0px;padding-right: 0px;margin-bottom: 0px;">
-            <div class="row d-xl-flex justify-content-xxl-center" style="padding-top: 12px;padding-bottom: 12px; padding-left: 10px; padding-right: 10px">
+<div class="container" style="padding-left:0px; padding-right:0px">
+    <div style="margin-top: 0px; padding-top: 0px;padding-bottom: 0px;"
+        border="5px solid lightgray;">
+        <div class="card-body" style="padding-top: 0px;margin-top: 0px;padding-bottom: 0px ; padding-left: 10px;padding-right: 10px;margin-bottom: 0px;">
+            <div class="row d-xl-flex justify-content-xxl-center" style="padding-top: 12px;padding-bottom: 12px;">
                 <div class="col-xl-3 col-xxl-4 d-xxl-flex justify-content-xxl-center" style="margin-right: 0px;">
-                    <div class="mb-3" style="margin-right: 10px;margin-bottom: 0px;width: 200px; margin-top: 24px">
+                    <div class="mb-3" style="margin-left: 5px; margin-right: 5px;margin-bottom: 0px;width: 200px; margin-top: 0px">
                         <label class="form-label d-lg-flex justify-content-lg-start">Provincia</label>
                         <select class="form-select"
                                 type="submit"
                                 onchange="loadProvince(this)"
                                 style="font-family: Roboto, sans-serif;"
-                                name=Model.provinceSelected
+                                name=province
                                 id="provinceDropdown">
                                 @foreach (var provincia in Model.provinces)
                                 {
@@ -20,10 +22,11 @@
                                 }
                         </select>
                     </div>
-                    <div class="mb-3" style="margin-bottom: 0px;width: 200px; margin-top: 24px">
+                    <div class="mb-3" style="margin-left: 5px; margin-right: 5px; margin-bottom: 0px;width: 200px; margin-top: 0px">
                         <label class="form-label d-lg-flex justify-content-lg-start">Cantón</label>
                         <select class="form-select"
                                 style="font-family: Roboto, sans-serif;padding-right: 10px;margin-right: 0px;"
+                                name=canton
                                 id="cantonDropdown">
                                 @foreach (var canton in Model.cantons)
                                 {
@@ -32,27 +35,31 @@
                         </select>
                     </div>
                 </div>
-                <div class="col-xl-3 d-xxl-flex justify-content-xxl-center" style="margin-top:24px">
+                <div class="col-xl-3 d-xxl-flex justify-content-xxl-center" style="margin-top:0px">
                     <div class="d-xl-flex justify-content-xl-start">
-                        <div class="mb-3" style="margin-right: 10px;">
+                        <div class="mb-3" style="margin-left:5px ;margin-right:5px;">
                             <label class="form-label d-lg-flex justify-content-lg-start justify-content-xxl-center">Precio Mínimo</label>
                             <input class="form-control"
-                                    type="number"
-                                    id="maxValue"
-                                    value=0 />
+                                   min=1
+                                   type="number"
+                                   id="minValue"
+                                   onchange="validatePriceInput(this)"
+                                   value=0 />
                         </div>
-                        <div class="mb-3" style="margin-right:0px;">
+                        <div class="mb-3" style="margin-left:5px ;margin-right:5px;">
                             <label class="form-label d-lg-flex justify-content-lg-start justify-content-xxl-center">Precio máximo</label>
                             <input class="form-control"
-                                    type="number"
-                                    id="minValue"
-                                    value=0 />
+                                   min=0
+                                   type="number"
+                                   id="maxValue"
+                                   onchange="validatePriceInput(this)"
+                                   value=0 />
                         </div>
                     </div>
                 </div>
                 <div class="col-xxl-4">
-                    <div class="text-center d-xl-flex justify-content-xxl-center">
-                        <div class="mb-3" style="margin-right: 10px;padding-right: 0px;width: 200px; margin-top: 24px">
+                    <div class="text-center d-xl-flex justify-content-xxl-center" style="margin-left: 5px; margin-right: 5px">
+                        <div class="mb-3" style="margin-right: 10px;padding-right: 0px;width: 200px; margin-top: 0px">
                             <label class="form-label d-lg-flex justify-content-lg-start">Categoría</label>
                             <select class="form-select"
                                     style="font-family: Roboto, sans-serif;margin-right: 30px;padding-right: 37px;"
@@ -63,28 +70,16 @@
                                 }
                             </select>
                         </div>
-                        <div class="mb-3" style="margin-right: 0px; margin-top: 24px">
+                        <div class="mb-3" style="margin-right: 0px; margin-top: 0px">
                             <label class="form-label d-lg-flex justify-content-lg-start">Modelo</label>
                             <input class="form-control"
                                     type="text"
                                     id="modelInput"
-                                    value=""
-                                    onchange="updateModel(this)">
+                                    value="">
                         </div>
                     </div>
                     
-                </div>
-                <div style="display: flex; justify-content: flex-end;">
-                    <button class="btn btn-primary ps-4 pe-4 rounded-pill"
-                            style="margin-right: 30px; margin-top: 6px; margin-bottom: 10px; text-align: left"
-                            formaction="/SearchResults/SearchResults"
-                            onclick="performSearchButton()"
-                            id="advancedSearchButton"
-                            type="button">
-                        Realizar busqueda avanzada
-                    </button>
-                </div>
-
+                </div> 
             </div>
         </div>
     </div>

@@ -1,38 +1,39 @@
 ﻿@page
 @model Locompro.Pages.SearchResults.SearchResultsModel
 @{
-    
+
 }
 
 <link rel="stylesheet" href="~/css/MainMenu.css" asp-append-version="true" />
 
 <div class="container  pt-5"
-     style="padding-left: 0px;margin-bottom: 3px;margin-top: -52px;">
+     style="margin-bottom: 3px;margin-top: -52px;">
     <div class="container">
-        <form method="get">
-        <div class="justify-content-center form-actions input-group" style="max-width: 1250px; margin: 0 auto;">
-            
-            <div class="input-group-prepend justify-content-center"
-                 style="position: absolute; left: 0; top: 0; bottom: 0; display: flex; align-items: center; margin-right: 6px;">
-                <button class="btn btn-primary ps-2 pe-2 rounded-pill"
-                        role="button"
-                        type="submit"
-                        formaction="/SearchResults/SearchResults"
-                        style="margin-left: 20px; height: 30px; font-size: 12px;">
-                    <i class="fa fa-search"></i>
-                </button>
+        <div class="justify-content-center form-actions input-group" style="margin: 0 auto;">
+            <div class="search-box form-control pe-4 rounded-pill input-group"
+                 style="">
+                <div style="width: 100%; padding-right: 20px">
+                    <input type="text"
+                           value="@Model.productName"
+                           class="form-control rounded-pill"
+                           name="query"
+                           placeholder="Buscar...."
+                           required="required"
+                           style="margin-left: 0px; border: none;"
+                           id="searchBox">
+                </div>
+                <div class="input-group-prepend justify-content-center"
+                     style="position: absolute; right: 0; top: 0; bottom: 0; display: flex; align-items: center; margin-right: 10px;">
+                    <button class="btn btn-primary ps-2 pe-2 rounded-pill"
+                            role="button"
+                            type="submit"
+                            onclick="performSearchButton()"
+                            style="height: 30px; font-size: 12px;"
+                            id="searchButton">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
             </div>
-            <div class="search-box form-control pe-4 rounded-pill"
-                 style="margin-left: 10px;">
-                <input type="text"
-                       value="@Model.productName"
-                       class="form-control rounded-pill"
-                       name="query"
-                       placeholder="Buscar...."
-                       style="margin-left: 30px; padding-right: 50px; border: none; width: 98%;"
-                       id="searchBox">
-            </div>
-            
             <button class="btn btn-primary ps-4 pe-4 rounded-pill"
                     style="margin-left: 10px; margin-bottom: 0px; "
                     id="advancedSearchButton"
@@ -41,64 +42,66 @@
                 Búsqueda avanzada
             </button>
         </div>
-        </form>
         <div id="modalContainer" class="justify-content-center">
         </div>
 
-        <div class="card border" style="margin-top: 15px;padding-top: 0px;padding-bottom: 0px;border-radius: 20px;" border="5px solid black;">
+        <div class="card border " style="margin-top: 15px;padding-top: 0px;padding-bottom: 0px;border-radius: 20px;" border="5px solid black;">
             <div style="margin-left: 20px; margin-top: 15px">
                 <h2>@Model.productName</h2>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Ultimo Aporte</th>
-                            <th scope="col">Producto</th>
-                            <th scope="col">Precio</th>
-                            <th scope="col">Tienda</th>
-                            <th scope="col">Provincia</th>
-                            <th scope="col">Canton</th>
-                            <th scope="col">Descripcion</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @{
-                            PaginatedList<ItemDisplayInfo> items = Model.displayItems;
-                            foreach (ItemDisplayInfo item in Model.displayItems)
-                            {
-                                <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.lastSubmissionDate)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.productName)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.productPrice)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.productStore)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.provinceLocation)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.cantonLocation)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.productDescription)
-                                    </td>
-                                </tr>
+                <h6> @Model.itemsAmount resultados encontrados </h6>
+                <div style="margin-right:20px; overflow-y:auto;">
+                    <table class="table table-hover" style="cursor:pointer">
+                        <thead>
+                            <tr>
+                                <th scope="col">Ultimo Aporte</th>
+                                <th scope="col">Producto</th>
+                                <th scope="col">Precio</th>
+                                <th scope="col">Tienda</th>
+                                <th scope="col">Provincia</th>
+                                <th scope="col">Canton</th>
+                                <th scope="col">Descripcion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                PaginatedList<ItemDisplayInfo> items = Model.displayItems;
+                                foreach (ItemDisplayInfo item in Model.displayItems)
+                                {
+                                    <tr onclick="itemSelected()">
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.lastSubmissionDate)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.productName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.productPrice)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.productStore)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.provinceLocation)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.cantonLocation)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.productDescription)
+                                        </td>
+                                    </tr>
+                                }
                             }
-                        } 
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
 
                 @{
                     var prevDisabled = !Model.displayItems.HasPreviousPage ? "disabled" : "";
                     var nextDisabled = !Model.displayItems.HasNextPage ? "disabled" : "";
                 }
 
-                <div style="margin-bottom: 20px">
+                <div style="margin-bottom: 20px; display: flex; align-items: center;">
                     <a asp-page=""
                        asp-route-query=@Model.productName
                        asp-route-province=@Model.provinceSelected
@@ -108,9 +111,18 @@
                        asp-route-category=@Model.categorySelected
                        asp-route-model=@Model.modelSelected
                        asp-route-pageIndex="@(Model.displayItems.PageIndex - 1)"
-                       class="btn btn-primary @prevDisabled">
+                       class="btn btn-primary @prevDisabled"
+                       style="margin-bottom:0px">
                         Previous
                     </a>
+
+                    <input type="number"
+                           style="bottom: 0; height: 100%; border: 2px solid grey; border-radius: 5px; padding: 7px; width: 60px; margin-left: 10px; margin-right: 10px;"
+                           min=1
+                           max="@Model.displayItems.TotalPages"
+                           value="@Model.displayItems.PageIndex"
+                           onchange="changeIndexPage(this)">
+
                     <a asp-page=""
                        asp-route-query=@Model.productName
                        asp-route-province=@Model.provinceSelected
@@ -123,6 +135,7 @@
                        class="btn btn-primary @nextDisabled">
                         Next
                     </a>
+                    <h6 style="margin-left: 10px; margin-bottom:0px"> @Model.displayItems.TotalPages paginas de resultados </h6>
                 </div>
             </div>
         </div>
@@ -135,13 +148,17 @@
 
         async function advancedSearchButtonPressed() {
             var button = document.getElementById("advancedSearchButton");
+            var modalContainer = document.getElementById("modalContainer");
 
             // if the modal is currently been shown, close it
             if (modalShown == true) {
                 // get the modal
-                var modal = document.getElementById("modalContainer");
+
                 // erase the contents
-                modal.innerHTML = "";
+                modalContainer.innerHTML = "";
+                button.classList.remove("button-rounded-top");
+                button.classList.add("btn-primary");
+                button.classList.add("rounded-pill");
 
                 // change state to modal not shown
                 modalShown = false;
@@ -154,7 +171,6 @@
                     const modalContent = await response.text();
 
                     // Append the modal content to the modal container
-                    const modalContainer = document.getElementById("modalContainer");
                     modalContainer.innerHTML = modalContent;
                 } else {
                     console.error('Failed to load modal content.');
@@ -164,6 +180,12 @@
             }
 
             modalShown = true;
+            modalContainer.classList.remove("modal-advanced-search");
+            modalContainer.classList.add("modal-search-results-on-advanced-search");
+
+            button.classList.remove("rounded-pill");
+            button.classList.remove("btn-primary");
+            button.classList.add("button-rounded-top");
 
         }
     </script>
@@ -218,28 +240,120 @@
 
     <script>
         function performSearchButton() {
-            console.log("clicked")
+            // if advanced search is not open it is normal search
+            var redirect = "/SearchResults/SearchResults?query=";
 
-            var provinceValue = document.getElementById("provinceDropdown").value;
-            var cantonValue = document.getElementById("cantonDropdown").value;
-            var minValue = document.getElementById("minValue").value;
-            var maxValue = document.getElementById("maxValue").value;
-            var categoryValue = document.getElementById("categoryDropdown").value;
-            var searchValue = document.getElementById("searchBox").value;
-            var modelValue = "";
-            try {
-                var modelValue = document.getElementById("modelInput").value;
-            } catch (error) {
+            if (!modalShown) {
+                // get value
+                var searchValue = document.getElementById("searchBox").value;
+                redirect += searchValue;
+            } else {
+                var provinceValue = document.getElementById("provinceDropdown").value;
+                var cantonValue = document.getElementById("cantonDropdown").value;
+                var minValue = document.getElementById("minValue").value;
+                var maxValue = document.getElementById("maxValue").value;
+                var categoryValue = document.getElementById("categoryDropdown").value;
+                var searchValue = document.getElementById("searchBox").value;
+                var modelValue = "";
+
+                try {
+                    var modelValue = document.getElementById("modelInput").value;
+                } catch (error) {
+                }
+
+                redirect += + searchValue
+                    + "&province=" + provinceValue
+                    + "&canton=" + cantonValue
+                    + "&minValue=" + minValue
+                    + "&maxValue=" + maxValue
+                    + "&category=" + categoryValue
+                    + "&model=" + modelValue;
             }
 
-            // redirect to search results page
-            window.location.href = "/SearchResults/SearchResults?query=" + searchValue +
-                "&province=" + provinceValue +
-                "&canton=" + cantonValue +
-                "&minValue=" + minValue +
-                "&maxValue=" + maxValue +
-                "&category=" + categoryValue +
-                "&model=" + modelValue;
+            if (!document.getElementById("searchBox").value) {
+                return;
+            }
+
+            window.location.href = redirect;
         }
+    </script>
+
+    <script>
+        function itemSelected() {
+            window.location.href = "/SearchResults/SearchResults?query=buttonClicked!";
+        }
+    </script>
+
+    <script>
+        function changeIndexPage(field) {
+            if (field.value > @Model.displayItems.TotalPages) {
+                field.value = @Model.displayItems.TotalPages;
+            }
+
+            if (field.value < 1) {
+                field.value = 1;
+            }
+            var provinceForEmptyCheck = "@Model.provinceSelected";
+
+            console.log(provinceForEmptyCheck);
+            if (provinceForEmptyCheck.length == 0) {
+                // redirect to search results page
+                window.location.href = "/SearchResults/SearchResults?query=" + "@Model.productName" +
+                    "&pageIndex=" + field.value;
+            } else {
+                // redirect to search results page
+                window.location.href = "/SearchResults/SearchResults?query=" + "@Model.productName" +
+                    "&province=" + "@Model.provinceSelected" +
+                    "&canton=" + "@Model.cantonSelected" +
+                    "&minValue=" + @Model.minPrice +
+                    "&maxValue=" + @Model.maxPrice +
+                    "&category=" + "@Model.categorySelected" +
+                    "&model=" + "@Model.modelSelected" +
+                    "&pageIndex=" + field.value;
+            }
+
+        }
+    </script>
+
+    <script>
+        // makes sure the min field is less than the max field
+        function validatePriceInput(button) {
+            // get the fields
+            var minButton = document.getElementById("minValue");
+            var maxButton = document.getElementById("maxValue");
+
+            // if the field is the min field
+            if (button == minButton) {
+                // check if the min field is greater or equal than the max field
+                if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
+                    // if no then make it less than the max field
+                    minButton.value = parseInt(maxButton.value, 10) - 1;
+                    // ensure the value is not negative
+                    if (minButton.value < 0) {
+                        minButton.value = 0;
+                    }
+                }
+            }
+
+            // field is the max field
+            if (button == maxButton) {
+                // if the value is less or equal than the min field
+                if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
+                    // make it greater than the min field
+                    maxButton.value = parseInt(minButton.value, 10) + 1;
+                }
+            }
+        }
+    </script>
+
+    <script>
+        // script to search on enter press
+        document.getElementById("searchBox")
+            .addEventListener("keyup", function (event) {
+                event.preventDefault();
+                if (event.keyCode === 13) {
+                    document.getElementById("searchButton").click();
+                }
+            });
     </script>
 }

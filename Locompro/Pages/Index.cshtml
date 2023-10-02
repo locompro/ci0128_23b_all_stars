@@ -11,42 +11,45 @@
 
 <div class="container  pt-5"
      style="padding-left: 0px;margin-bottom: 3px;margin-top: -42px;">
-    <div class="row justify-content-center" >
-        <form method="get">
-            <div class="container">
-                <div class="justify-content-center form-actions input-group" style="max-width: 800px; margin: 0 auto;">
-                    <div class="input-group-prepend"
-                         style="position: absolute; left: 0; top: 0; bottom: 0; display: flex; align-items: center; margin-right: 6px;">
-                        <button class="btn btn-primary ps-2 pe-2 rounded-pill"
-                                role="button"
-                                type="submit"
-                                formaction="/SearchResults/SearchResults"
-                                style="margin-left: 20px; height: 30px; font-size: 12px;">
-                            <i class="fa fa-search"></i>
-                        </button>
-                    </div>
-                    <div class="search-box form-control pe-4 rounded-pill"
-                         style="margin-left: 10px;">
+    <div class="row justify-content-center">
+        <div class="container">
+            <div class="justify-content-center form-actions input-group" style="max-width: 800px; margin: 0 auto;">
+                <div class="search-box form-control pe-4 rounded-pill input-group"
+                     style="">
+                    <div style="width: 100%; padding-right: 20px">
                         <input type="text"
                                class="form-control rounded-pill"
                                name="query"
                                placeholder="Buscar...."
-                               style="margin-left: 30px; padding-right: 50px; border: none; width: 98%;"
+                               required="required"
+                               style="margin-left: 0px; border: none;"
                                id="searchBox">
+                    </div>
+                    <div class="input-group-prepend justify-content-center"
+                         style="position: absolute; right: 0; top: 0; bottom: 0; display: flex; align-items: center; margin-right: 10px;">
+                        <button class="btn btn-primary ps-2 pe-2 rounded-pill"
+                                role="button"
+                                type="submit"
+                                onclick="performSearchButton()"
+                                style="height: 30px; font-size: 12px;"
+                                id="searchButton">
+                            <i class="fa fa-search"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-            <div style="text-align: center; margin-top: 20px">
-                <button class="btn btn-primary ps-4 pe-4 rounded-pill"
-                        style="margin-left: 6px; margin-top: 6px; margin-bottom: 0px; "
-                        id="advancedSearchButton"
-                        type="button">
-                    Búsqueda avanzada
-                </button>
-                <div id="modalContainer">
-                </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px">
+            <button class="btn btn-primary rounded-pill"
+                    style="margin-left: 6px; margin-top: 6px; margin-bottom: 0px; "
+                    id="advancedSearchButton"
+                    type="button"
+                    focus="outline: none; box-shadow: none;">
+                Búsqueda avanzada
+            </button>
+            <div id="modalContainer">
             </div>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -61,7 +64,7 @@
             document.getElementById("advancedSearchButton").addEventListener("click", async function () {
                 // get button for advanced search button
                 button = document.getElementById("advancedSearchButton");
-                
+
                 // if the modal is currently been shown, close it
                 if (modalShown == true) {
                     // get the modal
@@ -71,7 +74,10 @@
 
                     // reset the button
                     button.classList.remove("button-rounded-top");
+                    button.classList.add("btn-primary");
                     button.classList.add("rounded-pill");
+
+                    modalContainer.classList.remove("modal-advanced-search");
 
                     // change state to modal not shown
                     modalShown = false;
@@ -79,7 +85,7 @@
                 }
 
                 try {
-                    const response = await fetch("Index?handler=AdvancedSearch");                    
+                    const response = await fetch("Index?handler=AdvancedSearch");
                     if (response.ok) {
                         const modalContent = await response.text();
 
@@ -93,8 +99,11 @@
                     console.error('An error occurred:', error);
                 }
 
+                modalContainer.classList.add("modal-advanced-search");
+
                 // change the button style
                 button.classList.remove("rounded-pill");
+                button.classList.remove("btn-primary");
                 button.classList.add("button-rounded-top");
 
                 // if the modal has been displayed, then store the state
@@ -153,29 +162,115 @@
 
     <script>
         function performSearchButton() {
-            console.log("clicked")
+            // if advanced search is not open it is normal search
+            var redirect = "/SearchResults/SearchResults?query=";
 
-            var provinceValue = document.getElementById("provinceDropdown").value;
-            var cantonValue = document.getElementById("cantonDropdown").value;
-            var minValue = document.getElementById("minValue").value;
-            var maxValue = document.getElementById("maxValue").value;
-            var categoryValue = document.getElementById("categoryDropdown").value;
-            var searchValue = document.getElementById("searchBox").value;
-            var modelValue = "";
-            try {
-                var modelValue = document.getElementById("modelInput").value;
-            } catch (error) {
+            if (!modalShown) {
+                // get value
+                var searchValue = document.getElementById("searchBox").value;
+                redirect += searchValue;
+            } else {
+                var provinceValue = document.getElementById("provinceDropdown").value;
+                var cantonValue = document.getElementById("cantonDropdown").value;
+                var minValue = document.getElementById("minValue").value;
+                var maxValue = document.getElementById("maxValue").value;
+                var categoryValue = document.getElementById("categoryDropdown").value;
+                var searchValue = document.getElementById("searchBox").value;
+                var modelValue = "";
+
+                try {
+                    var modelValue = document.getElementById("modelInput").value;
+                } catch (error) {
+                }
+
+               redirect += + searchValue
+                    + "&province=" + provinceValue
+                    + "&canton=" + cantonValue
+                    + "&minValue=" + minValue
+                    + "&maxValue=" + maxValue
+                    + "&category=" + categoryValue
+                    + "&model=" + modelValue;
             }
 
-            // redirect to search results page
-            window.location.href = "/SearchResults/SearchResults?query=" + searchValue +
-                    "&province=" + provinceValue +
-                    "&canton=" + cantonValue +
-                    "&minValue=" + minValue +
-                    "&maxValue=" + maxValue +
-                    "&category=" + categoryValue +
-                    "&model=" + modelValue;
+            if (!document.getElementById("searchBox").value) {
+                return;
+            }
+
+            window.location.href = redirect;
+
+            /*
+            const dataToSend = {
+                query: searchValue,
+                province: provinceValue,
+                canton: cantonValue,
+                minValue: minValue,
+                maxValue: maxValue,
+                category: categoryValue,
+                model: modelValue
+            };
+
+            var url = window.location.pathname;
+            var handler = "?handler=SendSearchParameters";
+            var location = url + handler;
+
+            $.ajax({
+                contentType: 'application/json',
+                type: 'POST',
+                url: location,
+                data: JSON.stringify(dataToSend),
+                headers: {
+                    "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function () {
+                    window.location.href = "/SearchResults/SearchResults";
+                },
+                error: function () {
+                    alert("AJAX Request Failed, another failure...");
+                }
+            });
+            */
         }
+    </script>
+    <script>
+        // makes sure the min field is less than the max field
+        function validatePriceInput(button) {
+            // get the fields
+            var minButton = document.getElementById("minValue");
+            var maxButton = document.getElementById("maxValue");
+
+            // if the field is the min field
+            if (button == minButton) {
+                // check if the min field is greater or equal than the max field
+                if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
+                    // if no then make it less than the max field
+                    minButton.value = parseInt(maxButton.value, 10) - 1;
+                    // ensure the value is not negative
+                    if (minButton.value < 0) {
+                        minButton.value = 0;
+                    }
+                }
+            }
+
+            // field is the max field
+            if (button == maxButton) {
+                // if the value is less or equal than the min field
+                if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
+                    // make it greater than the min field
+                    maxButton.value = parseInt(minButton.value, 10) + 1;
+                }
+            }
+        }
+    </script>
+
+    <script>
+        // script to search on enter press
+        document.getElementById("searchBox")
+            .addEventListener("keyup", function (event) {
+                event.preventDefault();
+                if (event.keyCode === 13) {
+                    document.getElementById("searchButton").click();
+                }
+            });
     </script>
 }
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Locompro.Services;
 using Castle.Core.Internal;
 using Newtonsoft.Json;
+using System.Diagnostics.Contracts;
 
 namespace Locompro.Pages.SearchResults
 {
@@ -38,9 +39,9 @@ namespace Locompro.Pages.SearchResults
     public class SearchResultsModel : PageModel
     {
 
-        private AdvancedSearchService advancedSearchServiceHandler;
+        private AdvancedSearchModalService advancedSearchServiceHandler;
 
-        private AdministrativeUnitService administrativeUnitService;
+        private CountryService countryService;
 
         private readonly IConfiguration Configuration;
 
@@ -51,6 +52,8 @@ namespace Locompro.Pages.SearchResults
 
         private List<ItemDisplayInfo> items;
 
+        public double itemsAmount { get; set; }
+
         public string provinceSelected { get; set; }
         public string cantonSelected { get; set; }
         public string categorySelected { get; set; }
@@ -58,19 +61,19 @@ namespace Locompro.Pages.SearchResults
         public long maxPrice { get; set; }
         public string modelSelected { get; set; }
 
-        public SearchResultsModel(AdministrativeUnitService administrativeUnitService,
-                AdvancedSearchService advancedSearchServiceHandler,
+        public SearchResultsModel(CountryService countryService,
+                AdvancedSearchModalService advancedSearchServiceHandler,
                 IConfiguration configuration)
         {
             this.advancedSearchServiceHandler = advancedSearchServiceHandler;
-            this.administrativeUnitService = administrativeUnitService;
+            this.countryService = countryService;
             this.Configuration = configuration;
             this.pageSize = Configuration.GetValue("PageSize", 4);
 
             this.OnTestingCreateTestingItems();
         }
 
-        public async Task OnGetAsync(int? pageIndex,
+        public void OnGetAsync(int? pageIndex,
             string query,
             string province,
             string canton,
@@ -96,6 +99,8 @@ namespace Locompro.Pages.SearchResults
             this.productName = query;
             Console.WriteLine(this.productName);
 
+            this.itemsAmount = items.Count;
+
             this.displayItems = PaginatedList<ItemDisplayInfo>.Create(items, pageIndex ?? 1, pageSize);
         }
 
@@ -111,7 +116,7 @@ namespace Locompro.Pages.SearchResults
         public async Task<IActionResult> OnGetUpdateProvince(string province)
         {
             // update the model with all cantons in the given province
-            await this.advancedSearchServiceHandler.fetchCantonsAsync(province);
+            await this.advancedSearchServiceHandler.ObtainCantonsAsync(province);
 
             // prevent the json serializer from looping infinitely
             var settings = new JsonSerializerSettings
