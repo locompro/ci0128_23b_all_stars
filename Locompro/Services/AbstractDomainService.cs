@@ -2,7 +2,7 @@
 namespace Locompro.Services
 {
     /// <summary>
-    /// Abstract class representing domain services.
+    /// Generic domain service for an application entity type.
     /// </summary>
     /// <typeparam name="T">Type of entity handled by service.</typeparam>
     /// <typeparam name="I">Type of key used by entity.</typeparam>
@@ -13,11 +13,17 @@ namespace Locompro.Services
     {
         protected readonly R repository;
 
+        /// <summary>
+        /// Constructs a domain service for a given repository.
+        /// </summary>
+        /// <param name="unitOfWork">Unit of work to handle transactions.</param>
+        /// <param name="repository">Repository to base the service on.</param>
         protected AbstractDomainService(UnitOfWork unitOfWork, R repository) : base(unitOfWork)
         {
             this.repository = repository;
         }
 
+        /// <inheritdoc />
         public async Task<T> Get(I id)
         {
             await unitOfWork.BeginTransaction();
@@ -37,6 +43,7 @@ namespace Locompro.Services
             }
         }
 
+        /// <inheritdoc />
         public async Task<IEnumerable<T>> GetAll()
         {
             await unitOfWork.BeginTransaction();
@@ -56,6 +63,7 @@ namespace Locompro.Services
             }
         }
 
+        /// <inheritdoc />
         public async Task Add(T entity)
         {
             await unitOfWork.BeginTransaction();
@@ -75,6 +83,7 @@ namespace Locompro.Services
             }
         }
 
+        /// <inheritdoc />
         public async Task Update(T entity)
         {
             await unitOfWork.BeginTransaction();
@@ -94,6 +103,7 @@ namespace Locompro.Services
             }
         }
 
+        /// <inheritdoc />
         public async Task Delete(I id)
         {
             await unitOfWork.BeginTransaction();

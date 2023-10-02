@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Locompro.Models
 {
+    /// <summary>
+    /// A canton for a province.
+    /// </summary>
     public class Canton
     {
         [Key]

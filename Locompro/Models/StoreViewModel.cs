@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Locompro.Models
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class StoreViewModel
     {
         // Store Entity properties
