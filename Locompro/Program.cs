@@ -6,6 +6,7 @@ using Locompro.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Server;
 using System.Xml;
+using Locompro.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);

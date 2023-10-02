@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Locompro.Models
 {
@@ -8,15 +9,16 @@ namespace Locompro.Models
     /// </summary>
     public class Canton
     {
-        [Key]
         [Required]
-        [Column(Order = 0)]
-        public virtual Province Province { get; set; }
+        public string CountryName { get; set; }
+        
+        [Required]
+        public string ProvinceName { get; set; }
 
-        [Key]
         [Required]
-        [Column(Order = 1)]
         [StringLength(60)]
         public string Name { get; set; }
+        
+        public virtual Province Province { get; set; }
     }
 }

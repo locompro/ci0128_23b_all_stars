@@ -1,8 +1,8 @@
 ﻿#nullable disable
 
 using Locompro.Areas.Identity.ViewModels;
+using Locompro.Models;
 using Microsoft.AspNetCore.Identity;
-
 
 namespace Locompro.Services
 {
