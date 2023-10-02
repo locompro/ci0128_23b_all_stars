@@ -10,14 +10,14 @@ namespace Locompro.Models
     {
         [Key]
         [Required]
-        [StringLength(60)]
+        [StringLength(60, MinimumLength = 1)]
         public string Name { get; set; }
 
         [Required]
         public virtual Canton Canton { get; set; }
 
         [Required]
-        [StringLength(35)]
+        [StringLength(35, MinimumLength = 1)]
         public string Address { get; set; }
 
         [Required]

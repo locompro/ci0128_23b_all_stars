@@ -13,7 +13,8 @@ public class CountryRepository : AbstractRepository<Country, string>
     /// </summary>
     /// <param name="context">Context to base the repository on.</param>
     /// <param name="loggerFactory">Factory for repository logger.</param>
-    public CountryRepository(LocomproContext context, ILoggerFactory loggerFactory) : base(context, loggerFactory)
+    public CountryRepository(LocomproContext context, ILoggerFactory loggerFactory) :
+        base(context, loggerFactory)
     {
     }
 }

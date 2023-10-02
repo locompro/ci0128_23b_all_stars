@@ -23,12 +23,36 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+else
+{
+    app.UseDeveloperExceptionPage();
+    app.UseMigrationsEndPoint();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<LocomproContext>();
+    if (context.Database.EnsureCreated())
+    {
+        Console.WriteLine("Database created");
+    } else
+    {
+        Console.WriteLine("Database already exists");
+    }
+
+    SeedData.Initialize(context);
+}
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
 app.UseAuthentication();;
+
+//app.UseHttpLogging();
 
 app.UseAuthorization();
 
@@ -38,6 +62,8 @@ app.Run();
 
 void registerServices(WebApplicationBuilder builder)
 {
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
     // Add services to the container.
     builder.Services.AddLogging();
     builder.Services.AddRazorPages();
@@ -58,6 +84,18 @@ void registerServices(WebApplicationBuilder builder)
             .UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
     builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
         .AddEntityFrameworkStores<LocomproContext>();
+
+    // Register repositories and services
+    builder.Services.AddScoped<UnitOfWork>();
+    builder.Services.AddScoped<StoreRepository>();
+    builder.Services.AddScoped<StoreService>();
+
+    // for advanced search
+    builder.Services.AddScoped<AdvancedSearchModalService>();
+    builder.Services.AddScoped<CategoryRepository>();
+    builder.Services.AddScoped<CategoryService>();
+    builder.Services.AddScoped<ProductRepository>();
+    builder.Services.AddScoped<ProductService>();
 }
 
 
