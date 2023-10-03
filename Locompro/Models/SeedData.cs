@@ -9,13 +9,13 @@ namespace Locompro.Models
         public static void Initialize(LocomproContext context)
         {
 
-            bool isInitialized = context.Country.Any() &&
-                                    context.Province.Any() &&
-                                    context.Canton.Any() &&
-                                    context.Category.Any() &&
-                                    context.Submission.Any() &&
-                                    context.Store.Any() &&
-                                    context.Product.Any();
+            bool isInitialized = context.Countries.Any() &&
+                                    context.Provinces.Any() &&
+                                    context.Cantons.Any() &&
+                                    context.Categories.Any() &&
+                                    context.Submissions.Any() &&
+                                    context.Stores.Any() &&
+                                    context.Products.Any();
 
             // Check if the database is initialized
             if (isInitialized)
