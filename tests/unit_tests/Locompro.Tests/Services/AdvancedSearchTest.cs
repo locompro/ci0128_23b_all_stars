@@ -16,7 +16,6 @@ namespace Locompro.Tests.Services
         private UserRepository _repository;
         private CountryService _countryService;
         private CategoryService _categoryService;
-
         private AdvancedSearchModalService _advancedSearchService;
 
         [SetUp]
