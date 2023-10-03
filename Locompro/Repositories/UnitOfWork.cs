@@ -9,6 +9,7 @@ namespace Locompro.Repositories
     /// </summary>
     public class UnitOfWork
     {
+        private readonly bool _isTesting;
         private readonly ILogger<UnitOfWork> _logger;
         private readonly LocomproContext _dbContext;
         private IDbContextTransaction _transaction;
@@ -22,6 +23,8 @@ namespace Locompro.Repositories
         {
             _logger = logger;
             _dbContext = dbContext;
+            _isTesting = _dbContext.Database.ProviderName.EndsWith("InMemory") ||
+                         _dbContext.Database.ProviderName.EndsWith("InMemoryDatabaseProvider");
         }
 
         /// <summary>
@@ -29,6 +32,8 @@ namespace Locompro.Repositories
         /// </summary>
         public async Task BeginTransaction()
         {
+            if (_isTesting) return;
+            
             _transaction = await _dbContext.Database.BeginTransactionAsync();
             _logger.Log(LogLevel.Information, "Beginning transaction {}", _transaction.TransactionId);
         }
@@ -40,6 +45,8 @@ namespace Locompro.Repositories
         /// </summary>
         public async Task Commit()
         {
+            if (_isTesting) return;
+            
             try
             {
                 await _dbContext.SaveChangesAsync();
@@ -66,6 +73,8 @@ namespace Locompro.Repositories
         /// </summary>
         public async Task Rollback()
         {
+            if (_isTesting) return;
+            
             try
             {
                 await _transaction.RollbackAsync();
@@ -85,6 +94,8 @@ namespace Locompro.Repositories
         /// </summary>
         public void Dispose()
         {
+            if (_isTesting) return;
+            
             DisposeAsync().AsTask().Wait();
         }
 

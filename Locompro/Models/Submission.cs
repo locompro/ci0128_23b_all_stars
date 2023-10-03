@@ -31,4 +31,6 @@ public class Submission
     public virtual Store Store { get; set; }
     
     public virtual Product Product { get; set; }
+    
+    // TODO: Add pictures to submission
 }

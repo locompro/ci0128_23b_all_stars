@@ -78,6 +78,7 @@ namespace Locompro.Services
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
+
             return (IUserEmailStore<User>)_userStore;
         }
         /// <summary>
@@ -123,3 +124,4 @@ namespace Locompro.Services
         }
     }
 }
+

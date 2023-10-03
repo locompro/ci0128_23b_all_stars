@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Pages.SearchResults
 {
+    /// <summary>
+    /// List of items that can be paginated
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class PaginatedList<T> : List<T>
     {
         public int PageIndex { get; private set; }
@@ -25,6 +29,13 @@ namespace Locompro.Pages.SearchResults
 
         public bool HasNextPage => PageIndex < TotalPages;
 
+        /// <summary>
+        /// Creates a paginated list from a queryable source
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
         public static async Task<PaginatedList<T>> CreateAsync(
             IQueryable<T> source, int pageIndex, int pageSize)
         {
@@ -35,6 +46,13 @@ namespace Locompro.Pages.SearchResults
             return new PaginatedList<T>(items, count, pageIndex, pageSize);
         }
 
+        /// <summary>
+        /// Creates a paginated list from a list source
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
         public static PaginatedList<T> Create(List<T> source, int pageIndex, int pageSize)
         {
             var count = source.Count();
