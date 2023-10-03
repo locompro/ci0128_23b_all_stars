@@ -6,13 +6,13 @@ namespace Locompro.Data;
 
 public class LocomproContext : IdentityDbContext<User>
 {
-    public DbSet<Country> Country { get; set; } = default!;
-    public DbSet<Province> Province { get; set; } = default!;
-    public DbSet<Canton> Canton { get; set; } = default!;
-    public DbSet<Category> Category { get; set; } = default!;
-    public DbSet<Submission> Submission { get; set; } = default!;
-    public DbSet<Store> Store { get; set; } = default!;
-    public DbSet<Product> Product { get; set; } = default!;
+    public DbSet<Country> Countries { get; set; } = default!;
+    public DbSet<Province> Provinces { get; set; } = default!;
+    public DbSet<Canton> Cantons { get; set; } = default!;
+    public DbSet<Category> Categories { get; set; } = default!;
+    public DbSet<Submission> Submissions { get; set; } = default!;
+    public DbSet<Store> Stores { get; set; } = default!;
+    public DbSet<Product> Products { get; set; } = default!;
 
     public LocomproContext(DbContextOptions<LocomproContext> options)
         : base(options)
@@ -52,5 +52,21 @@ public class LocomproContext : IdentityDbContext<User>
             .WithMany()
             .HasForeignKey(s => s.StoreName)
             .IsRequired();
+        
+        builder.Entity<Submission>()
+            .HasOne(s => s.Product)
+            .WithMany()
+            .HasForeignKey(s => s.ProductId)
+            .IsRequired();
+        
+        builder.Entity<Submission>()
+            .HasOne(s => s.User)
+            .WithMany()
+            .HasForeignKey(s => s.Username)
+            .IsRequired();
+
+        builder.Entity<User>()
+            .HasMany(u => u.Submissions)
+            .WithOne(s => s.User);
     }
 }

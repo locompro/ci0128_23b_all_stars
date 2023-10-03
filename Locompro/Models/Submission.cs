@@ -26,6 +26,8 @@ public class Submission
     [Required]
     public int ProductId { get; set; }
     
+    public virtual User User { get; set; }
+    
     public virtual Store Store { get; set; }
     
     public virtual Product Product { get; set; }
