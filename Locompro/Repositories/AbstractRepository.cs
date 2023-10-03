@@ -8,7 +8,7 @@ namespace Locompro.Repositories
     /// </summary>
     /// <typeparam name="T">Type of entity handled by repository.</typeparam>
     /// <typeparam name="I">Type of key used by entity.</typeparam>
-    public abstract class AbstractRepository<T, I> : IRepository<T, I> where T : class
+    public abstract class AbstractRepository<T, I> : IRepository<T, I> where T: class
     {
         protected readonly ILogger Logger;
         protected readonly LocomproContext Context;

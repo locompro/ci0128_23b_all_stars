@@ -18,13 +18,14 @@ namespace Locompro.Services
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             IUserStore<User> userStore,
-            ILogger<RegisterViewModel> logger)
+            ILogger<RegisterViewModel> logger,
+            IUserEmailStore<User> emailStore = null)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _userStore = userStore;
-            _emailStore = GetEmailStore();
             _logger = logger;
+            _emailStore = emailStore ?? GetEmailStore();
         }
 
         private static User CreateUser()

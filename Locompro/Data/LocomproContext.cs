@@ -7,9 +7,11 @@ namespace Locompro.Data;
 public class LocomproContext : IdentityDbContext<User>
 {
     public DbSet<Store> Store { get; set; } = default!;
-    public DbSet<Country> Countries { get; set; } = default!;
-    public DbSet<Province> Provinces { get; set; }
-    public DbSet<Canton> Cantons { get; set; }
+    public DbSet<Country> Country { get; set; } = default!;
+    public DbSet<Province> Province { get; set; } = default!;
+    public DbSet<Canton> Canton { get; set; } = default!;
+
+    public DbSet<Category> Category { get; set; } = default!;
 
     public LocomproContext(DbContextOptions<LocomproContext> options)
         : base(options)
@@ -37,5 +39,8 @@ public class LocomproContext : IdentityDbContext<User>
             .HasOne(c => c.Province)
             .WithMany(p => p.Cantons)
             .HasForeignKey(c => new { c.CountryName, c.ProvinceName });
+
+        builder.Entity<Category>()
+            .HasKey(c => new { c.Name });
     }
 }
