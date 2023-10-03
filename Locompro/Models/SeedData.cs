@@ -9,9 +9,16 @@ namespace Locompro.Models
         public static void Initialize(LocomproContext context)
         {
 
-            // Check if the database is empty
-            
-            if (context.Canton.Any())
+            bool isInitialized = context.Country.Any() &&
+                                    context.Province.Any() &&
+                                    context.Canton.Any() &&
+                                    context.Category.Any() &&
+                                    context.Submission.Any() &&
+                                    context.Store.Any() &&
+                                    context.Product.Any();
+
+            // Check if the database is initialized
+            if (isInitialized)
             {
                 // Database has been seeded
                 return;

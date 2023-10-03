@@ -14,5 +14,6 @@ public class User : IdentityUser
 
     public float Rating { get; set; } = 0;
 
+    [Required]
     public Status Status { get; set; } = Status.Active;
 }
