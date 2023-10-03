@@ -1,12 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Locompro.Data
 @using Locompro.Models
+@using Locompro.Services
 
-@inject SignInManager<User> SignInManager
-@inject UserManager<User> UserManager
+@inject AuthService AuthService
 @{
     var currentPage = Context.Request.Path.Value;
-    bool isLoggedIn = SignInManager.IsSignedIn(User);
+    var isLoggedIn = AuthService.IsLoggedIn();
 }
 
 <!DOCTYPE html>
@@ -55,7 +55,9 @@
                     </div>
                     <div class="d-none d-md-block">
                         <button class="btn btn-light me-2" type="button">Mi perfil</button>
-                        <a class="btn btn-primary" role="button" href="#">Cerrar sesión</a>
+                        <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="d-inline-block">
+                            <button type="submit" class="btn btn-primary">Cerrar sesión</button>
+                        </form>
                     </div>
                 }
                 else // if not logged in
