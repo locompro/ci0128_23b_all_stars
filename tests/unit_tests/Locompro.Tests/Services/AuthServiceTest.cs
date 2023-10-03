@@ -1,4 +1,5 @@
-﻿using Locompro.Areas.Identity.ViewModels;
+﻿using System.Security.Claims;
+using Locompro.Areas.Identity.ViewModels;
 using Locompro.Models;
 using Locompro.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -29,6 +30,9 @@ namespace Locompro.Tests.Services
             _loggerMock = new Mock<ILogger<RegisterViewModel>>();
 
             var contextAccessorMock = new Mock<IHttpContextAccessor>();
+            var httpContextMock = new Mock<HttpContext>();
+            contextAccessorMock.Setup(ca => ca.HttpContext).Returns(httpContextMock.Object);
+
             var userClaimsPrincipalFactoryMock = new Mock<IUserClaimsPrincipalFactory<User>>();
             var optionsAccessorMock = new Mock<IOptions<IdentityOptions>>();
             var loggerSignInManagerMock = new Mock<ILogger<SignInManager<User>>>();
@@ -48,6 +52,7 @@ namespace Locompro.Tests.Services
             _service = new AuthService(_signInManagerMock.Object, _userManagerMock.Object, _userStoreMock.Object,
                 _loggerMock.Object, _emailStoreMock.Object);
         }
+
 
         [Test]
         public async Task Register_UserRegistrationSucceeds_ReturnsIdentityResultSuccess()
@@ -96,5 +101,39 @@ namespace Locompro.Tests.Services
             _userStoreMock.Verify(x =>
                 x.SetUserNameAsync(It.IsAny<User>(), inputData.UserName, It.IsAny<CancellationToken>()), Times.Once);
         }
+        [Test]
+        public async Task Logout_UserLoggedOut()
+        {
+            await _service.Logout();
+
+            _signInManagerMock.Verify(x => x.SignOutAsync(), Times.Once);
+            _loggerMock.Verify(l => l.Log(
+                    LogLevel.Information, 
+                    It.IsAny<EventId>(), 
+                    It.Is<It.IsAnyType>((v, t) => string.Equals("User logged out.", v.ToString())), 
+                    null, 
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!), 
+                Times.Once);        }
+
+        [Test]
+        public void IsLoggedIn_UserIsLoggedIn()
+        {
+            _signInManagerMock.Setup(x => x.IsSignedIn(It.IsAny<ClaimsPrincipal>())).Returns(true);
+
+            var isLoggedIn = _service.IsLoggedIn();
+
+            Assert.That(isLoggedIn, Is.True);
+        }
+
+        [Test]
+        public void IsLoggedIn_UserIsNotLoggedIn()
+        {
+            _signInManagerMock.Setup(x => x.IsSignedIn(It.IsAny<ClaimsPrincipal>())).Returns(false);
+
+            var isLoggedIn = _service.IsLoggedIn();
+
+            Assert.That(isLoggedIn, Is.False);
+        }
     }
+    
 }
