@@ -7,6 +7,10 @@ using System.Diagnostics.Contracts;
 
 namespace Locompro.Pages.SearchResults
 {
+    /// <summary>
+    /// Class that represents a single item to be displayed in the search results
+    /// An item is a product that is being sold in a store
+    /// </summary>
     public class ItemDisplayInfo
     {
         public string lastSubmissionDate { get; set; }
@@ -35,25 +39,50 @@ namespace Locompro.Pages.SearchResults
         }
     };
 
-
+    /// <summary>
+    /// Page model for the search results page
+    /// </summary>
     public class SearchResultsModel : PageModel
     {
-
+        /// <summary>
+        /// Service that handles the advanced search modal
+        /// </summary>
         private AdvancedSearchModalService advancedSearchServiceHandler;
 
+        /// <summary>
+        /// Service that handles the locations data
+        /// </summary>
         private CountryService countryService;
 
+        /// <summary>
+        /// Configuration to get the page size
+        /// </summary>
         private readonly IConfiguration Configuration;
 
+        /// <summary>
+        /// Buffer for page size according to Paginated List and configuration
+        /// </summary>
         private int pageSize;
-        public string productName { get; set; }
 
+        /// <summary>
+        /// Paginated list of products found
+        /// </summary>
         public PaginatedList<ItemDisplayInfo> displayItems { get; set; }
 
+        /// <summary>
+        /// List of all items found
+        /// </summary>
         private List<ItemDisplayInfo> items;
 
+        /// <summary>
+        /// Amount of items found
+        /// </summary>
         public double itemsAmount { get; set; }
 
+        /// <summary>
+        /// Name of product that was searched
+        /// </summary>
+        public string productName { get; set; }
         public string provinceSelected { get; set; }
         public string cantonSelected { get; set; }
         public string categorySelected { get; set; }
@@ -61,6 +90,12 @@ namespace Locompro.Pages.SearchResults
         public long maxPrice { get; set; }
         public string modelSelected { get; set; }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="countryService"></param>
+        /// <param name="advancedSearchServiceHandler"></param>
+        /// <param name="configuration"></param>
         public SearchResultsModel(CountryService countryService,
                 AdvancedSearchModalService advancedSearchServiceHandler,
                 IConfiguration configuration)
@@ -73,6 +108,17 @@ namespace Locompro.Pages.SearchResults
             this.OnTestingCreateTestingItems();
         }
 
+        /// <summary>
+        /// Gets the items to be displayed in the search results
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="query"></param>
+        /// <param name="province"></param>
+        /// <param name="canton"></param>
+        /// <param name="minValue"></param>
+        /// <param name="maxValue"></param>
+        /// <param name="category"></param>
+        /// <param name="model"></param>
         public void OnGetAsync(int? pageIndex,
             string query,
             string province,
@@ -115,6 +161,10 @@ namespace Locompro.Pages.SearchResults
             this.displayItems = PaginatedList<ItemDisplayInfo>.Create(items, pageIndex ?? 1, pageSize);
         }
 
+        /// <summary>
+        /// Returns the view component for the advanced search modal
+        /// </summary>
+        /// <returns></returns>
         public IActionResult OnGetAdvancedSearch()
         {
             // generate the view component
@@ -124,6 +174,11 @@ namespace Locompro.Pages.SearchResults
             return viewComponentResult;
         }
 
+        /// <summary>
+        /// Updates the cantons and province selected for the advanced search modal
+        /// </summary>
+        /// <param name="province"></param>
+        /// <returns></returns>
         public async Task<IActionResult> OnGetUpdateProvince(string province)
         {
             // update the model with all cantons in the given province

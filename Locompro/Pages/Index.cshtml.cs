@@ -8,20 +8,20 @@ using System.Text.Json;
 
 namespace Locompro.Pages
 {
-    public class SearchParameters
-    {
-        public string query { get; set; }
-        public string province { get; set; }
-        public string canton { get; set; }
-        public int minValue { get; set; }
-        public int maxValue { get; set; }
-        public string category { get; set; }
-        public string model { get; set; }
-    }
+    /// <summary>
+    /// Index page model
+    /// </summary>
     public class IndexModel : PageModel
     {
+        /// <summary>
+        /// string for search query product name
+        /// </summary>
         public string SearchQuery { get; set; }
 
+        /// <summary>
+        /// Service that handles the advanced search modal
+        /// Helps to keep page and modal information syncronized
+        /// </summary>
         AdvancedSearchModalService advancedSearchServiceHandler;
 
         public IndexModel(AdvancedSearchModalService advancedSearchServiceHandler)
@@ -29,39 +29,27 @@ namespace Locompro.Pages
             this.advancedSearchServiceHandler = advancedSearchServiceHandler;
         }
 
-    public void OnGet()
-    {
-    }
-
-        public void OnPost()
+        /// <summary>
+        /// Returns view component modal for advanced search
+        /// </summary>
+        /// <param name="searchQuery"></param>
+        /// <returns></returns>
+        public IActionResult OnGetAdvancedSearch(string searchQuery)
         {
-    
+            this.SearchQuery = searchQuery;
+
+            // generate the view component
+            var viewComponentResult = ViewComponent("AdvancedSearch", this.advancedSearchServiceHandler);
+
+            // return it for it to be integrated
+            return viewComponentResult;
         }
 
-        public void OnPostSendSearchParameters([FromBody] SearchParameters searchParameters)
-        {
-            string query = (string)searchParameters.query;
-            string province = (string)searchParameters.province;
-            string canton = (string)searchParameters.canton;
-            int minValue = (int)searchParameters.minValue;
-            int maxValue = (int)searchParameters.maxValue;
-            string category = (string)searchParameters.category;
-            string model = (string)searchParameters.model;
-
-            RedirectToPage("/SearchResults/SearchResults", new {query, province, canton, minValue, maxValue, category, model });
-        }
-
-    public IActionResult OnGetAdvancedSearch(string searchQuery)
-    {
-        this.SearchQuery = searchQuery;
-
-        // generate the view component
-        var viewComponentResult = ViewComponent("AdvancedSearch", this.advancedSearchServiceHandler);
-
-        // return it for it to be integrated
-        return viewComponentResult;
-    }
-
+        /// <summary>
+        /// Updates the cantons and the province selected in the advanced search modal
+        /// </summary>
+        /// <param name="province"></param>
+        /// <returns></returns>
         public async Task<IActionResult> OnGetUpdateProvince(string province)
         {
             // update the model with all cantons in the given province
