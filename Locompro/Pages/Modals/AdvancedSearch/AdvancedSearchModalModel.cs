@@ -52,7 +52,7 @@ public class AdvancedSearchModalModel
     public async Task ObtainCantonsAsync(string provinceName)
     {
         await this.advancedSearchService.ObtainCantonsAsync(provinceName);
-        this.cantons = this.advancedSearchService.cantons;
+        this.cantons = this.advancedSearchService.Cantons;
     }
 
     /// <summary>
@@ -62,7 +62,7 @@ public class AdvancedSearchModalModel
     public async Task ObtainProvincesAsync()
     {
         await this.advancedSearchService.ObtainProvincesAsync();
-        this.provinces = this.advancedSearchService.provinces;
+        this.provinces = this.advancedSearchService.Provinces;
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ public class AdvancedSearchModalModel
     public async Task ObtainCategoriesAsync()
     {
         await this.advancedSearchService.ObtainCategoriesAsync(); 
-        this.categories = this.advancedSearchService.categories; 
+        this.categories = this.advancedSearchService.Categories; 
     }
 }
 

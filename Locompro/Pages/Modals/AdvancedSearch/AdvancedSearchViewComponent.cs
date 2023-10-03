@@ -26,7 +26,7 @@ namespace Locompro.Pages.Modals.AdvancedSearchViewComponent
 
             // get all the cantons for the first province shown
             this.pageModel.ObtainCantonsAsync(
-                    this.advancedSearchServiceHandler.provinces[0].Name).Wait();
+                    this.advancedSearchServiceHandler.Provinces[0].Name).Wait();
 
             this.pageModel.ObtainCategoriesAsync().Wait();
         }

@@ -13,7 +13,6 @@ namespace Locompro.Tests.Services
     {
         private ILoggerFactory _loggerFactory;
         private LocomproContext _context;
-        private UserRepository _repository;
         private CountryService _countryService;
         private CategoryService _categoryService;
         private AdvancedSearchModalService _advancedSearchService;
@@ -30,17 +29,7 @@ namespace Locompro.Tests.Services
             _context = new LocomproContext(options);
             _context.Database.EnsureDeleted(); // Make sure the db is clean
             _context.Database.EnsureCreated();
-
-            Category category1 = new Category { Name = "Sombreros" };
-            Category category2 = new Category { Name = "Zapatos" };
-            Category category3 = new Category { Name = "Ropa" };
-            Category category4 = new Category { Name = "Accesorios" };
-
-            _context.Set<Category>().Add(category1);
-            _context.Set<Category>().Add(category2);
-            _context.Set<Category>().Add(category3);
-            _context.Set<Category>().Add(category4);
-
+            
             Country CostaRica = new Country { Name = "Costa Rica" };
 
             _context.Set<Country>().Add(CostaRica);
@@ -63,20 +52,31 @@ namespace Locompro.Tests.Services
             _context.Set<Canton>().Add(AlajuelaCanton);
             _context.Set<Canton>().Add(SanRamonCanton);
 
-            _repository = new UserRepository(_context, _loggerFactory);
+            new UserRepository(_context, _loggerFactory);
 
             CountryRepository countryRepostory = new CountryRepository(_context, _loggerFactory);
             CategoryRepository categoryRepository = new CategoryRepository(_context, _loggerFactory);
 
             ILogger<UnitOfWork> unitOfWorkLogger = _loggerFactory.CreateLogger<UnitOfWork>();
-
-
+            
             UnitOfWork unitOfWork = new UnitOfWork(unitOfWorkLogger, _context);
 
             this._categoryService = new CategoryService(unitOfWork, categoryRepository, _loggerFactory);
             this._countryService = new CountryService(unitOfWork, countryRepostory, _loggerFactory);
 
             this._advancedSearchService = new AdvancedSearchModalService(_countryService, _categoryService);
+            
+            Category category1 = new Category { Name = "Sombreros" };
+            Category category2 = new Category { Name = "Zapatos" };
+            Category category3 = new Category { Name = "Ropa" };
+            Category category4 = new Category { Name = "Accesorios" };
+
+            _context.Set<Category>().Add(category1);
+            _context.Set<Category>().Add(category2);
+            _context.Set<Category>().Add(category3);
+            _context.Set<Category>().Add(category4);
+            
+            _context.SaveChanges();
         }
 
         [Test]
@@ -86,8 +86,8 @@ namespace Locompro.Tests.Services
 
             Assert.Multiple(()=>
             {
-                Assert.IsTrue(this._advancedSearchService.provinces.Any(Province=>Province.Name == "San José"));
-                Assert.IsTrue(this._advancedSearchService.provinces.Any(Province => Province.Name == "Alajuela"));
+                Assert.IsTrue(this._advancedSearchService.Provinces.Any(Province=>Province.Name == "San José"));
+                Assert.IsTrue(this._advancedSearchService.Provinces.Any(Province => Province.Name == "Alajuela"));
             });
         }
 
@@ -100,9 +100,9 @@ namespace Locompro.Tests.Services
 
             Assert.Multiple(() =>
             {
-                Assert.IsTrue(this._advancedSearchService.cantons.Any(Canton=>Canton.Name == "San José"));
-                Assert.IsTrue(this._advancedSearchService.cantons.Any(Canton => Canton.Name == "Tibás"));
-                Assert.IsTrue(this._advancedSearchService.cantons.Any(Canton => Canton.Name == "Desamparados"));
+                Assert.IsTrue(this._advancedSearchService.Cantons.Any(Canton => Canton.Name == "San José"));
+                Assert.IsTrue(this._advancedSearchService.Cantons.Any(Canton => Canton.Name == "Tibás"));
+                Assert.IsTrue(this._advancedSearchService.Cantons.Any(Canton => Canton.Name == "Desamparados"));
             });
         }
 
@@ -110,18 +110,15 @@ namespace Locompro.Tests.Services
         public async Task GetCategories_ProvidesAllCategories()
         {
             await this._advancedSearchService.ObtainCategoriesAsync();
-
-            Category category1 = new Category { Name = "Sombreros" };
-            Category category2 = new Category { Name = "Zapatos" };
-            Category category3 = new Category { Name = "Ropa" };
-            Category category4 = new Category { Name = "Accesorios" };
-
+            
+            Assert.Greater(this._advancedSearchService.Categories.Count, 0);
+            
             Assert.Multiple(() =>
             {
-                Assert.IsTrue(this._advancedSearchService.categories.Contains(category1));
-                Assert.IsTrue(this._advancedSearchService.categories.Contains(category2));
-                Assert.IsTrue(this._advancedSearchService.categories.Contains(category3));
-                Assert.IsTrue(this._advancedSearchService.categories.Contains(category4));
+                Assert.IsTrue(this._advancedSearchService.Categories.Any(Category => Category.Name == "Sombreros"));
+                Assert.IsTrue(this._advancedSearchService.Categories.Any(Category => Category.Name == "Zapatos"));
+                Assert.IsTrue(this._advancedSearchService.Categories.Any(Category => Category.Name == "Ropa"));
+                Assert.IsTrue(this._advancedSearchService.Categories.Any(Category => Category.Name == "Accesorios"));
             });
         }
     }

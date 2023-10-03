@@ -191,7 +191,7 @@ namespace Locompro.Pages.SearchResults
             };
 
             // generate the json file with the cantons
-            var cantonsJson = JsonConvert.SerializeObject(this.advancedSearchServiceHandler.cantons, settings);
+            var cantonsJson = JsonConvert.SerializeObject(this.advancedSearchServiceHandler.Cantons, settings);
 
             // specify the content type as a json file
             Response.ContentType = "application/json";
@@ -258,13 +258,13 @@ namespace Locompro.Pages.SearchResults
                     "tienda de ropa",
                     "Heredia",
                     "Heredia",
-                    "camisa de algodÛn"),
+                    "camisa de algod√≥n"),
 
                 new ItemDisplayInfo(
                     "2021-02-28",
                     "televisor",
                     2000,
-                    "electrodomÈsticos",
+                    "electrodom√©sticos",
                     "Cartago",
                     "Cartago",
                     "televisor LED de 55 pulgadas"),
@@ -273,7 +273,7 @@ namespace Locompro.Pages.SearchResults
                     "2021-01-05",
                     "laptop",
                     1200,
-                    "tecnologÌa",
+                    "tecnolog√≠a",
                     "San Jose",
                     "San Jose",
                     "laptop ultrabook"),
@@ -285,13 +285,13 @@ namespace Locompro.Pages.SearchResults
                     "deportes",
                     "Alajuela",
                     "Alajuela",
-                    "bicicleta de montaÒa"),
+                    "bicicleta de monta√±a"),
 
                 new ItemDisplayInfo(
                     "2021-06-10",
                     "refrigeradora",
                     900,
-                    "electrodomÈsticos",
+                    "electrodom√©sticos",
                     "Heredia",
                     "Heredia",
                     "refrigeradora de acero inoxidable"),
@@ -300,43 +300,43 @@ namespace Locompro.Pages.SearchResults
                     "2021-08-22",
                     "reloj",
                     300,
-                    "joyerÌa",
+                    "joyer√≠a",
                     "Puntarenas",
                     "Puntarenas",
                     "reloj de pulsera"),
 
                 new ItemDisplayInfo(
                     "2020-11-17",
-                    "mueble de salÛn",
+                    "mueble de sal√≥n",
                     750,
                     "muebles",
                     "San Jose",
                     "San Jose",
-                    "mueble de salÛn moderno"),
+                    "mueble de sal√≥n moderno"),
 
                 new ItemDisplayInfo(
                     "2021-09-02",
-                    "telÈfono mÛvil",
+                    "tel√©fono m√≥vil",
                     800,
-                    "tecnologÌa",
+                    "tecnolog√≠a",
                     "Cartago",
                     "Cartago",
-                    "telÈfono mÛvil Android"),
+                    "tel√©fono m√≥vil Android"),
 
                 new ItemDisplayInfo(
                     "2021-07-30",
-                    "c·mara DSLR",
+                    "c√°mara DSLR",
                     1100,
-                    "electrÛnica",
+                    "electr√≥nica",
                     "Alajuela",
                     "Alajuela",
-                    "c·mara rÈflex digital"),
+                    "c√°mara r√©flex digital"),
 
                 new ItemDisplayInfo(
                     "2020-12-05",
                     "tabla de surf",
                     350,
-                    "deportes acu·ticos",
+                    "deportes acu√°ticos",
                     "Puntarenas",
                     "Puntarenas",
                     "tabla de surf para principiantes"),
@@ -348,25 +348,25 @@ namespace Locompro.Pages.SearchResults
                     "muebles",
                     "Heredia",
                     "Heredia",
-                    "silla ergonÛmica para oficina"),
+                    "silla ergon√≥mica para oficina"),
 
                 new ItemDisplayInfo(
                     "2021-03-12",
-                    "cafÈ gourmet",
+                    "caf√© gourmet",
                     12,
-                    "cafeterÌa",
+                    "cafeter√≠a",
                     "San Jose",
                     "San Jose",
-                    "cafÈ molido de alta calidad"),
+                    "caf√© molido de alta calidad"),
 
                 new ItemDisplayInfo(
                     "2021-02-14",
-                    "guitarra ac˙stica",
+                    "guitarra ac√∫stica",
                     300,
                     "instrumentos musicales",
                     "Cartago",
                     "Cartago",
-                    "guitarra ac˙stica de concierto"),
+                    "guitarra ac√∫stica de concierto"),
 
                 new ItemDisplayInfo(
                     "2021-08-28",
@@ -379,18 +379,18 @@ namespace Locompro.Pages.SearchResults
 
                 new ItemDisplayInfo(
                     "2021-07-01",
-                    "caÒa de pescar",
+                    "ca√±a de pescar",
                     40,
                     "deportes",
                     "Puntarenas",
                     "Puntarenas",
-                    "caÒa de pescar telescÛpica"),
+                    "ca√±a de pescar telesc√≥pica"),
 
                 new ItemDisplayInfo(
                     "2021-06-15",
                     "batidora",
                     60,
-                    "electrodomÈsticos",
+                    "electrodom√©sticos",
                     "Heredia",
                     "Heredia",
                     "batidora de mano"),

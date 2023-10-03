@@ -12,32 +12,32 @@ namespace Locompro.Services
         /// <summary>
         /// Service for fetching location data
         /// </summary>
-        private CountryService countryService;
+        private readonly CountryService _countryService;
 
         /// <summary>
         /// Service for fetching category data
         /// </summary>
-        private CategoryService categoryService;
+        private readonly CategoryService _categoryService;
 
         /// <summary>
         /// List of provinces
         /// </summary>
-        public List<Province> provinces { get; set; }
+        public List<Province> Provinces { get; set; }
 
         /// <summary>
         /// List of cantons
         /// </summary>
-        public List<Canton> cantons { get; set; }
+        public List<Canton> Cantons { get; set; }
 
         /// <summary>
         /// List of categories
         /// </summary>
-        public List<Category> categories { get; set; }
+        public List<Category> Categories { get; set; }
 
         /// <summary>
         /// Province that was selected
         /// </summary>
-        public string provinceSelected { get; set; }
+        public string ProvinceSelected { get; set; }
 
         /// <summary>
         /// Constructor
@@ -46,8 +46,8 @@ namespace Locompro.Services
         /// <param name="categoryService"></param>
         public AdvancedSearchModalService(CountryService countryService, CategoryService categoryService)
         {
-            this.countryService = countryService;
-            this.categoryService = categoryService;
+            this._countryService = countryService;
+            this._categoryService = categoryService;
         }
 
         /// <summary>
@@ -57,9 +57,9 @@ namespace Locompro.Services
         public async Task ObtainProvincesAsync()
         {
             // get the country
-            Country country = await countryService.Get("Costa Rica");
+            Country country = await _countryService.Get("Costa Rica");
             // for the country, get all provinces
-            provinces = country.Provinces.ToList();
+            Provinces = country.Provinces.ToList();
         }
 
         /// <summary>
@@ -70,14 +70,14 @@ namespace Locompro.Services
         public async Task ObtainCantonsAsync(string provinceName)
         {
             // get the country
-            Country country = await countryService.Get("Costa Rica");
+            Country country = await _countryService.Get("Costa Rica");
 
             // get the requested province
             Province requestedProvince =
                 country.Provinces.ToList().Find(province => province.Name == provinceName);
            
             // set the cantons to the cantons of the requested province
-            cantons = await Task.FromResult(requestedProvince.Cantons.ToList());
+            Cantons = await Task.FromResult(requestedProvince.Cantons.ToList());
         }
 
         /// <summary>
@@ -86,8 +86,7 @@ namespace Locompro.Services
         /// <returns></returns>
         public async Task ObtainCategoriesAsync()
         {
-            this.categories = (await this.categoryService.GetAll()).ToList();
- 
+            this.Categories = (await this._categoryService.GetAll()).ToList();
         }
     }
 }

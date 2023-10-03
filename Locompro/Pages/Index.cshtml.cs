@@ -62,7 +62,7 @@ namespace Locompro.Pages
             };
 
             // generate the json file with the cantons
-            var cantonsJson = JsonConvert.SerializeObject(this.advancedSearchServiceHandler.cantons, settings);
+            var cantonsJson = JsonConvert.SerializeObject(this.advancedSearchServiceHandler.Cantons, settings);
 
             // specify the content type as a json file
             Response.ContentType = "application/json";

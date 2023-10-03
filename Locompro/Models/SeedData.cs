@@ -25,13 +25,13 @@ namespace Locompro.Models
             }
 
             // Read SQL script
-            string sqlScript = File.ReadAllText("Services/Resources/static.sql");
+            string sqlScript = File.ReadAllText("Resources/static.sql");
 
             // Execute SQL script
             context.Database.ExecuteSqlRaw(sqlScript);
 
             // Read SQL script
-            sqlScript = File.ReadAllText("Services/Resources/dummy.sql");
+            sqlScript = File.ReadAllText("Resources/dummy.sql");
 
             // Execute SQL script
             context.Database.ExecuteSqlRaw(sqlScript);
