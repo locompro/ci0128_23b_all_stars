@@ -72,7 +72,15 @@ namespace Locompro.Services
 
             return (IUserEmailStore<User>)_userStore;
         }
-
+        /// <summary>
+        /// Attempts to sign in a user using the provided username and password.
+        /// </summary>
+        /// <param name="inputData">A view model containing the user's login details.</param>
+        /// <returns>The result of the sign-in attempt.</returns>
+        /// <remarks>
+        /// If the login is successful, a log entry will be created stating "User logged in."
+        /// The method will not lock out the user even after multiple failed login attempts.
+        /// </remarks>
         public async Task<SignInResult> Login(LoginViewModel inputData)
         {
             var result = await _signInManager.PasswordSignInAsync(inputData.UserName, inputData.Password,
@@ -84,5 +92,27 @@ namespace Locompro.Services
 
             return result;
         }
+        /// <summary>
+        /// Signs out the current logged-in user.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        /// <remarks>
+        /// Once the user is logged out, a log entry will be created stating "User logged out."
+        /// </remarks>
+        public async Task Logout()
+        {
+            await _signInManager.SignOutAsync();
+            _logger.LogInformation("User logged out.");
+        }
+        /// <summary>
+        /// Checks if a user is currently logged in.
+        /// </summary>
+        /// <returns>True if a user is logged in, otherwise false.</returns>
+        public bool IsLoggedIn()
+        {
+         var result =  _signInManager.IsSignedIn(_signInManager.Context.User);
+         return result;
+        }
     }
 }
+
