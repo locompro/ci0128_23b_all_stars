@@ -1,5 +1,6 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Locompro.Data
+@using Locompro.Models
 
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
@@ -76,13 +77,14 @@
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container" style="margin-bottom: 200px;padding-right:0px; padding-left:0px">
+        <main role="main" class="pb-3" style="min-height: calc(100vh-100px)">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="text-center py-4 border-top footer text-muted">
+    <footer class="text-center py-4 border-top footer text-muted"
+        style="position: absolute; bottom: 0; width: 100%;">
         <div class="container">
             Copyright &copy; 2023 LoCoMPro
         </div>
@@ -91,13 +93,14 @@
                 <li class="list-inline-item"><a class="link-secondary" href="/Privacy">Privacy Policy</a></li>
                 <li class="list-inline-item"><a class="link-secondary" href="#">Terms of Use</a></li>
             </ul>
-
         </div>
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <partial name="_ValidationScriptsPartial" />
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

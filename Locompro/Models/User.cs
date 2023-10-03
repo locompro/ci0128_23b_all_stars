@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
+namespace Locompro.Models;
+
 public class User : IdentityUser
 {
     [StringLength(40, MinimumLength = 1)]
