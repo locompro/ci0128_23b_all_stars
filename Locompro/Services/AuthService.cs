@@ -27,7 +27,16 @@ namespace Locompro.Services
             _logger = logger;
             _emailStore = emailStore ?? GetEmailStore();
         }
-
+        /// <summary>
+        /// Creates a new instance of the <see cref="User"/> class.
+        /// </summary>
+       
+        /// <returns>A new instance of the <see cref="User"/> class.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the <see cref="User"/> class cannot be instantiated. This could be due to the class being abstract, 
+        /// lacking a parameterless constructor, or other reflection-related issues. When this exception is thrown, 
+        /// consider overriding the registration page located at /Areas/Identity/Pages/Account/Register.cshtml.
+        /// </exception>
         private static User CreateUser()
         {
             try
