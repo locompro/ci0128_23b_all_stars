@@ -1,5 +1,5 @@
 -- Agregar categorías de ejemplo a la tabla Category
-INSERT INTO Category (Name)
+INSERT INTO Categories (Name)
 VALUES
     ('Electrónica'),
     ('Ropa'),
