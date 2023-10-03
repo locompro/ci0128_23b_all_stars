@@ -19,8 +19,7 @@ namespace Locompro.Areas.Identity.Pages.Account
             this.authService = authService;
         }
 
-        [BindProperty]
-        public RegisterViewModel Input { get; set; }
+        [BindProperty] public RegisterViewModel Input { get; set; }
 
         public string ReturnUrl { get; set; }
 
@@ -30,6 +29,10 @@ namespace Locompro.Areas.Identity.Pages.Account
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Acts over a post request to the register page. Uses the AuthService to register the user.
+        /// </summary> 
+        /// <param name="returnUrl">Url to return to after registering.</param>
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             _ = returnUrl ?? Url.Content("~/");

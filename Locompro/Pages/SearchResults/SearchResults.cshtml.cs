@@ -7,6 +7,10 @@ using System.Diagnostics.Contracts;
 
 namespace Locompro.Pages.SearchResults
 {
+    /// <summary>
+    /// Class that represents a single item to be displayed in the search results
+    /// An item is a product that is being sold in a store
+    /// </summary>
     public class ItemDisplayInfo
     {
         public string lastSubmissionDate { get; set; }
@@ -35,25 +39,50 @@ namespace Locompro.Pages.SearchResults
         }
     };
 
-
+    /// <summary>
+    /// Page model for the search results page
+    /// </summary>
     public class SearchResultsModel : PageModel
     {
-
+        /// <summary>
+        /// Service that handles the advanced search modal
+        /// </summary>
         private AdvancedSearchModalService advancedSearchServiceHandler;
 
+        /// <summary>
+        /// Service that handles the locations data
+        /// </summary>
         private CountryService countryService;
 
+        /// <summary>
+        /// Configuration to get the page size
+        /// </summary>
         private readonly IConfiguration Configuration;
 
+        /// <summary>
+        /// Buffer for page size according to Paginated List and configuration
+        /// </summary>
         private int pageSize;
-        public string productName { get; set; }
 
+        /// <summary>
+        /// Paginated list of products found
+        /// </summary>
         public PaginatedList<ItemDisplayInfo> displayItems { get; set; }
 
+        /// <summary>
+        /// List of all items found
+        /// </summary>
         private List<ItemDisplayInfo> items;
 
+        /// <summary>
+        /// Amount of items found
+        /// </summary>
         public double itemsAmount { get; set; }
 
+        /// <summary>
+        /// Name of product that was searched
+        /// </summary>
+        public string productName { get; set; }
         public string provinceSelected { get; set; }
         public string cantonSelected { get; set; }
         public string categorySelected { get; set; }
@@ -61,6 +90,12 @@ namespace Locompro.Pages.SearchResults
         public long maxPrice { get; set; }
         public string modelSelected { get; set; }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="countryService"></param>
+        /// <param name="advancedSearchServiceHandler"></param>
+        /// <param name="configuration"></param>
         public SearchResultsModel(CountryService countryService,
                 AdvancedSearchModalService advancedSearchServiceHandler,
                 IConfiguration configuration)
@@ -73,6 +108,17 @@ namespace Locompro.Pages.SearchResults
             this.OnTestingCreateTestingItems();
         }
 
+        /// <summary>
+        /// Gets the items to be displayed in the search results
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="query"></param>
+        /// <param name="province"></param>
+        /// <param name="canton"></param>
+        /// <param name="minValue"></param>
+        /// <param name="maxValue"></param>
+        /// <param name="category"></param>
+        /// <param name="model"></param>
         public void OnGetAsync(int? pageIndex,
             string query,
             string province,
@@ -115,6 +161,10 @@ namespace Locompro.Pages.SearchResults
             this.displayItems = PaginatedList<ItemDisplayInfo>.Create(items, pageIndex ?? 1, pageSize);
         }
 
+        /// <summary>
+        /// Returns the view component for the advanced search modal
+        /// </summary>
+        /// <returns></returns>
         public IActionResult OnGetAdvancedSearch()
         {
             // generate the view component
@@ -124,6 +174,11 @@ namespace Locompro.Pages.SearchResults
             return viewComponentResult;
         }
 
+        /// <summary>
+        /// Updates the cantons and province selected for the advanced search modal
+        /// </summary>
+        /// <param name="province"></param>
+        /// <returns></returns>
         public async Task<IActionResult> OnGetUpdateProvince(string province)
         {
             // update the model with all cantons in the given province
@@ -136,7 +191,7 @@ namespace Locompro.Pages.SearchResults
             };
 
             // generate the json file with the cantons
-            var cantonsJson = JsonConvert.SerializeObject(this.advancedSearchServiceHandler.cantons, settings);
+            var cantonsJson = JsonConvert.SerializeObject(this.advancedSearchServiceHandler.Cantons, settings);
 
             // specify the content type as a json file
             Response.ContentType = "application/json";
@@ -203,13 +258,13 @@ namespace Locompro.Pages.SearchResults
                     "tienda de ropa",
                     "Heredia",
                     "Heredia",
-                    "camisa de algodÛn"),
+                    "camisa de algod√≥n"),
 
                 new ItemDisplayInfo(
                     "2021-02-28",
                     "televisor",
                     2000,
-                    "electrodomÈsticos",
+                    "electrodom√©sticos",
                     "Cartago",
                     "Cartago",
                     "televisor LED de 55 pulgadas"),
@@ -218,7 +273,7 @@ namespace Locompro.Pages.SearchResults
                     "2021-01-05",
                     "laptop",
                     1200,
-                    "tecnologÌa",
+                    "tecnolog√≠a",
                     "San Jose",
                     "San Jose",
                     "laptop ultrabook"),
@@ -230,13 +285,13 @@ namespace Locompro.Pages.SearchResults
                     "deportes",
                     "Alajuela",
                     "Alajuela",
-                    "bicicleta de montaÒa"),
+                    "bicicleta de monta√±a"),
 
                 new ItemDisplayInfo(
                     "2021-06-10",
                     "refrigeradora",
                     900,
-                    "electrodomÈsticos",
+                    "electrodom√©sticos",
                     "Heredia",
                     "Heredia",
                     "refrigeradora de acero inoxidable"),
@@ -245,43 +300,43 @@ namespace Locompro.Pages.SearchResults
                     "2021-08-22",
                     "reloj",
                     300,
-                    "joyerÌa",
+                    "joyer√≠a",
                     "Puntarenas",
                     "Puntarenas",
                     "reloj de pulsera"),
 
                 new ItemDisplayInfo(
                     "2020-11-17",
-                    "mueble de salÛn",
+                    "mueble de sal√≥n",
                     750,
                     "muebles",
                     "San Jose",
                     "San Jose",
-                    "mueble de salÛn moderno"),
+                    "mueble de sal√≥n moderno"),
 
                 new ItemDisplayInfo(
                     "2021-09-02",
-                    "telÈfono mÛvil",
+                    "tel√©fono m√≥vil",
                     800,
-                    "tecnologÌa",
+                    "tecnolog√≠a",
                     "Cartago",
                     "Cartago",
-                    "telÈfono mÛvil Android"),
+                    "tel√©fono m√≥vil Android"),
 
                 new ItemDisplayInfo(
                     "2021-07-30",
-                    "c·mara DSLR",
+                    "c√°mara DSLR",
                     1100,
-                    "electrÛnica",
+                    "electr√≥nica",
                     "Alajuela",
                     "Alajuela",
-                    "c·mara rÈflex digital"),
+                    "c√°mara r√©flex digital"),
 
                 new ItemDisplayInfo(
                     "2020-12-05",
                     "tabla de surf",
                     350,
-                    "deportes acu·ticos",
+                    "deportes acu√°ticos",
                     "Puntarenas",
                     "Puntarenas",
                     "tabla de surf para principiantes"),
@@ -293,25 +348,25 @@ namespace Locompro.Pages.SearchResults
                     "muebles",
                     "Heredia",
                     "Heredia",
-                    "silla ergonÛmica para oficina"),
+                    "silla ergon√≥mica para oficina"),
 
                 new ItemDisplayInfo(
                     "2021-03-12",
-                    "cafÈ gourmet",
+                    "caf√© gourmet",
                     12,
-                    "cafeterÌa",
+                    "cafeter√≠a",
                     "San Jose",
                     "San Jose",
-                    "cafÈ molido de alta calidad"),
+                    "caf√© molido de alta calidad"),
 
                 new ItemDisplayInfo(
                     "2021-02-14",
-                    "guitarra ac˙stica",
+                    "guitarra ac√∫stica",
                     300,
                     "instrumentos musicales",
                     "Cartago",
                     "Cartago",
-                    "guitarra ac˙stica de concierto"),
+                    "guitarra ac√∫stica de concierto"),
 
                 new ItemDisplayInfo(
                     "2021-08-28",
@@ -324,18 +379,18 @@ namespace Locompro.Pages.SearchResults
 
                 new ItemDisplayInfo(
                     "2021-07-01",
-                    "caÒa de pescar",
+                    "ca√±a de pescar",
                     40,
                     "deportes",
                     "Puntarenas",
                     "Puntarenas",
-                    "caÒa de pescar telescÛpica"),
+                    "ca√±a de pescar telesc√≥pica"),
 
                 new ItemDisplayInfo(
                     "2021-06-15",
                     "batidora",
                     60,
-                    "electrodomÈsticos",
+                    "electrodom√©sticos",
                     "Heredia",
                     "Heredia",
                     "batidora de mano"),

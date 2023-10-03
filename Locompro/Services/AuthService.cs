@@ -37,11 +37,15 @@ namespace Locompro.Services
             catch
             {
                 throw new InvalidOperationException($"Can't create an instance of '{nameof(User)}'. " +
-                    $"Ensure that '{nameof(User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+                                                    $"Ensure that '{nameof(User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                                                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
 
+        /// <summary>
+        /// Register a user with the given data using ASP.NET Core Identity.
+        /// </summary>
+        /// <param name="inputData">Data entered by the user in the view</param>
         public async Task<IdentityResult> Register(RegisterViewModel inputData)
         {
             var user = CreateUser();
@@ -65,6 +69,7 @@ namespace Locompro.Services
             {
                 throw new NotSupportedException("The default UI requires a user store with email support.");
             }
+
             return (IUserEmailStore<User>)_userStore;
         }
         /// <summary>
@@ -78,7 +83,8 @@ namespace Locompro.Services
         /// </remarks>
         public async Task<SignInResult> Login(LoginViewModel inputData)
         {
-            var result = await _signInManager.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, lockoutOnFailure: false);
+            var result = await _signInManager.PasswordSignInAsync(inputData.UserName, inputData.Password,
+                inputData.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
                 _logger.LogInformation("User logged in.");
@@ -108,5 +114,5 @@ namespace Locompro.Services
          return result;
         }
     }
-    
 }
+
