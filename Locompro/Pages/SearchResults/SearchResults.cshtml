@@ -1,0 +1,194 @@
+﻿@page
+@using Locompro.Models
+@using Locompro.Common
+@model Locompro.Pages.SearchResults.SearchResultsModel
+
+<link rel="stylesheet" href="~/css/MainMenu.css" asp-append-version="true"/>
+
+<div class="container  pt-5"
+     style="margin-bottom: 3px;margin-top: -52px;">
+    <div class="container">
+        <div class="justify-content-center form-actions input-group" style="margin: 0 auto;">
+            <div class="search-box form-control pe-4 rounded-pill input-group"
+                 style="">
+                <div style="width: 100%; padding-right: 20px">
+                    <input type="text"
+                           value="@Model.ProductName"
+                           class="form-control rounded-pill"
+                           name="query"
+                           placeholder="Ingresar nombre de producto"
+                           required="required"
+                           style="margin-left: 0px; border: none;"
+                           id="searchBox">
+                </div>
+                <div class="input-group-prepend justify-content-center"
+                     style="position: absolute; right: 0; top: 0; bottom: 0; display: flex; align-items: center; margin-right: 10px;">
+                    <button class="btn btn-primary ps-2 pe-2 rounded-pill"
+                            role="button"
+                            type="submit"
+                            onclick="performSearchButton()"
+                            style="height: 30px; font-size: 12px;"
+                            id="searchButton">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div id="modalContainer" class="justify-content-center">
+            </div>
+        </div>    
+        <div class="card border " style="margin-top: 15px;padding-top: 0px;padding-bottom: 20px;border-radius: 20px;" border="5px solid black;">
+            <div style="margin-left: 20px; margin-top: 15px">
+                <h2>@Model.ProductName</h2>
+                <h6> @Model.ItemsAmount resultados encontrados </h6>
+                <div style="margin-right:20px; overflow-y:auto;">
+                    <table class="table table-hover" style="cursor:pointer">
+                        <thead>
+                        <tr>
+                            <th>
+                                <a asp-page="./SearchResults"
+                                   asp-route-sortOrder="@Model.NameSort"
+                                   asp-route-currentFilter="@Model.CurrentFilter"
+                                   asp-route-query=@Model.ProductName
+                                   asp-route-province=@Model.ProvinceSelected
+                                   asp-route-canton=@Model.CantonSelected
+                                   asp-route-category=@Model.CategorySelected
+                                   asp-route-model=@Model.ModelSelected
+                                   asp-route-brand="@Model.BrandSelected">
+                                    Producto
+                                </a>
+                            </th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Tienda</th>
+                            <th scope="col">Provincia</th>
+                            <th scope="col">Canton</th>
+                            <th scope="col">Descripcion</th>
+                            <th scope="col">Ultimo Aporte </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @{
+                            PaginatedList<Item> items = Model.DisplayItems;
+                            foreach (Item item in Model.DisplayItems)
+                            {
+                                <tr onclick="itemSelected()">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProductName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProductPrice)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProductStore)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProvinceLocation)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CantonLocation)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProductDescription)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.LastSubmissionDate)
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+
+                @{
+                    var prevDisabled = !Model.DisplayItems.HasPreviousPage ? "disabled" : "";
+                    var nextDisabled = !Model.DisplayItems.HasNextPage ? "disabled" : "";
+                }
+
+                <div style="margin-bottom: 20px; display: flex; align-items: center; justify-content: center;">
+                    <a asp-page=""
+                       asp-route-query=@Model.ProductName
+                       asp-route-pageIndex="@(Model.DisplayItems.PageIndex - 1)"
+                       asp-route-sortOrder="@Model.NameSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"
+                       class="btn btn-primary @prevDisabled"
+                       style="margin-bottom:0px">
+                        Previo
+                    </a>
+
+                    <input type="number"
+                           style="bottom: 0; height: 100%; border: 2px solid grey; border-radius: 5px; padding: 7px; width: 60px; margin-left: 10px; margin-right: 10px;"
+                           min=1
+                           max="@Model.DisplayItems.TotalPages"
+                           value="@Model.DisplayItems.PageIndex"
+                           onchange="changeIndexPage(this)">
+
+                    <a asp-page=""
+                       asp-route-query=@Model.ProductName
+                       asp-route-pageIndex="@(Model.DisplayItems.PageIndex + 1)"
+                       asp-route-sortOrder="@Model.NameSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"
+                       class="btn btn-primary @nextDisabled">
+                        Siguiente
+                    </a>
+                </div>
+                <h6 style="display: flex; align-items: center; justify-content: center;"> @Model.DisplayItems.TotalPages paginas de resultados </h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        const invalidSimpleSearch = "/SearchResults/SearchResults?query=";            
+        function performSearchButton() {
+            var redirect = "/SearchResults/SearchResults?query=";
+            var searchValue = document.getElementById("searchBox").value.valueOf() ;
+                redirect += searchValue;
+            if (redirect.localeCompare(invalidSimpleSearch) === 0) {
+                alert("Por favor llenar el campo de búsqueda");
+                return;
+            }
+            window.location.href = redirect;
+        }
+    </script>
+
+    <script>
+        function itemSelected() {
+            window.location.href = "/SearchResults/SearchResults?query=buttonClicked!";
+        }
+    </script>
+
+    <script>
+        function changeIndexPage(field) {
+            if (field.value > @Model.DisplayItems.TotalPages) {
+                field.value = @Model.DisplayItems.TotalPages;
+            }
+
+            if (field.value < 1) {
+                field.value = 1;
+            }
+            var provinceForEmptyCheck = "@Model.ProvinceSelected";
+
+            console.log(provinceForEmptyCheck);
+            if (provinceForEmptyCheck.length === 0) {
+                window.location.href = "/SearchResults/SearchResults?query=" + "@Model.ProductName" +
+                    "&pageIndex=" + field.value;
+            } else {
+                window.location.href = "/SearchResults/SearchResults?query=" + "@Model.ProductName" +
+                    "&pageIndex=" + field.value;
+            }
+        }
+    </script>
+    <script>
+        // script to search on enter press
+        document.getElementById("searchBox")
+            .addEventListener("keyup", function (event) {
+                event.preventDefault();
+                if (event.keyCode === 13) {
+                    document.getElementById("searchButton").click();
+                }
+            });
+    </script>
+}

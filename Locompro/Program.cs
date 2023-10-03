@@ -1,9 +1,25 @@
-var builder = WebApplication.CreateBuilder(args);
+using System;
+using Microsoft.EntityFrameworkCore;
 
-// Add services to the container.
-builder.Services.AddRazorPages();
+using Locompro.Data;
+using Locompro.Repositories;
+using Locompro.Services;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Components.Server;
+using System.Xml;
+using Locompro.Models;
+using Locompro.Services.Domain;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-var app = builder.Build();
+var webApplicationBuilder = WebApplication.CreateBuilder(args);
+
+// Register repositories and services
+RegisterServices(webApplicationBuilder);
+
+var app = webApplicationBuilder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -12,14 +28,52 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+else
+{
+    app.UseDeveloperExceptionPage();
+    app.UseMigrationsEndPoint();
+}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseAuthentication();
+
+app.UseHttpLogging();
 
 app.UseAuthorization();
 
 app.MapRazorPages();
 
 app.Run();
+return;
+
+void RegisterServices(WebApplicationBuilder builder)
+{
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+    // Built in services
+    builder.Services.AddLogging();
+    builder.Services.AddRazorPages();
+
+    // Add DbContext using SQL Server
+    builder.Services.AddDbContext<LocomproContext>(options =>
+        options.UseLazyLoadingProxies()
+            .UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
+
+    builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
+        .AddEntityFrameworkStores<LocomproContext>();
+    builder.Services.AddScoped<UnitOfWork>();
+    builder.Services.AddScoped<StoreRepository>();
+    builder.Services.AddScoped<StoreService>();
+    builder.Services.AddScoped<StoreRepository>();
+    builder.Services.AddScoped<StoreService>();
+    builder.Services.AddScoped<SearchService>();
+    builder.Services.AddScoped<ProductRepository>();
+    builder.Services.AddScoped<SubmissionRepository>();
+    builder.Services.AddScoped<SearchService>();
+    builder.Services.AddScoped<SubmissionRepository>();
+}
+
+
