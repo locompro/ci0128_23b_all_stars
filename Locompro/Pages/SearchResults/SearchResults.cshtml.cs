@@ -1,9 +1,12 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Locompro.Services;
 using Castle.Core.Internal;
 using Newtonsoft.Json;
 using System.Diagnostics.Contracts;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace Locompro.Pages.SearchResults
 {
@@ -16,6 +19,8 @@ namespace Locompro.Pages.SearchResults
         /// Service that handles the advanced search modal
         /// </summary>
         private readonly AdvancedSearchModalService _advancedSearchServiceHandler;
+        
+        private SearchService _searchService;
 
         /// <summary>
         /// Service that handles the locations data
@@ -66,8 +71,10 @@ namespace Locompro.Pages.SearchResults
         /// <param name="configuration"></param>
         public SearchResultsModel(CountryService countryService,
                 AdvancedSearchModalService advancedSearchServiceHandler,
-                IConfiguration configuration)
+                IConfiguration configuration,
+                SearchService searchService)
         {
+            this._searchService = searchService;
             this._advancedSearchServiceHandler = advancedSearchServiceHandler;
             this._countryService = countryService;
             this.Configuration = configuration;
@@ -110,12 +117,9 @@ namespace Locompro.Pages.SearchResults
             }
 
             this.productName = query;
-            Console.WriteLine(this.productName);
 
             this.itemsAmount = items.Count;
             
-            
-
             /*
            List<Product> products = (await this.productService.GetAll()).ToList();
 
@@ -126,6 +130,8 @@ namespace Locompro.Pages.SearchResults
 
            this.itemsAmount = items.Count;
            */
+
+            //this._searchService.getProductsByName("");
 
             this.displayItems = PaginatedList<Item>.Create(items, pageIndex ?? 1, _pageSize);
         }

@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Locompro.Repositories;
 using Locompro.Models;
 
@@ -40,7 +42,7 @@ public class SearchService
     private readonly SubmissionRepository _submissionRepository;
     private readonly ProductRepository _productRepository;
     private readonly CountryRepository _countryRepository;
-    
+
     public SearchService(SubmissionRepository submissionRepository, CountryRepository countryRepository,
         ProductRepository productRepository)
     {
@@ -49,15 +51,19 @@ public class SearchService
         _productRepository = productRepository;
     }
 
-    /*
-    public async Task<IEnumerable<Submission>> SearchSubmissions(string countryName, string productName)
+    public async Task<IEnumerable<Product>> getProductsByName(string name)
     {
+        return await _productRepository.getProductsByName(name);
+    }
+/*
+public async Task<IEnumerable<Submission>> SearchSubmissions(string countryName, string productName)
+{
 
-        var country = await _countryRepository.Get(countryName);
-        var product = await _productRepository.Get(productName);
-        var submissions = await _submissionRepository.GetAll();
-        return submissions.Where(s => s.Product == product && s.Store.Country == country);
-       
-    } */
+    var country = await _countryRepository.Get(countryName);
+    var product = await _productRepository.Get(productName);
+    var submissions = await _submissionRepository.GetAll();
+    return submissions.Where(s => s.Product == product && s.Store.Country == country);
+
+} */
     
 }

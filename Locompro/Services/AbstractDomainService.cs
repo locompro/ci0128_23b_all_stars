@@ -1,4 +1,9 @@
-﻿using Locompro.Repositories;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Locompro.Repositories;
+using Microsoft.Extensions.Logging;
+
 namespace Locompro.Services
 {
     /// <summary>

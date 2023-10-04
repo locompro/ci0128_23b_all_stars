@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Locompro.Pages
 {

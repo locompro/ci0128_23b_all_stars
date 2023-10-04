@@ -2,6 +2,7 @@
 using Locompro.Models;
 using Locompro.Repositories;
 using Locompro.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Locompro.Services
 {
