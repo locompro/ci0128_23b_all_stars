@@ -1,6 +1,7 @@
 ﻿using Locompro.Data;
 using Locompro.Models;
 using Locompro.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Repositories
 {
@@ -17,5 +18,17 @@ namespace Locompro.Repositories
         public ProductRepository(LocomproContext context, ILoggerFactory loggerFactory) : base(context, loggerFactory)
         {
         }
+        
+        /// <summary>
+        /// Asyncronously gets products by model
+        /// </summary>
+        /// <param name="model"></param>
+        public async Task<IEnumerable<Product>> getByModelAsync(string model)
+        {
+            var products = await DbSet.Where(p => p.Model == model).ToListAsync();
+            
+            return products;
+        }
+        
     }
 }
