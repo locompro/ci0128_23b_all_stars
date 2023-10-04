@@ -34,10 +34,6 @@
                 </div>
             </div>
         </div>
-        <div>
-            <div id="modalContainer" class="justify-content-center">
-            </div>
-        </div>    
         <div class="card border " style="margin-top: 15px;padding-top: 0px;padding-bottom: 20px;border-radius: 20px;" border="5px solid black;">
             <div style="margin-left: 20px; margin-top: 15px">
                 <h2>@Model.ProductName</h2>
@@ -69,38 +65,88 @@
                         </thead>
                         <tbody>
                         @{
+                            int index = 0;
                             PaginatedList<Item> items = Model.DisplayItems;
-                            foreach (Item item in Model.DisplayItems)
+                            foreach (Item tempItem in Model.DisplayItems)
                             {
-                                <tr onclick="itemSelected()">
+                                 <tr onclick="itemSelected(@index)">
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.ProductName)
+                                        @Html.DisplayFor(modelItem => tempItem.ProductName)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.ProductPrice)
+                                         @Html.DisplayFor(modelItem => tempItem.ProductPrice)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.ProductStore)
+                                         @Html.DisplayFor(modelItem => tempItem.ProductStore)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.ProvinceLocation)
+                                        @Html.DisplayFor(modelItem => tempItem.ProvinceLocation)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.CantonLocation)
+                                         @Html.DisplayFor(modelItem => tempItem.CantonLocation)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.ProductDescription)
+                                         @Html.DisplayFor(modelItem => tempItem.ProductDescription)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.LastSubmissionDate)
+                                         @Html.DisplayFor(modelItem => tempItem.LastSubmissionDate)
                                     </td>
-                                </tr>
+                                    </tr>
+                                    index++;
+                                }
                             }
-                        }
                         </tbody>
                     </table>
+                    @{
+                        index = 0;
+                        foreach (Item tempItem in Model.DisplayItems)
+                        {
+                            string modalName = "modal" + @index;
+                            <div class="modal fade" id="@modalName" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-body">
+                                            <h4 class="d-xxl-flex align-items-xxl-center card-title"><i class="fa fa-envelope"></i> @tempItem.ProductName</h4>
+                                            <h4 class="d-xxl-flex align-items-xxl-center card-title"><i class="fa fa-home"></i>@tempItem.ProductStore</h4>
+                                            <div>
+                                                <div class="table-responsive d-xxl-flex table mb-0 pt-3 pe-2">
+                                                    <table class="table table-striped table-sm my-0 mydatatable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-center">Fecha de aporte&nbsp;</th>
+                                                                <th>Precio&nbsp;</th>
+                                                                <th>Descripción&nbsp;</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @{
+                                                                foreach (Submission tempSubmit in tempItem.Submissions)
+                                                                {
+                                                                    <tr>
+                                                                        <td class="text-center">
+                                                                            @Html.DisplayFor(modelSub => tempSubmit.EntryTime)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelSub => tempSubmit.Price)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelSub => tempSubmit.Description)
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            index++;
+                        }
+                    }
                 </div>
-
                 @{
                     var prevDisabled = !Model.DisplayItems.HasPreviousPage ? "disabled" : "";
                     var nextDisabled = !Model.DisplayItems.HasNextPage ? "disabled" : "";
@@ -155,8 +201,9 @@
     </script>
 
     <script>
-        function itemSelected() {
-            window.location.href = "/SearchResults/SearchResults?query=buttonClicked!";
+        function itemSelected(index) {
+            var modalId = "#modal" + index;
+            $(modalId).modal('show');
         }
     </script>
 
