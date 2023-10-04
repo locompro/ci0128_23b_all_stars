@@ -10,7 +10,7 @@
 </h1>
 
 <div class="container  pt-5"
-     style="padding-left: 0px;margin-bottom: 3px;margin-top: -42px;">
+     style="padding-left: 0px;margin-bottom: 3px;margin-top: -42px; margin-left: 10px; margin-right: 10px">
     <div class="row justify-content-center">
         <div class="container">
             <div class="justify-content-center form-actions input-group" style="max-width: 800px; margin: 0 auto;">
@@ -168,10 +168,11 @@
             if (!document.getElementById("searchBox").value) {
                 return;
             }
-
+            
+            var searchValue = document.getElementById("searchBox").value.valueOf() ;
+            
             if (!modalShown) {
                 // get value
-                var searchValue = document.getElementById("searchBox").value;
                 redirect += searchValue;
             } else {
                 var provinceValue = document.getElementById("provinceDropdown").value;
@@ -179,15 +180,13 @@
                 var minValue = document.getElementById("minValue").value;
                 var maxValue = document.getElementById("maxValue").value;
                 var categoryValue = document.getElementById("categoryDropdown").value;
-                var searchValue = document.getElementById("searchBox").value;
-                var modelValue = "";
 
                 try {
                     var modelValue = document.getElementById("modelInput").value;
                 } catch (error) {
                 }
 
-               redirect += + searchValue
+               redirect += searchValue
                     + "&province=" + provinceValue
                     + "&canton=" + cantonValue
                     + "&minValue=" + minValue

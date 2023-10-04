@@ -8,38 +8,6 @@ using System.Diagnostics.Contracts;
 namespace Locompro.Pages.SearchResults
 {
     /// <summary>
-    /// Class that represents a single item to be displayed in the search results
-    /// An item is a product that is being sold in a store
-    /// </summary>
-    public class ItemDisplayInfo
-    {
-        public string lastSubmissionDate { get; set; }
-        public string productName { get; set; }
-        public double productPrice { get; set; }
-        public string productStore { get; set; }
-        public string cantonLocation { get; set; }
-        public string provinceLocation { get; set; }
-        public string productDescription { get; set; }
-
-        public ItemDisplayInfo(string lastSubmissionDate,
-                string productName,
-                double productPrice,
-                string productStore,
-                string cantonLocation,
-                string provinceLocation,
-                string productDescription)
-        {
-            this.lastSubmissionDate = lastSubmissionDate;
-            this.productName = productName;
-            this.productPrice = productPrice;
-            this.productStore = productStore;
-            this.cantonLocation = cantonLocation;
-            this.provinceLocation = provinceLocation;
-            this.productDescription = productDescription;
-        }
-    };
-
-    /// <summary>
     /// Page model for the search results page
     /// </summary>
     public class SearchResultsModel : PageModel
@@ -47,12 +15,12 @@ namespace Locompro.Pages.SearchResults
         /// <summary>
         /// Service that handles the advanced search modal
         /// </summary>
-        private AdvancedSearchModalService advancedSearchServiceHandler;
+        private readonly AdvancedSearchModalService _advancedSearchServiceHandler;
 
         /// <summary>
         /// Service that handles the locations data
         /// </summary>
-        private CountryService countryService;
+        private CountryService _countryService;
 
         /// <summary>
         /// Configuration to get the page size
@@ -62,17 +30,17 @@ namespace Locompro.Pages.SearchResults
         /// <summary>
         /// Buffer for page size according to Paginated List and configuration
         /// </summary>
-        private int pageSize;
+        private int _pageSize;
 
         /// <summary>
         /// Paginated list of products found
         /// </summary>
-        public PaginatedList<ItemDisplayInfo> displayItems { get; set; }
+        public PaginatedList<Item> displayItems { get; set; }
 
         /// <summary>
         /// List of all items found
         /// </summary>
-        private List<ItemDisplayInfo> items;
+        private List<Item> items;
 
         /// <summary>
         /// Amount of items found
@@ -100,10 +68,10 @@ namespace Locompro.Pages.SearchResults
                 AdvancedSearchModalService advancedSearchServiceHandler,
                 IConfiguration configuration)
         {
-            this.advancedSearchServiceHandler = advancedSearchServiceHandler;
-            this.countryService = countryService;
+            this._advancedSearchServiceHandler = advancedSearchServiceHandler;
+            this._countryService = countryService;
             this.Configuration = configuration;
-            this.pageSize = Configuration.GetValue("PageSize", 4);
+            this._pageSize = Configuration.GetValue("PageSize", 4);
 
             this.OnTestingCreateTestingItems();
         }
@@ -138,27 +106,28 @@ namespace Locompro.Pages.SearchResults
             string queryString = Request.Query["query"];
             if (queryString.IsNullOrEmpty())
             {
-                queryString = "";
                 this.productName = query;
-            }            
+            }
 
             this.productName = query;
             Console.WriteLine(this.productName);
 
             this.itemsAmount = items.Count;
+            
+            
 
             /*
            List<Product> products = (await this.productService.GetAll()).ToList();
 
            foreach (Product product in products)
            {
-               this.items.Add(new ItemDisplayInfo("0/0/0", product.Name, 1000, "Generic Store", "Generic Canton", "Generic Province", "Generic Description"));
+               this.items.Add(new Item("0/0/0", product.Name, 1000, "Generic Store", "Generic Canton", "Generic Province", "Generic Description"));
            }
 
            this.itemsAmount = items.Count;
            */
 
-            this.displayItems = PaginatedList<ItemDisplayInfo>.Create(items, pageIndex ?? 1, pageSize);
+            this.displayItems = PaginatedList<Item>.Create(items, pageIndex ?? 1, _pageSize);
         }
 
         /// <summary>
@@ -168,7 +137,7 @@ namespace Locompro.Pages.SearchResults
         public IActionResult OnGetAdvancedSearch()
         {
             // generate the view component
-            var viewComponentResult = ViewComponent("AdvancedSearch", this.advancedSearchServiceHandler);
+            var viewComponentResult = ViewComponent("AdvancedSearch", this._advancedSearchServiceHandler);
 
             // return it for it to be integrated
             return viewComponentResult;
@@ -182,7 +151,7 @@ namespace Locompro.Pages.SearchResults
         public async Task<IActionResult> OnGetUpdateProvince(string province)
         {
             // update the model with all cantons in the given province
-            await this.advancedSearchServiceHandler.ObtainCantonsAsync(province);
+            await this._advancedSearchServiceHandler.ObtainCantonsAsync(province);
 
             // prevent the json serializer from looping infinitely
             var settings = new JsonSerializerSettings
@@ -191,7 +160,7 @@ namespace Locompro.Pages.SearchResults
             };
 
             // generate the json file with the cantons
-            var cantonsJson = JsonConvert.SerializeObject(this.advancedSearchServiceHandler.Cantons, settings);
+            var cantonsJson = JsonConvert.SerializeObject(this._advancedSearchServiceHandler.Cantons, settings);
 
             // specify the content type as a json file
             Response.ContentType = "application/json";
@@ -202,9 +171,9 @@ namespace Locompro.Pages.SearchResults
 
         void OnTestingCreateTestingItems()
         {
-            this.items = new List<ItemDisplayInfo>
+            this.items = new List<Item>
                 {
-                new ItemDisplayInfo(
+                new Item(
                     "2020-10-10",
                     "sombrero",
                     1000,
@@ -212,28 +181,28 @@ namespace Locompro.Pages.SearchResults
                     "San Jose",
                     "San Jose",
                     "sombrero de paja"),
-                new ItemDisplayInfo("2020-10-10",
+                new Item("2020-10-10",
                     "zapatos",
                     1000,
                     "zapateria",
                     "San Jose",
                     "San Jose",
                     "zapatos de cuero"),
-                new ItemDisplayInfo("2020-10-10",
+                new Item("2020-10-10",
                     "camisas",
                     1000,
                     "camiseria",
                     "San Jose",
                     "San Jose",
                     "camisas de algodon"),
-                new ItemDisplayInfo("2020-10-10",
+                new Item("2020-10-10",
                     "pantalones",
                     1000,
                     "pantaloneria",
                     "San Jose",
                     "San Jose",
                     "pantalones de mezclilla"),
-                new ItemDisplayInfo(
+                new Item(
                     "2020-10-10",
                     "sombrero",
                     1000,
@@ -242,7 +211,7 @@ namespace Locompro.Pages.SearchResults
                     "San Jose",
                     "sombrero de paja"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2020-10-10",
                     "zapatos",
                     1000,
@@ -251,7 +220,7 @@ namespace Locompro.Pages.SearchResults
                     "San Jose",
                     "zapatos de cuero"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-03-15",
                     "camisa",
                     500,
@@ -260,7 +229,7 @@ namespace Locompro.Pages.SearchResults
                     "Heredia",
                     "camisa de algodón"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-02-28",
                     "televisor",
                     2000,
@@ -269,7 +238,7 @@ namespace Locompro.Pages.SearchResults
                     "Cartago",
                     "televisor LED de 55 pulgadas"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-01-05",
                     "laptop",
                     1200,
@@ -278,7 +247,7 @@ namespace Locompro.Pages.SearchResults
                     "San Jose",
                     "laptop ultrabook"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-04-20",
                     "bicicleta",
                     350,
@@ -287,7 +256,7 @@ namespace Locompro.Pages.SearchResults
                     "Alajuela",
                     "bicicleta de montaña"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-06-10",
                     "refrigeradora",
                     900,
@@ -296,7 +265,7 @@ namespace Locompro.Pages.SearchResults
                     "Heredia",
                     "refrigeradora de acero inoxidable"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-08-22",
                     "reloj",
                     300,
@@ -305,7 +274,7 @@ namespace Locompro.Pages.SearchResults
                     "Puntarenas",
                     "reloj de pulsera"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2020-11-17",
                     "mueble de salón",
                     750,
@@ -314,7 +283,7 @@ namespace Locompro.Pages.SearchResults
                     "San Jose",
                     "mueble de salón moderno"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-09-02",
                     "teléfono móvil",
                     800,
@@ -323,7 +292,7 @@ namespace Locompro.Pages.SearchResults
                     "Cartago",
                     "teléfono móvil Android"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-07-30",
                     "cámara DSLR",
                     1100,
@@ -332,7 +301,7 @@ namespace Locompro.Pages.SearchResults
                     "Alajuela",
                     "cámara réflex digital"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2020-12-05",
                     "tabla de surf",
                     350,
@@ -341,7 +310,7 @@ namespace Locompro.Pages.SearchResults
                     "Puntarenas",
                     "tabla de surf para principiantes"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-04-05",
                     "silla de oficina",
                     150,
@@ -350,7 +319,7 @@ namespace Locompro.Pages.SearchResults
                     "Heredia",
                     "silla ergonómica para oficina"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-03-12",
                     "café gourmet",
                     12,
@@ -359,7 +328,7 @@ namespace Locompro.Pages.SearchResults
                     "San Jose",
                     "café molido de alta calidad"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-02-14",
                     "guitarra acústica",
                     300,
@@ -368,7 +337,7 @@ namespace Locompro.Pages.SearchResults
                     "Cartago",
                     "guitarra acústica de concierto"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-08-28",
                     "juego de mesa",
                     25,
@@ -377,7 +346,7 @@ namespace Locompro.Pages.SearchResults
                     "Alajuela",
                     "juego de mesa familiar"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-07-01",
                     "caña de pescar",
                     40,
@@ -386,7 +355,7 @@ namespace Locompro.Pages.SearchResults
                     "Puntarenas",
                     "caña de pescar telescópica"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-06-15",
                     "batidora",
                     60,
@@ -395,7 +364,7 @@ namespace Locompro.Pages.SearchResults
                     "Heredia",
                     "batidora de mano"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2021-09-10",
                     "silla de playa",
                     25,
@@ -404,7 +373,7 @@ namespace Locompro.Pages.SearchResults
                     "San Jose",
                     "silla plegable para la playa"),
 
-                new ItemDisplayInfo(
+                new Item(
                     "2020-11-30",
                     "tenis deportivos",
                     75,

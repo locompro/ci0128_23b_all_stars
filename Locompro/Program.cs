@@ -34,6 +34,10 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<LocomproContext>();
+
+    // TODO: delete before merge
+    context.Database.EnsureDeleted();
+    
     if (context.Database.EnsureCreated())
     {
         Console.WriteLine("Database created");
@@ -50,9 +54,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication();;
+app.UseAuthentication();
 
-//app.UseHttpLogging();
+app.UseHttpLogging();
 
 app.UseAuthorization();
 

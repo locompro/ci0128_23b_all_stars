@@ -1,4 +1,5 @@
 ﻿@page
+@using Locompro.Services
 @model Locompro.Pages.SearchResults.SearchResultsModel
 @{
 
@@ -64,8 +65,8 @@
                         </thead>
                         <tbody>
                             @{
-                                PaginatedList<ItemDisplayInfo> items = Model.displayItems;
-                                foreach (ItemDisplayInfo item in Model.displayItems)
+                                PaginatedList<Item> items = Model.displayItems;
+                                foreach (Item item in Model.displayItems)
                                 {
                                     <tr onclick="itemSelected()">
                                         <td>
