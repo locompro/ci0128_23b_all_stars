@@ -1,9 +1,12 @@
-﻿@{
-    var currentPage = Context.Request.Path.Value;
+﻿@using Microsoft.AspNetCore.Identity
+@using Locompro.Data
+@using Locompro.Models
+@using Locompro.Services
 
-    // TODO: change based on the state of wether the user is logged in or not
-    // TODO: add logic to accomplish this
-    bool isLoggedIn = true;
+@inject AuthService AuthService
+@{
+    var currentPage = Context.Request.Path.Value;
+    var isLoggedIn = AuthService.IsLoggedIn();
 }
 
 <!DOCTYPE html>
@@ -14,7 +17,7 @@
     <title>LoCoMPro</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/locompro.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Locompro.styles.css" asp-append-version="true" />
 
     <!-- for the plus sign  -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -37,7 +40,7 @@
                     <div class="collapse navbar-collapse flex-grow-0 order-md-first" id="navcol-4">
                         <ul class="navbar-nav me-auto">
                             <li class="nav-item">
-                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" href="#">
+                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Submissions/Create">
                                     <i class="fa fa-plus" style="margin-right: 8px;">
                                     </i>
                                     Aportar
@@ -52,7 +55,9 @@
                     </div>
                     <div class="d-none d-md-block">
                         <button class="btn btn-light me-2" type="button">Mi perfil</button>
-                        <a class="btn btn-primary" role="button" href="#">Cerrar sesión</a>
+                        <form asp-area="Identity" asp-page="/Account/Logout" method="post" class="d-inline-block">
+                            <button type="submit" class="btn btn-primary">Cerrar sesión</button>
+                        </form>
                     </div>
                 }
                 else // if not logged in
@@ -67,20 +72,21 @@
                             <li class="nav-item"></li>
                             <li class="nav-item"></li>
                         </ul>
-                        <a class="btn btn-primary" role="button" href="#">Iniciar sesión</a>
+                        <a class="btn btn-primary" role="button" asp-area="Identity" asp-page="/Account/Login">Iniciar sesión</a>
                     </div>
                 }
  
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="container" style="margin-bottom: 200px;padding-right:0px; padding-left:0px">
+        <main role="main" class="pb-3" style="min-height: calc(100vh-100px)">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="text-center py-4 border-top footer text-muted">
+    <footer class="text-center py-4 border-top footer text-muted"
+        style="position: absolute; bottom: 0; width: 100%;">
         <div class="container">
             Copyright &copy; 2023 LoCoMPro
         </div>
@@ -89,13 +95,14 @@
                 <li class="list-inline-item"><a class="link-secondary" href="/Privacy">Privacy Policy</a></li>
                 <li class="list-inline-item"><a class="link-secondary" href="#">Terms of Use</a></li>
             </ul>
-
         </div>
     </footer>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <partial name="_ValidationScriptsPartial" />
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

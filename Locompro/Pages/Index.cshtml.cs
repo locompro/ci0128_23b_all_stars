@@ -1,27 +1,74 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Locompro.Services;
+using MessagePack;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Newtonsoft.Json;
+using System.Text;
+using System.Text.Json;
 
-namespace locompro.Pages
+namespace Locompro.Pages
 {
+    /// <summary>
+    /// Index page model
+    /// </summary>
     public class IndexModel : PageModel
     {
-        private readonly ILogger<IndexModel> _logger;
-            
+        /// <summary>
+        /// string for search query product name
+        /// </summary>
         public string SearchQuery { get; set; }
 
-        public IndexModel(ILogger<IndexModel> logger)
+        /// <summary>
+        /// Service that handles the advanced search modal
+        /// Helps to keep page and modal information syncronized
+        /// </summary>
+        AdvancedSearchModalService advancedSearchServiceHandler;
+
+        public IndexModel(AdvancedSearchModalService advancedSearchServiceHandler)
         {
-            _logger = logger;
+            this.advancedSearchServiceHandler = advancedSearchServiceHandler;
         }
 
-        public void OnGet()
+        /// <summary>
+        /// Returns view component modal for advanced search
+        /// </summary>
+        /// <param name="searchQuery"></param>
+        /// <returns></returns>
+        public IActionResult OnGetAdvancedSearch(string searchQuery)
         {
+            this.SearchQuery = searchQuery;
 
+            // generate the view component
+            var viewComponentResult = ViewComponent("AdvancedSearch", this.advancedSearchServiceHandler);
+
+            // return it for it to be integrated
+            return viewComponentResult;
         }
 
-        public void OnPost()
+        /// <summary>
+        /// Updates the cantons and the province selected in the advanced search modal
+        /// </summary>
+        /// <param name="province"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> OnGetUpdateProvince(string province)
         {
+            // update the model with all cantons in the given province
+            await this.advancedSearchServiceHandler.ObtainCantonsAsync(province);
 
+            // prevent the json serializer from looping infinitely
+            var settings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+
+            // generate the json file with the cantons
+            var cantonsJson = JsonConvert.SerializeObject(this.advancedSearchServiceHandler.Cantons, settings);
+
+            // specify the content type as a json file
+            Response.ContentType = "application/json";
+
+            // send to client
+            return Content(cantonsJson);
         }
     }
 }

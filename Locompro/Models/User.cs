@@ -1,38 +1,21 @@
-﻿using System.Runtime.InteropServices;
+﻿using Locompro.Models;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography.X509Certificates;
 
-namespace Locompro.Models
+namespace Locompro.Models;
+
+public class User : IdentityUser
 {
-    public class User
-    {
-        [Key]
-        [Required]
-        public string Username { get; set; }
+    [StringLength(40, MinimumLength = 1)]
+    public string Name { get; set; }
 
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; }
+    [StringLength(50, MinimumLength = 1)]
+    public string Address { get; set; }
 
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+    public float Rating { get; set; } = 0;
 
-        [Required]
-        [StringLength(40, MinimumLength = 1)]
-        public string Name { get; set; }
-
-        [Required]
-        [StringLength(50, MinimumLength = 1)]
-        public string Address { get; set; }
-        // default 0
-        public float Rating { get; set; } = 0;
-        public int Status { get; set; } = 0;
-        public int Roles { get; set; } = 0;
-
-    }
+    [Required]
+    public Status Status { get; set; } = Status.Active;
+    
+    public virtual ICollection<Submission> Submissions { get; set; }
 }
-
-/*
- * USER(Username, password, email, name, address, rating, status, rols)
- */

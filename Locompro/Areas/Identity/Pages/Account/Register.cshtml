@@ -1,0 +1,52 @@
+﻿@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-xl-4">
+        <div class="card mb-5">
+            <div class="card-body d-flex flex-column align-items-center col-auto">
+                <div class="bs-icon-xl bs-icon-circle bs-icon-primary bs-icon my-4 mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-person">
+                        <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"></path>
+                    </svg>
+                </div>
+                <fieldset class="mx-auto">
+                    <legend style="margin-bottom: 22px;">Crea tu cuenta</legend>
+                </fieldset>
+                <form class="col-9" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div class="mb-3">
+                        <label class="form-label d-xl-flex justify-content-xl-start">Correo Electrónico</label>
+                        <input class="form-control" type="email" asp-for="Input.Email" placeholder="Correo">
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-xl-flex justify-content-xl-start">Nombre de Usuario</label>
+                        <input class="form-control" type="text" asp-for="Input.UserName" placeholder="Nombre de Usuario">
+                        <span asp-validation-for="Input.UserName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-xl-flex justify-content-xl-start">Contraseña</label>
+                        <input class="form-control" type="password" asp-for="Input.Password" placeholder="Contraseña">
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <input class="form-control" type="password" asp-for="Input.ConfirmPassword" placeholder="Reingresar contraseña">
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+
+                    </div>
+                    <div class="mb-3">
+                        <input class="btn btn-primary d-block w-100" type="submit" style="margin-top: 20px;" value="Crear cuenta" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+<!-- Add other script references here -->
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

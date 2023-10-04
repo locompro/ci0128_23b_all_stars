@@ -1,0 +1,47 @@
+@page
+@model Submissions.CreateModel
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Agregar contribución</title>
+</head>
+<body>
+<form class="text-center" method="post">
+    <label class="form-label d-lg-flex justify-content-lg-start">Tienda</label>
+    <input class="form-control" asp-for="StoreVm.Name" id="mainStoreName">
+    <span class="text-danger field-validation-valid" asp-validation-for="StoreVm.Name"></span>
+
+    <!-- Trigger button -->
+    <button type="button" id="showAddStoreBtn" data-bs-toggle="modal" data-bs-target="#addStoreModal">
+        Show Add Store
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="addStoreModal" tabindex="-1" aria-labelledby="addStoreModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Your partial view content goes here, without the <form> tags -->
+                    @Html.Partial("_AddStore", Model.StoreVm)
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" id="hideAddStoreBtn" class="btn btn-primary">Agregar tienda</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit">Submit</button>
+</form>
+</body>
+
+@section Scripts {
+    <script src="~/js/Create.js"></script>
+}
+
+</html>
