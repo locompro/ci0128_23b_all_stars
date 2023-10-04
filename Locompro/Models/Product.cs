@@ -4,23 +4,20 @@ namespace Locompro.Models;
 
 public class Product
 {
-    [Key]
+    [Key] [Required] public int Id { get; set; }
+
     [Required]
     [StringLength(60, MinimumLength = 1)]
     public string Name { get; set; }
+
+    [StringLength(60)] public string Model { get; set; }
+
+    [StringLength(60)] public string Brand { get; set; }
     
-    [StringLength(60)]
-    public string Model { get; set; }
-    
-    [StringLength(60)]
-    public string Brand { get; set; }
-    
-    [StringLength(13)]
-    public string BarCode { get; set; }
-    
+    [Required]
     public Status Status { get; set; } = Status.Active;
-    
+
     public virtual ICollection<Category> Categories { get; set; }
-    
+
     // TODO: Build pictures method automatic from DB?
 }

@@ -6,6 +6,7 @@
 using System;
 using System.Threading.Tasks;
 using Locompro.Models;
+using Locompro.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,28 +17,15 @@ namespace Locompro.Areas.Identity.Pages.Account;
 
 public class LogoutModel : PageModel
 {
-    private readonly SignInManager<User> _signInManager;
-    private readonly ILogger<LogoutModel> _logger;
-
-    public LogoutModel(SignInManager<User> signInManager, ILogger<LogoutModel> logger)
+    private readonly AuthService _authService;
+    public LogoutModel(AuthService authService)
     {
-        _signInManager = signInManager;
-        _logger = logger;
+        _authService = authService;
     }
 
-    public async Task<IActionResult> OnPost(string returnUrl = null)
+    public async Task<IActionResult> OnPost()
     {
-        await _signInManager.SignOutAsync();
-        _logger.LogInformation("User logged out.");
-        if (returnUrl != null)
-        {
-            return LocalRedirect(returnUrl);
-        }
-        else
-        {
-            // This needs to be a redirect so that the browser performs a new
-            // request and the identity for the user gets updated.
-            return RedirectToPage();
-        }
+        await _authService.Logout();
+        return RedirectToPage("/Index");
     }
 }

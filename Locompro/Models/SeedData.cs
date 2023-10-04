@@ -9,22 +9,29 @@ namespace Locompro.Models
         public static void Initialize(LocomproContext context)
         {
 
-            // Check if the database is empty
-            
-            if (context.Canton.Any())
+            bool isInitialized = context.Countries.Any() &&
+                                    context.Provinces.Any() &&
+                                    context.Cantons.Any() &&
+                                    context.Categories.Any() &&
+                                    context.Submissions.Any() &&
+                                    context.Stores.Any() &&
+                                    context.Products.Any();
+
+            // Check if the database is initialized
+            if (isInitialized)
             {
                 // Database has been seeded
                 return;
             }
 
             // Read SQL script
-            string sqlScript = File.ReadAllText("Services/Resources/static.sql");
+            string sqlScript = File.ReadAllText("./Resources/static.sql");
 
             // Execute SQL script
             context.Database.ExecuteSqlRaw(sqlScript);
 
             // Read SQL script
-            sqlScript = File.ReadAllText("Services/Resources/dummy.sql");
+            sqlScript = File.ReadAllText("./Resources/dummy.sql");
 
             // Execute SQL script
             context.Database.ExecuteSqlRaw(sqlScript);
