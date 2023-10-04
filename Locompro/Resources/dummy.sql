@@ -1,33 +1,51 @@
--- Agregar categorÌas de ejemplo a la tabla Category
+-- Agregar categor√≠as de ejemplo a la tabla Category
 INSERT INTO Categories (Name)
 VALUES
-    ('ElectrÛnica'),
+    ('Electr√≥nica'),
     ('Ropa'),
-    ('Hogar y JardÌn'),
+    ('Hogar y Jard√≠n'),
     ('Libros'),
     ('Juguetes'),
     ('Salud y Belleza'),
     ('Deportes y Aire Libre'),
-    ('AutomÛviles'),
+    ('Autom√≥viles'),
     ('Alimentos y Comestibles'),
-    ('JoyerÌa'),
+    ('Joyer√≠a'),
     ('Muebles'),
-    ('M˙sica'),
+    ('M√∫sica'),
     ('Mascotas'),
-    ('ElectrodomÈsticos'),
-    ('PelÌculas y Series de TV'),
-    ('Suministros ElÈctricos'),
+    ('Electrodom√©sticos'),
+    ('Pel√≠culas y Series de TV'),
+    ('Suministros El√©ctricos'),
     ('Suministros de Oficina'),
-    ('BebÈs y NiÒos'),
-    ('Herramientas y FerreterÌa'),
+    ('Beb√©s y Ni√±os'),
+    ('Herramientas y Ferreter√≠a'),
     ('Fitness'),
     ('Zapatos'),
     ('Viajes'),
     ('Manualidades y Pasatiempos'),
     ('Software'),
     ('Arte y Coleccionables'),
-    ('C·maras y FotografÌa'),
+    ('C√°maras y Fotograf√≠a'),
     ('Relojes'),
-    ('Industrial y CientÌfico'),
-    ('JardinerÌa'),
+    ('Industrial y Cient√≠fico'),
+    ('Jardiner√≠a'),
     ('Suministros para Fiestas');
+
+-- Adding stores in San Jos√© province
+INSERT INTO Stores (Name, CantonCountryName, CantonProvinceName, CantonName, Address, Telephone, Status, Latitude, Longitude)
+VALUES ('Super San Jos√©', 'Costa Rica', 'San Jos√©', 'San Jos√©', 'Calle Central, Avenida 2', '2256-7890', 1, 9.93, -84.08),
+       ('Tienda Escaz√∫', 'Costa Rica', 'San Jos√©', 'Escaz√∫', 'Calle Los Laureles', '2228-3456', 1, 9.92, -84.14),
+       ('Mercado Moravia', 'Costa Rica', 'San Jos√©', 'Moravia', 'Avenida Principal', '2240-5678', 1, 9.96, -84.05),
+       ('Comercio Curri', 'Costa Rica', 'San Jos√©', 'Curridabat', 'Calle Freses', '2272-8910', 1, 9.91, -84.03),
+       ('Bodega Tib√°s', 'Costa Rica', 'San Jos√©', 'Tib√°s', 'Avenida Central', '2236-2345', 1, 9.95, -84.07),
+       ('Almac√©n Desampa', 'Costa Rica', 'San Jos√©', 'Desamparados', 'Calle 5, Avenida 3', '2219-0123', 1, 9.89, -84.09);
+
+-- Adding products
+INSERT INTO Products (Name, Model, Brand, Status)
+VALUES ('Laptop', 'Inspiron 15', 'Dell', 1),
+       ('Celular', 'Galaxy S21', 'Samsung', 1),
+       ('Refrigeradora', 'Modelo 3000', 'LG', 1),
+       ('Cafetera', 'Express', 'Oster', 1),
+       ('Televisor', 'Ultra HD 55"', 'Sony', 1),
+       ('Microondas', 'QuickHeat', 'Panasonic', 1);
