@@ -13,13 +13,15 @@
                         <select class="form-select"
                                 type="submit"
                                 onchange="loadProvince(this)"
+                                onchange="loadProvince(this)"
                                 style="font-family: Roboto, sans-serif;"
                                 name=province
                                 id="provinceDropdown">
-                                @foreach (var provincia in Model.provinces)
-                                {
-                                    <option>@provincia.Name</option>
-                                }
+                            <option>Ninguno</option>
+                            @foreach (var provincia in Model.provinces)
+                            {
+                                <option>@provincia.Name</option>
+                            }
                         </select>
                     </div>
                     <div class="mb-3" style="margin-left: 5px; margin-right: 5px; margin-bottom: 0px;width: 200px; margin-top: 0px">
@@ -28,10 +30,11 @@
                                 style="font-family: Roboto, sans-serif;padding-right: 10px;margin-right: 0px;"
                                 name=canton
                                 id="cantonDropdown">
-                                @foreach (var canton in Model.cantons)
-                                {
-                                    <option>@canton.Name</option>
-                                }
+                            <option>Ninguno</option>
+                            @foreach (var canton in Model.cantons)
+                            {
+                                <option>@canton.Name</option>
+                            }
                         </select>
                     </div>
                 </div>
@@ -64,7 +67,8 @@
                             <select class="form-select"
                                     style="font-family: Roboto, sans-serif;margin-right: 30px;padding-right: 37px;"
                                     id="categoryDropdown">
-                                @foreach(var category in Model.categories)
+                                <option>Ninguno</option>
+                                @foreach (var category in Model.categories)
                                 {
                                     <option>@category.Name</option>
                                 }
@@ -78,7 +82,6 @@
                                     value="">
                         </div>
                     </div>
-                    
                 </div> 
             </div>
         </div>

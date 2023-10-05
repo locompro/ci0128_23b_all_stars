@@ -1,7 +1,12 @@
 using System.Reflection.PortableExecutable;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Locompro.Models;
 using Locompro.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Locompro.Repositories;
 
@@ -39,7 +44,6 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
         
         return await submissionsQuery.ToListAsync();
     }
-    
 
     public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAsync(string cantonName, string provinceName)
     {
@@ -66,4 +70,17 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
         return submissions;
     }
 
+    /// <summary>
+    /// Gets all submissions that contain the given product name
+    /// </summary>
+    /// <param name="productName"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<Submission>> GetSubmissionsByProductName(string productName)
+    {
+        IQueryable<Submission> submissionsQuery = this.DbSet
+            .Include(s => s.Product)
+            .Where(s => s.Product.Name == productName);
+        
+        return await submissionsQuery.ToListAsync();
+    }
 }

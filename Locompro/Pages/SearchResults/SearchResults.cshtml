@@ -51,8 +51,20 @@
                     <table class="table table-hover" style="cursor:pointer">
                         <thead>
                             <tr>
-                                <th scope="col">Ultimo Aporte</th>
-                                <th scope="col">Producto</th>
+                                <th scope="col">Ultimo Aporte </th>
+                                <th>
+                                    <a asp-page="./SearchResults" asp-route-sortOrder="@Model.nameSort"
+                                       asp-route-currentFilter="@Model.currentFilter"
+                                       asp-route-query=@Model.productName
+                                       asp-route-province=@Model.provinceSelected
+                                       asp-route-canton=@Model.cantonSelected
+                                       asp-route-minValue=@Model.minPrice
+                                       asp-route-maxValue=@Model.maxPrice
+                                       asp-route-category=@Model.categorySelected
+                                       asp-route-model=@Model.modelSelected>
+                                        Producto
+                                    </a> 
+                                </th>
                                 <th scope="col">Precio</th>
                                 <th scope="col">Tienda</th>
                                 <th scope="col">Provincia</th>
@@ -240,8 +252,12 @@
         function performSearchButton() {
             // if advanced search is not open it is normal search
             var redirect = "/SearchResults/SearchResults?query=";
-
-            var searchValue = document.getElementById("searchBox").value;
+    
+            if (!document.getElementById("searchBox").value) {
+                return;
+            }
+            
+            var searchValue = document.getElementById("searchBox").value.valueOf() ;
             
             if (!modalShown) {
                 // get value
@@ -252,14 +268,13 @@
                 var minValue = document.getElementById("minValue").value;
                 var maxValue = document.getElementById("maxValue").value;
                 var categoryValue = document.getElementById("categoryDropdown").value;
-                var modelValue = "";
-
+    
                 try {
-                    modelValue = document.getElementById("modelInput").value;
+                    var modelValue = document.getElementById("modelInput").value;
                 } catch (error) {
                 }
-
-                redirect += + searchValue
+    
+               redirect += searchValue
                     + "&province=" + provinceValue
                     + "&canton=" + cantonValue
                     + "&minValue=" + minValue
@@ -267,11 +282,11 @@
                     + "&category=" + categoryValue
                     + "&model=" + modelValue;
             }
-
+    
             if (!document.getElementById("searchBox").value) {
                 return;
             }
-
+    
             window.location.href = redirect;
         }
     </script>
