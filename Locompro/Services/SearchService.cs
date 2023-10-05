@@ -24,6 +24,16 @@ public class Item
 
     public List<Submission> Submissions { get; set; }
 
+    /// <summary>
+    /// Constructor for an item
+    /// </summary>
+    /// <param name="lastSubmissionDate"></param>
+    /// <param name="productName"></param>
+    /// <param name="productPrice"></param>
+    /// <param name="productStore"></param>
+    /// <param name="cantonLocation"></param>
+    /// <param name="provinceLocation"></param>
+    /// <param name="productDescription"></param>
     public Item(string lastSubmissionDate,
         string productName,
         double productPrice,
@@ -46,18 +56,78 @@ public class SearchService
 {
     private readonly SubmissionRepository _submissionRepository;
 
-
+    /// <summary>
+    /// Constructor for the search service
+    /// </summary>
+    /// <param name="submissionRepository"></param>
+    /// <param name="countryRepository"></param>
+    /// <param name="productRepository"></param>
     public SearchService(SubmissionRepository submissionRepository, CountryRepository countryRepository,
         ProductRepository productRepository)
     {
         _submissionRepository = submissionRepository;
     }
 
-    public async Task<IEnumerable<Submission>> GetSubmissionByCanton(string canton, string province)
+    /// <summary>
+    /// Searches for items based on the criteria provided in the search view model.
+    /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
+    /// It then returns a list of items that match all the criteria.
+    /// </summary>
+    /// <param name="productName"></param>
+    /// <param name="province"></param>
+    /// <param name="canton"></param>
+    /// <param name="minValue"></param>
+    /// <param name="maxValue"></param>
+    /// <param name="category"></param>
+    /// <param name="model"></param>
+    /// <returns>A list of items that match the search criteria.</returns>
+    public async Task<List<Item>> SearchItems(string productName, string province, string canton, long minValue,
+        long maxValue, string category, string model)
     {
-        return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
-    }
+        
+        // List of items to be returned
+        List<Item> items = new List<Item>();
+        
+        // List for submissions to be aggregated
+        List<IEnumerable<Submission>> submissions = new List<IEnumerable<Submission>>();
 
+        // add results from searching by product name
+        if (!string.IsNullOrEmpty(productName))
+        {
+            submissions.Add(await GetSubmissionsByProductName(productName));
+        }
+        
+        // add results from searching by product model
+        if (!string.IsNullOrEmpty(model))
+        {
+            submissions.Add(await GetSubmissionsByProductModel(model));
+        }
+        
+        // add results from searching by canton and province
+        if (!string.IsNullOrEmpty(canton) && !string.IsNullOrEmpty(province))
+        {
+            submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
+        }
+        
+        // aggregate results (look for intersection of all results)
+        IEnumerable<Submission> result = submissions.Aggregate((x, y) => x.Intersect(y));
+        
+        // get items from the submissions
+        items.AddRange(await GetItems(result));
+
+        return items;
+    }
+    
+    /// <summary>
+    /// Gets submissions containing a specific product name
+    /// </summary>
+    /// <param name="productName"></param>
+    /// <returns></returns>
+    private async Task<IEnumerable<Submission>> GetSubmissionsByProductName(string productName)
+    {
+        return await _submissionRepository.GetSubmissionsByProductNameAsync(productName);
+    }
+    
     /// <summary>
     /// Gets submissions containing a specific product model
     /// </summary>
@@ -66,17 +136,40 @@ public class SearchService
         return await _submissionRepository.GetSubmissionsByProductModelAsync(productModel);
     }
 
+    private async Task<IEnumerable<Submission>> GetSubmissionsByCantonAndProvince(string canton, string province)
+    {
+        return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
+    }
+    
+    public async Task<IEnumerable<Submission>> GetSubmissionByCanton(string canton, string province)
+    {
+        return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
+    }
+    
+    /// <summary>
+    /// Gets all the items to be displayed in the search results
+    /// from a list of submissions
+    /// </summary>
+    /// <param name="submissions"></param>
+    /// <returns></returns>
     private async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
     {
+        // list to contain the items
         List<Item> items = new List<Item>();
+        
+        // group submissions by store
+        IEnumerable<IGrouping<Store,Submission>> submissionsByStore = submissions.GroupBy(s => s.Store);
 
-        var submissionsByStore = submissions.GroupBy(s => s.Store);
-
-        foreach (var store in submissionsByStore)
+        // for each store
+        foreach (IGrouping<Store,Submission> store in submissionsByStore)
         {
-            var submissionsByProduct = store.GroupBy(s => s.Product);
-            foreach (var product in submissionsByProduct)
+            // group submissions by product
+            IEnumerable<IGrouping<Product,Submission>> submissionsByProduct = store.GroupBy(s => s.Product);
+            
+            // for each product
+            foreach (IGrouping<Product,Submission> product in submissionsByProduct)
             {
+                // add it as an item to the list
                 items.Add(await this.GetItem(product));
             }
         }
@@ -85,7 +178,9 @@ public class SearchService
     }
 
     /// <summary>
-    /// 
+    /// Produces an item from a group of submissions
+    /// Gets the best submission from the group of items
+    /// uses its information for the item to be shown
     /// </summary>
     /// <param name="itemGrouping"></param>
     /// <returns></returns>
@@ -103,69 +198,24 @@ public class SearchService
             bestSubmission.Store.Canton.Name,
             bestSubmission.Store.Canton.Province.Name,
             bestSubmission.Description
-        );
-
-        // add all submissions to list
-        item.Submissions = itemGrouping.ToList();
+        )
+        {
+            // add all submissions to list
+            Submissions = itemGrouping.ToList()
+        };
 
         return await Task.FromResult(item);
     }
-
+    
+    /// <summary>
+    /// According to established heuristics determines best best submission
+    /// from among a list of submissions
+    /// </summary>
+    /// <param name="submissions"></param>
+    /// <returns></returns>
     private Submission GetBestSubmission(IEnumerable<Submission> submissions)
     {
         // for the time being, the best submission is the one with the most recent entry time
         return submissions.MaxBy(s => s.EntryTime);
-    }
-
-    /// <summary>
-    /// Searches for items based on the criteria provided in the search view model.
-    /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
-    /// It then returns a list of items that match all the criteria.
-    /// </summary>
-    /// <param name="productName"></param>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
-    /// <param name="query">The search criteria provided by the user.</param>
-    /// <returns>A list of items that match the search criteria.</returns>
-    public async Task<List<Item>> SearchItems(string productName, string province, string canton, long minValue,
-        long maxValue, string category, string model)
-    {
-        List<Item> items = new List<Item>();
-        List<IEnumerable<Submission>> submissions = new List<IEnumerable<Submission>>();
-
-        if (!string.IsNullOrEmpty(productName))
-        {
-            submissions.Add(await GetSubmissionsByProductName(productName));
-        }
-
-        if (!string.IsNullOrEmpty(model))
-        {
-            submissions.Add(await GetSubmissionsByProductModel(model));
-        }
-
-        if (!string.IsNullOrEmpty(canton) && !string.IsNullOrEmpty(province))
-        {
-            submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
-        }
-
-        var result = submissions.Aggregate((x, y) => x.Intersect(y));
-        items.AddRange(await GetItems(result));
-
-        return items;
-    }
-
-    private async Task<IEnumerable<Submission>> GetSubmissionsByProductName(string productName)
-    {
-        return await _submissionRepository.GetSubmissionsByProductNameAsync(productName);
-    }
-
-    private async Task<IEnumerable<Submission>> GetSubmissionsByCantonAndProvince(string canton, string province)
-    {
-        var submissions = await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
-        return submissions;
     }
 }
