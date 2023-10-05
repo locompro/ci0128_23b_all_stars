@@ -39,20 +39,7 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
         
         return await submissionsQuery.ToListAsync();
     }
-
-    public async Task<Submission> GetBestSubmission(int productId)
-    {
-        // get all submissions for the given product
-        IQueryable<Submission> submissionsQuery = this.DbSet.Where(s => s.ProductId == productId);
-        
-        // get the logic for the best submission
-        DateTime mostRecentDate = submissionsQuery.Max(s => s.EntryTime);
-
-        // use logic to get that submission
-        Submission bestSubmission = submissionsQuery.FirstOrDefault(s=>s.EntryTime == mostRecentDate);
-        
-        return await Task.FromResult(bestSubmission);
-    }
+    
 
     public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAsync(string cantonName, string provinceName)
     {
