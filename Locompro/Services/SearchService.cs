@@ -10,13 +10,13 @@ namespace Locompro.Services;
 /// </summary>
 public class Item
 {
-    public string LastSubmissionDate { get; set; }
-    public string ProductName { get; set; }
-    public double ProductPrice { get; set; }
-    public string ProductStore { get; set; }
-    public string CantonLocation { get; set; }
-    public string ProvinceLocation { get; set; }
-    public string ProductDescription { get; set; }
+    public string LastSubmissionDate { get; init; }
+    public string ProductName { get; init; }
+    public double ProductPrice { get; init; }
+    public string ProductStore { get; init; }
+    public string CantonLocation { get; init; }
+    public string ProvinceLocation { get; init; }
+    public string ProductDescription { get; init; }
 
     public List<Submission> Submissions { get; set; }
 
@@ -53,4 +53,13 @@ public class SearchService
     {
         return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
     }
+    
+    public Submission GetBestSubmission(IEnumerable<Submission> submissions)
+    {
+        // for the time being, the best submission is the one with the most recent entry time
+        return submissions.MaxBy(s => s.EntryTime);
+    }
+    
+    
+    
 }
