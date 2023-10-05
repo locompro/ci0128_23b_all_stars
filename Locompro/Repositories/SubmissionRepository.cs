@@ -1,6 +1,12 @@
+using System.Reflection.PortableExecutable;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Locompro.Models;
 using Locompro.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Locompro.Repositories;
 
@@ -26,19 +32,6 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
     {
     }
     
-    /// <summary>
-    /// Get all the submissions for a product
-    /// </summary>
-    /// <param name="productId"></param>
-    /// <returns></returns>
-    public async Task<IEnumerable<Submission>> GetSubmissionsForProduct (int productId)
-    {
-        // get all submissions for the product
-        IQueryable<Submission> submissionsQuery = this.DbSet.Where(s => s.ProductId == productId);
-        
-        return await submissionsQuery.ToListAsync();
-    }
-    
 
     public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAsync(string cantonName, string provinceName)
     {
@@ -50,5 +43,32 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
     
         return submissions;
     }
+    
+    /// <summary>
+    /// Gets all submissions that contain the given product model
+    /// </summary>
+    /// <param name="productModel"></param>
+    public async Task<IEnumerable<Submission>> GetSubmissionsByProductModelAsync(string productModel)
+    {
+        var submissions = await DbSet
+            .Include(s => s.Product)
+            .Where(s => s.Product.Model.Contains(productModel))
+            .ToListAsync();
+    
+        return submissions;
+    }
 
+    /// <summary>
+    /// Gets all submissions that contain the given product name
+    /// </summary>
+    /// <param name="productName"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<Submission>> GetSubmissionsByProductNameAsync(string productName)
+    {
+        IQueryable<Submission> submissionsQuery = this.DbSet
+            .Include(s => s.Product)
+            .Where(s => s.Product.Name.Contains(productName));
+        
+        return await submissionsQuery.ToListAsync();
+    }
 }
