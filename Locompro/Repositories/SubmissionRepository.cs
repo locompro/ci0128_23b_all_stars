@@ -32,7 +32,11 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
     {
     }
     
-
+    /// <summary>
+    /// gets all submissions that are in a store in the given canton and province
+    /// <param name="cantonName"></param>
+    /// <param name="provinceName"></param>
+    /// <returns> a task IEnumerable of submissions </returns>
     public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAsync(string cantonName, string provinceName)
     {
         var submissions = await DbSet

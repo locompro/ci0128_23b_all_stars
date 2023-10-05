@@ -52,12 +52,6 @@ public class SearchService
     {
         _submissionRepository = submissionRepository;
     }
-
-    public async Task<IEnumerable<Submission>> GetSubmissionByCanton(string canton, string province)
-    {
-        return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
-    }
-
     /// <summary>
     /// Gets submissions containing a specific product model
     /// </summary>
@@ -110,7 +104,11 @@ public class SearchService
 
         return await Task.FromResult(item);
     }
-
+    /// <summary>
+    /// gets the best submission from a list of submissions based on a heuristic
+    /// </summary>
+    /// <param name="submissions"> the list of submissions to select from</param> 
+    /// <returns></returns>
     private Submission GetBestSubmission(IEnumerable<Submission> submissions)
     {
         // for the time being, the best submission is the one with the most recent entry time
@@ -122,14 +120,13 @@ public class SearchService
     /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
     /// It then returns a list of items that match all the criteria.
     /// </summary>
-    /// <param name="productName"></param>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
-    /// <param name="query">The search criteria provided by the user.</param>
+    /// <param name="productName"> the product to search for</param>
+    /// <param name="province"> province to filter submission</param>
+    /// <param name="canton"> canton to filter submissions</param>
+    /// <param name="minValue"> to limit the prices</param>
+    /// <param name="maxValue"> to limit the prices</param>
+    /// <param name="category"> to select from products on a specific category</param>
+    /// <param name="model"> to select product with based on model</param>
     /// <returns>A list of items that match the search criteria.</returns>
     public async Task<List<Item>> SearchItems(string productName, string province, string canton, long minValue,
         long maxValue, string category, string model)
