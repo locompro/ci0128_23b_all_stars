@@ -12,7 +12,7 @@
                  style="">
                 <div style="width: 100%; padding-right: 20px">
                     <input type="text"
-                           value="@Model.productName"
+                           value="@Model.ProductName"
                            class="form-control rounded-pill"
                            name="query"
                            placeholder="Buscar...."
@@ -45,23 +45,23 @@
 
         <div class="card border " style="margin-top: 15px;padding-top: 0px;padding-bottom: 0px;border-radius: 20px;" border="5px solid black;">
             <div style="margin-left: 20px; margin-top: 15px">
-                <h2>@Model.productName</h2>
-                <h6> @Model.itemsAmount resultados encontrados </h6>
+                <h2>@Model.ProductName</h2>
+                <h6> @Model.ItemsAmount resultados encontrados </h6>
                 <div style="margin-right:20px; overflow-y:auto;">
                     <table class="table table-hover" style="cursor:pointer">
                         <thead>
                             <tr>
                                 <th scope="col">Ultimo Aporte </th>
                                 <th>
-                                    <a asp-page="./SearchResults" asp-route-sortOrder="@Model.nameSort"
-                                       asp-route-currentFilter="@Model.currentFilter"
-                                       asp-route-query=@Model.productName
-                                       asp-route-province=@Model.provinceSelected
-                                       asp-route-canton=@Model.cantonSelected
-                                       asp-route-minValue=@Model.minPrice
-                                       asp-route-maxValue=@Model.maxPrice
-                                       asp-route-category=@Model.categorySelected
-                                       asp-route-model=@Model.modelSelected>
+                                    <a asp-page="./SearchResults" asp-route-sortOrder="@Model.NameSort"
+                                       asp-route-currentFilter="@Model.CurrentFilter"
+                                       asp-route-query=@Model.ProductName
+                                       asp-route-province=@Model.ProvinceSelected
+                                       asp-route-canton=@Model.CantonSelected
+                                       asp-route-minValue=@Model.MinPrice
+                                       asp-route-maxValue=@Model.MaxPrice
+                                       asp-route-category=@Model.CategorySelected
+                                       asp-route-model=@Model.ModelSelected>
                                         Producto
                                     </a> 
                                 </th>
@@ -74,8 +74,8 @@
                         </thead>
                         <tbody>
                             @{
-                                PaginatedList<Item> items = Model.displayItems;
-                                foreach (Item item in Model.displayItems)
+                                PaginatedList<Item> items = Model.DisplayItems;
+                                foreach (Item item in Model.DisplayItems)
                                 {
                                     <tr onclick="itemSelected()">
                                         <td>
@@ -107,20 +107,20 @@
                 </div>
 
                 @{
-                    var prevDisabled = !Model.displayItems.HasPreviousPage ? "disabled" : "";
-                    var nextDisabled = !Model.displayItems.HasNextPage ? "disabled" : "";
+                    var prevDisabled = !Model.DisplayItems.HasPreviousPage ? "disabled" : "";
+                    var nextDisabled = !Model.DisplayItems.HasNextPage ? "disabled" : "";
                 }
 
                 <div style="margin-bottom: 20px; display: flex; align-items: center;">
                     <a asp-page=""
-                       asp-route-query=@Model.productName
-                       asp-route-province=@Model.provinceSelected
-                       asp-route-canton=@Model.cantonSelected
-                       asp-route-minValue=@Model.minPrice
-                       asp-route-maxValue=@Model.maxPrice
-                       asp-route-category=@Model.categorySelected
-                       asp-route-model=@Model.modelSelected
-                       asp-route-pageIndex="@(Model.displayItems.PageIndex - 1)"
+                       asp-route-query=@Model.ProductName
+                       asp-route-province=@Model.ProvinceSelected
+                       asp-route-canton=@Model.CantonSelected
+                       asp-route-minValue=@Model.MinPrice
+                       asp-route-maxValue=@Model.MaxPrice
+                       asp-route-category=@Model.CategorySelected
+                       asp-route-model=@Model.ModelSelected
+                       asp-route-pageIndex="@(Model.DisplayItems.PageIndex - 1)"
                        class="btn btn-primary @prevDisabled"
                        style="margin-bottom:0px">
                         Previous
@@ -129,23 +129,23 @@
                     <input type="number"
                            style="bottom: 0; height: 100%; border: 2px solid grey; border-radius: 5px; padding: 7px; width: 60px; margin-left: 10px; margin-right: 10px;"
                            min=1
-                           max="@Model.displayItems.TotalPages"
-                           value="@Model.displayItems.PageIndex"
+                           max="@Model.DisplayItems.TotalPages"
+                           value="@Model.DisplayItems.PageIndex"
                            onchange="changeIndexPage(this)">
 
                     <a asp-page=""
-                       asp-route-query=@Model.productName
-                       asp-route-province=@Model.provinceSelected
-                       asp-route-canton=@Model.cantonSelected
-                       asp-route-minValue=@Model.minPrice
-                       asp-route-maxValue=@Model.maxPrice
-                       asp-route-category=@Model.categorySelected
-                       asp-route-model=@Model.modelSelected
-                       asp-route-pageIndex="@(Model.displayItems.PageIndex + 1)"
+                       asp-route-query=@Model.ProductName
+                       asp-route-province=@Model.ProvinceSelected
+                       asp-route-canton=@Model.CantonSelected
+                       asp-route-minValue=@Model.MinPrice
+                       asp-route-maxValue=@Model.MaxPrice
+                       asp-route-category=@Model.CategorySelected
+                       asp-route-model=@Model.ModelSelected
+                       asp-route-pageIndex="@(Model.DisplayItems.PageIndex + 1)"
                        class="btn btn-primary @nextDisabled">
                         Next
                     </a>
-                    <h6 style="margin-left: 10px; margin-bottom:0px"> @Model.displayItems.TotalPages paginas de resultados </h6>
+                    <h6 style="margin-left: 10px; margin-bottom:0px"> @Model.DisplayItems.TotalPages paginas de resultados </h6>
                 </div>
             </div>
         </div>
@@ -299,29 +299,29 @@
 
     <script>
         function changeIndexPage(field) {
-            if (field.value > @Model.displayItems.TotalPages) {
-                field.value = @Model.displayItems.TotalPages;
+            if (field.value > @Model.DisplayItems.TotalPages) {
+                field.value = @Model.DisplayItems.TotalPages;
             }
 
             if (field.value < 1) {
                 field.value = 1;
             }
-            var provinceForEmptyCheck = "@Model.provinceSelected";
+            var provinceForEmptyCheck = "@Model.ProvinceSelected";
 
             console.log(provinceForEmptyCheck);
             if (provinceForEmptyCheck.length == 0) {
                 // redirect to search results page
-                window.location.href = "/SearchResults/SearchResults?query=" + "@Model.productName" +
+                window.location.href = "/SearchResults/SearchResults?query=" + "@Model.ProductName" +
                     "&pageIndex=" + field.value;
             } else {
                 // redirect to search results page
-                window.location.href = "/SearchResults/SearchResults?query=" + "@Model.productName" +
-                    "&province=" + "@Model.provinceSelected" +
-                    "&canton=" + "@Model.cantonSelected" +
-                    "&minValue=" + @Model.minPrice +
-                    "&maxValue=" + @Model.maxPrice +
-                    "&category=" + "@Model.categorySelected" +
-                    "&model=" + "@Model.modelSelected" +
+                window.location.href = "/SearchResults/SearchResults?query=" + "@Model.ProductName" +
+                    "&province=" + "@Model.ProvinceSelected" +
+                    "&canton=" + "@Model.CantonSelected" +
+                    "&minValue=" + @Model.MinPrice +
+                    "&maxValue=" + @Model.MaxPrice +
+                    "&category=" + "@Model.CategorySelected" +
+                    "&model=" + "@Model.ModelSelected" +
                     "&pageIndex=" + field.value;
             }
 

@@ -26,14 +26,9 @@ namespace Locompro.Pages.SearchResults
         private SearchService _searchService;
 
         /// <summary>
-        /// Service that handles the locations data
-        /// </summary>
-        private CountryService _countryService;
-
-        /// <summary>
         /// Configuration to get the page size
         /// </summary>
-        private readonly IConfiguration Configuration;
+        private readonly IConfiguration _configuration;
 
         /// <summary>
         /// Buffer for page size according to Paginated List and configuration
@@ -43,55 +38,52 @@ namespace Locompro.Pages.SearchResults
         /// <summary>
         /// Paginated list of products found
         /// </summary>
-        public PaginatedList<Item> displayItems { get; set; }
+        public PaginatedList<Item> DisplayItems { get; set; }
 
         /// <summary>
         /// List of all items found
         /// </summary>
-        private List<Item> items;
+        private List<Item> _items;
 
         /// <summary>
         /// Amount of items found
         /// </summary>
-        public double itemsAmount { get; set; }
+        public double ItemsAmount { get; set; }
 
         /// <summary>
         /// Name of product that was searched
         /// </summary>
-        public string productName { get; set; }
+        public string ProductName { get; set; }
 
-        public string provinceSelected { get; set; }
-        public string cantonSelected { get; set; }
-        public string categorySelected { get; set; }
-        public long minPrice { get; set; }
-        public long maxPrice { get; set; }
-        public string modelSelected { get; set; }
+        public string ProvinceSelected { get; set; }
+        public string CantonSelected { get; set; }
+        public string CategorySelected { get; set; }
+        public long MinPrice { get; set; }
+        public long MaxPrice { get; set; }
+        public string ModelSelected { get; set; }
         
         
-        public string nameSort { get; set; }
+        public string NameSort { get; set; }
         
-        public string currentSort { get; set; }
+        public string CurrentSort { get; set; }
         
-        public string currentFilter { get; set; }
+        public string CurrentFilter { get; set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="countryService"></param>
+        /// <param name="searchService"></param>
         /// <param name="advancedSearchServiceHandler"></param>
         /// <param name="configuration"></param>
-        public SearchResultsModel(CountryService countryService,
+        public SearchResultsModel(
             AdvancedSearchModalService advancedSearchServiceHandler,
             IConfiguration configuration,
             SearchService searchService)
         {
             this._searchService = searchService;
             this._advancedSearchServiceHandler = advancedSearchServiceHandler;
-            this._countryService = countryService;
-            this.Configuration = configuration;
-            this._pageSize = Configuration.GetValue("PageSize", 4);
-
-            this.OnTestingCreateTestingItems();
+            this._configuration = configuration;
+            this._pageSize = _configuration.GetValue("PageSize", 4);
         }
 
         /// <summary>
@@ -116,53 +108,53 @@ namespace Locompro.Pages.SearchResults
             string currentFilter,
             string sortOrder)
         {
-            this.provinceSelected = province;
-            this.cantonSelected = canton;
-            this.minPrice = minValue;
-            this.maxPrice = maxValue;
-            this.categorySelected = category;
-            this.modelSelected = model;
-            this.currentSort = sortOrder;
+            this.ProvinceSelected = province;
+            this.CantonSelected = canton;
+            this.MinPrice = minValue;
+            this.MaxPrice = maxValue;
+            this.CategorySelected = category;
+            this.ModelSelected = model;
+            this.CurrentSort = sortOrder;
 
-            this.productName = query;
+            this.ProductName = query;
             
             if (string.IsNullOrEmpty(sortOrder))
             {
-                nameSort = "name_asc";
+                NameSort = "name_asc";
             }
             else
             {
-                nameSort = sortOrder.Contains("name_asc") ? "name_desc" : "name_asc";
+                NameSort = sortOrder.Contains("name_asc") ? "name_desc" : "name_asc";
             }
             
-            Console.WriteLine(nameSort);
+            Console.WriteLine(NameSort);
             
-            /*
-            this.items =
-                (await _searchService.SearchItems(productName, province, canton, minValue, maxValue, category, model))
+            
+            this._items =
+                (await _searchService.SearchItems(ProductName, province, canton, minValue, maxValue, category, model))
                 .ToList();
-            */
-            this.itemsAmount = items.Count;
+            
+            this.ItemsAmount = _items.Count;
             
             // order items by sort order
-            this.orderItems(sortOrder);
+            this.OrderItems(sortOrder);
 
-            this.displayItems = PaginatedList<Item>.Create(items, pageIndex ?? 1, _pageSize);
+            this.DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
         }
 
         /// <summary>
         /// Orders items
         /// </summary>
         /// <param name="sortOrder"></param>
-        void orderItems(string sortOrder)
+        void OrderItems(string sortOrder)
         {
             switch (sortOrder)
             {
                 case "name_desc":
-                    items = items.OrderByDescending(item => item.ProductName).ToList();
+                    _items = _items.OrderByDescending(item => item.ProductName).ToList();
                     break;
                 case "name_asc":
-                    items = items.OrderBy(item => item.ProductName).ToList();
+                    _items = _items.OrderBy(item => item.ProductName).ToList();
                     break;
             }
         }
@@ -205,220 +197,7 @@ namespace Locompro.Pages.SearchResults
             // send to client
             return Content(cantonsJson);
         }
-
-        void OnTestingCreateTestingItems()
-        {
-            this.items = new List<Item>
-            {
-                new Item(
-                    "2020-10-10",
-                    "sombrero",
-                    1000,
-                    "sombrereria",
-                    "San Jose",
-                    "San Jose",
-                    "sombrero de paja"),
-                new Item("2020-10-10",
-                    "zapatos",
-                    1000,
-                    "zapateria",
-                    "San Jose",
-                    "San Jose",
-                    "zapatos de cuero"),
-                new Item("2020-10-10",
-                    "camisas",
-                    1000,
-                    "camiseria",
-                    "San Jose",
-                    "San Jose",
-                    "camisas de algodon"),
-                new Item("2020-10-10",
-                    "pantalones",
-                    1000,
-                    "pantaloneria",
-                    "San Jose",
-                    "San Jose",
-                    "pantalones de mezclilla"),
-                new Item(
-                    "2020-10-10",
-                    "sombrero",
-                    1000,
-                    "sombrereria",
-                    "San Jose",
-                    "San Jose",
-                    "sombrero de paja"),
-
-                new Item(
-                    "2020-10-10",
-                    "zapatos",
-                    1000,
-                    "zapateria",
-                    "San Jose",
-                    "San Jose",
-                    "zapatos de cuero"),
-
-                new Item(
-                    "2021-03-15",
-                    "camisa",
-                    500,
-                    "tienda de ropa",
-                    "Heredia",
-                    "Heredia",
-                    "camisa de algodón"),
-
-                new Item(
-                    "2021-02-28",
-                    "televisor",
-                    2000,
-                    "electrodomésticos",
-                    "Cartago",
-                    "Cartago",
-                    "televisor LED de 55 pulgadas"),
-
-                new Item(
-                    "2021-01-05",
-                    "laptop",
-                    1200,
-                    "tecnología",
-                    "San Jose",
-                    "San Jose",
-                    "laptop ultrabook"),
-
-                new Item(
-                    "2021-04-20",
-                    "bicicleta",
-                    350,
-                    "deportes",
-                    "Alajuela",
-                    "Alajuela",
-                    "bicicleta de montaña"),
-
-                new Item(
-                    "2021-06-10",
-                    "refrigeradora",
-                    900,
-                    "electrodomésticos",
-                    "Heredia",
-                    "Heredia",
-                    "refrigeradora de acero inoxidable"),
-
-                new Item(
-                    "2021-08-22",
-                    "reloj",
-                    300,
-                    "joyería",
-                    "Puntarenas",
-                    "Puntarenas",
-                    "reloj de pulsera"),
-
-                new Item(
-                    "2020-11-17",
-                    "mueble de salón",
-                    750,
-                    "muebles",
-                    "San Jose",
-                    "San Jose",
-                    "mueble de salón moderno"),
-
-                new Item(
-                    "2021-09-02",
-                    "teléfono móvil",
-                    800,
-                    "tecnología",
-                    "Cartago",
-                    "Cartago",
-                    "teléfono móvil Android"),
-
-                new Item(
-                    "2021-07-30",
-                    "cámara DSLR",
-                    1100,
-                    "electrónica",
-                    "Alajuela",
-                    "Alajuela",
-                    "cámara réflex digital"),
-
-                new Item(
-                    "2020-12-05",
-                    "tabla de surf",
-                    350,
-                    "deportes acuáticos",
-                    "Puntarenas",
-                    "Puntarenas",
-                    "tabla de surf para principiantes"),
-
-                new Item(
-                    "2021-04-05",
-                    "silla de oficina",
-                    150,
-                    "muebles",
-                    "Heredia",
-                    "Heredia",
-                    "silla ergonómica para oficina"),
-
-                new Item(
-                    "2021-03-12",
-                    "café gourmet",
-                    12,
-                    "cafetería",
-                    "San Jose",
-                    "San Jose",
-                    "café molido de alta calidad"),
-
-                new Item(
-                    "2021-02-14",
-                    "guitarra acústica",
-                    300,
-                    "instrumentos musicales",
-                    "Cartago",
-                    "Cartago",
-                    "guitarra acústica de concierto"),
-
-                new Item(
-                    "2021-08-28",
-                    "juego de mesa",
-                    25,
-                    "juguetes",
-                    "Alajuela",
-                    "Alajuela",
-                    "juego de mesa familiar"),
-
-                new Item(
-                    "2021-07-01",
-                    "caña de pescar",
-                    40,
-                    "deportes",
-                    "Puntarenas",
-                    "Puntarenas",
-                    "caña de pescar telescópica"),
-
-                new Item(
-                    "2021-06-15",
-                    "batidora",
-                    60,
-                    "electrodomésticos",
-                    "Heredia",
-                    "Heredia",
-                    "batidora de mano"),
-
-                new Item(
-                    "2021-09-10",
-                    "silla de playa",
-                    25,
-                    "muebles de exterior",
-                    "San Jose",
-                    "San Jose",
-                    "silla plegable para la playa"),
-
-                new Item(
-                    "2020-11-30",
-                    "tenis deportivos",
-                    75,
-                    "tienda de deportes",
-                    "Cartago",
-                    "Cartago",
-                    "tenis deportivos para correr")
-            };
-        }
+        
+        
     }
 }
