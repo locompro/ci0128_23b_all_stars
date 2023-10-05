@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Locompro.Models;
-
-namespace Locompro.Repositories
+﻿namespace Locompro.Repositories
 {
     /// <summary>
     /// An application repository.

@@ -1,6 +1,5 @@
 using Locompro.Data;
 using Locompro.Models;
-using Microsoft.Extensions.Logging;
 
 namespace Locompro.Repositories;
 

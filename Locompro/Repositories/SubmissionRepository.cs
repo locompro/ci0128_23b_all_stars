@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using Locompro.Models;
 using Locompro.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using NuGet.Versioning;
 
 namespace Locompro.Repositories;
 
@@ -38,7 +31,7 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
     /// </summary>
     /// <param name="productId"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Submission>> getSubmissionsForProduct (int productId)
+    public async Task<IEnumerable<Submission>> GetSubmissionsForProduct (int productId)
     {
         // get all submissions for the product
         IQueryable<Submission> submissionsQuery = this.DbSet.Where(s => s.ProductId == productId);
@@ -46,7 +39,7 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
         return await submissionsQuery.ToListAsync();
     }
 
-    public async Task<Submission> getBestSubmission(int productId)
+    public async Task<Submission> GetBestSubmission(int productId)
     {
         // get all submissions for the given product
         IQueryable<Submission> submissionsQuery = this.DbSet.Where(s => s.ProductId == productId);

@@ -19,5 +19,6 @@ namespace Locompro.Services
             : base(unitOfWork, repository, loggerFactory)
         {
         }
+        
     }
 }
