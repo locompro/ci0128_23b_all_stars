@@ -60,4 +60,9 @@ public class SearchService
        
     } */
     
+    public async Task<IEnumerable<Product>> getProductByModel(string model)
+    {
+        return await _productRepository.getByModelAsync(model);
+    }
+    
 }
