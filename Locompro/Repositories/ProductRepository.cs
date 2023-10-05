@@ -31,7 +31,7 @@ namespace Locompro.Repositories
         public async Task<IEnumerable<Product>> getProductsByName(string name)
         {
             // get all products with the same name
-            IQueryable<Product> productsQuery = this.DbSet.Where(p => p.Name == name);
+            IQueryable<Product> productsQuery = this.DbSet.Where(p => p.Name.Contains(name));
 
             return await productsQuery.ToListAsync();
         }
@@ -42,7 +42,7 @@ namespace Locompro.Repositories
         /// <param name="model"></param>
         public async Task<IEnumerable<Product>> getByModelAsync(string model)
         {
-            var products = await DbSet.Where(p => p.Model == model).ToListAsync();
+            var products = await DbSet.Where(p => p.Model.Contains(model)).ToListAsync();
             
             return products;
         }

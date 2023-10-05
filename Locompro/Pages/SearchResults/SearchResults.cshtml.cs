@@ -22,7 +22,7 @@ namespace Locompro.Pages.SearchResults
         /// Service that handles the advanced search modal
         /// </summary>
         private readonly AdvancedSearchModalService _advancedSearchServiceHandler;
-        
+
         private SearchService _searchService;
 
         /// <summary>
@@ -59,6 +59,7 @@ namespace Locompro.Pages.SearchResults
         /// Name of product that was searched
         /// </summary>
         public string productName { get; set; }
+
         public string provinceSelected { get; set; }
         public string cantonSelected { get; set; }
         public string categorySelected { get; set; }
@@ -73,9 +74,9 @@ namespace Locompro.Pages.SearchResults
         /// <param name="advancedSearchServiceHandler"></param>
         /// <param name="configuration"></param>
         public SearchResultsModel(CountryService countryService,
-                AdvancedSearchModalService advancedSearchServiceHandler,
-                IConfiguration configuration,
-                SearchService searchService)
+            AdvancedSearchModalService advancedSearchServiceHandler,
+            IConfiguration configuration,
+            SearchService searchService)
         {
             this._searchService = searchService;
             this._advancedSearchServiceHandler = advancedSearchServiceHandler;
@@ -83,7 +84,7 @@ namespace Locompro.Pages.SearchResults
             this.Configuration = configuration;
             this._pageSize = Configuration.GetValue("PageSize", 4);
 
-            this.OnTestingCreateTestingItems();
+            // this.OnTestingCreateTestingItems();
         }
 
         /// <summary>
@@ -112,7 +113,6 @@ namespace Locompro.Pages.SearchResults
             this.maxPrice = maxValue;
             this.categorySelected = category;
             this.modelSelected = model;
-
             string queryString = Request.Query["query"];
             if (queryString.IsNullOrEmpty())
             {
@@ -120,30 +120,15 @@ namespace Locompro.Pages.SearchResults
             }
 
             this.productName = query;
-
-            this.itemsAmount = items.Count;
+            this.items =
+                (await _searchService.searchItems(productName, province, canton, minValue, maxValue, category, model))
+                .ToList();
             
-            /*
-           List<Product> products = (await this.productService.GetAll()).ToList();
-
-           foreach (Product product in products)
-           {
-               this.items.Add(new Item("0/0/0", product.Name, 1000, "Generic Store", "Generic Canton", "Generic Province", "Generic Description"));
-           }
-
-           this.itemsAmount = items.Count;
-           */
-
-            List<Product> products = (await this._searchService.getProductsByName("Laptop")).ToList();
-
-            foreach (Product product in products)
-            {
-                Console.WriteLine(product.Name + ", " + product.Categories + ", " + product.Model + ", ");
-            }
+            this.itemsAmount = items.Count;
 
             this.displayItems = PaginatedList<Item>.Create(items, pageIndex ?? 1, _pageSize);
         }
-        
+
 
         /// <summary>
         /// Returns the view component for the advanced search modal
@@ -187,7 +172,7 @@ namespace Locompro.Pages.SearchResults
         void OnTestingCreateTestingItems()
         {
             this.items = new List<Item>
-                {
+            {
                 new Item(
                     "2020-10-10",
                     "sombrero",
@@ -396,8 +381,7 @@ namespace Locompro.Pages.SearchResults
                     "Cartago",
                     "Cartago",
                     "tenis deportivos para correr")
-
-                };
+            };
         }
     }
 }

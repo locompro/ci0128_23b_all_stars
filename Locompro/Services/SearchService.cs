@@ -114,5 +114,45 @@ public class SearchService
     {
         return await _productRepository.getByModelAsync(model);
     }
+
+    public async Task<IEnumerable<Item>> searchItems(string name, string province, string canton, long minValue,
+        long maxValue, string category, string model)
+    {
+        // Validate parameters
+        // bool = validateParameters
+        
+        List<IEnumerable<Product>> products = new List<IEnumerable<Product>>();
+        
+        // query products by name
+        if (name != null)
+        {
+            products.Add(await this.getProductsByName(name));
+        }
+        
+        // query products by province and canton
+        // if province is null, dont query anything
+        // if canton is null and province is not null, query by province
+        
+        // query products by price
+        // if max value is 0, query everything
+        // if min value is 0, and max value is not 0, query everything less than max value
+        
+        // query products by category
+        // if category is null, query everything
+        
+        // query products by model
+        if (model != null)
+        {
+            products.Add(await this.getProductByModel(model));
+        }
+        
+        // get intersection of all products
+        var intersection = products.Aggregate((previous, next) => previous.Intersect(next));
+        
+        // get items for intersection
+        var items = await this.getItems(intersection.ToList());
+        
+        return items;
+    } 
     
 }
