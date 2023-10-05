@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using Locompro.Repositories;
 using Locompro.Models;
 
@@ -13,15 +10,15 @@ namespace Locompro.Services;
 /// </summary>
 public class Item
 {
-    public string lastSubmissionDate { get; set; }
-    public string productName { get; set; }
-    public double productPrice { get; set; }
-    public string productStore { get; set; }
-    public string cantonLocation { get; set; }
-    public string provinceLocation { get; set; }
-    public string productDescription { get; set; }
+    public string LastSubmissionDate { get; set; }
+    public string ProductName { get; set; }
+    public double ProductPrice { get; set; }
+    public string ProductStore { get; set; }
+    public string CantonLocation { get; set; }
+    public string ProvinceLocation { get; set; }
+    public string ProductDescription { get; set; }
 
-    public List<Submission> submissions { get; set; }
+    public List<Submission> Submissions { get; set; }
 
     public Item(string lastSubmissionDate,
         string productName,
@@ -29,17 +26,15 @@ public class Item
         string productStore,
         string cantonLocation,
         string provinceLocation,
-        string productDescription,
-        List<Submission> submissions = null)
+        string productDescription)
     {
-        this.lastSubmissionDate = lastSubmissionDate;
-        this.productName = productName;
-        this.productPrice = productPrice;
-        this.productStore = productStore;
-        this.cantonLocation = cantonLocation;
-        this.provinceLocation = provinceLocation;
-        this.productDescription = productDescription;
-        this.submissions = submissions;
+        this.LastSubmissionDate = lastSubmissionDate;
+        this.ProductName = productName;
+        this.ProductPrice = productPrice;
+        this.ProductStore = productStore;
+        this.CantonLocation = cantonLocation;
+        this.ProvinceLocation = provinceLocation;
+        this.ProductDescription = productDescription;
     }
 };
 
@@ -57,9 +52,14 @@ public class SearchService
         _productRepository = productRepository;
     }
 
-    public async Task<IEnumerable<Product>> getProductsByName(string name)
+    public async Task<IEnumerable<Product>> GetProductsByName(string name)
     {
         return await _productRepository.getProductsByName(name);
+    }
+    
+    public async Task<IEnumerable<Submission>> GetSubmissionByCanton(string canton, string province)
+    {
+        return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
     }
 
     /// <summary>
@@ -67,7 +67,7 @@ public class SearchService
     /// </summary>
     /// <param name="products"></param>
     /// <returns></returns>
-    private async Task<IEnumerable<Item>> getItems(List<Product> products)
+    private async Task<IEnumerable<Item>> GetItems(List<Product> products)
     {
         // make list to store items
         List < Item > items = new List<Item>();
@@ -76,13 +76,12 @@ public class SearchService
         foreach (Product product in products)
         {
             // get the item and add it to the list
-            items.Add(await this.getItemForProduct(product));
+            items.Add(await this.GetItemForProduct(product));
         }
 
         return items;
     }
     
-    public async Task<IEnumerable<Submission>> GetSubmissionsByCanton(string cantonName, string provinceName)
     /// <summary>
     /// Returns a item object for a given product
     /// Includes the information from the best submission
@@ -90,7 +89,7 @@ public class SearchService
     /// </summary>
     /// <param name="product"></param>
     /// <returns></returns>
-    private async Task<Item> getItemForProduct(Product product)
+    private async Task<Item> GetItemForProduct(Product product)
     {
         // get best submission for product
         Submission bestSubmission = await this._submissionRepository.getBestSubmission(product.Id);
@@ -106,13 +105,57 @@ public class SearchService
             bestSubmission.Store.Name,
             bestSubmission.Store.Canton.Name,
             bestSubmission.Store.Canton.Province.Name,
-            bestSubmission.Description,
-            productSubmissions);
+            bestSubmission.Description);
+        item.Submissions = productSubmissions;
 
         return item;
     }
-    public async Task<IEnumerable<Product>> getProductByModel(string model)
+
+    private async Task<IEnumerable<Product>> GetProductByModel(string model)
     {
-        return await _submissionRepository.GetSubmissionsByCantonAsync(cantonName, provinceName);
+        return await _productRepository.getByModelAsync(model);
     }
+
+    public async Task<IEnumerable<Item>> SearchItems(string name, string province, string canton, long minValue,
+        long maxValue, string category, string model)
+    {
+        // Validate parameters
+        // bool = validateParameters
+        
+        List<IEnumerable<Product>> products = new List<IEnumerable<Product>>();
+        
+        // query products by name
+        if (name != null)
+        {
+            products.Add(await this.GetProductsByName(name));
+        }
+        
+        // query products by province and canton
+        // if province is null, dont query anything
+        // if canton is null and province is not null, query by province
+        
+        // query products by price
+        // if max value is 0, query everything
+        // if min value is 0, and max value is not 0, query everything less than max value
+        
+        // query products by category
+        // if category is null, query everything
+        
+        // query products by model
+        if (model != null)
+        {
+            products.Add(await this.GetProductByModel(model));
+        }
+       
+        var intersection = products.Skip(1).Aggregate(products[0], (previous, next) => previous.Intersect(next)).ToList();
+
+        // get items for intersection
+        var items = await this.GetItems(intersection);
+
+        return items;
+
+       
+        
+    } 
+    
 }

@@ -121,7 +121,7 @@ namespace Locompro.Pages.SearchResults
 
             this.productName = query;
             this.items =
-                (await _searchService.searchItems(productName, province, canton, minValue, maxValue, category, model))
+                (await _searchService.SearchItems(productName, province, canton, minValue, maxValue, category, model))
                 .ToList();
             
             this.itemsAmount = items.Count;
