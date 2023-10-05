@@ -120,10 +120,10 @@ namespace Locompro.Pages.SearchResults
             }
 
             this.productName = query;
-            this.items =
+           /* this.items =
                 (await _searchService.SearchItems(productName, province, canton, minValue, maxValue, category, model))
                 .ToList();
-            
+            */
             this.itemsAmount = items.Count;
 
             this.displayItems = PaginatedList<Item>.Create(items, pageIndex ?? 1, _pageSize);

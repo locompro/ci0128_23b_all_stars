@@ -1,3 +1,4 @@
+using System.Reflection.PortableExecutable;
 using Locompro.Models;
 using Locompro.Data;
 using Microsoft.EntityFrameworkCore;
@@ -59,6 +60,20 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
             .Include(s => s.Store)
             .ThenInclude(st => st.Canton)
             .Where(s => s.Store.Canton.Name == cantonName && s.Store.Canton.Province.Name == provinceName)
+            .ToListAsync();
+    
+        return submissions;
+    }
+    
+    /// <summary>
+    /// Gets all submissions that contain the given product model
+    /// </summary>
+    /// <param name="productModel"></param>
+    public async Task<IEnumerable<Submission>> GetSubmissionsByProductModelAsync(string productModel)
+    {
+        var submissions = await DbSet
+            .Include(s => s.Product)
+            .Where(s => s.Product.Model == productModel)
             .ToListAsync();
     
         return submissions;

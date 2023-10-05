@@ -53,4 +53,12 @@ public class SearchService
     {
         return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
     }
+    
+    /// <summary>
+    /// Gets submissions containing a specific product model
+    /// </summary>
+    public async Task<IEnumerable<Submission>> GetSubmissionsByProductModel(string productModel)
+    {
+        return await _submissionRepository.GetSubmissionsByProductModelAsync(productModel);
+    }
 }
