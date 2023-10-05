@@ -15,7 +15,7 @@
                            value="@Model.ProductName"
                            class="form-control rounded-pill"
                            name="query"
-                           placeholder="Buscar...."
+                           placeholder="Ingresar nombre de producto"
                            required="required"
                            style="margin-left: 0px; border: none;"
                            id="searchBox">
@@ -249,44 +249,55 @@
     </script>
 
     <script>
-        function performSearchButton() {
+        const invalidSimpleSearch = "/SearchResults/SearchResults?query=";
+             
+            const invalidAdvancedSearch = "/SearchResults/SearchResults?query="
+             + "&province=Ninguno"
+             + "&canton=Ninguno"
+             + "&minValue=0"
+             + "&maxValue=0"
+             + "&category=Ninguno"
+             + "&model=";
+            
+            function performSearchButton() {
             // if advanced search is not open it is normal search
             var redirect = "/SearchResults/SearchResults?query=";
-    
-            if (!document.getElementById("searchBox").value) {
-                return;
-            }
-            
+             
             var searchValue = document.getElementById("searchBox").value.valueOf() ;
-            
+             
+             
             if (!modalShown) {
-                // get value
-                redirect += searchValue;
-            } else {
-                var provinceValue = document.getElementById("provinceDropdown").value;
-                var cantonValue = document.getElementById("cantonDropdown").value;
-                var minValue = document.getElementById("minValue").value;
-                var maxValue = document.getElementById("maxValue").value;
-                var categoryValue = document.getElementById("categoryDropdown").value;
-    
-                try {
-                    var modelValue = document.getElementById("modelInput").value;
-                } catch (error) {
+                 // get value
+                 redirect += searchValue;   
+                 
+                if (redirect.localeCompare(invalidSimpleSearch) === 0) {
+                    return;
                 }
-    
-               redirect += searchValue
+            } else {
+                 var provinceValue = document.getElementById("provinceDropdown").value;
+                 var cantonValue = document.getElementById("cantonDropdown").value;
+                 var minValue = document.getElementById("minValue").value;
+                 var maxValue = document.getElementById("maxValue").value;
+                 var categoryValue = document.getElementById("categoryDropdown").value;
+            
+                 try {
+                     var modelValue = document.getElementById("modelInput").value;
+                 } catch (error) {
+                 }
+            
+                redirect += searchValue
                     + "&province=" + provinceValue
                     + "&canton=" + cantonValue
                     + "&minValue=" + minValue
                     + "&maxValue=" + maxValue
                     + "&category=" + categoryValue
                     + "&model=" + modelValue;
+                 
+                if (redirect.localeCompare(invalidAdvancedSearch) === 0) {
+                    return;
+                }
             }
-    
-            if (!document.getElementById("searchBox").value) {
-                return;
-            }
-    
+            
             window.location.href = redirect;
         }
     </script>
