@@ -66,4 +66,9 @@ public async Task<IEnumerable<Submission>> SearchSubmissions(string countryName,
 
 } */
     
+    public async Task<IEnumerable<Product>> getProductByModel(string model)
+    {
+        return await _productRepository.getByModelAsync(model);
+    }
+    
 }
