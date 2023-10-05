@@ -49,20 +49,13 @@ public class SearchService
         _productRepository = productRepository;
     }
 
-    /*
-    public async Task<IEnumerable<Submission>> SearchSubmissions(string countryName, string productName)
+    public async Task<IEnumerable<Product>> GetProductByModel(string model)
     {
-
-        var country = await _countryRepository.Get(countryName);
-        var product = await _productRepository.Get(productName);
-        var submissions = await _submissionRepository.GetAll();
-        return submissions.Where(s => s.Product == product && s.Store.Country == country);
-       
-    } */
-    
-    public async Task<IEnumerable<Product>> getProductByModel(string model)
-    {
-        return await _productRepository.getByModelAsync(model);
+        return await _productRepository.GetByModelAsync(model);
     }
     
+    public async Task<IEnumerable<Submission>> GetSubmissionsByCanton(string cantonName, string provinceName)
+    {
+        return await _submissionRepository.GetSubmissionsByCantonAsync(cantonName, provinceName);
+    }
 }

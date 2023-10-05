@@ -23,9 +23,11 @@ namespace Locompro.Repositories
         /// Asyncronously gets products by model
         /// </summary>
         /// <param name="model"></param>
-        public async Task<IEnumerable<Product>> getByModelAsync(string model)
+        public async Task<IEnumerable<Product>> GetByModelAsync(string model)
         {
-            var products = await DbSet.Where(p => p.Model == model).ToListAsync();
+            var products = await DbSet
+                .Where(p => p.Model == model)
+                .ToListAsync();
             
             return products;
         }

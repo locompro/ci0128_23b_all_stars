@@ -1,6 +1,6 @@
 using Locompro.Models;
 using Locompro.Data;
-
+using Microsoft.EntityFrameworkCore;
 namespace Locompro.Repositories;
 
 public struct SubmissionKey
@@ -24,4 +24,16 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
         base(context, loggerFactory)
     {
     }
+
+    public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAsync(string cantonName, string provinceName)
+    {
+        var submissions = await DbSet
+            .Include(s => s.Store)
+            .ThenInclude(st => st.Canton)
+            .Where(s => s.Store.Canton.Name == cantonName && s.Store.Canton.Province.Name == provinceName)
+            .ToListAsync();
+    
+        return submissions;
+    }
+
 }
