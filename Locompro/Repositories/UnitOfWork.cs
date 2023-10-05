@@ -1,5 +1,8 @@
-﻿using Locompro.Data;
+﻿using System;
+using System.Threading.Tasks;
+using Locompro.Data;
 using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Logging;
 
 namespace Locompro.Repositories
 {

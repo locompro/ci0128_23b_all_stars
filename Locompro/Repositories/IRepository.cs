@@ -1,4 +1,7 @@
-﻿namespace Locompro.Repositories
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace Locompro.Repositories
 {
     /// <summary>
     /// An application repository.

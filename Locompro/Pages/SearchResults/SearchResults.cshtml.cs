@@ -66,6 +66,13 @@ namespace Locompro.Pages.SearchResults
         public long minPrice { get; set; }
         public long maxPrice { get; set; }
         public string modelSelected { get; set; }
+        
+        
+        public string nameSort { get; set; }
+        
+        public string currentSort { get; set; }
+        
+        public string currentFilter { get; set; }
 
         /// <summary>
         /// Constructor
@@ -84,7 +91,7 @@ namespace Locompro.Pages.SearchResults
             this.Configuration = configuration;
             this._pageSize = Configuration.GetValue("PageSize", 4);
 
-            // this.OnTestingCreateTestingItems();
+            this.OnTestingCreateTestingItems();
         }
 
         /// <summary>
@@ -105,7 +112,9 @@ namespace Locompro.Pages.SearchResults
             long minValue,
             long maxValue,
             string category,
-            string model)
+            string model,
+            string currentFilter,
+            string sortOrder)
         {
             this.provinceSelected = province;
             this.cantonSelected = canton;
@@ -113,23 +122,51 @@ namespace Locompro.Pages.SearchResults
             this.maxPrice = maxValue;
             this.categorySelected = category;
             this.modelSelected = model;
-            string queryString = Request.Query["query"];
-            if (queryString.IsNullOrEmpty())
-            {
-                this.productName = query;
-            }
+            this.currentSort = sortOrder;
 
             this.productName = query;
-           /* this.items =
+            
+            if (string.IsNullOrEmpty(sortOrder))
+            {
+                nameSort = "name_asc";
+            }
+            else
+            {
+                nameSort = sortOrder.Contains("name_asc") ? "name_desc" : "name_asc";
+            }
+            
+            Console.WriteLine(nameSort);
+            
+            /*
+            this.items =
                 (await _searchService.SearchItems(productName, province, canton, minValue, maxValue, category, model))
                 .ToList();
             */
             this.itemsAmount = items.Count;
+            
+            // order items by sort order
+            this.orderItems(sortOrder);
 
             this.displayItems = PaginatedList<Item>.Create(items, pageIndex ?? 1, _pageSize);
         }
 
-
+        /// <summary>
+        /// Orders items
+        /// </summary>
+        /// <param name="sortOrder"></param>
+        void orderItems(string sortOrder)
+        {
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    items = items.OrderByDescending(item => item.ProductName).ToList();
+                    break;
+                case "name_asc":
+                    items = items.OrderBy(item => item.ProductName).ToList();
+                    break;
+            }
+        }
+        
         /// <summary>
         /// Returns the view component for the advanced search modal
         /// </summary>
