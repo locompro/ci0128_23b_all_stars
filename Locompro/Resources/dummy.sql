@@ -1,4 +1,4 @@
--- Agregar categorías de ejemplo a la tabla Category
+-- Agregar categor�as de ejemplo a la tabla Category
 INSERT INTO Categories (Name)
 VALUES
     ('Electrónica'),

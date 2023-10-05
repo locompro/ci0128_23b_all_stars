@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 
 using Locompro.Data;
@@ -7,6 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Server;
 using System.Xml;
 using Locompro.Models;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -99,8 +104,11 @@ void registerServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<SearchService>();
     builder.Services.AddScoped<CategoryRepository>();
     builder.Services.AddScoped<CategoryService>();
+    
+    // for searching
     builder.Services.AddScoped<ProductRepository>();
-    builder.Services.AddScoped<ProductService>();
+    builder.Services.AddScoped<SubmissionRepository>();
+    builder.Services.AddScoped<SearchService>();
     builder.Services.AddScoped<SubmissionRepository>();
 }
 

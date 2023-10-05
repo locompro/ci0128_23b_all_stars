@@ -1,9 +1,15 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Locompro.Services;
 using Castle.Core.Internal;
 using Newtonsoft.Json;
 using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Threading.Tasks;
+using Locompro.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Locompro.Pages.SearchResults
 {
@@ -16,6 +22,8 @@ namespace Locompro.Pages.SearchResults
         /// Service that handles the advanced search modal
         /// </summary>
         private readonly AdvancedSearchModalService _advancedSearchServiceHandler;
+        
+        private SearchService _searchService;
 
         /// <summary>
         /// Service that handles the locations data
@@ -66,8 +74,10 @@ namespace Locompro.Pages.SearchResults
         /// <param name="configuration"></param>
         public SearchResultsModel(CountryService countryService,
                 AdvancedSearchModalService advancedSearchServiceHandler,
-                IConfiguration configuration)
+                IConfiguration configuration,
+                SearchService searchService)
         {
+            this._searchService = searchService;
             this._advancedSearchServiceHandler = advancedSearchServiceHandler;
             this._countryService = countryService;
             this.Configuration = configuration;
@@ -87,7 +97,7 @@ namespace Locompro.Pages.SearchResults
         /// <param name="maxValue"></param>
         /// <param name="category"></param>
         /// <param name="model"></param>
-        public void OnGetAsync(int? pageIndex,
+        public async Task OnGetAsync(int? pageIndex,
             string query,
             string province,
             string canton,
@@ -110,12 +120,9 @@ namespace Locompro.Pages.SearchResults
             }
 
             this.productName = query;
-            Console.WriteLine(this.productName);
 
             this.itemsAmount = items.Count;
             
-            
-
             /*
            List<Product> products = (await this.productService.GetAll()).ToList();
 
@@ -127,8 +134,16 @@ namespace Locompro.Pages.SearchResults
            this.itemsAmount = items.Count;
            */
 
+            List<Product> products = (await this._searchService.getProductsByName("Laptop")).ToList();
+
+            foreach (Product product in products)
+            {
+                Console.WriteLine(product.Name + ", " + product.Categories + ", " + product.Model + ", ");
+            }
+
             this.displayItems = PaginatedList<Item>.Create(items, pageIndex ?? 1, _pageSize);
         }
+        
 
         /// <summary>
         /// Returns the view component for the advanced search modal
