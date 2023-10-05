@@ -1,9 +1,6 @@
 ﻿@page
 @using Locompro.Services
 @model Locompro.Pages.SearchResults.SearchResultsModel
-@{
-
-}
 
 <link rel="stylesheet" href="~/css/MainMenu.css" asp-append-version="true" />
 
@@ -244,9 +241,10 @@
             // if advanced search is not open it is normal search
             var redirect = "/SearchResults/SearchResults?query=";
 
+            var searchValue = document.getElementById("searchBox").value;
+            
             if (!modalShown) {
                 // get value
-                var searchValue = document.getElementById("searchBox").value;
                 redirect += searchValue;
             } else {
                 var provinceValue = document.getElementById("provinceDropdown").value;
@@ -254,11 +252,10 @@
                 var minValue = document.getElementById("minValue").value;
                 var maxValue = document.getElementById("maxValue").value;
                 var categoryValue = document.getElementById("categoryDropdown").value;
-                var searchValue = document.getElementById("searchBox").value;
                 var modelValue = "";
 
                 try {
-                    var modelValue = document.getElementById("modelInput").value;
+                    modelValue = document.getElementById("modelInput").value;
                 } catch (error) {
                 }
 

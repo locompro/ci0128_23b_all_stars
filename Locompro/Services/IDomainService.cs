@@ -1,4 +1,7 @@
-﻿namespace Locompro.Services
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+
+namespace Locompro.Services
 {
     /// <summary>
     /// An application domain service.

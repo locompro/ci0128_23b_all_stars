@@ -1,9 +1,15 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Locompro.Services;
 using Castle.Core.Internal;
 using Newtonsoft.Json;
 using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Threading.Tasks;
+using Locompro.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace Locompro.Pages.SearchResults
 {
@@ -16,6 +22,8 @@ namespace Locompro.Pages.SearchResults
         /// Service that handles the advanced search modal
         /// </summary>
         private readonly AdvancedSearchModalService _advancedSearchServiceHandler;
+
+        private SearchService _searchService;
 
         /// <summary>
         /// Service that handles the locations data
@@ -51,6 +59,7 @@ namespace Locompro.Pages.SearchResults
         /// Name of product that was searched
         /// </summary>
         public string productName { get; set; }
+
         public string provinceSelected { get; set; }
         public string cantonSelected { get; set; }
         public string categorySelected { get; set; }
@@ -65,15 +74,17 @@ namespace Locompro.Pages.SearchResults
         /// <param name="advancedSearchServiceHandler"></param>
         /// <param name="configuration"></param>
         public SearchResultsModel(CountryService countryService,
-                AdvancedSearchModalService advancedSearchServiceHandler,
-                IConfiguration configuration)
+            AdvancedSearchModalService advancedSearchServiceHandler,
+            IConfiguration configuration,
+            SearchService searchService)
         {
+            this._searchService = searchService;
             this._advancedSearchServiceHandler = advancedSearchServiceHandler;
             this._countryService = countryService;
             this.Configuration = configuration;
             this._pageSize = Configuration.GetValue("PageSize", 4);
 
-            this.OnTestingCreateTestingItems();
+            // this.OnTestingCreateTestingItems();
         }
 
         /// <summary>
@@ -87,7 +98,7 @@ namespace Locompro.Pages.SearchResults
         /// <param name="maxValue"></param>
         /// <param name="category"></param>
         /// <param name="model"></param>
-        public void OnGetAsync(int? pageIndex,
+        public async Task OnGetAsync(int? pageIndex,
             string query,
             string province,
             string canton,
@@ -102,7 +113,6 @@ namespace Locompro.Pages.SearchResults
             this.maxPrice = maxValue;
             this.categorySelected = category;
             this.modelSelected = model;
-
             string queryString = Request.Query["query"];
             if (queryString.IsNullOrEmpty())
             {
@@ -110,25 +120,15 @@ namespace Locompro.Pages.SearchResults
             }
 
             this.productName = query;
-            Console.WriteLine(this.productName);
-
+            this.items =
+                (await _searchService.searchItems(productName, province, canton, minValue, maxValue, category, model))
+                .ToList();
+            
             this.itemsAmount = items.Count;
-            
-            
-
-            /*
-           List<Product> products = (await this.productService.GetAll()).ToList();
-
-           foreach (Product product in products)
-           {
-               this.items.Add(new Item("0/0/0", product.Name, 1000, "Generic Store", "Generic Canton", "Generic Province", "Generic Description"));
-           }
-
-           this.itemsAmount = items.Count;
-           */
 
             this.displayItems = PaginatedList<Item>.Create(items, pageIndex ?? 1, _pageSize);
         }
+
 
         /// <summary>
         /// Returns the view component for the advanced search modal
@@ -172,7 +172,7 @@ namespace Locompro.Pages.SearchResults
         void OnTestingCreateTestingItems()
         {
             this.items = new List<Item>
-                {
+            {
                 new Item(
                     "2020-10-10",
                     "sombrero",
@@ -381,8 +381,7 @@ namespace Locompro.Pages.SearchResults
                     "Cartago",
                     "Cartago",
                     "tenis deportivos para correr")
-
-                };
+            };
         }
     }
 }

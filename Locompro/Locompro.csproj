@@ -16,6 +16,7 @@
 	  <EmbeddedResource Remove="Pages\NewFolder1\**" />
 	  <None Remove="NewFolder\**" />
 	  <None Remove="Pages\NewFolder1\**" />
+	  <Compile Remove="Services\ProductService.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

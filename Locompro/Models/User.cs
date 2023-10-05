@@ -1,4 +1,5 @@
-﻿using Locompro.Models;
+﻿using System.Collections.Generic;
+using Locompro.Models;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
