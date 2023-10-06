@@ -1,3 +1,4 @@
+using System.Globalization;
 using Locompro.Data;
 using Locompro.Models;
 using Locompro.Repositories;
@@ -12,38 +13,20 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class SearchServiceTest
 {
-    private ILoggerFactory _logger;
     
-    // context
-    private LocomproContext _context;
+    private readonly Mock<LocomproContext> _dbContextMock;
+    private readonly Mock<ILoggerFactory> _loggerFactoryMock;
+    private readonly Mock<SubmissionRepository> _submissionRepositoryMock;
+    private readonly SearchService _searchService;
     
-    // repository
-    private SubmissionRepository _submissionRepository;
-    
-    // search service
-    private SearchService _searchService;
-    
-    [SetUp]
-    public void SetUp()
+    public SearchServiceTest()
     {
-        this._logger = new LoggerFactory();
-        
-        DbContextOptions<LocomproContext> options = new DbContextOptionsBuilder<LocomproContext>()
-            .UseInMemoryDatabase(databaseName: "InMemoryDbForTesting")
-            .Options;
-        
-        // prepare context and add db sets
-        this._context = new LocomproContext(options);
-        _context.Database.EnsureDeleted(); // Make sure the db is clean
-        _context.Database.EnsureCreated();
-        
-        // set repositories and services
-        this._submissionRepository = new SubmissionRepository(this._context, this._logger);
-        this._searchService = new SearchService(this._submissionRepository);
-        
-        this.PrepareDatabase();
+        _dbContextMock = new Mock<LocomproContext>(new DbContextOptions<LocomproContext>());
+        _loggerFactoryMock = new Mock<ILoggerFactory>();
+        _submissionRepositoryMock = new Mock<SubmissionRepository>(_dbContextMock.Object, _loggerFactoryMock.Object);
+        _searchService = new SearchService(_submissionRepositoryMock.Object);
     }
-
+    
     /// <summary>
     /// Finds a list of names that are expected to be found
     /// <author>Joseph Stuart Valverde Kong C18100</author>
@@ -53,49 +36,49 @@ public class SearchServiceTest
     {
         // Arrange
         string productSearchName = "Product1";
-
+        MockDataSetup();
         List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
-        
+
         // Assert
-        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
 
         productSearchName = "Product2";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
-        
+
         // Assert
-        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
-        
+        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+
         productSearchName = "Product3";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
-        
+
         // Assert
-        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
 
         productSearchName = "Product4";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
-        
+
         // Assert
-        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
-        
+        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+
         productSearchName = "Product5";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
-        
+
         // Assert
-        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
-        
+        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+
         productSearchName = "Product6";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
-        
+
         // Assert
-        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
-        
+        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+
         productSearchName = "Product7";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
-        
+
         // Assert
-        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
     }
-    
+
     /// <summary>
     /// Searches for name that is not expected to be found and
     /// returns empty list
@@ -106,17 +89,17 @@ public class SearchServiceTest
     {
         // Arrange
         string productSearchName = "ProductNonExistent";
-
+        MockDataSetup();
         List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
-        
+
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.IsFalse(searchResults.Any(i => i.ProductName == productSearchName));
+            Assert.IsFalse(searchResults.Exists(i => i.ProductName == productSearchName));
             Assert.IsEmpty(searchResults);
         });
     }
-    
+
     /// <summary>
     /// Gives an empty string and returns empty list
     /// Should not throw an exception
@@ -127,17 +110,17 @@ public class SearchServiceTest
     {
         // Arrange
         string productSearchName = "";
-
+        MockDataSetup();
         List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
-        
+
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.IsFalse(searchResults.Any(i => i.ProductName == productSearchName));
+            Assert.IsFalse(searchResults.Exists(i => i.ProductName == productSearchName));
             Assert.IsEmpty(searchResults);
         });
     }
-    
+
     /// <summary>
     /// Searches for an item and the result is the one expected
     /// to be the best submission
@@ -154,30 +137,118 @@ public class SearchServiceTest
 
         List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
-        DateTime dateTimeExpected = new DateTime(2023, 10, 6, 12, 0, 0);
-        DateTime dateTimeReceived = DateTime.Parse(searchResults[0].LastSubmissionDate);
-        
+        DateTime dateTimeExpected = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
+        DateTime dateTimeReceived = DateTime.Parse(searchResults[0].LastSubmissionDate, new CultureInfo("en-US"));
+
         // Assert
         Assert.That(dateTimeReceived, Is.EqualTo(dateTimeExpected));
     }
 
-    void PrepareDatabase()
+    [Test]
+    public void SearchByModel_ModelIsFound()
     {
-        Country country = new Country { Name = "Country" }; 
-        
-        this._context.Set<Country>().Add(country);
+        // Arrange
+        string modelName = "Model1";
+        MockDataSetup();
+        // Act
+        List<Item> searchResults = _searchService.SearchItems(null, null, null, 0, 0, null, modelName).Result;
+
+        // Assert
+        Assert.That(searchResults, Is.Not.Null);
+        Assert.That(searchResults.Count > 0, Is.True);
+        Assert.That(searchResults.TrueForAll(item => item.Submissions[0].Product.Model.Contains(modelName)),
+            Is.True); // Verify that all items have the expected model name
+    }
+
+    [Test]
+    public void SearchByModel_ModelIsNotFound()
+    {
+        // Arrange
+        string modelName = "NonExistentModel";
+        MockDataSetup();
+        // Act
+        List<Item> searchResults = _searchService.SearchItems(null, null, null, 0, 0, null, modelName).Result;
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.EqualTo(0)); // Expecting an empty result
+    }
+
+    [Test]
+    public void SearchByModel_EmptyModelName()
+    {
+        // Arrange
+        string modelName = string.Empty;
+        MockDataSetup();
+        // Act
+        List<Item> searchResults = _searchService.SearchItems(null, null, null, 0, 0, null, modelName).Result;
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.EqualTo(0)); // Expecting an empty result
+    }
+    
+    /// <summary>
+    ///   tests that the search by canton and province returns the expected results when the canton and province are mentioned in the submissions
+    /// <author> A. Badilla Olivas B80874 </author>
+    /// </summary>
+    [Test]
+    public async Task GetSubmissionsByCantonAndProvince_ValidCantonAndProvince_SubmissionsReturned()
+    {
+        // Arrange
+        string canton = "Canton1";
+        string province = "Province1";
+        MockDataSetup();
+        // Act
+        var results = await _searchService.GetSubmissionsByCantonAndProvince(canton, province);
+
+        // Assert
+        var submissions = results as Submission[] ?? results.ToArray();
+        Assert.That(submissions, Is.Not.Null);
+        Assert.That(submissions.Count(), Is.GreaterThan(0));
+        bool all = true;
+        foreach (var sub in submissions)
+        {
+            if (sub.Store.Canton.Name != canton || sub.Store.Canton.ProvinceName != province)
+            {
+                all = false;
+                break;
+            }
+        }
+
+        Assert.That(all, Is.True);
+    }
+    /// <summary>
+    /// Tests that an empty list is returned when the canton and province are not mentioned in any submission
+    /// <author> A. Badilla Olivas B80874 </author>
+    /// </summary>
+    [Test]
+    public async Task GetSubmissionsByCantonAndProvince_InvalidCantonAndProvince_EmptyListReturned()
+    {
+        // Arrange
+        string canton = "InvalidCanton";
+        string province = "InvalidProvince";
+        MockDataSetup();
+        // Act
+        var results = await _searchService.GetSubmissionsByCantonAndProvince(canton, province);
+
+        // Assert
+        var submissions = results as Submission[] ?? results.ToArray();
+        Assert.That(submissions, Is.Not.Null);
+        Assert.That(submissions.Count(), Is.EqualTo(0));
+    }
+    /// <summary>
+    /// Sets up the mock for the submission repository so that it behaves as expected for the tests
+    /// </summary>
+    void MockDataSetup()
+    {
+        Country country = new Country { Name = "Country" };
         
         Province province1 = new Province { Name = "Province1", CountryName = "Country", Country = country };
         Province province2 = new Province { Name = "Province2", CountryName = "Country", Country = country };
-
-        this._context.Set<Province>().Add(province1);
-        this._context.Set<Province>().Add(province2);
         
-        Canton canton1 = new Canton{ Name = "Canton1", ProvinceName = "Province1", Province = province1 };
-        Canton canton2 = new Canton{ Name = "Canton2", ProvinceName = "Province2", Province = province2 };
-        
-        this._context.Set<Canton>().Add(canton1);
-        this._context.Set<Canton>().Add(canton2);
+        Canton canton1 = new Canton { Name = "Canton1", ProvinceName = "Province1", Province = province1 };
+        Canton canton2 = new Canton { Name = "Canton2", ProvinceName = "Province2", Province = province2 };
         
         // Add users
         List<User> users = new List<User>
@@ -195,7 +266,7 @@ public class SearchServiceTest
                 Name = "User3"
             }
         };
-   
+
         // Add stores
         List<Store> stores = new List<Store>
         {
@@ -228,7 +299,7 @@ public class SearchServiceTest
                 Telephone = "Telephone4",
             }
         };
-        
+
         // Add products
         List<Product> products = new List<Product>
         {
@@ -236,46 +307,53 @@ public class SearchServiceTest
             {
                 Id = 1,
                 Name = "Product1",
+                Model = "Model1"
             },
             new Product
             {
                 Id = 2,
-                Name = "Product2"
+                Name = "Product2",
+                Model = "Model2"
             },
             new Product
             {
                 Id = 3,
-                Name = "Product3"
+                Name = "Product3",
+                Model = "Model3"
             },
             new Product
             {
                 Id = 4,
-                Name = "Product4"
+                Name = "Product4",
+                Model = "Model4"
             },
             new Product
             {
                 Id = 5,
-                Name = "Product5"
+                Name = "Product5",
+                Model = "Model5"
             },
             new Product
             {
                 Id = 6,
-                Name = "Product6"
+                Name = "Product6",
+                Model = "Model6"
             },
             new Product
             {
                 Id = 7,
-                Name = "Product7"
+                Name = "Product7",
+                Model = "Model7"
             }
         };
-        
+
         // Add submissions
-        List<Submission> submissions = new List<Submission> 
+        List<Submission> submissions = new List<Submission>
         {
             new Submission
             {
                 Username = "User1",
-                EntryTime = new DateTime(2023, 10, 6, 12, 0, 0),
+                EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
                 Price = 100,
                 Rating = 4.5f,
                 Description = "Description for Submission 1",
@@ -366,7 +444,7 @@ public class SearchServiceTest
             new Submission
             {
                 Username = "User8",
-                EntryTime = new DateTime(2023, 10, 5, 12, 0, 0),
+                EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
                 Price = 180,
                 Rating = 4.3f,
                 Description = "Description for Submission 8",
@@ -532,13 +610,26 @@ public class SearchServiceTest
                 Store = stores[1],
                 Product = products[5]
             }
+            
         };
+        // setting up mock repository behavior requires the methods to be virtual on class being mocked or using interface, in this case
+        // the methods are virtual because interface does not have the methods being implemented.
+        _submissionRepositoryMock.Setup(repo => repo.GetSubmissionsByCantonAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync((string canton, string province) => 
+            {
+                return submissions.Where(s => s.Store.Canton.Name == canton && s.Store.Canton.ProvinceName == province).ToList();
+            });
 
-        this._context.Set<User>().AddRange(users);
-        this._context.Set<Store>().AddRange(stores);
-        this._context.Set<Product>().AddRange(products);
-        this._context.Set<Submission>().AddRange(submissions);
-        
-        this._context.SaveChanges();
+        _submissionRepositoryMock.Setup(repo => repo.GetSubmissionsByProductModelAsync(It.IsAny<string>()))
+            .ReturnsAsync((string model) => 
+            {
+                return submissions.Where(s => s.Product.Model == model).ToList();
+            });
+
+        _submissionRepositoryMock.Setup(repo => repo.GetSubmissionsByProductNameAsync(It.IsAny<string>()))
+            .ReturnsAsync((string productName) => 
+            {
+                return submissions.Where(s => s.Product.Name == productName).ToList();
+            });
     }
 }
