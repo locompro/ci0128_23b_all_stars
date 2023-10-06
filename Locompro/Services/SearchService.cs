@@ -62,8 +62,7 @@ public class SearchService
     /// <param name="submissionRepository"></param>
     /// <param name="countryRepository"></param>
     /// <param name="productRepository"></param>
-    public SearchService(SubmissionRepository submissionRepository, CountryRepository countryRepository,
-        ProductRepository productRepository)
+    public SearchService(SubmissionRepository submissionRepository)
     {
         _submissionRepository = submissionRepository;
     }

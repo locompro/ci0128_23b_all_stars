@@ -241,14 +241,14 @@ public class SearchResultsModel : PageModel
         if (province.Equals("Ninguno"))
         {
             // create empty list
-            List<Canton> emptyCantonList = new List<Canton>();
-            
-            // add none back as an option
-            emptyCantonList.Add(
+            List<Canton> emptyCantonList = new List<Canton>
+            {
+                // add none back as an option
                 new Canton{CountryName = "Ninguno",
                     Name = "Ninguno", 
-                    ProvinceName = "Ninguno"});
-            
+                    ProvinceName = "Ninguno"}
+            };
+
             // set new list to service canton list
             this._advancedSearchServiceHandler.Cantons = emptyCantonList;
         }
