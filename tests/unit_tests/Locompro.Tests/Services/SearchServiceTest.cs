@@ -10,16 +10,10 @@ namespace Locompro.Tests.Services;
 
 public class SearchServiceTest
 {
-    private Mock<ILoggerFactory> _logger;
-    
-    // Db sets for context
-    private Mock<DbSet<Submission>> _submissionDbSet;
-    private Mock<DbSet<Product>> _productDbSet;
-    private Mock<DbSet<User>> _userDbSet;
-    private Mock<DbSet<Store>> _storeDbSet;
+    private ILoggerFactory _logger;
     
     // context
-    private Mock<LocomproContext> _context;
+    private LocomproContext _context;
     
     // repository
     private SubmissionRepository _submissionRepository;
@@ -30,25 +24,19 @@ public class SearchServiceTest
     [SetUp]
     public void SetUp()
     {
-        DbContextOptions<LocomproContext> contextOptions = new DbContextOptions<LocomproContext>();
+        this._logger = new LoggerFactory();
         
-        this._logger = new Mock<ILoggerFactory>();
-        
-        // prepare db sets
-        this._submissionDbSet = new Mock<DbSet<Submission>>();
-        this._productDbSet = new Mock<DbSet<Product>>();
-        this._userDbSet = new Mock<DbSet<User>>();
-        this._storeDbSet = new Mock<DbSet<Store>>();
+        DbContextOptions<LocomproContext> options = new DbContextOptionsBuilder<LocomproContext>()
+            .UseInMemoryDatabase(databaseName: "InMemoryDbForTesting")
+            .Options;
         
         // prepare context and add db sets
-        this._context = new Mock<LocomproContext>(contextOptions);
-        this._context.Setup(c => c.Set<Submission>()).Returns(this._submissionDbSet.Object);
-        this._context.Setup(c => c.Set<Product>()).Returns(this._productDbSet.Object);
-        this._context.Setup(c => c.Set<User>()).Returns(this._userDbSet.Object);
-        this._context.Setup(c => c.Set<Store>()).Returns(this._storeDbSet.Object);
+        this._context = new LocomproContext(options);
+        _context.Database.EnsureDeleted(); // Make sure the db is clean
+        _context.Database.EnsureCreated();
         
         // set repositories and services
-        this._submissionRepository = new SubmissionRepository(this._context.Object, this._logger.Object);
+        this._submissionRepository = new SubmissionRepository(this._context, this._logger);
         this._searchService = new SearchService(this._submissionRepository);
         
         this.PrepareDatabase();
@@ -101,6 +89,22 @@ public class SearchServiceTest
 
     void PrepareDatabase()
     {
+        Country country = new Country { Name = "Country" }; 
+        
+        this._context.Set<Country>().Add(country);
+        
+        Province province1 = new Province { Name = "Province1", CountryName = "Country", Country = country };
+        Province province2 = new Province { Name = "Province2", CountryName = "Country", Country = country };
+
+        this._context.Set<Province>().Add(province1);
+        this._context.Set<Province>().Add(province2);
+        
+        Canton canton1 = new Canton{ Name = "Canton1", ProvinceName = "Province1", Province = province1 };
+        Canton canton2 = new Canton{ Name = "Canton2", ProvinceName = "Province2", Province = province2 };
+        
+        this._context.Set<Canton>().Add(canton1);
+        this._context.Set<Canton>().Add(canton2);
+        
         // Add users
         List<User> users = new List<User>
         {
@@ -117,43 +121,40 @@ public class SearchServiceTest
                 Name = "User3"
             }
         };
-        
-        this._userDbSet.As<IQueryable<User>>().Setup(m => m.Provider).Returns(users.AsQueryable().Provider);
-        this._userDbSet.As<IQueryable<User>>().Setup(m => m.Expression).Returns(users.AsQueryable().Expression);
-        this._userDbSet.As<IQueryable<User>>().Setup(m => m.ElementType).Returns(users.AsQueryable().ElementType);
-        this._userDbSet.As<IQueryable<User>>().Setup(m => m.GetEnumerator()).Returns(users.AsQueryable().GetEnumerator());
-
+   
         // Add stores
         List<Store> stores = new List<Store>
         {
             new Store
             {
                 Name = "Store1",
-                Canton = new Canton {Name = "Canton1", ProvinceName = "Province1"}
+                Canton = canton1,
+                Address = "Address1",
+                Telephone = "Telephone1",
             },
             new Store
             {
                 Name = "Store2",
-                Canton = new Canton {Name = "Canton1", ProvinceName = "Province1"}
+                Canton = canton1,
+                Address = "Address2",
+                Telephone = "Telephone2",
             },
             new Store
             {
                 Name = "Store3",
-                Canton = new Canton {Name = "Canton2", ProvinceName = "Province2"}
+                Canton = canton2,
+                Address = "Address3",
+                Telephone = "Telephone3",
             },
             new Store
             {
                 Name = "Store4",
-                Canton = new Canton {Name = "Canton2", ProvinceName = "Province2"}
+                Canton = canton2,
+                Address = "Address4",
+                Telephone = "Telephone4",
             }
         };
         
-        this._storeDbSet.As<IQueryable<Store>>().Setup(m => m.Provider).Returns(stores.AsQueryable().Provider);
-        this._storeDbSet.As<IQueryable<Store>>().Setup(m => m.Expression).Returns(stores.AsQueryable().Expression);
-        this._storeDbSet.As<IQueryable<Store>>().Setup(m => m.ElementType).Returns(stores.AsQueryable().ElementType);
-        this._storeDbSet.As<IQueryable<Store>>().Setup(m => m.GetEnumerator()).Returns(stores.AsQueryable().GetEnumerator());
-        
-
         // Add products
         List<Product> products = new List<Product>
         {
@@ -194,11 +195,6 @@ public class SearchServiceTest
             }
         };
         
-        this._productDbSet.As<IQueryable<Product>>().Setup(m => m.Provider).Returns(products.AsQueryable().Provider);
-        this._productDbSet.As<IQueryable<Product>>().Setup(m => m.Expression).Returns(products.AsQueryable().Expression);
-        this._productDbSet.As<IQueryable<Product>>().Setup(m => m.ElementType).Returns(products.AsQueryable().ElementType);
-        this._productDbSet.As<IQueryable<Product>>().Setup(m => m.GetEnumerator()).Returns(products.AsQueryable().GetEnumerator());
-
         // Add submissions
         List<Submission> submissions = new List<Submission> 
         {
@@ -463,10 +459,12 @@ public class SearchServiceTest
                 Product = products[5]
             }
         };
+
+        this._context.Set<User>().AddRange(users);
+        this._context.Set<Store>().AddRange(stores);
+        this._context.Set<Product>().AddRange(products);
+        this._context.Set<Submission>().AddRange(submissions);
         
-        this._submissionDbSet.As<IQueryable<Submission>>().Setup(m => m.Provider).Returns(submissions.AsQueryable().Provider);
-        this._submissionDbSet.As<IQueryable<Submission>>().Setup(m => m.Expression).Returns(submissions.AsQueryable().Expression);
-        this._submissionDbSet.As<IQueryable<Submission>>().Setup(m => m.ElementType).Returns(submissions.AsQueryable().ElementType);
-        this._submissionDbSet.As<IQueryable<Submission>>().Setup(m => m.GetEnumerator()).Returns(submissions.AsQueryable().GetEnumerator());
+        this._context.SaveChanges();
     }
 }
