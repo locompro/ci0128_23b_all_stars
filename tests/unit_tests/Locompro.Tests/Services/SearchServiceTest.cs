@@ -5,9 +5,11 @@ using Locompro.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NuGet.ContentModel;
 
 namespace Locompro.Tests.Services;
 
+[TestFixture]
 public class SearchServiceTest
 {
     private ILoggerFactory _logger;
@@ -44,47 +46,119 @@ public class SearchServiceTest
 
     /// <summary>
     /// Finds a list of names that are expected to be found
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public void SearchByName_NameIsFound()
     {
         // Arrange
-        string productName = "Product1";
+        string productSearchName = "Product1";
 
-        List<Item> searchResults = _searchService.SearchItems(productName, null, null, 0, 0, null, null).Result;
+        List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
         
         // Assert
-        Assert.IsNotNull(searchResults);
+        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
+
+        productSearchName = "Product2";
+        searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        // Assert
+        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
+        
+        productSearchName = "Product3";
+        searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        // Assert
+        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
+
+        productSearchName = "Product4";
+        searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        // Assert
+        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
+        
+        productSearchName = "Product5";
+        searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        // Assert
+        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
+        
+        productSearchName = "Product6";
+        searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        // Assert
+        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
+        
+        productSearchName = "Product7";
+        searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        // Assert
+        Assert.IsTrue(searchResults.Any(i => i.ProductName == productSearchName));
     }
     
     /// <summary>
     /// Searches for name that is not expected to be found and
     /// returns empty list
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public void SearchByNameForNonExistent_NameIsNotFound()
     {
+        // Arrange
+        string productSearchName = "ProductNonExistent";
+
+        List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
         
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.IsFalse(searchResults.Any(i => i.ProductName == productSearchName));
+            Assert.IsEmpty(searchResults);
+        });
     }
     
     /// <summary>
     /// Gives an empty string and returns empty list
     /// Should not throw an exception
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public void SearchByNameForEmptyString_NameIsNotFound()
     {
+        // Arrange
+        string productSearchName = "";
+
+        List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
         
+        // Assert
+        Assert.Multiple(() =>
+        {
+            Assert.IsFalse(searchResults.Any(i => i.ProductName == productSearchName));
+            Assert.IsEmpty(searchResults);
+        });
     }
     
     /// <summary>
     /// Searches for an item and the result is the one expected
     /// to be the best submission
+    /// <remarks>
+    /// This test is to be changed accordingly when
+    /// a new heuristic change to the best submission algorithm is made
+    /// </remarks>
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public void SearchByName_FindsBestSubmission()
     {
+        string productSearchName = "Product1";
+
+        List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+
+        DateTime dateTimeExpected = new DateTime(2023, 10, 6, 12, 0, 0);
+        DateTime dateTimeReceived = DateTime.Parse(searchResults[0].LastSubmissionDate);
         
+        // Assert
+        Assert.That(dateTimeReceived, Is.EqualTo(dateTimeExpected));
     }
 
     void PrepareDatabase()
@@ -201,7 +275,7 @@ public class SearchServiceTest
             new Submission
             {
                 Username = "User1",
-                EntryTime = DateTime.Now.AddDays(-2),
+                EntryTime = new DateTime(2023, 10, 6, 12, 0, 0),
                 Price = 100,
                 Rating = 4.5f,
                 Description = "Description for Submission 1",
@@ -292,14 +366,14 @@ public class SearchServiceTest
             new Submission
             {
                 Username = "User8",
-                EntryTime = DateTime.Now.AddDays(-8),
+                EntryTime = new DateTime(2023, 10, 5, 12, 0, 0),
                 Price = 180,
                 Rating = 4.3f,
                 Description = "Description for Submission 8",
-                StoreName = "Store8",
-                ProductId = 8,
-                User = users[1],
-                Store = stores[1],
+                StoreName = "Store1",
+                ProductId = 1,
+                User = users[0],
+                Store = stores[0],
                 Product = products[0]
             },
             new Submission
@@ -387,8 +461,8 @@ public class SearchServiceTest
                 Price = 190,
                 Rating = 4.2f,
                 Description = "Description for Submission 15",
-                StoreName = "Store15",
-                ProductId = 15,
+                StoreName = "Store2",
+                ProductId = 1,
                 User = users[2],
                 Store = stores[2],
                 Product = products[0]
