@@ -134,6 +134,48 @@ namespace Locompro.Tests.Services
 
             Assert.That(isLoggedIn, Is.False);
         }
+        [Test]
+        public async Task Login_SuccessfulLogin()
+        {
+            var inputData = new LoginViewModel { UserName = "TestUser", Password = "TestPassword123!" };
+
+            _signInManagerMock.Setup(x => x.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, false))
+                .ReturnsAsync(SignInResult.Success);
+
+            var result = await _service.Login(inputData);
+
+            Assert.That(result.Succeeded, Is.True);
+            _loggerMock.Verify(l => l.Log(
+                    LogLevel.Information, 
+                    It.IsAny<EventId>(), 
+                    It.Is<It.IsAnyType>((v, t) => string.Equals("User logged in.", v.ToString())), 
+                    It.IsAny<Exception>(), 
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!), 
+                Times.Once);
+        }
+
+
+        [Test]
+        public async Task Login_FailedLogin()
+        {
+            var inputData = new LoginViewModel { UserName = "TestUser", Password = "WrongPassword" };
+
+            _signInManagerMock.Setup(x => x.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, false))
+                .ReturnsAsync(SignInResult.Failed);
+
+            var result = await _service.Login(inputData);
+
+            Assert.That(result.Succeeded, Is.False);
+            _loggerMock.Verify(l => l.Log(
+                    LogLevel.Information, 
+                    It.IsAny<EventId>(), 
+                    It.Is<It.IsAnyType>((v, t) => string.Equals("User logged in.", v.ToString())), 
+                    It.IsAny<Exception>(), 
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!), 
+                Times.Never);
+        }
+
+
     }
     
 }

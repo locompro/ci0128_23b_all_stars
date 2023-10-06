@@ -16,9 +16,11 @@
 	  <EmbeddedResource Remove="Pages\NewFolder1\**" />
 	  <None Remove="NewFolder\**" />
 	  <None Remove="Pages\NewFolder1\**" />
+	  <Compile Remove="Services\ProductService.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Castle.Core" Version="5.1.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.21" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.21" />

@@ -1,8 +1,12 @@
 ﻿#nullable disable
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Locompro.Areas.Identity.ViewModels;
 using Locompro.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Locompro.Services
 {
@@ -27,7 +31,16 @@ namespace Locompro.Services
             _logger = logger;
             _emailStore = emailStore ?? GetEmailStore();
         }
-
+        /// <summary>
+        /// Creates a new instance of the <see cref="User"/> class.
+        /// </summary>
+       
+        /// <returns>A new instance of the <see cref="User"/> class.</returns>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the <see cref="User"/> class cannot be instantiated. This could be due to the class being abstract, 
+        /// lacking a parameterless constructor, or other reflection-related issues. When this exception is thrown, 
+        /// consider overriding the registration page located at /Areas/Identity/Pages/Account/Register.cshtml.
+        /// </exception>
         private static User CreateUser()
         {
             try
@@ -37,8 +50,8 @@ namespace Locompro.Services
             catch
             {
                 throw new InvalidOperationException($"Can't create an instance of '{nameof(User)}'. " +
-                                                    $"Ensure that '{nameof(User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                                                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+                    $"Ensure that '{nameof(User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                    $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
             }
         }
 

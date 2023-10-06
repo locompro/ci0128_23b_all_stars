@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Build.Framework;
 
 namespace Locompro.Models;
@@ -18,7 +19,7 @@ public class Submission
     
     public float Rating { get; set; }
     
-    public int Description { get; set; }
+    public string Description { get; set; }
     
     [Required]
     public string StoreName { get; set; }
