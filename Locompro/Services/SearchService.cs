@@ -142,7 +142,7 @@ public class SearchService
         return await _submissionRepository.GetSubmissionsByProductModelAsync(productModel);
     }
 
-    private async Task<IEnumerable<Submission>> GetSubmissionsByCantonAndProvince(string canton, string province)
+    public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAndProvince(string canton, string province)
     {
         return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
     }

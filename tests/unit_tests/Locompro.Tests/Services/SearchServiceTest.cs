@@ -189,7 +189,7 @@ public class SearchServiceTest
 
         // Assert
         Assert.IsNotNull(searchResults);
-        Assert.AreEqual(0, searchResults.Count); // Expecting an empty result
+        Assert.That(searchResults.Count, Is.EqualTo(0)); // Expecting an empty result
     }
 
     [Test]
@@ -203,9 +203,50 @@ public class SearchServiceTest
 
         // Assert
         Assert.IsNotNull(searchResults);
-        Assert.AreEqual(0, searchResults.Count); // Expecting an empty result
+        Assert.That(searchResults.Count, Is.EqualTo(0)); // Expecting an empty result
+    }
+    [Test]
+    public async Task GetSubmissionsByCantonAndProvince_ValidCantonAndProvince_SubmissionsReturned()
+    {
+        // Arrange
+        string canton = "Canton1";
+        string province = "Province1";
+
+        // Act
+        var results = await _searchService.GetSubmissionsByCantonAndProvince(canton, province);
+
+        // Assert
+        var submissions = results as Submission[] ?? results.ToArray();
+        Assert.That(submissions, Is.Not.Null);
+        Assert.That(submissions.Count(), Is.GreaterThan(0));
+        bool all = true;
+        foreach (var sub in submissions)
+        {
+            if (sub.Store.Canton.Name != canton || sub.Store.Canton.ProvinceName != province)
+            {
+                all = false;
+                break;
+            }
+        }
+
+        Assert.That(all, Is.True);
     }
 
+    [Test]
+    public async Task GetSubmissionsByCantonAndProvince_InvalidCantonAndProvince_EmptyListReturned()
+    {
+        // Arrange
+        string canton = "InvalidCanton";
+        string province = "InvalidProvince";
+
+        // Act
+        var results = await _searchService.GetSubmissionsByCantonAndProvince(canton, province);
+
+        // Assert
+        var submissions = results as Submission[] ?? results.ToArray();
+        Assert.That(submissions, Is.Not.Null);
+        Assert.That(submissions.Count(), Is.EqualTo(0));
+    }
     void PrepareDatabase()
     {
         Country country = new Country { Name = "Country" };
