@@ -108,6 +108,13 @@ public class SearchService
             submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
         }
         
+        // if there are no submissions
+        if (submissions.Count == 0)
+        {
+            // just return an empty list
+            return items;
+        } 
+        
         // aggregate results (look for intersection of all results)
         IEnumerable<Submission> result = submissions.Aggregate((x, y) => x.Intersect(y));
         
