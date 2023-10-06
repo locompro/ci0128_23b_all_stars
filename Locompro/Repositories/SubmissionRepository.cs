@@ -37,7 +37,7 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
     /// <param name="cantonName"></param>
     /// <param name="provinceName"></param>
     /// <returns> a task IEnumerable of submissions </returns>
-    public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAsync(string cantonName, string provinceName)
+    public virtual async Task<IEnumerable<Submission>> GetSubmissionsByCantonAsync(string cantonName, string provinceName)
     {
         var submissions = await DbSet
             .Include(s => s.Store)
@@ -52,7 +52,7 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
     /// Gets all submissions that contain the given product model
     /// </summary>
     /// <param name="productModel"></param>
-    public async Task<IEnumerable<Submission>> GetSubmissionsByProductModelAsync(string productModel)
+    public virtual async Task<IEnumerable<Submission>> GetSubmissionsByProductModelAsync(string productModel)
     {
         var submissions = await DbSet
             .Include(s => s.Product)
@@ -67,7 +67,7 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
     /// </summary>
     /// <param name="productName"></param>
     /// <returns></returns>
-    public async Task<IEnumerable<Submission>> GetSubmissionsByProductNameAsync(string productName)
+    public virtual async Task<IEnumerable<Submission>> GetSubmissionsByProductNameAsync(string productName)
     {
         IQueryable<Submission> submissionsQuery = this.DbSet
             .Include(s => s.Product)
