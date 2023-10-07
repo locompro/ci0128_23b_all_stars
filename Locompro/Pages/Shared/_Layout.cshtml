@@ -12,10 +12,8 @@
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 <head>
-<<<<<<<<< Temporary merge branch 1
     <link rel="icon" src="~/favicon.ico" type="image/x-icon" />
-=========
->>>>>>>>> Temporary merge branch 2
+
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>LoCoMPro</title>
@@ -66,7 +64,7 @@
                         <ul class="navbar-nav me-auto">
                             <li class="nav-item">
                                 <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Submissions/Create">
-                                    <i class="fa fa-plus" style="margin-right: 8px;">
+                                    <i class="fa fa-plus aportar-button">
                                     </i>
                                     Aportar
                                 </a>
@@ -105,13 +103,12 @@
         </nav>
     </header>
     <div class="container" style="margin-bottom: 200px;padding-right:0px; padding-left:0px">
-        <main role="main" class="pb-3" style="min-height: calc(100vh-100px)">
+        <main role="main" class="pb-3 body-container">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="text-center py-4 border-top footer text-muted"
-        style="position: absolute; bottom: 0; width: 100%;">
+    <footer class="text-center py-4 border-top footer text-muted footer-container">
         <div class="container">
             Copyright &copy; 2023 LoCoMPro
         </div>
