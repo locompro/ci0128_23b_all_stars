@@ -1,0 +1,105 @@
+.seach-results-page-container {
+    margin-bottom: 3px;
+    margin-top: -52px;
+}
+
+.search-input-group {
+    margin: 0 auto;
+    margin-right: 10px;
+}
+
+.search-results-button-rounded-top {
+    border-top-left-radius: 20px; /* Rounded top-left corner */
+    border-top-right-radius: 20px; /* Rounded top-right corner */
+    border-bottom-left-radius: 0px; /* Rounded bottom-left corner */
+    border-bottom-right-radius: 0px; /* Rounded bottom-right corner */
+
+    background-color: lightgray;
+    border: 2px solid lightgray;
+    color: black;
+
+    padding-bottom: 5px;
+    padding-top: 5px;
+}
+
+.modal-search-results-on-advanced-search {
+    border-top-left-radius: 20px; /* Rounded top-left corner */
+    border-top-right-radius: 0px;
+    border-bottom-left-radius: 20px; /* Rounded bottom-left corner */
+    border-bottom-right-radius: 20px; /* Rounded bottom-right corner */
+    background-color: lightgray;
+}
+
+.search-results-advanced-search-button-initial {
+    border: 2px solid #0d6efd;
+}
+
+.search-bar-encapsulate {
+    width: 100%;
+    padding-right: 20px;
+}
+
+.search-bar {
+    margin-left: 0px;
+    border: none;
+}
+
+.search-button-inside-search-bar {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.search-button-circle {
+    height: 30px;
+    font-size: 12px;
+}
+
+.advanced-search-results-base {
+    margin-bottom: 0px;
+    
+}
+
+.search-results-card {
+    margin-top: 15px;
+    padding-top: 15px;
+    padding-bottom: 0px;
+    padding-left: 25px;
+    padding-right: 25px;
+    border-radius: 20px;
+}
+
+.table-encapsulate-for-results {
+    margin-top: 15px;
+    overflow-y:auto;
+}
+
+.search-results-table {
+    cursor:pointer
+}
+
+.previous-next-button-area {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.number-input-pages {
+    bottom: 0;
+    height: 100%;
+    border: 2px solid grey;
+    border-radius: 5px;
+    padding: 7px;
+    width: 60px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.page-amount-text {
+    margin-left: 10px;
+    margin-bottom:0px;
+}
