@@ -20,6 +20,10 @@ namespace Locompro.Tests.Services
         private Mock<SignInManager<User>> _signInManagerMock;
         private AuthService _service;
 
+        /// <summary>
+        /// Sets up the mocks for the tests. Mocks Identity services and the logger.
+        /// </summary>
+        /// <author> Brandon Alonso Mora Umaña C15179 </author>
         [SetUp]
         public void SetUp()
         {
@@ -53,7 +57,10 @@ namespace Locompro.Tests.Services
                 _loggerMock.Object, _emailStoreMock.Object);
         }
 
-
+        /// <summary>
+        /// Tests the behavior of the Register method when the user registration succeeds.
+        /// </summary>
+        /// <author> Brandon Alonso Mora Umaña C15179 </author>
         [Test]
         public async Task Register_UserRegistrationSucceeds_ReturnsIdentityResultSuccess()
         {
@@ -78,6 +85,10 @@ namespace Locompro.Tests.Services
                 x.SetUserNameAsync(It.IsAny<User>(), inputData.UserName, It.IsAny<CancellationToken>()), Times.Once);
         }
 
+        /// <summary>
+        /// Tests the behavior of the Register method when the user registration fails.
+        /// </summary>
+        /// <author> Brandon Alonso Mora Umaña C15179 </author>
         [Test]
         public async Task Register_UserRegistrationFails_ReturnsIdentityResultFailure()
         {

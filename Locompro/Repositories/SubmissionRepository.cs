@@ -52,6 +52,7 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
     /// Gets all submissions that contain the given product model
     /// </summary>
     /// <param name="productModel"></param>
+    /// <returns> a task IEnumerable of submissions that contain the model</returns>
     public virtual async Task<IEnumerable<Submission>> GetSubmissionsByProductModelAsync(string productModel)
     {
         var submissions = await DbSet

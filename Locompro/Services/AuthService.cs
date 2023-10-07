@@ -59,6 +59,7 @@ namespace Locompro.Services
         /// Register a user with the given data using ASP.NET Core Identity.
         /// </summary>
         /// <param name="inputData">Data entered by the user in the view</param>
+        /// <returns>The result of the registration attempt.</returns>
         public async Task<IdentityResult> Register(RegisterViewModel inputData)
         {
             var user = CreateUser();
@@ -76,6 +77,8 @@ namespace Locompro.Services
             return result;
         }
 
+        /// <summary>
+        /// 
         private IUserEmailStore<User> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)

@@ -13,12 +13,11 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class SearchServiceTest
 {
-    
     private readonly Mock<LocomproContext> _dbContextMock;
     private readonly Mock<ILoggerFactory> _loggerFactoryMock;
     private readonly Mock<SubmissionRepository> _submissionRepositoryMock;
     private readonly SearchService _searchService;
-    
+
     public SearchServiceTest()
     {
         _dbContextMock = new Mock<LocomproContext>(new DbContextOptions<LocomproContext>());
@@ -26,7 +25,7 @@ public class SearchServiceTest
         _submissionRepositoryMock = new Mock<SubmissionRepository>(_dbContextMock.Object, _loggerFactoryMock.Object);
         _searchService = new SearchService(_submissionRepositoryMock.Object);
     }
-    
+
     /// <summary>
     /// Finds a list of names that are expected to be found
     /// <author>Joseph Stuart Valverde Kong C18100</author>
@@ -144,6 +143,10 @@ public class SearchServiceTest
         Assert.That(dateTimeReceived, Is.EqualTo(dateTimeExpected));
     }
 
+    /// <summary>
+    /// Searches for an item with a specific model and the result is the one expected
+    /// </summary>
+    /// <author> Brandon Alonso Mora Umaña C15179 </author>
     [Test]
     public void SearchByModel_ModelIsFound()
     {
@@ -160,6 +163,10 @@ public class SearchServiceTest
             Is.True); // Verify that all items have the expected model name
     }
 
+    /// <summary>
+    ///  Searches for an item with a specific model and the result is empty
+    /// </summary>
+    /// <author> Brandon Alonso Mora Umaña C15179 </author>
     [Test]
     public void SearchByModel_ModelIsNotFound()
     {
@@ -174,6 +181,10 @@ public class SearchServiceTest
         Assert.That(searchResults.Count, Is.EqualTo(0)); // Expecting an empty result
     }
 
+    /// <summary>
+    /// Searches for an empty model and the result is empty, according to the expected behavior
+    /// </summary>
+    /// <author> Brandon Alonso Mora Umaña C15179 </author>
     [Test]
     public void SearchByModel_EmptyModelName()
     {
@@ -187,7 +198,7 @@ public class SearchServiceTest
         Assert.IsNotNull(searchResults);
         Assert.That(searchResults.Count, Is.EqualTo(0)); // Expecting an empty result
     }
-    
+
     /// <summary>
     ///   tests that the search by canton and province returns the expected results when the canton and province are mentioned in the submissions
     /// <author> A. Badilla Olivas B80874 </author>
@@ -218,6 +229,7 @@ public class SearchServiceTest
 
         Assert.That(all, Is.True);
     }
+
     /// <summary>
     /// Tests that an empty list is returned when the canton and province are not mentioned in any submission
     /// <author> A. Badilla Olivas B80874 </author>
@@ -237,19 +249,20 @@ public class SearchServiceTest
         Assert.That(submissions, Is.Not.Null);
         Assert.That(submissions.Count(), Is.EqualTo(0));
     }
+
     /// <summary>
     /// Sets up the mock for the submission repository so that it behaves as expected for the tests
     /// </summary>
     void MockDataSetup()
     {
         Country country = new Country { Name = "Country" };
-        
+
         Province province1 = new Province { Name = "Province1", CountryName = "Country", Country = country };
         Province province2 = new Province { Name = "Province2", CountryName = "Country", Country = country };
-        
+
         Canton canton1 = new Canton { Name = "Canton1", ProvinceName = "Province1", Province = province1 };
         Canton canton2 = new Canton { Name = "Canton2", ProvinceName = "Province2", Province = province2 };
-        
+
         // Add users
         List<User> users = new List<User>
         {
@@ -610,24 +623,22 @@ public class SearchServiceTest
                 Store = stores[1],
                 Product = products[5]
             }
-            
         };
         // setting up mock repository behavior requires the methods to be virtual on class being mocked or using interface, in this case
         // the methods are virtual because interface does not have the methods being implemented.
-        _submissionRepositoryMock.Setup(repo => repo.GetSubmissionsByCantonAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync((string canton, string province) => 
+        _submissionRepositoryMock
+            .Setup(repo => repo.GetSubmissionsByCantonAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync((string canton, string province) =>
             {
-                return submissions.Where(s => s.Store.Canton.Name == canton && s.Store.Canton.ProvinceName == province).ToList();
+                return submissions
+                    .Where(s => s.Store.Canton.Name == canton && s.Store.Canton.ProvinceName == province).ToList();
             });
 
         _submissionRepositoryMock.Setup(repo => repo.GetSubmissionsByProductModelAsync(It.IsAny<string>()))
-            .ReturnsAsync((string model) => 
-            {
-                return submissions.Where(s => s.Product.Model == model).ToList();
-            });
+            .ReturnsAsync((string model) => { return submissions.Where(s => s.Product.Model == model).ToList(); });
 
         _submissionRepositoryMock.Setup(repo => repo.GetSubmissionsByProductNameAsync(It.IsAny<string>()))
-            .ReturnsAsync((string productName) => 
+            .ReturnsAsync((string productName) =>
             {
                 return submissions.Where(s => s.Product.Name == productName).ToList();
             });
