@@ -1,4 +1,5 @@
-﻿using Locompro.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Locompro.Repositories
 {

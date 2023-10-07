@@ -1,4 +1,5 @@
-﻿using Locompro.Models;
+﻿using System.Collections.Generic;
+using Locompro.Models;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,5 +15,8 @@ public class User : IdentityUser
 
     public float Rating { get; set; } = 0;
 
+    [Required]
     public Status Status { get; set; } = Status.Active;
+    
+    public virtual ICollection<Submission> Submissions { get; set; }
 }

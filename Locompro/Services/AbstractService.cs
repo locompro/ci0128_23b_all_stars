@@ -1,4 +1,6 @@
+using Locompro.Data;
 using Locompro.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace Locompro.Services
 {
