@@ -13,38 +13,20 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class SearchServiceTest
 {
-    private ILoggerFactory _logger;
-
-    // context
-    private LocomproContext _context;
-
-    // repository
-    private SubmissionRepository _submissionRepository;
-
-    // search service
-    private SearchService _searchService;
-
-    [SetUp]
-    public void SetUp()
+    
+    private readonly Mock<LocomproContext> _dbContextMock;
+    private readonly Mock<ILoggerFactory> _loggerFactoryMock;
+    private readonly Mock<SubmissionRepository> _submissionRepositoryMock;
+    private readonly SearchService _searchService;
+    
+    public SearchServiceTest()
     {
-        this._logger = new LoggerFactory();
-
-        DbContextOptions<LocomproContext> options = new DbContextOptionsBuilder<LocomproContext>()
-            .UseInMemoryDatabase(databaseName: "InMemoryDbForTesting")
-            .Options;
-
-        // prepare context and add db sets
-        this._context = new LocomproContext(options);
-        _context.Database.EnsureDeleted(); // Make sure the db is clean
-        _context.Database.EnsureCreated();
-
-        // set repositories and services
-        this._submissionRepository = new SubmissionRepository(this._context, this._logger);
-        this._searchService = new SearchService(this._submissionRepository);
-
-        this.PrepareDatabase();
+        _dbContextMock = new Mock<LocomproContext>(new DbContextOptions<LocomproContext>());
+        _loggerFactoryMock = new Mock<ILoggerFactory>();
+        _submissionRepositoryMock = new Mock<SubmissionRepository>(_dbContextMock.Object, _loggerFactoryMock.Object);
+        _searchService = new SearchService(_submissionRepositoryMock.Object);
     }
-
+    
     /// <summary>
     /// Finds a list of names that are expected to be found
     /// <author>Joseph Stuart Valverde Kong C18100</author>
@@ -54,7 +36,7 @@ public class SearchServiceTest
     {
         // Arrange
         string productSearchName = "Product1";
-
+        MockDataSetup();
         List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
@@ -107,7 +89,7 @@ public class SearchServiceTest
     {
         // Arrange
         string productSearchName = "ProductNonExistent";
-
+        MockDataSetup();
         List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
@@ -128,7 +110,7 @@ public class SearchServiceTest
     {
         // Arrange
         string productSearchName = "";
-
+        MockDataSetup();
         List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
@@ -167,7 +149,7 @@ public class SearchServiceTest
     {
         // Arrange
         string modelName = "Model1";
-
+        MockDataSetup();
         // Act
         List<Item> searchResults = _searchService.SearchItems(null, null, null, 0, 0, null, modelName).Result;
 
@@ -183,13 +165,13 @@ public class SearchServiceTest
     {
         // Arrange
         string modelName = "NonExistentModel";
-
+        MockDataSetup();
         // Act
         List<Item> searchResults = _searchService.SearchItems(null, null, null, 0, 0, null, modelName).Result;
 
         // Assert
         Assert.IsNotNull(searchResults);
-        Assert.AreEqual(0, searchResults.Count); // Expecting an empty result
+        Assert.That(searchResults.Count, Is.EqualTo(0)); // Expecting an empty result
     }
 
     [Test]
@@ -197,33 +179,77 @@ public class SearchServiceTest
     {
         // Arrange
         string modelName = string.Empty;
-
+        MockDataSetup();
         // Act
         List<Item> searchResults = _searchService.SearchItems(null, null, null, 0, 0, null, modelName).Result;
 
         // Assert
         Assert.IsNotNull(searchResults);
-        Assert.AreEqual(0, searchResults.Count); // Expecting an empty result
+        Assert.That(searchResults.Count, Is.EqualTo(0)); // Expecting an empty result
     }
+    
+    /// <summary>
+    ///   tests that the search by canton and province returns the expected results when the canton and province are mentioned in the submissions
+    /// <author> A. Badilla Olivas B80874 </author>
+    /// </summary>
+    [Test]
+    public async Task GetSubmissionsByCantonAndProvince_ValidCantonAndProvince_SubmissionsReturned()
+    {
+        // Arrange
+        string canton = "Canton1";
+        string province = "Province1";
+        MockDataSetup();
+        // Act
+        var results = await _searchService.GetSubmissionsByCantonAndProvince(canton, province);
 
-    void PrepareDatabase()
+        // Assert
+        var submissions = results as Submission[] ?? results.ToArray();
+        Assert.That(submissions, Is.Not.Null);
+        Assert.That(submissions.Count(), Is.GreaterThan(0));
+        bool all = true;
+        foreach (var sub in submissions)
+        {
+            if (sub.Store.Canton.Name != canton || sub.Store.Canton.ProvinceName != province)
+            {
+                all = false;
+                break;
+            }
+        }
+
+        Assert.That(all, Is.True);
+    }
+    /// <summary>
+    /// Tests that an empty list is returned when the canton and province are not mentioned in any submission
+    /// <author> A. Badilla Olivas B80874 </author>
+    /// </summary>
+    [Test]
+    public async Task GetSubmissionsByCantonAndProvince_InvalidCantonAndProvince_EmptyListReturned()
+    {
+        // Arrange
+        string canton = "InvalidCanton";
+        string province = "InvalidProvince";
+        MockDataSetup();
+        // Act
+        var results = await _searchService.GetSubmissionsByCantonAndProvince(canton, province);
+
+        // Assert
+        var submissions = results as Submission[] ?? results.ToArray();
+        Assert.That(submissions, Is.Not.Null);
+        Assert.That(submissions.Count(), Is.EqualTo(0));
+    }
+    /// <summary>
+    /// Sets up the mock for the submission repository so that it behaves as expected for the tests
+    /// </summary>
+    void MockDataSetup()
     {
         Country country = new Country { Name = "Country" };
-
-        this._context.Set<Country>().Add(country);
-
+        
         Province province1 = new Province { Name = "Province1", CountryName = "Country", Country = country };
         Province province2 = new Province { Name = "Province2", CountryName = "Country", Country = country };
-
-        this._context.Set<Province>().Add(province1);
-        this._context.Set<Province>().Add(province2);
-
+        
         Canton canton1 = new Canton { Name = "Canton1", ProvinceName = "Province1", Province = province1 };
         Canton canton2 = new Canton { Name = "Canton2", ProvinceName = "Province2", Province = province2 };
-
-        this._context.Set<Canton>().Add(canton1);
-        this._context.Set<Canton>().Add(canton2);
-
+        
         // Add users
         List<User> users = new List<User>
         {
@@ -584,13 +610,26 @@ public class SearchServiceTest
                 Store = stores[1],
                 Product = products[5]
             }
+            
         };
+        // setting up mock repository behavior requires the methods to be virtual on class being mocked or using interface, in this case
+        // the methods are virtual because interface does not have the methods being implemented.
+        _submissionRepositoryMock.Setup(repo => repo.GetSubmissionsByCantonAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync((string canton, string province) => 
+            {
+                return submissions.Where(s => s.Store.Canton.Name == canton && s.Store.Canton.ProvinceName == province).ToList();
+            });
 
-        this._context.Set<User>().AddRange(users);
-        this._context.Set<Store>().AddRange(stores);
-        this._context.Set<Product>().AddRange(products);
-        this._context.Set<Submission>().AddRange(submissions);
+        _submissionRepositoryMock.Setup(repo => repo.GetSubmissionsByProductModelAsync(It.IsAny<string>()))
+            .ReturnsAsync((string model) => 
+            {
+                return submissions.Where(s => s.Product.Model == model).ToList();
+            });
 
-        this._context.SaveChanges();
+        _submissionRepositoryMock.Setup(repo => repo.GetSubmissionsByProductNameAsync(It.IsAny<string>()))
+            .ReturnsAsync((string productName) => 
+            {
+                return submissions.Where(s => s.Product.Name == productName).ToList();
+            });
     }
 }
