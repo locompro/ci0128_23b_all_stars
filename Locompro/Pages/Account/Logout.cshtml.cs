@@ -3,17 +3,11 @@
 
 #nullable disable
 
-using System;
-using System.Threading.Tasks;
-using Locompro.Models;
 using Locompro.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Logging;
 
-namespace Locompro.Areas.Identity.Pages.Account;
+namespace Locompro.Pages.Account;
 
 public class LogoutModel : PageModel
 {

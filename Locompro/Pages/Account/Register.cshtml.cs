@@ -8,7 +8,7 @@ using Locompro.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Locompro.Areas.Identity.Pages.Account
+namespace Locompro.Pages.Account
 {
     public class RegisterModel : PageModel
     {

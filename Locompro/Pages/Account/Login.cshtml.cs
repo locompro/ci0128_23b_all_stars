@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Locompro.Services;
 using Locompro.Areas.Identity.ViewModels;
 
-namespace Locompro.Areas.Identity.Pages.Account
+namespace Locompro.Pages.Account
 {
     public class LoginModel : PageModel
     {
