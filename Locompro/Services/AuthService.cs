@@ -1,8 +1,12 @@
 ﻿#nullable disable
 
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Locompro.Areas.Identity.ViewModels;
 using Locompro.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Locompro.Services
 {

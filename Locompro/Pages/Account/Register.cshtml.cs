@@ -3,6 +3,8 @@
 
 #nullable disable
 
+using System;
+using System.Threading.Tasks;
 using Locompro.Areas.Identity.ViewModels;
 using Locompro.Services;
 using Microsoft.AspNetCore.Mvc;

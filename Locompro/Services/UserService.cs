@@ -1,5 +1,6 @@
 ﻿using Locompro.Models;
 using Locompro.Repositories;
+using Microsoft.Extensions.Logging;
 
 namespace Locompro.Services
 {
@@ -18,5 +19,6 @@ namespace Locompro.Services
             : base(unitOfWork, repository, loggerFactory)
         {
         }
+        
     }
 }
