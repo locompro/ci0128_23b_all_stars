@@ -278,10 +278,7 @@
                  // get value
                  redirect += searchValue;   
                  
-                if (redirect.localeCompare(invalidSimpleSearch) === 0) {
-                    alert("Por favor llenar al menos un campo:\n" +
-                         "Esto puede incluir unicamente el nombre de busqueda en la barra de busqueda\n" +
-                         "O unicamente algun campo de la busqueda avanzada");
+                if (redirect.localeCompare(invalidSimpleSearch) === 0) { 
                     return;
                 }
             } else {
@@ -305,9 +302,6 @@
                     + "&model=" + modelValue;
                  
                 if (redirect.localeCompare(invalidAdvancedSearch) === 0) {
-                    alert("Por favor llenar al menos un campo:\n" +
-                          "Esto puede incluir unicamente el nombre de busqueda en la barra de busqueda\n" +
-                          "O unicamente algun campo de la busqueda avanzada");
                     return;
                 }
             }
