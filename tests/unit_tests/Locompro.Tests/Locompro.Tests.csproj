@@ -31,8 +31,5 @@
     <ProjectReference Include="..\..\..\Locompro\Locompro.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Pages\" />
-  </ItemGroup>
 
 </Project>

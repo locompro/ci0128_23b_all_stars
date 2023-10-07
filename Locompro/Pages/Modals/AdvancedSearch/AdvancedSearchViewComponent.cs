@@ -11,11 +11,11 @@ namespace Locompro.Pages.Modals.AdvancedSearchViewComponent
     public class AdvancedSearchViewComponent : ViewComponent
     {
         // model to be connected to page
-        private AdvancedSearchModalService advancedSearchServiceHandler;
+        private AdvancedSearchInputService advancedSearchServiceHandler;
 
         public AdvancedSearchModalModel pageModel { get; set; }
 
-        public AdvancedSearchViewComponent(AdvancedSearchModalService advancedSearchServiceHandler)
+        public AdvancedSearchViewComponent(AdvancedSearchInputService advancedSearchServiceHandler)
         {
             // get the handler
             this.advancedSearchServiceHandler = advancedSearchServiceHandler;
