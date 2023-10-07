@@ -8,10 +8,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <Compile Remove="Services\ProductService.cs" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.21" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.21" />
@@ -39,26 +35,22 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.js" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.js" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\dist\jquery.min.map" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery\LICENSE.txt" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.js" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation-unobtrusive\LICENSE.txt" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\dist\additional-methods.js" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\dist\additional-methods.min.js" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\dist\jquery.validate.js" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\dist\jquery.validate.min.js" />
-	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\LICENSE.md" />
-	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewImports.cshtml" />
-	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewStart.cshtml" />
+	  <None Remove="Properties\serviceDependencies.local.json" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <AdditionalFiles Include="Pages\Account\Login.cshtml" />
-	  <AdditionalFiles Include="Pages\Account\Logout.cshtml" />
-	  <AdditionalFiles Include="Pages\Account\Register.cshtml" />
-	  <AdditionalFiles Include="Pages\Account\_ViewImports.cshtml" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\font-awesome.min.css" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.eot" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.svg" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.ttf" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.woff" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.woff2" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\FontAwesome.otf" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\material-icons.min.css" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.eot" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.svg" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.ttf" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.woff" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.woff2" />
 	</ItemGroup>
 </Project>

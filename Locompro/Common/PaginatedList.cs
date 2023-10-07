@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
-namespace Locompro.Pages.SearchResults
+namespace Locompro.Common
 {
     /// <summary>
     /// List of items that can be paginated

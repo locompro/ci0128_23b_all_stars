@@ -24,9 +24,9 @@ namespace Locompro.Pages
         /// Service that handles the advanced search modal
         /// Helps to keep page and modal information syncronized
         /// </summary>
-        private readonly AdvancedSearchModalService _advancedSearchServiceHandler;
+        private readonly AdvancedSearchInputService _advancedSearchServiceHandler;
 
-        public IndexModel(AdvancedSearchModalService advancedSearchServiceHandler)
+        public IndexModel(AdvancedSearchInputService advancedSearchServiceHandler)
         {
             this._advancedSearchServiceHandler = advancedSearchServiceHandler;
         }

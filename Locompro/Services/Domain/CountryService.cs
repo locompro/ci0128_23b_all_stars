@@ -1,21 +1,21 @@
-﻿using Locompro.Models;
+using Locompro.Data;
+using Locompro.Models;
 using Locompro.Repositories;
-using Microsoft.Extensions.Logging;
 
-namespace Locompro.Services
+namespace Locompro.Services.Domain
 {
     /// <summary>
-    /// Domain service for Store entities.
+    /// Domain service for Country entities.
     /// </summary>
-    public class StoreService : AbstractDomainService<Store, string, StoreRepository>
+    public class CountryService : AbstractDomainService<Country, string, CountryRepository>
     {
         /// <summary>
-        /// Constructs a Store service for a given repository.
+        /// Constructs a Country service for a given repository.
         /// </summary>
         /// <param name="unitOfWork">Unit of work to handle transactions.</param>
         /// <param name="repository">Repository to base the service on.</param>
         /// <param name="loggerFactory">Factory for service logger.</param>
-        public StoreService(UnitOfWork unitOfWork, StoreRepository repository, ILoggerFactory loggerFactory) 
+        public CountryService(UnitOfWork unitOfWork, CountryRepository repository, ILoggerFactory loggerFactory) 
             : base(unitOfWork, repository, loggerFactory)
         {
         }

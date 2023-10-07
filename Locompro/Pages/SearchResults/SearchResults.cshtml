@@ -1,5 +1,7 @@
 ﻿@page
 @using Locompro.Models
+@using Locompro.Services
+@using Locompro.Common
 @model Locompro.Pages.SearchResults.SearchResultsModel
 
 <link rel="stylesheet" href="~/css/MainMenu.css" asp-append-version="true"/>
@@ -277,6 +279,7 @@
             var redirect = "/SearchResults/SearchResults?query=";
              
             var searchValue = document.getElementById("searchBox").value.valueOf() ;
+             
              
             if (!modalShown) {
                  // get value
