@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Locompro.Repositories;
 using Locompro.Models;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.Text.RegularExpressions;
 
 namespace Locompro.Services;
 
@@ -197,7 +198,7 @@ public class SearchService
 
         // create an item
         Item item = new Item(
-            bestSubmission.EntryTime.ToString(CultureInfo.InvariantCulture),
+            GetFormatedDate(bestSubmission),
             bestSubmission.Product.Name,
             bestSubmission.Price,
             bestSubmission.Store.Name,
@@ -211,6 +212,21 @@ public class SearchService
         };
 
         return await Task.FromResult(item);
+    }
+    
+    /// <summary>
+    /// Extracts from entry time, the date in the format yyyy-mm-dd
+    /// to be shown in the results page
+    /// </summary>
+    /// <param name="submission"></param>
+    /// <returns></returns>
+    string GetFormatedDate(Submission submission)
+    {
+        Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture), @"[0-9]*/[0-9.]*/[0-9]*");
+
+        string date = regexMatch.Success ? regexMatch.Groups[0].Value : submission.EntryTime.ToString(CultureInfo.InvariantCulture);
+        
+        return date;
     }
     
     /// <summary>

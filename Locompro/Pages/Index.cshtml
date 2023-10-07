@@ -39,15 +39,16 @@
                 </div>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 20px">
-            <button class="btn btn-primary rounded-pill"
-                    style="margin-left: 6px; margin-top: 6px; margin-bottom: 0px; "
+        <div style="text-align: center; margin-top: 20px; justify-content: center">
+            <button class="index-advanced-search-button-initial"
+                    style="margin-top: 6px; margin-bottom: 0px; "
                     id="advancedSearchButton"
-                    type="button"
-                    focus="outline: none; box-shadow: none;">
+            >
                 Búsqueda avanzada
             </button>
-            <div id="modalContainer">
+            
+            <div id="modalContainer"
+                 style="margin-left: auto; margin-right: auto;">
             </div>
         </div>
     </div>
@@ -74,11 +75,11 @@
 
                     // reset the button
                     button.classList.remove("button-rounded-top");
-                    button.classList.add("btn-primary");
-                    button.classList.add("rounded-pill");
-
-                    modalContainer.classList.remove("modal-advanced-search");
-
+                    button.classList.add("index-advanced-search-button");
+                    
+                    modalContainer.classList.remove("index-modal-advanced-search");
+                    modalContainer.classList.add("advanced-search-modal-default");
+                    
                     // change state to modal not shown
                     modalShown = false;
                     return;
@@ -99,11 +100,12 @@
                     console.error('An error occurred:', error);
                 }
 
-                modalContainer.classList.add("modal-advanced-search");
+                modalContainer.classList.add("index-modal-advanced-search");
+                modalContainer.classList.remove("advanced-search-modal-default");
 
                 // change the button style
-                button.classList.remove("rounded-pill");
-                button.classList.remove("btn-primary");
+                button.classList.remove("index-advanced-search-button-initial");
+                button.classList.remove("index-advanced-search-button");
                 button.classList.add("button-rounded-top");
 
                 // if the modal has been displayed, then store the state

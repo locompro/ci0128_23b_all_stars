@@ -155,7 +155,7 @@ public class SearchServiceTest
 
         List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
-        DateTime dateTimeExpected = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
+        DateTime dateTimeExpected = new DateTime(2023, 10, 6, 0, 0, 0, DateTimeKind.Utc);
         DateTime dateTimeReceived = DateTime.Parse(searchResults[0].LastSubmissionDate, new CultureInfo("en-US"));
 
         // Assert
