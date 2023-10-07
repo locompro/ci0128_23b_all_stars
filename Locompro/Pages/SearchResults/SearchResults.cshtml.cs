@@ -1,419 +1,286 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Locompro.Services;
 using Castle.Core.Internal;
 using Newtonsoft.Json;
 using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Threading.Tasks;
+using Locompro.Models;
+using Microsoft.Extensions.Configuration;
 
-namespace Locompro.Pages.SearchResults
+namespace Locompro.Pages.SearchResults;
+
+/// <summary>
+/// Page model for the search results page
+/// </summary>
+public class SearchResultsModel : PageModel
 {
     /// <summary>
-    /// Class that represents a single item to be displayed in the search results
-    /// An item is a product that is being sold in a store
+    /// Service that handles the advanced search modal
     /// </summary>
-    public class ItemDisplayInfo
-    {
-        public string lastSubmissionDate { get; set; }
-        public string productName { get; set; }
-        public double productPrice { get; set; }
-        public string productStore { get; set; }
-        public string cantonLocation { get; set; }
-        public string provinceLocation { get; set; }
-        public string productDescription { get; set; }
+    private readonly AdvancedSearchModalService _advancedSearchServiceHandler;
 
-        public ItemDisplayInfo(string lastSubmissionDate,
-                string productName,
-                double productPrice,
-                string productStore,
-                string cantonLocation,
-                string provinceLocation,
-                string productDescription)
-        {
-            this.lastSubmissionDate = lastSubmissionDate;
-            this.productName = productName;
-            this.productPrice = productPrice;
-            this.productStore = productStore;
-            this.cantonLocation = cantonLocation;
-            this.provinceLocation = provinceLocation;
-            this.productDescription = productDescription;
-        }
-    };
+    private readonly SearchService _searchService;
 
     /// <summary>
-    /// Page model for the search results page
+    /// Configuration to get the page size
     /// </summary>
-    public class SearchResultsModel : PageModel
+    private readonly IConfiguration _configuration;
+
+    /// <summary>
+    /// Buffer for page size according to Paginated List and configuration
+    /// </summary>
+    private readonly int _pageSize;
+
+    /// <summary>
+    /// Paginated list of products found
+    /// </summary>
+    public PaginatedList<Item> DisplayItems { get; set; }
+
+    /// <summary>
+    /// List of all items found
+    /// </summary>
+    private List<Item> _items;
+
+    /// <summary>
+    /// Amount of items found
+    /// </summary>
+    public double ItemsAmount { get; set; }
+
+    /// <summary>
+    /// Name of product that was searched
+    /// </summary>
+    public string ProductName { get; set; }
+
+    public string ProvinceSelected { get; set; }
+    public string CantonSelected { get; set; }
+    public string CategorySelected { get; set; }
+    public long MinPrice { get; set; }
+    public long MaxPrice { get; set; }
+    public string ModelSelected { get; set; }
+        
+        
+    public string NameSort { get; set; }
+        
+    public string CurrentSort { get; set; }
+        
+    public string CurrentFilter { get; set; }
+
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="searchService"></param>
+    /// <param name="advancedSearchServiceHandler"></param>
+    /// <param name="configuration"></param>
+    public SearchResultsModel(
+        AdvancedSearchModalService advancedSearchServiceHandler,
+        IConfiguration configuration,
+        SearchService searchService)
     {
-        /// <summary>
-        /// Service that handles the advanced search modal
-        /// </summary>
-        private AdvancedSearchModalService advancedSearchServiceHandler;
+        this._searchService = searchService;
+        this._advancedSearchServiceHandler = advancedSearchServiceHandler;
+        this._configuration = configuration;
+        this._pageSize = _configuration.GetValue("PageSize", 4);
+    }
 
-        /// <summary>
-        /// Service that handles the locations data
-        /// </summary>
-        private CountryService countryService;
+    /// <summary>
+    /// Gets the items to be displayed in the search results
+    /// </summary>
+    /// <param name="pageIndex"></param>
+    /// <param name="sorting"></param>
+    /// <param name="query"></param>
+    /// <param name="province"></param>
+    /// <param name="canton"></param>
+    /// <param name="minValue"></param>
+    /// <param name="maxValue"></param>
+    /// <param name="category"></param>
+    /// <param name="model"></param>
+    /// <param name="currentFilter"></param>
+    /// <param name="sortOrder"></param>
+    public async Task OnGetAsync(int? pageIndex,
+        bool? sorting,
+        string query,
+        string province,
+        string canton,
+        long minValue,
+        long maxValue,
+        string category,
+        string model,
+        string currentFilter,
+        string sortOrder)
+    {
+        // validate input
+        this.ValidateInput(province, canton, minValue, maxValue, category, model);
+        
+        this.ProductName = query;
+        
+        // set up sorting parameters
+        this.SetSortingParameters(sortOrder, (sorting is not null));
+        
+        // get items from search service
+        this._items =
+            (await _searchService.SearchItems(
+                this.ProductName,
+                this.ProvinceSelected,
+                this.CantonSelected,
+                this.MinPrice,
+                this.MaxPrice,
+                this.CategorySelected,
+                this.ModelSelected)
+            ).ToList();
+        
+        // get amount of items found    
+        this.ItemsAmount = _items.Count;
+        
+        // order items by sort order
+        this.OrderItems();
+        
+        // create paginated list and set it to be displayed
+        this.DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
+    }
 
-        /// <summary>
-        /// Configuration to get the page size
-        /// </summary>
-        private readonly IConfiguration Configuration;
-
-        /// <summary>
-        /// Buffer for page size according to Paginated List and configuration
-        /// </summary>
-        private int pageSize;
-
-        /// <summary>
-        /// Paginated list of products found
-        /// </summary>
-        public PaginatedList<ItemDisplayInfo> displayItems { get; set; }
-
-        /// <summary>
-        /// List of all items found
-        /// </summary>
-        private List<ItemDisplayInfo> items;
-
-        /// <summary>
-        /// Amount of items found
-        /// </summary>
-        public double itemsAmount { get; set; }
-
-        /// <summary>
-        /// Name of product that was searched
-        /// </summary>
-        public string productName { get; set; }
-        public string provinceSelected { get; set; }
-        public string cantonSelected { get; set; }
-        public string categorySelected { get; set; }
-        public long minPrice { get; set; }
-        public long maxPrice { get; set; }
-        public string modelSelected { get; set; }
-
-        /// <summary>
-        /// Constructor
-        /// </summary>
-        /// <param name="countryService"></param>
-        /// <param name="advancedSearchServiceHandler"></param>
-        /// <param name="configuration"></param>
-        public SearchResultsModel(CountryService countryService,
-                AdvancedSearchModalService advancedSearchServiceHandler,
-                IConfiguration configuration)
+    /// <summary>
+    /// Changes input from front end into values usable for search engine
+    /// </summary>
+    /// <param name="province"></param>
+    /// <param name="canton"></param>
+    /// <param name="minValue"></param>
+    /// <param name="maxValue"></param>
+    /// <param name="category"></param>
+    /// <param name="model"></param>
+    private void ValidateInput(
+        string province,
+        string canton,
+        long minValue,
+        long maxValue,
+        string category,
+        string model)
+    {
+        
+        if (!string.IsNullOrEmpty(province) && province.Equals("Ninguno"))
         {
-            this.advancedSearchServiceHandler = advancedSearchServiceHandler;
-            this.countryService = countryService;
-            this.Configuration = configuration;
-            this.pageSize = Configuration.GetValue("PageSize", 4);
-
-            this.OnTestingCreateTestingItems();
+            province = null;
+        }
+        
+        if (!string.IsNullOrEmpty(canton) && canton.Equals("Ninguno"))
+        {
+            canton = null;
         }
 
-        /// <summary>
-        /// Gets the items to be displayed in the search results
-        /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="query"></param>
-        /// <param name="province"></param>
-        /// <param name="canton"></param>
-        /// <param name="minValue"></param>
-        /// <param name="maxValue"></param>
-        /// <param name="category"></param>
-        /// <param name="model"></param>
-        public void OnGetAsync(int? pageIndex,
-            string query,
-            string province,
-            string canton,
-            long minValue,
-            long maxValue,
-            string category,
-            string model)
+        if (!string.IsNullOrEmpty(category) && category.Equals("Ninguno"))
         {
-            this.provinceSelected = province;
-            this.cantonSelected = canton;
-            this.minPrice = minValue;
-            this.maxPrice = maxValue;
-            this.categorySelected = category;
-            this.modelSelected = model;
+            category = null;
+        } 
+        
+        this.ProvinceSelected = province;
+        this.CantonSelected = canton;
+        this.MinPrice = minValue;
+        this.MaxPrice = maxValue;
+        this.CategorySelected = category;
+        this.ModelSelected = model;
+    }
 
-            string queryString = Request.Query["query"];
-            if (queryString.IsNullOrEmpty())
+    /// <summary>
+    /// Manages all sorting done to items in list
+    /// </summary>
+    /// <param name="sortOrder"></param>
+    /// <param name="sorting"></param>
+    private void SetSortingParameters(string sortOrder, bool sorting)
+    {
+        if (!sorting)
+        {
+            if (!string.IsNullOrEmpty(sortOrder))
             {
-                queryString = "";
-                this.productName = query;
-            }            
-
-            this.productName = query;
-            Console.WriteLine(this.productName);
-
-            this.itemsAmount = items.Count;
-
-            /*
-           List<Product> products = (await this.productService.GetAll()).ToList();
-
-           foreach (Product product in products)
-           {
-               this.items.Add(new ItemDisplayInfo("0/0/0", product.Name, 1000, "Generic Store", "Generic Canton", "Generic Province", "Generic Description"));
-           }
-
-           this.itemsAmount = items.Count;
-           */
-
-            this.displayItems = PaginatedList<ItemDisplayInfo>.Create(items, pageIndex ?? 1, pageSize);
+                this.NameSort = sortOrder;
+            }
+            return;
         }
-
-        /// <summary>
-        /// Returns the view component for the advanced search modal
-        /// </summary>
-        /// <returns></returns>
-        public IActionResult OnGetAdvancedSearch()
+        
+        if (string.IsNullOrEmpty(sortOrder))
         {
-            // generate the view component
-            var viewComponentResult = ViewComponent("AdvancedSearch", this.advancedSearchServiceHandler);
-
-            // return it for it to be integrated
-            return viewComponentResult;
+            this.NameSort = "name_asc";
         }
-
-        /// <summary>
-        /// Updates the cantons and province selected for the advanced search modal
-        /// </summary>
-        /// <param name="province"></param>
-        /// <returns></returns>
-        public async Task<IActionResult> OnGetUpdateProvince(string province)
+        else
         {
-            // update the model with all cantons in the given province
-            await this.advancedSearchServiceHandler.ObtainCantonsAsync(province);
+            this.NameSort = sortOrder.Contains("name_asc") ? "name_desc" : "name_asc";
+        }
+    }
 
-            // prevent the json serializer from looping infinitely
-            var settings = new JsonSerializerSettings
+    /// <summary>
+    /// Orders items
+    /// </summary>
+    void OrderItems()
+    {
+        switch (this.NameSort)
+        {
+            case "name_desc":
+                _items = _items.OrderByDescending(item => item.ProductName).ToList();
+                break;
+            case "name_asc":
+                _items = _items.OrderBy(item => item.ProductName).ToList();
+                break;
+        }
+    }
+        
+    /// <summary>
+    /// Returns the view component for the advanced search modal
+    /// </summary>
+    /// <returns></returns>
+    public IActionResult OnGetAdvancedSearch()
+    {
+        // generate the view component
+        var viewComponentResult = ViewComponent("AdvancedSearch", this._advancedSearchServiceHandler);
+
+        // return it for it to be integrated
+        return viewComponentResult;
+    }
+
+    /// <summary>
+    /// Updates the cantons and province selected for the advanced search modal
+    /// </summary>
+    /// <param name="province"></param>
+    /// <returns></returns>
+    public async Task<IActionResult> OnGetUpdateProvince(string province)
+    {
+        string cantonsJson = "";
+        
+        // if province is none
+        if (province.Equals("Ninguno"))
+        {
+            // create empty list
+            List<Canton> emptyCantonList = new List<Canton>
             {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                // add none back as an option
+                new Canton{CountryName = "Ninguno",
+                    Name = "Ninguno", 
+                    ProvinceName = "Ninguno"}
             };
 
-            // generate the json file with the cantons
-            var cantonsJson = JsonConvert.SerializeObject(this.advancedSearchServiceHandler.Cantons, settings);
-
-            // specify the content type as a json file
-            Response.ContentType = "application/json";
-
-            // send to client
-            return Content(cantonsJson);
+            // set new list to service canton list
+            this._advancedSearchServiceHandler.Cantons = emptyCantonList;
         }
-
-        void OnTestingCreateTestingItems()
+        else
         {
-            this.items = new List<ItemDisplayInfo>
-                {
-                new ItemDisplayInfo(
-                    "2020-10-10",
-                    "sombrero",
-                    1000,
-                    "sombrereria",
-                    "San Jose",
-                    "San Jose",
-                    "sombrero de paja"),
-                new ItemDisplayInfo("2020-10-10",
-                    "zapatos",
-                    1000,
-                    "zapateria",
-                    "San Jose",
-                    "San Jose",
-                    "zapatos de cuero"),
-                new ItemDisplayInfo("2020-10-10",
-                    "camisas",
-                    1000,
-                    "camiseria",
-                    "San Jose",
-                    "San Jose",
-                    "camisas de algodon"),
-                new ItemDisplayInfo("2020-10-10",
-                    "pantalones",
-                    1000,
-                    "pantaloneria",
-                    "San Jose",
-                    "San Jose",
-                    "pantalones de mezclilla"),
-                new ItemDisplayInfo(
-                    "2020-10-10",
-                    "sombrero",
-                    1000,
-                    "sombrereria",
-                    "San Jose",
-                    "San Jose",
-                    "sombrero de paja"),
-
-                new ItemDisplayInfo(
-                    "2020-10-10",
-                    "zapatos",
-                    1000,
-                    "zapateria",
-                    "San Jose",
-                    "San Jose",
-                    "zapatos de cuero"),
-
-                new ItemDisplayInfo(
-                    "2021-03-15",
-                    "camisa",
-                    500,
-                    "tienda de ropa",
-                    "Heredia",
-                    "Heredia",
-                    "camisa de algodón"),
-
-                new ItemDisplayInfo(
-                    "2021-02-28",
-                    "televisor",
-                    2000,
-                    "electrodomésticos",
-                    "Cartago",
-                    "Cartago",
-                    "televisor LED de 55 pulgadas"),
-
-                new ItemDisplayInfo(
-                    "2021-01-05",
-                    "laptop",
-                    1200,
-                    "tecnología",
-                    "San Jose",
-                    "San Jose",
-                    "laptop ultrabook"),
-
-                new ItemDisplayInfo(
-                    "2021-04-20",
-                    "bicicleta",
-                    350,
-                    "deportes",
-                    "Alajuela",
-                    "Alajuela",
-                    "bicicleta de montaña"),
-
-                new ItemDisplayInfo(
-                    "2021-06-10",
-                    "refrigeradora",
-                    900,
-                    "electrodomésticos",
-                    "Heredia",
-                    "Heredia",
-                    "refrigeradora de acero inoxidable"),
-
-                new ItemDisplayInfo(
-                    "2021-08-22",
-                    "reloj",
-                    300,
-                    "joyería",
-                    "Puntarenas",
-                    "Puntarenas",
-                    "reloj de pulsera"),
-
-                new ItemDisplayInfo(
-                    "2020-11-17",
-                    "mueble de salón",
-                    750,
-                    "muebles",
-                    "San Jose",
-                    "San Jose",
-                    "mueble de salón moderno"),
-
-                new ItemDisplayInfo(
-                    "2021-09-02",
-                    "teléfono móvil",
-                    800,
-                    "tecnología",
-                    "Cartago",
-                    "Cartago",
-                    "teléfono móvil Android"),
-
-                new ItemDisplayInfo(
-                    "2021-07-30",
-                    "cámara DSLR",
-                    1100,
-                    "electrónica",
-                    "Alajuela",
-                    "Alajuela",
-                    "cámara réflex digital"),
-
-                new ItemDisplayInfo(
-                    "2020-12-05",
-                    "tabla de surf",
-                    350,
-                    "deportes acuáticos",
-                    "Puntarenas",
-                    "Puntarenas",
-                    "tabla de surf para principiantes"),
-
-                new ItemDisplayInfo(
-                    "2021-04-05",
-                    "silla de oficina",
-                    150,
-                    "muebles",
-                    "Heredia",
-                    "Heredia",
-                    "silla ergonómica para oficina"),
-
-                new ItemDisplayInfo(
-                    "2021-03-12",
-                    "café gourmet",
-                    12,
-                    "cafetería",
-                    "San Jose",
-                    "San Jose",
-                    "café molido de alta calidad"),
-
-                new ItemDisplayInfo(
-                    "2021-02-14",
-                    "guitarra acústica",
-                    300,
-                    "instrumentos musicales",
-                    "Cartago",
-                    "Cartago",
-                    "guitarra acústica de concierto"),
-
-                new ItemDisplayInfo(
-                    "2021-08-28",
-                    "juego de mesa",
-                    25,
-                    "juguetes",
-                    "Alajuela",
-                    "Alajuela",
-                    "juego de mesa familiar"),
-
-                new ItemDisplayInfo(
-                    "2021-07-01",
-                    "caña de pescar",
-                    40,
-                    "deportes",
-                    "Puntarenas",
-                    "Puntarenas",
-                    "caña de pescar telescópica"),
-
-                new ItemDisplayInfo(
-                    "2021-06-15",
-                    "batidora",
-                    60,
-                    "electrodomésticos",
-                    "Heredia",
-                    "Heredia",
-                    "batidora de mano"),
-
-                new ItemDisplayInfo(
-                    "2021-09-10",
-                    "silla de playa",
-                    25,
-                    "muebles de exterior",
-                    "San Jose",
-                    "San Jose",
-                    "silla plegable para la playa"),
-
-                new ItemDisplayInfo(
-                    "2020-11-30",
-                    "tenis deportivos",
-                    75,
-                    "tienda de deportes",
-                    "Cartago",
-                    "Cartago",
-                    "tenis deportivos para correr")
-
-                };
+            // update the model with all cantons in the given province
+            await this._advancedSearchServiceHandler.ObtainCantonsAsync(province);
         }
+        
+        // prevent the json serializer from looping infinitely
+        var settings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+        };
+
+        // generate the json file with the cantons
+        cantonsJson = JsonConvert.SerializeObject(this._advancedSearchServiceHandler.Cantons, settings);
+        
+        // specify the content type as a json file
+        Response.ContentType = "application/json";
+
+        // send to client
+        return Content(cantonsJson);
     }
 }

@@ -3,8 +3,10 @@ using MessagePack;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
+using Locompro.Models;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace Locompro.Pages
 {
@@ -22,11 +24,11 @@ namespace Locompro.Pages
         /// Service that handles the advanced search modal
         /// Helps to keep page and modal information syncronized
         /// </summary>
-        AdvancedSearchModalService advancedSearchServiceHandler;
+        private readonly AdvancedSearchModalService _advancedSearchServiceHandler;
 
         public IndexModel(AdvancedSearchModalService advancedSearchServiceHandler)
         {
-            this.advancedSearchServiceHandler = advancedSearchServiceHandler;
+            this._advancedSearchServiceHandler = advancedSearchServiceHandler;
         }
 
         /// <summary>
@@ -39,7 +41,7 @@ namespace Locompro.Pages
             this.SearchQuery = searchQuery;
 
             // generate the view component
-            var viewComponentResult = ViewComponent("AdvancedSearch", this.advancedSearchServiceHandler);
+            var viewComponentResult = ViewComponent("AdvancedSearch", this._advancedSearchServiceHandler);
 
             // return it for it to be integrated
             return viewComponentResult;
@@ -52,9 +54,29 @@ namespace Locompro.Pages
         /// <returns></returns>
         public async Task<IActionResult> OnGetUpdateProvince(string province)
         {
-            // update the model with all cantons in the given province
-            await this.advancedSearchServiceHandler.ObtainCantonsAsync(province);
-
+            string cantonsJson = "";
+        
+            // if province is none
+            if (province.Equals("Ninguno"))
+            {
+                // create empty list
+                List<Canton> emptyCantonList = new List<Canton>();
+            
+                // add none back as an option
+                emptyCantonList.Add(
+                    new Canton{CountryName = "Ninguno",
+                        Name = "Ninguno", 
+                        ProvinceName = "Ninguno"});
+            
+                // set new list to service canton list
+                this._advancedSearchServiceHandler.Cantons = emptyCantonList;
+            }
+            else
+            {
+                // update the model with all cantons in the given province
+                await this._advancedSearchServiceHandler.ObtainCantonsAsync(province);
+            }
+        
             // prevent the json serializer from looping infinitely
             var settings = new JsonSerializerSettings
             {
@@ -62,8 +84,8 @@ namespace Locompro.Pages
             };
 
             // generate the json file with the cantons
-            var cantonsJson = JsonConvert.SerializeObject(this.advancedSearchServiceHandler.Cantons, settings);
-
+            cantonsJson = JsonConvert.SerializeObject(this._advancedSearchServiceHandler.Cantons, settings);
+        
             // specify the content type as a json file
             Response.ContentType = "application/json";
 
