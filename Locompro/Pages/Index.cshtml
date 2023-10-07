@@ -189,12 +189,13 @@
             } else {
                 var provinceValue = document.getElementById("provinceDropdown").value;
                 var cantonValue = document.getElementById("cantonDropdown").value;
-                var minValue = /*document.getElementById("minValue").value*/ 0
+                var minValue = /*document.getElementById("minValue").value*/ 0;
                 var maxValue = /*document.getElementById("maxValue").value*/ 0;
                 var categoryValue = document.getElementById("categoryDropdown").value;
 
                 try {
                     var modelValue = document.getElementById("modelInput").value;
+                    var brandValue = document.getElementById("brandInput").value;
                 } catch (error) {
                 }
 
@@ -204,7 +205,8 @@
                     + "&minValue=" + minValue
                     + "&maxValue=" + maxValue
                     + "&category=" + categoryValue
-                    + "&model=" + modelValue;
+                    + "&model=" + modelValue
+                    + "&brand=" + brandValue;
                 
                if (redirect.localeCompare(invalidAdvancedSearch) === 0) {
                     return;
@@ -254,7 +256,7 @@
             var maxButton = document.getElementById("maxValue");
 
             // if the field is the min field
-            if (button == minButton) {
+            if (button === minButton) {
                 // check if the min field is greater or equal than the max field
                 if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
                     // if no then make it less than the max field
@@ -267,7 +269,7 @@
             }
 
             // field is the max field
-            if (button == maxButton) {
+            if (button === maxButton) {
                 // if the value is less or equal than the min field
                 if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
                     // make it greater than the min field

@@ -55,19 +55,22 @@ namespace Locompro.Pages
         public async Task<IActionResult> OnGetUpdateProvince(string province)
         {
             string cantonsJson = "";
-        
+
             // if province is none
             if (province.Equals("Ninguno"))
             {
                 // create empty list
                 List<Canton> emptyCantonList = new List<Canton>();
-            
+
                 // add none back as an option
                 emptyCantonList.Add(
-                    new Canton{CountryName = "Ninguno",
-                        Name = "Ninguno", 
-                        ProvinceName = "Ninguno"});
-            
+                    new Canton
+                    {
+                        CountryName = "Ninguno",
+                        Name = "Ninguno",
+                        ProvinceName = "Ninguno"
+                    });
+
                 // set new list to service canton list
                 this._advancedSearchServiceHandler.Cantons = emptyCantonList;
             }
@@ -76,7 +79,7 @@ namespace Locompro.Pages
                 // update the model with all cantons in the given province
                 await this._advancedSearchServiceHandler.ObtainCantonsAsync(province);
             }
-        
+
             // prevent the json serializer from looping infinitely
             var settings = new JsonSerializerSettings
             {
@@ -85,7 +88,7 @@ namespace Locompro.Pages
 
             // generate the json file with the cantons
             cantonsJson = JsonConvert.SerializeObject(this._advancedSearchServiceHandler.Cantons, settings);
-        
+
             // specify the content type as a json file
             Response.ContentType = "application/json";
 
