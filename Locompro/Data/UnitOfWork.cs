@@ -1,10 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using Locompro.Data;
-using Microsoft.EntityFrameworkCore.Storage;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Locompro.Repositories
+namespace Locompro.Data
 {
     /// <summary>
     /// Encapsulates a given DB transaction.

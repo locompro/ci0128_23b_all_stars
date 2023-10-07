@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Locompro.Areas.Identity.ViewModels;
 using Locompro.Models;
+using Locompro.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 

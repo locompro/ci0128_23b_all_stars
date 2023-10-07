@@ -4,10 +4,7 @@
 @{
     ViewData["Title"] = "Inicio de sesión";
 }
-<head>
-    
-    <link rel="stylesheet" href="../assets/css/Stats-icons.css">
-</head>
+<link rel="stylesheet" href="../assets/css/Stats-icons.css">
 <h1 class="text-center my-4">@ViewData["Title"]</h1>
 
 
@@ -23,18 +20,20 @@
                 <fieldset>
                     <legend style="margin-bottom: 22px;">Bienvenido de vuelta</legend>
                 </fieldset>
-
+                
                 <form class="text-center" method="post">
                     <div class="mb-3">
                         <label class="form-label d-xl-flex justify-content-xl-start">Nombre de usuario</label>
                         <input asp-for="Input.UserName" class="form-control" autocomplete="username" aria-required="true"/>
                         <span asp-validation-for="Input.UserName" class="text-danger"></span>
                     </div>
+                    
                     <div class="mb-3">
                         <label class="form-label d-xl-flex justify-content-xl-start">Contraseña</label>
                         <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true"/>
                         <span asp-validation-for="Input.Password" class="text-danger"></span>
                     </div>
+                    <div asp-validation-summary="ModelOnly" class="text-danger"> </div>
                     <div class="mb-3">
                         <div>
                             <div class="checkbox">
@@ -47,11 +46,7 @@
                         <button type="submit" class="btn btn-primary d-block w-100">Iniciar sesión</button>
 
                     </div>
-
                     <div>
-                        <p>
-                            <a id="forgot-password" asp-page="./ForgotPassword">Olvido su contraseña</a>
-                        </p>
                         <p>
                             <span class="msg">¿No tiene una cuenta aún?</span>
                             <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Registrese</a>

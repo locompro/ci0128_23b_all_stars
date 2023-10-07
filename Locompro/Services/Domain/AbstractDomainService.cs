@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using Locompro.Data;
 using Locompro.Repositories;
-using Microsoft.Extensions.Logging;
 
-namespace Locompro.Services
+namespace Locompro.Services.Domain
 {
     /// <summary>
     /// Generic domain service for an application entity type.

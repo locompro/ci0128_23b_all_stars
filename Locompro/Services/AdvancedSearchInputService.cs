@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Locompro.Models;
+using Locompro.Services.Domain;
 
 namespace Locompro.Services
 {
@@ -10,7 +11,7 @@ namespace Locompro.Services
     /// Helps get data from repositories and these from the database
     /// Also helps keeping data available between caller page and the modal generated
     /// </summary>
-    public class AdvancedSearchModalService
+    public class AdvancedSearchInputService
     {
         /// <summary>
         /// Service for fetching location data
@@ -47,7 +48,7 @@ namespace Locompro.Services
         /// </summary>
         /// <param name="countryService"></param>
         /// <param name="categoryService"></param>
-        public AdvancedSearchModalService(CountryService countryService, CategoryService categoryService)
+        public AdvancedSearchInputService(CountryService countryService, CategoryService categoryService)
         {
             this._countryService = countryService;
             this._categoryService = categoryService;
