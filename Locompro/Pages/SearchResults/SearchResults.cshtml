@@ -1,9 +1,9 @@
 ﻿@page
-@using Locompro.Services
+@using Locompro.Models
 @using Locompro.Common
 @model Locompro.Pages.SearchResults.SearchResultsModel
 
-<link rel="stylesheet" href="~/css/MainMenu.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/MainMenu.css" asp-append-version="true"/>
 
 <div class="container  pt-5"
      style="margin-bottom: 3px;margin-top: -52px;">
@@ -33,7 +33,7 @@
                     </button>
                 </div>
             </div>
-            <button class="btn btn-primary ps-4 pe-4 rounded-pill"
+            <button class="search-results-advanced-search-button-initial btn-primary rounded-pill"
                     style="margin-left: 10px; margin-bottom: 0px; "
                     id="advancedSearchButton"
                     onclick="advancedSearchButtonPressed()"
@@ -41,9 +41,10 @@
                 Búsqueda avanzada
             </button>
         </div>
-        <div id="modalContainer" class="justify-content-center">
-        </div>
-
+        <div>
+            <div id="modalContainer" class="justify-content-center">
+            </div>
+        </div>    
         <div class="card border " style="margin-top: 15px;padding-top: 0px;padding-bottom: 0px;border-radius: 20px;" border="5px solid black;">
             <div style="margin-left: 20px; margin-top: 15px">
                 <h2>@Model.ProductName</h2>
@@ -51,58 +52,61 @@
                 <div style="margin-right:20px; overflow-y:auto;">
                     <table class="table table-hover" style="cursor:pointer">
                         <thead>
-                            <tr>
-                                <th scope="col">Ultimo Aporte </th>
-                                <th>
-                                    <a asp-page="./SearchResults" asp-route-sortOrder="@Model.NameSort"
-                                       asp-route-currentFilter="@Model.CurrentFilter"
-                                       asp-route-query=@Model.ProductName
-                                       asp-route-province=@Model.ProvinceSelected
-                                       asp-route-canton=@Model.CantonSelected
-                                       asp-route-minValue=@Model.MinPrice
-                                       asp-route-maxValue=@Model.MaxPrice
-                                       asp-route-category=@Model.CategorySelected
-                                       asp-route-model=@Model.ModelSelected>
-                                        Producto
-                                    </a> 
-                                </th>
-                                <th scope="col">Precio</th>
-                                <th scope="col">Tienda</th>
-                                <th scope="col">Provincia</th>
-                                <th scope="col">Canton</th>
-                                <th scope="col">Descripcion</th>
-                            </tr>
+                        <tr>
+                            <th>
+                                <a asp-page="./SearchResults"
+                                   asp-route-sortOrder="@Model.NameSort"
+                                   asp-route-sorting=true
+                                   asp-route-currentFilter="@Model.CurrentFilter"
+                                   asp-route-query=@Model.ProductName
+                                   asp-route-province=@Model.ProvinceSelected
+                                   asp-route-canton=@Model.CantonSelected
+                                   asp-route-minValue=@Model.MinPrice
+                                   asp-route-maxValue=@Model.MaxPrice
+                                   asp-route-category=@Model.CategorySelected
+                                   asp-route-model=@Model.ModelSelected
+                                   asp-route-brand="@Model.BrandSelected">
+                                    Producto
+                                </a>
+                            </th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Tienda</th>
+                            <th scope="col">Provincia</th>
+                            <th scope="col">Canton</th>
+                            <th scope="col">Descripcion</th>
+                            <th scope="col">Ultimo Aporte </th>
+                        </tr>
                         </thead>
                         <tbody>
-                            @{
-                                PaginatedList<Item> items = Model.DisplayItems;
-                                foreach (Item item in Model.DisplayItems)
-                                {
-                                    <tr onclick="itemSelected()">
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.LastSubmissionDate)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.ProductName)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.ProductPrice)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.ProductStore)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.ProvinceLocation)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.CantonLocation)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.ProductDescription)
-                                        </td>
-                                    </tr>
-                                }
+                        @{
+                            PaginatedList<Item> items = Model.DisplayItems;
+                            foreach (Item item in Model.DisplayItems)
+                            {
+                                <tr onclick="itemSelected()">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProductName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProductPrice)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProductStore)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProvinceLocation)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CantonLocation)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ProductDescription)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.LastSubmissionDate)
+                                    </td>
+                                </tr>
                             }
+                        }
                         </tbody>
                     </table>
                 </div>
@@ -121,10 +125,13 @@
                        asp-route-maxValue=@Model.MaxPrice
                        asp-route-category=@Model.CategorySelected
                        asp-route-model=@Model.ModelSelected
+                       asp-route-brand="@Model.BrandSelected"
                        asp-route-pageIndex="@(Model.DisplayItems.PageIndex - 1)"
+                       asp-route-sortOrder="@Model.NameSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"
                        class="btn btn-primary @prevDisabled"
                        style="margin-bottom:0px">
-                        Previous
+                        Previo
                     </a>
 
                     <input type="number"
@@ -142,9 +149,12 @@
                        asp-route-maxValue=@Model.MaxPrice
                        asp-route-category=@Model.CategorySelected
                        asp-route-model=@Model.ModelSelected
+                       asp-route-brand="@Model.BrandSelected"
                        asp-route-pageIndex="@(Model.DisplayItems.PageIndex + 1)"
+                       asp-route-sortOrder="@Model.NameSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"
                        class="btn btn-primary @nextDisabled">
-                        Next
+                        Siguiente
                     </a>
                     <h6 style="margin-left: 10px; margin-bottom:0px"> @Model.DisplayItems.TotalPages paginas de resultados </h6>
                 </div>
@@ -167,7 +177,8 @@
 
                 // erase the contents
                 modalContainer.innerHTML = "";
-                button.classList.remove("button-rounded-top");
+                button.classList.remove("search-results-button-rounded-top");
+                button.classList.add("search-results-advanced-search-button-initial");
                 button.classList.add("btn-primary");
                 button.classList.add("rounded-pill");
 
@@ -196,7 +207,8 @@
 
             button.classList.remove("rounded-pill");
             button.classList.remove("btn-primary");
-            button.classList.add("button-rounded-top");
+            button.classList.remove("search-results-advanced-search-button-initial");
+            button.classList.add("search-results-button-rounded-top");
 
         }
     </script>
@@ -252,37 +264,41 @@
     <script>
         const invalidSimpleSearch = "/SearchResults/SearchResults?query=";
              
-            const invalidAdvancedSearch = "/SearchResults/SearchResults?query="
+        const invalidAdvancedSearch = "/SearchResults/SearchResults?query="
              + "&province=Ninguno"
              + "&canton=Ninguno"
              + "&minValue=0"
              + "&maxValue=0"
              + "&category=Ninguno"
-             + "&model=";
+             + "&model="
+             + "&brand=";
             
-            function performSearchButton() {
+        function performSearchButton() {
             // if advanced search is not open it is normal search
             var redirect = "/SearchResults/SearchResults?query=";
              
             var searchValue = document.getElementById("searchBox").value.valueOf() ;
-             
              
             if (!modalShown) {
                  // get value
                  redirect += searchValue;   
                  
                 if (redirect.localeCompare(invalidSimpleSearch) === 0) {
+                    alert("Por favor llenar al menos un campo:\n" +
+                         "Esto puede incluir unicamente el nombre de busqueda en la barra de busqueda\n" +
+                         "O unicamente algun campo de la busqueda avanzada");
                     return;
                 }
             } else {
                  var provinceValue = document.getElementById("provinceDropdown").value;
                  var cantonValue = document.getElementById("cantonDropdown").value;
-                 var minValue = document.getElementById("minValue").value;
-                 var maxValue = document.getElementById("maxValue").value;
+                 var minValue = 0/*document.getElementById("minValue").value*/;
+                 var maxValue = 0/*document.getElementById("maxValue").value*/;
                  var categoryValue = document.getElementById("categoryDropdown").value;
             
                  try {
                      var modelValue = document.getElementById("modelInput").value;
+                     var brandValue = document.getElementById("brandInput").value;
                  } catch (error) {
                  }
             
@@ -292,7 +308,8 @@
                     + "&minValue=" + minValue
                     + "&maxValue=" + maxValue
                     + "&category=" + categoryValue
-                    + "&model=" + modelValue;
+                    + "&model=" + modelValue
+                    + "&brand=" + brandValue;
                  
                 if (redirect.localeCompare(invalidAdvancedSearch) === 0) {
                     return;
@@ -321,7 +338,7 @@
             var provinceForEmptyCheck = "@Model.ProvinceSelected";
 
             console.log(provinceForEmptyCheck);
-            if (provinceForEmptyCheck.length == 0) {
+            if (provinceForEmptyCheck.length === 0) {
                 // redirect to search results page
                 window.location.href = "/SearchResults/SearchResults?query=" + "@Model.ProductName" +
                     "&pageIndex=" + field.value;
@@ -334,6 +351,7 @@
                     "&maxValue=" + @Model.MaxPrice +
                     "&category=" + "@Model.CategorySelected" +
                     "&model=" + "@Model.ModelSelected" +
+                    "$brand=" + "@Model.BrandSelected" +
                     "&pageIndex=" + field.value;
             }
 
@@ -348,7 +366,7 @@
             var maxButton = document.getElementById("maxValue");
 
             // if the field is the min field
-            if (button == minButton) {
+            if (button === minButton) {
                 // check if the min field is greater or equal than the max field
                 if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
                     // if no then make it less than the max field
@@ -361,7 +379,7 @@
             }
 
             // field is the max field
-            if (button == maxButton) {
+            if (button === maxButton) {
                 // if the value is less or equal than the min field
                 if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
                     // make it greater than the min field
