@@ -19,6 +19,8 @@ public class Product
     public Status Status { get; set; } = Status.Active;
 
     public virtual ICollection<Category> Categories { get; set; }
+    
+    public virtual ICollection<Category> Submissions { get; set; }
 
     // TODO: Build pictures method automatic from DB?
 }
