@@ -31,23 +31,24 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
         base(context, loggerFactory)
     {
     }
-    
+
     /// <summary>
     /// gets all submissions that are in a store in the given canton and province
     /// <param name="cantonName"></param>
     /// <param name="provinceName"></param>
     /// <returns> a task IEnumerable of submissions </returns>
-    public virtual async Task<IEnumerable<Submission>> GetSubmissionsByCantonAsync(string cantonName, string provinceName)
+    public virtual async Task<IEnumerable<Submission>> GetSubmissionsByCantonAsync(string cantonName,
+        string provinceName)
     {
         var submissions = await DbSet
             .Include(s => s.Store)
             .ThenInclude(st => st.Canton)
             .Where(s => s.Store.Canton.Name == cantonName && s.Store.Canton.Province.Name == provinceName)
             .ToListAsync();
-    
+
         return submissions;
     }
-    
+
     /// <summary>
     /// Gets all submissions that contain the given product model
     /// </summary>
@@ -59,7 +60,7 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
             .Include(s => s.Product)
             .Where(s => s.Product.Model.Contains(productModel))
             .ToListAsync();
-    
+
         return submissions;
     }
 
@@ -73,7 +74,20 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
         IQueryable<Submission> submissionsQuery = this.DbSet
             .Include(s => s.Product)
             .Where(s => s.Product.Name.Contains(productName));
-        
+
+        return await submissionsQuery.ToListAsync();
+    }
+
+    /// <summary>
+    /// Gets all submissions that contain the given brand name, case insensitive
+    /// </summary>
+    /// <param name="brandName"></param>
+    public virtual async Task<IEnumerable<Submission>> GetSubmissionByBrandAsync(string brandName)
+    {
+        IQueryable<Submission> submissionsQuery = this.DbSet
+            .Include(s => s.Product)
+            .Where(s => s.Product.Brand.Contains(brandName));
+
         return await submissionsQuery.ToListAsync();
     }
 }

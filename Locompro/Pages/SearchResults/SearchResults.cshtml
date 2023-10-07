@@ -64,7 +64,8 @@
                                    asp-route-minValue=@Model.MinPrice
                                    asp-route-maxValue=@Model.MaxPrice
                                    asp-route-category=@Model.CategorySelected
-                                   asp-route-model=@Model.ModelSelected>
+                                   asp-route-model=@Model.ModelSelected
+                                   asp-route-brand="@Model.BrandSelected">
                                     Producto
                                 </a>
                             </th>
@@ -124,6 +125,7 @@
                        asp-route-maxValue=@Model.MaxPrice
                        asp-route-category=@Model.CategorySelected
                        asp-route-model=@Model.ModelSelected
+                       asp-route-brand="@Model.BrandSelected"
                        asp-route-pageIndex="@(Model.DisplayItems.PageIndex - 1)"
                        asp-route-sortOrder="@Model.NameSort"
                        asp-route-currentFilter="@Model.CurrentFilter"
@@ -147,6 +149,7 @@
                        asp-route-maxValue=@Model.MaxPrice
                        asp-route-category=@Model.CategorySelected
                        asp-route-model=@Model.ModelSelected
+                       asp-route-brand="@Model.BrandSelected"
                        asp-route-pageIndex="@(Model.DisplayItems.PageIndex + 1)"
                        asp-route-sortOrder="@Model.NameSort"
                        asp-route-currentFilter="@Model.CurrentFilter"
@@ -267,7 +270,8 @@
              + "&minValue=0"
              + "&maxValue=0"
              + "&category=Ninguno"
-             + "&model=";
+             + "&model="
+             + "&brand=";
             
         function performSearchButton() {
             // if advanced search is not open it is normal search
@@ -294,6 +298,7 @@
             
                  try {
                      var modelValue = document.getElementById("modelInput").value;
+                     var brandValue = document.getElementById("brandInput").value;
                  } catch (error) {
                  }
             
@@ -303,7 +308,8 @@
                     + "&minValue=" + minValue
                     + "&maxValue=" + maxValue
                     + "&category=" + categoryValue
-                    + "&model=" + modelValue;
+                    + "&model=" + modelValue
+                    + "&brand=" + brandValue;
                  
                 if (redirect.localeCompare(invalidAdvancedSearch) === 0) {
                     return;
@@ -332,7 +338,7 @@
             var provinceForEmptyCheck = "@Model.ProvinceSelected";
 
             console.log(provinceForEmptyCheck);
-            if (provinceForEmptyCheck.length == 0) {
+            if (provinceForEmptyCheck.length === 0) {
                 // redirect to search results page
                 window.location.href = "/SearchResults/SearchResults?query=" + "@Model.ProductName" +
                     "&pageIndex=" + field.value;
@@ -345,6 +351,7 @@
                     "&maxValue=" + @Model.MaxPrice +
                     "&category=" + "@Model.CategorySelected" +
                     "&model=" + "@Model.ModelSelected" +
+                    "$brand=" + "@Model.BrandSelected" +
                     "&pageIndex=" + field.value;
             }
 
@@ -359,7 +366,7 @@
             var maxButton = document.getElementById("maxValue");
 
             // if the field is the min field
-            if (button == minButton) {
+            if (button === minButton) {
                 // check if the min field is greater or equal than the max field
                 if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
                     // if no then make it less than the max field
@@ -372,7 +379,7 @@
             }
 
             // field is the max field
-            if (button == maxButton) {
+            if (button === maxButton) {
                 // if the value is less or equal than the min field
                 if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
                     // make it greater than the min field

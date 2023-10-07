@@ -36,9 +36,10 @@ public class SearchService
     /// <param name="maxValue"></param>
     /// <param name="category"></param>
     /// <param name="model"></param>
+    /// <param name="brand"></param>
     /// <returns>A list of items that match the search criteria.</returns>
     public async Task<List<Item>> SearchItems(string productName, string province, string canton, long minValue,
-        long maxValue, string category, string model)
+        long maxValue, string category, string model, string brand = null)
     {
         
         // List of items to be returned
@@ -63,6 +64,12 @@ public class SearchService
         if (!string.IsNullOrEmpty(canton) && !string.IsNullOrEmpty(province))
         {
             submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
+        }
+        
+        // add results from searching by brand
+        if (!string.IsNullOrEmpty(brand))
+        {
+            submissions.Add(await GetSubmissionsByBrand(brand));
         }
         
         // if there are no submissions
@@ -99,7 +106,17 @@ public class SearchService
     {
         return await _submissionRepository.GetSubmissionsByProductModelAsync(productModel);
     }
-
+    
+    /// <summary>
+    /// Calls the submission repository to get all submissions containing a specific brand name
+    /// </summary>
+    /// <param name="brandName"></param>
+    /// <returns> An Enumerable with al the submissions tha meet the criteria</returns>
+    private async Task<IEnumerable<Submission>> GetSubmissionsByBrand(string brandName)
+    {
+        return await _submissionRepository.GetSubmissionByBrandAsync(brandName);
+    }
+ 
     public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAndProvince(string canton, string province)
     {
         return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);

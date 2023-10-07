@@ -62,6 +62,7 @@ public class SearchResultsModel : PageModel
     public long MinPrice { get; set; }
     public long MaxPrice { get; set; }
     public string ModelSelected { get; set; }
+    public string BrandSelected { get; set; }
         
         
     public string NameSort { get; set; }
@@ -99,6 +100,7 @@ public class SearchResultsModel : PageModel
     /// <param name="maxValue"></param>
     /// <param name="category"></param>
     /// <param name="model"></param>
+    /// <param name="brand"></param>
     /// <param name="currentFilter"></param>
     /// <param name="sortOrder"></param>
     public async Task OnGetAsync(int? pageIndex,
@@ -110,11 +112,12 @@ public class SearchResultsModel : PageModel
         long maxValue,
         string category,
         string model,
+        string brand,
         string currentFilter,
         string sortOrder)
     {
         // validate input
-        this.ValidateInput(province, canton, minValue, maxValue, category, model);
+        this.ValidateInput(province, canton, minValue, maxValue, category, model, brand);
         
         this.ProductName = query;
         
@@ -130,7 +133,8 @@ public class SearchResultsModel : PageModel
                 this.MinPrice,
                 this.MaxPrice,
                 this.CategorySelected,
-                this.ModelSelected)
+                this.ModelSelected,
+                this.BrandSelected)
             ).ToList();
         
         // get amount of items found    
@@ -158,7 +162,8 @@ public class SearchResultsModel : PageModel
         long minValue,
         long maxValue,
         string category,
-        string model)
+        string model,
+        string brand)
     {
         
         if (!string.IsNullOrEmpty(province) && province.Equals("Ninguno"))
@@ -182,6 +187,7 @@ public class SearchResultsModel : PageModel
         this.MaxPrice = maxValue;
         this.CategorySelected = category;
         this.ModelSelected = model;
+        this.BrandSelected = brand;
     }
 
     /// <summary>
