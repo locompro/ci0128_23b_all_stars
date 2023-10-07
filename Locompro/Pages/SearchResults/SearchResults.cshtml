@@ -51,7 +51,6 @@
                     <table class="table table-hover" style="cursor:pointer">
                         <thead>
                             <tr>
-                                <th scope="col">Ultimo Aporte </th>
                                 <th>
                                     <a asp-page="./SearchResults"
                                        asp-route-sortOrder="@Model.NameSort"
@@ -72,6 +71,7 @@
                                 <th scope="col">Provincia</th>
                                 <th scope="col">Canton</th>
                                 <th scope="col">Descripcion</th>
+                                <th scope="col">Ultimo Aporte </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -80,9 +80,6 @@
                                 foreach (Item item in Model.DisplayItems)
                                 {
                                     <tr onclick="itemSelected()">
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.LastSubmissionDate)
-                                        </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.ProductName)
                                         </td>
@@ -100,6 +97,9 @@
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.ProductDescription)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.LastSubmissionDate)
                                         </td>
                                     </tr>
                                 }
