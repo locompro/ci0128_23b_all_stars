@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NuGet.ContentModel;
+using Locompro.Models;
 
 namespace Locompro.Tests.Services;
 
