@@ -99,7 +99,17 @@ public class SearchService
     {
         return await _submissionRepository.GetSubmissionsByProductModelAsync(productModel);
     }
-
+    
+    /// <summary>
+    /// Calls the submission repository to get all submissions containing a specific brand name
+    /// </summary>
+    /// <param name="brandName"></param>
+    /// <returns> An Enumerable with al the submissions tha meet the criteria</returns>
+    private async Task<IEnumerable<Submission>> GetSubmissionsByBrand(string brandName)
+    {
+        return await _submissionRepository.GetSubmissionByBrandAsync(brandName);
+    }
+ 
     public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAndProvince(string canton, string province)
     {
         return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);

@@ -5,11 +5,11 @@ namespace Locompro.Areas.Identity.ViewModels
     public class RegisterViewModel
     {
         [Required]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "El email no es válido.")] 
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required]
+        [Required (ErrorMessage = "El nombre de usuario es requerido.")]
         [Display(Name = "Nombre de usuario")]
         public string UserName { get; set; }
 
