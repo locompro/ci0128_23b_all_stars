@@ -32,7 +32,7 @@
                     </button>
                 </div>
             </div>
-            <button class="btn btn-primary ps-4 pe-4 rounded-pill"
+            <button class="search-results-advanced-search-button-initial btn-primary rounded-pill"
                     style="margin-left: 10px; margin-bottom: 0px; "
                     id="advancedSearchButton"
                     onclick="advancedSearchButtonPressed()"
@@ -53,7 +53,9 @@
                             <tr>
                                 <th scope="col">Ultimo Aporte </th>
                                 <th>
-                                    <a asp-page="./SearchResults" asp-route-sortOrder="@Model.NameSort"
+                                    <a asp-page="./SearchResults"
+                                       asp-route-sortOrder="@Model.NameSort"
+                                       asp-route-sorting=true
                                        asp-route-currentFilter="@Model.CurrentFilter"
                                        asp-route-query=@Model.ProductName
                                        asp-route-province=@Model.ProvinceSelected
@@ -121,6 +123,8 @@
                        asp-route-category=@Model.CategorySelected
                        asp-route-model=@Model.ModelSelected
                        asp-route-pageIndex="@(Model.DisplayItems.PageIndex - 1)"
+                       asp-route-sortOrder="@Model.NameSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"
                        class="btn btn-primary @prevDisabled"
                        style="margin-bottom:0px">
                         Previous
@@ -142,6 +146,8 @@
                        asp-route-category=@Model.CategorySelected
                        asp-route-model=@Model.ModelSelected
                        asp-route-pageIndex="@(Model.DisplayItems.PageIndex + 1)"
+                       asp-route-sortOrder="@Model.NameSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"
                        class="btn btn-primary @nextDisabled">
                         Next
                     </a>
@@ -166,7 +172,8 @@
 
                 // erase the contents
                 modalContainer.innerHTML = "";
-                button.classList.remove("button-rounded-top");
+                button.classList.remove("search-results-button-rounded-top");
+                button.classList.add("search-results-advanced-search-button-initial");
                 button.classList.add("btn-primary");
                 button.classList.add("rounded-pill");
 
@@ -195,7 +202,8 @@
 
             button.classList.remove("rounded-pill");
             button.classList.remove("btn-primary");
-            button.classList.add("button-rounded-top");
+            button.classList.remove("search-results-advanced-search-button-initial");
+            button.classList.add("search-results-button-rounded-top");
 
         }
     </script>
@@ -251,7 +259,7 @@
     <script>
         const invalidSimpleSearch = "/SearchResults/SearchResults?query=";
              
-            const invalidAdvancedSearch = "/SearchResults/SearchResults?query="
+        const invalidAdvancedSearch = "/SearchResults/SearchResults?query="
              + "&province=Ninguno"
              + "&canton=Ninguno"
              + "&minValue=0"
@@ -259,12 +267,11 @@
              + "&category=Ninguno"
              + "&model=";
             
-            function performSearchButton() {
+        function performSearchButton() {
             // if advanced search is not open it is normal search
             var redirect = "/SearchResults/SearchResults?query=";
              
             var searchValue = document.getElementById("searchBox").value.valueOf() ;
-             
              
             if (!modalShown) {
                  // get value
