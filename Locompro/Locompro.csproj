@@ -60,5 +60,14 @@
 	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\dist\jquery.validate.js" />
 	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\dist\jquery.validate.min.js" />
 	  <_ContentIncludedByDefault Remove="wwwroot\lib\jquery-validation\LICENSE.md" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewImports.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewStart.cshtml" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <AdditionalFiles Include="Pages\Account\Login.cshtml" />
+	  <AdditionalFiles Include="Pages\Account\Logout.cshtml" />
+	  <AdditionalFiles Include="Pages\Account\Register.cshtml" />
+	  <AdditionalFiles Include="Pages\Account\_ViewImports.cshtml" />
 	</ItemGroup>
 </Project>
