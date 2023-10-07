@@ -2,33 +2,46 @@
 
 var provinces = null;
 
-$(document).ready(function() {
+// Create a flag to determine whether to clear modal inputs
+var shouldClearModalInputs = true;
+
+$(document).ready(function () {
     // Bootstrap modal instance
     var addStoreModal = new bootstrap.Modal($("#addStoreModal")[0]);
 
     // Event fired just before the modal is shown
-    $('#addStoreModal').on('show.bs.modal', function() {
+    $("#addStoreModal").on('show.bs.modal', function () {
         if (!provinces) {
             const provincesElement = $("#provincesData");
             provinces = JSON.parse(provincesElement.attr("data-provinces"));  // Initialize the global variable
         }
     });
-    
+
     // Event fired just before the modal is hidden
-    $('#addStoreModal').on('hidden.bs.modal', function() {
-        // Clear all input, select, and textarea elements within the modal
-        $(this).find("input, select, textarea").each(function() {
-            clearModalInputs($(this));
-        });
+    $("#addStoreModal").on('hidden.bs.modal', function () {
+        if (shouldClearModalInputs) {
+            // Clear all input, select, and textarea elements within the modal
+            $(this).find("input, select, textarea").each(function () {
+                clearModalInputs($(this));
+            });
+        } else {
+            // Reset the flag for the next time
+            shouldClearModalInputs = true;
+        }
     });
 
+    // Attach input event listener to all textboxes for immediate validation
+    $("input, select, textarea").on('input', function() {
+        $(this).valid();
+    });
+    
     // Hide the partial view and update main view
-    $("#hideAddStoreBtn").click(function() {
+    $("#addStoreBtn").click(function () {
         validateAndCopyValues(addStoreModal);
     });
 
     // Update cantons on province select
-    $("#partialStoreProvince").change(function() {
+    $("#partialStoreProvince").change(function () {
         updateCantonDropdown($("#partialStoreProvince").val());
     });
 });
@@ -41,7 +54,7 @@ function clearModalInputs(element) {
     }
 
     updateCantonDropdown(null);
-    
+
     // Trigger focusout event to re-run validation and clear messages
     element.trigger("focusout");
 
@@ -74,6 +87,9 @@ function validateAndCopyValues(addStoreModal) {
         // Disable editing of the main view input box
         $("#mainStoreName").prop("disabled", true);
 
+        // Set the flag to false to prevent clearing
+        shouldClearModalInputs = false;
+        
         // Hide the modal using Bootstrap's API
         addStoreModal.hide();
     }
