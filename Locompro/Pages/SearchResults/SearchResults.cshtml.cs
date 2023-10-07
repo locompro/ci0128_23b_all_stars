@@ -61,6 +61,7 @@ public class SearchResultsModel : PageModel
     public long MinPrice { get; set; }
     public long MaxPrice { get; set; }
     public string ModelSelected { get; set; }
+    public string BrandSelected { get; set; }
         
         
     public string NameSort { get; set; }
@@ -90,6 +91,7 @@ public class SearchResultsModel : PageModel
     /// Gets the items to be displayed in the search results
     /// </summary>
     /// <param name="pageIndex"></param>
+    /// <param name="sorting"></param>
     /// <param name="query"></param>
     /// <param name="province"></param>
     /// <param name="canton"></param>
@@ -97,9 +99,11 @@ public class SearchResultsModel : PageModel
     /// <param name="maxValue"></param>
     /// <param name="category"></param>
     /// <param name="model"></param>
+    /// <param name="brand"></param>
     /// <param name="currentFilter"></param>
     /// <param name="sortOrder"></param>
     public async Task OnGetAsync(int? pageIndex,
+        bool? sorting,
         string query,
         string province,
         string canton,
@@ -107,17 +111,17 @@ public class SearchResultsModel : PageModel
         long maxValue,
         string category,
         string model,
+        string brand,
         string currentFilter,
         string sortOrder)
     {
         // validate input
-        this.ValidateInput(province, canton, minValue, maxValue, category, model);
+        this.ValidateInput(province, canton, minValue, maxValue, category, model, brand);
         
-        this.CurrentSort = sortOrder;
         this.ProductName = query;
         
         // set up sorting parameters
-        this.SetSortingParameters(sortOrder);
+        this.SetSortingParameters(sortOrder, (sorting is not null));
         
         // get items from search service
         this._items =
@@ -128,14 +132,15 @@ public class SearchResultsModel : PageModel
                 this.MinPrice,
                 this.MaxPrice,
                 this.CategorySelected,
-                this.ModelSelected)
+                this.ModelSelected,
+                this.BrandSelected)
             ).ToList();
         
         // get amount of items found    
         this.ItemsAmount = _items.Count;
-            
+        
         // order items by sort order
-        this.OrderItems(sortOrder);
+        this.OrderItems();
         
         // create paginated list and set it to be displayed
         this.DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
@@ -156,7 +161,8 @@ public class SearchResultsModel : PageModel
         long minValue,
         long maxValue,
         string category,
-        string model)
+        string model,
+        string brand)
     {
         
         if (!string.IsNullOrEmpty(province) && province.Equals("Ninguno"))
@@ -180,14 +186,25 @@ public class SearchResultsModel : PageModel
         this.MaxPrice = maxValue;
         this.CategorySelected = category;
         this.ModelSelected = model;
+        this.BrandSelected = brand;
     }
-    
+
     /// <summary>
     /// Manages all sorting done to items in list
     /// </summary>
     /// <param name="sortOrder"></param>
-    private void SetSortingParameters(string sortOrder)
+    /// <param name="sorting"></param>
+    private void SetSortingParameters(string sortOrder, bool sorting)
     {
+        if (!sorting)
+        {
+            if (!string.IsNullOrEmpty(sortOrder))
+            {
+                this.NameSort = sortOrder;
+            }
+            return;
+        }
+        
         if (string.IsNullOrEmpty(sortOrder))
         {
             this.NameSort = "name_asc";
@@ -201,10 +218,9 @@ public class SearchResultsModel : PageModel
     /// <summary>
     /// Orders items
     /// </summary>
-    /// <param name="sortOrder"></param>
-    void OrderItems(string sortOrder)
+    void OrderItems()
     {
-        switch (sortOrder)
+        switch (this.NameSort)
         {
             case "name_desc":
                 _items = _items.OrderByDescending(item => item.ProductName).ToList();

@@ -5,52 +5,9 @@ using System.Threading.Tasks;
 using Locompro.Repositories;
 using Locompro.Models;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.Text.RegularExpressions;
 
 namespace Locompro.Services;
-
-/// <summary>
-/// Class that represents a single item to be displayed in the search results
-/// An item is a product that is being sold in a store
-/// </summary>
-public class Item
-{
-    public string LastSubmissionDate { get; init; }
-    public string ProductName { get; init; }
-    public double ProductPrice { get; init; }
-    public string ProductStore { get; init; }
-    public string CantonLocation { get; init; }
-    public string ProvinceLocation { get; init; }
-    public string ProductDescription { get; init; }
-
-    public List<Submission> Submissions { get; set; }
-
-    /// <summary>
-    /// Constructor for an item
-    /// </summary>
-    /// <param name="lastSubmissionDate"></param>
-    /// <param name="productName"></param>
-    /// <param name="productPrice"></param>
-    /// <param name="productStore"></param>
-    /// <param name="cantonLocation"></param>
-    /// <param name="provinceLocation"></param>
-    /// <param name="productDescription"></param>
-    public Item(string lastSubmissionDate,
-        string productName,
-        double productPrice,
-        string productStore,
-        string cantonLocation,
-        string provinceLocation,
-        string productDescription)
-    {
-        this.LastSubmissionDate = lastSubmissionDate;
-        this.ProductName = productName;
-        this.ProductPrice = productPrice;
-        this.ProductStore = productStore;
-        this.CantonLocation = cantonLocation;
-        this.ProvinceLocation = provinceLocation;
-        this.ProductDescription = productDescription;
-    }
-};
 
 public class SearchService
 {
@@ -79,9 +36,10 @@ public class SearchService
     /// <param name="maxValue"></param>
     /// <param name="category"></param>
     /// <param name="model"></param>
+    /// <param name="brand"></param>
     /// <returns>A list of items that match the search criteria.</returns>
     public async Task<List<Item>> SearchItems(string productName, string province, string canton, long minValue,
-        long maxValue, string category, string model)
+        long maxValue, string category, string model, string brand = null)
     {
         
         // List of items to be returned
@@ -106,6 +64,12 @@ public class SearchService
         if (!string.IsNullOrEmpty(canton) && !string.IsNullOrEmpty(province))
         {
             submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
+        }
+        
+        // add results from searching by brand
+        if (!string.IsNullOrEmpty(brand))
+        {
+            submissions.Add(await GetSubmissionsByBrand(brand));
         }
         
         // if there are no submissions
@@ -137,11 +101,22 @@ public class SearchService
     /// <summary>
     /// Gets submissions containing a specific product model
     /// </summary>
+    /// <remarks> This is just a wrapper for the submission repository </remarks>
     private async Task<IEnumerable<Submission>> GetSubmissionsByProductModel(string productModel)
     {
         return await _submissionRepository.GetSubmissionsByProductModelAsync(productModel);
     }
-
+    
+    /// <summary>
+    /// Calls the submission repository to get all submissions containing a specific brand name
+    /// </summary>
+    /// <param name="brandName"></param>
+    /// <returns> An Enumerable with al the submissions tha meet the criteria</returns>
+    private async Task<IEnumerable<Submission>> GetSubmissionsByBrand(string brandName)
+    {
+        return await _submissionRepository.GetSubmissionByBrandAsync(brandName);
+    }
+ 
     public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAndProvince(string canton, string province)
     {
         return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
@@ -197,7 +172,7 @@ public class SearchService
 
         // create an item
         Item item = new Item(
-            bestSubmission.EntryTime.ToString(CultureInfo.InvariantCulture),
+            GetFormatedDate(bestSubmission),
             bestSubmission.Product.Name,
             bestSubmission.Price,
             bestSubmission.Store.Name,
@@ -211,6 +186,21 @@ public class SearchService
         };
 
         return await Task.FromResult(item);
+    }
+    
+    /// <summary>
+    /// Extracts from entry time, the date in the format yyyy-mm-dd
+    /// to be shown in the results page
+    /// </summary>
+    /// <param name="submission"></param>
+    /// <returns></returns>
+    string GetFormatedDate(Submission submission)
+    {
+        Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture), @"[0-9]*/[0-9.]*/[0-9]*");
+
+        string date = regexMatch.Success ? regexMatch.Groups[0].Value : submission.EntryTime.ToString(CultureInfo.InvariantCulture);
+        
+        return date;
     }
     
     /// <summary>

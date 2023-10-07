@@ -39,15 +39,16 @@
                 </div>
             </div>
         </div>
-        <div style="text-align: center; margin-top: 20px">
-            <button class="btn btn-primary rounded-pill"
-                    style="margin-left: 6px; margin-top: 6px; margin-bottom: 0px; "
+        <div style="text-align: center; margin-top: 20px; justify-content: center">
+            <button class="index-advanced-search-button-initial"
+                    style="margin-top: 6px; margin-bottom: 0px; "
                     id="advancedSearchButton"
-                    type="button"
-                    focus="outline: none; box-shadow: none;">
+            >
                 Búsqueda avanzada
             </button>
-            <div id="modalContainer">
+            
+            <div id="modalContainer"
+                 style="margin-left: auto; margin-right: auto;">
             </div>
         </div>
     </div>
@@ -74,11 +75,11 @@
 
                     // reset the button
                     button.classList.remove("button-rounded-top");
-                    button.classList.add("btn-primary");
-                    button.classList.add("rounded-pill");
-
-                    modalContainer.classList.remove("modal-advanced-search");
-
+                    button.classList.add("index-advanced-search-button");
+                    
+                    modalContainer.classList.remove("index-modal-advanced-search");
+                    modalContainer.classList.add("advanced-search-modal-default");
+                    
                     // change state to modal not shown
                     modalShown = false;
                     return;
@@ -99,11 +100,12 @@
                     console.error('An error occurred:', error);
                 }
 
-                modalContainer.classList.add("modal-advanced-search");
+                modalContainer.classList.add("index-modal-advanced-search");
+                modalContainer.classList.remove("advanced-search-modal-default");
 
                 // change the button style
-                button.classList.remove("rounded-pill");
-                button.classList.remove("btn-primary");
+                button.classList.remove("index-advanced-search-button-initial");
+                button.classList.remove("index-advanced-search-button");
                 button.classList.add("button-rounded-top");
 
                 // if the modal has been displayed, then store the state
@@ -169,7 +171,8 @@
             + "&minValue=0"
             + "&maxValue=0"
             + "&category=Ninguno"
-            + "&model=";
+            + "&model="
+            + "&brand=";
     
         function performSearchButton() {
             // if advanced search is not open it is normal search
@@ -187,12 +190,13 @@
             } else {
                 var provinceValue = document.getElementById("provinceDropdown").value;
                 var cantonValue = document.getElementById("cantonDropdown").value;
-                var minValue = document.getElementById("minValue").value;
-                var maxValue = document.getElementById("maxValue").value;
+                var minValue = /*document.getElementById("minValue").value*/ 0;
+                var maxValue = /*document.getElementById("maxValue").value*/ 0;
                 var categoryValue = document.getElementById("categoryDropdown").value;
 
                 try {
                     var modelValue = document.getElementById("modelInput").value;
+                    var brandValue = document.getElementById("brandInput").value;
                 } catch (error) {
                 }
 
@@ -202,7 +206,8 @@
                     + "&minValue=" + minValue
                     + "&maxValue=" + maxValue
                     + "&category=" + categoryValue
-                    + "&model=" + modelValue;
+                    + "&model=" + modelValue
+                    + "&brand=" + brandValue;
                 
                if (redirect.localeCompare(invalidAdvancedSearch) === 0) {
                     return;
@@ -252,7 +257,7 @@
             var maxButton = document.getElementById("maxValue");
 
             // if the field is the min field
-            if (button == minButton) {
+            if (button === minButton) {
                 // check if the min field is greater or equal than the max field
                 if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
                     // if no then make it less than the max field
@@ -265,7 +270,7 @@
             }
 
             // field is the max field
-            if (button == maxButton) {
+            if (button === maxButton) {
                 // if the value is less or equal than the min field
                 if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
                     // make it greater than the min field
