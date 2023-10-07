@@ -4,6 +4,7 @@
 #nullable disable
 
 using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Locompro.Services;
 using Locompro.Areas.Identity.ViewModels;
 
-namespace Locompro.Areas.Identity.Pages.Account
+namespace Locompro.Pages.Account
 {
     public class LoginModel : PageModel
     {

@@ -3,12 +3,14 @@
 
 #nullable disable
 
+using System;
+using System.Threading.Tasks;
 using Locompro.Areas.Identity.ViewModels;
 using Locompro.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Locompro.Areas.Identity.Pages.Account
+namespace Locompro.Pages.Account
 {
     public class RegisterModel : PageModel
     {

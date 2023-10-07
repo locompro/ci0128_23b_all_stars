@@ -1,3 +1,4 @@
+using System;
 using Microsoft.EntityFrameworkCore;
 
 using Locompro.Data;
@@ -7,6 +8,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Server;
 using System.Xml;
 using Locompro.Models;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,6 +39,10 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
 
     var context = services.GetRequiredService<LocomproContext>();
+
+    // TODO: delete before merge
+    context.Database.EnsureDeleted();
+    
     if (context.Database.EnsureCreated())
     {
         Console.WriteLine("Database created");
@@ -50,9 +59,9 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication();;
+app.UseAuthentication();
 
-//app.UseHttpLogging();
+app.UseHttpLogging();
 
 app.UseAuthorization();
 
@@ -92,10 +101,15 @@ void registerServices(WebApplicationBuilder builder)
 
     // for advanced search
     builder.Services.AddScoped<AdvancedSearchModalService>();
+    builder.Services.AddScoped<SearchService>();
     builder.Services.AddScoped<CategoryRepository>();
     builder.Services.AddScoped<CategoryService>();
+    
+    // for searching
     builder.Services.AddScoped<ProductRepository>();
-    builder.Services.AddScoped<ProductService>();
+    builder.Services.AddScoped<SubmissionRepository>();
+    builder.Services.AddScoped<SearchService>();
+    builder.Services.AddScoped<SubmissionRepository>();
 }
 
 
