@@ -12,21 +12,21 @@
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.21" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.21" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.22">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.22" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.21" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.22" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.21">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.jQuery.Unobtrusive.Validation" Version="3.2.11" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
 		<PackageReference Include="NUnit.Analyzers" Version="3.6.1">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="NUnit.ConsoleRunner" Version="3.16.3" />
 		<PackageReference Include="NUnit.Engine" Version="3.16.3" />
@@ -35,26 +35,22 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Remove="Properties\serviceDependencies.local.json" />
+	  <None Remove="Properties\serviceDependencies.local.json" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\font-awesome.min.css" />
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.eot" />
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.svg" />
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.ttf" />
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.woff" />
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.woff2" />
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\FontAwesome.otf" />
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\material-icons.min.css" />
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.eot" />
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.svg" />
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.ttf" />
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.woff" />
-		<_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.woff2" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <None Include="Pages\SearchResults\SearchResults.cshtml" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\font-awesome.min.css" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.eot" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.svg" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.ttf" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.woff" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\fontawesome-webfont.woff2" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\FontAwesome.otf" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\material-icons.min.css" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.eot" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.svg" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.ttf" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.woff" />
+	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.woff2" />
 	</ItemGroup>
 </Project>

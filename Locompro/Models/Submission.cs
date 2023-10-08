@@ -24,7 +24,6 @@ public class Submission
     [Required]
     public string StoreName { get; set; }
     
-    [Required]
     public int ProductId { get; set; }
     
     public virtual User User { get; set; }
@@ -33,4 +32,5 @@ public class Submission
     
     public virtual Product Product { get; set; }
     
+    // TODO: Add pictures to submission
 }

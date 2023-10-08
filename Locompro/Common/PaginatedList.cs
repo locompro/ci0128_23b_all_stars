@@ -51,7 +51,7 @@ namespace Locompro.Common
         /// <returns></returns>
         public static PaginatedList<T> Create(List<T> source, int pageIndex, int pageSize)
         {
-            var count = source.Count;
+            var count = source.Count();
             var items = source.Skip(
                                (pageIndex - 1) * pageSize)
                 .Take(pageSize).ToList();

@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "mssql": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:LocomproContext"
+    }
+  }
+}

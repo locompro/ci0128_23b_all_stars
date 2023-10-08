@@ -1,120 +1,133 @@
-// TODO: Generify to use with product modal
+class ModalManager {
+    constructor(modal, showButton, hideButton, addButton, mainInput, partialInput, dataElement) {
+        this.modal = modal;
+        this.showButton = showButton;
+        this.hideButton = hideButton;
+        this.addButton = addButton;
+        this.mainInput = mainInput;
+        this.partialInput = partialInput;
+        this.shouldClearFlag = true;
+        this.dataElement = dataElement;
+        this.data = null;
+    }
 
-var provinces = null;
+    setupEvents() {
+        this.modal.on('show.bs.modal', () => this.#loadData());
+        this.modal.on('hidden.bs.modal', () => this.#clearOrHide());
+        this.addButton.click(() => this.#addAndValidate());
+    }
 
-// Create a flag to determine whether to clear modal inputs
-var shouldClearModalInputs = true;
-
-$(document).ready(function () {
-    // Bootstrap modal instance
-    var addStoreModal = new bootstrap.Modal($("#addStoreModal")[0]);
-
-    // Event fired just before the modal is shown
-    $("#addStoreModal").on('show.bs.modal', function () {
-        if (!provinces) {
-            const provincesElement = $("#provincesData");
-            provinces = JSON.parse(provincesElement.attr("data-provinces"));  // Initialize the global variable
+    #loadData() {
+        if (!this.data) {
+            this.data = JSON.parse(this.dataElement.attr("data"));
         }
-    });
+    }
 
-    // Event fired just before the modal is hidden
-    $("#addStoreModal").on('hidden.bs.modal', function () {
-        if (shouldClearModalInputs) {
-            // Clear all input, select, and textarea elements within the modal
-            $(this).find("input, select, textarea").each(function () {
-                clearModalInputs($(this));
-            });
+    #clearOrHide() {
+        if (this.shouldClearFlag) {
+            this.#clearModalInputs();
         } else {
-            // Reset the flag for the next time
-            shouldClearModalInputs = true;
+            this.showButton.hide();
         }
-    });
-
-    // Attach input event listener to all textboxes for immediate validation
-    $("input, select, textarea").on('input', function() {
-        $(this).valid();
-    });
-    
-    // Hide the partial view and update main view
-    $("#addStoreBtn").click(function () {
-        validateAndCopyValues(addStoreModal);
-    });
-
-    // Update cantons on province select
-    $("#partialStoreProvince").change(function () {
-        updateCantonDropdown($("#partialStoreProvince").val());
-    });
-});
-
-function clearModalInputs(element) {
-    if (element.is("select")) {
-        element.prop("selectedIndex", 0);
-    } else {
-        element.val('');
     }
 
-    updateCantonDropdown(null);
-
-    // Trigger focusout event to re-run validation and clear messages
-    element.trigger("focusout");
-
-    // Manually reset the validation messages
-    const fieldName = element.attr("name");
-    $(`span[data-valmsg-for='${fieldName}']`).text("")
-        .removeClass("field-validation-error")
-        .addClass("field-validation-valid");
-}
-
-function validateAndCopyValues(addStoreModal) {
-    let isValid = true;
-
-    // Loop through all input, select, and textarea elements within the modal
-    $("#addStoreModal").find("input, select, textarea").each(function () {
-        // Trigger focusout event to simulate user interaction
-        $(this).trigger("focusout");
-
-        // Use jQuery Validation's valid method
-        if (!$(this).valid()) {
-            isValid = false;
-        }
-    });
-
-    if (isValid) {
-        // Copy the value from the partial to the main view
-        var partialStoreName = $("#partialStoreName").val();
-        $("#mainStoreName").val(partialStoreName);
-
-        // Disable editing of the main view input box
-        $("#mainStoreName").prop("disabled", true);
-
-        // Set the flag to false to prevent clearing
-        shouldClearModalInputs = false;
-        
-        // Hide the modal using Bootstrap's API
-        addStoreModal.hide();
-    }
-}
-
-function updateCantonDropdown(selectedProvinceName) {
-    const $cantonDropdown = $("#partialStoreCanton");
-
-    // Remove only the options that are not the default "Seleccionar" option
-    $cantonDropdown.find("option").not(':first').remove();
-
-    // If Province select is set to its placeholder, stop further execution.
-    if (!selectedProvinceName) {
-        return;
+    #addAndValidate() {
+        this.shouldClearFlag = this.#validateAndCopyValues();
     }
 
-    const selectedProvince = provinces.find(p => p.Name === selectedProvinceName);
-
-    // Populate canton dropdown based on selected province
-    if (selectedProvince) {
-        const cantons = selectedProvince.Cantons;
-
-        cantons.forEach(cantonObj => {
-            const option = new Option(cantonObj.Name, cantonObj.Name);
-            $cantonDropdown.append(option);
+    #clearModalInputs() {
+        this.modal.find("input, select, textarea").each((index, element) => {
+            const $element = $(element);
+            if ($element.is("select")) {
+                $element.prop("selectedIndex", 0);
+            } else {
+                $element.val('');
+            }
+            $element.trigger("focusout");
+            const fieldName = $element.attr("name");
+            $(`span[data-valmsg-for='${fieldName}']`).text("")
+                .removeClass("field-validation-error")
+                .addClass("field-validation-valid");
         });
     }
-}  
+
+    #validateAndCopyValues() {
+        let isValid = true;
+        this.modal.find("input, select, textarea").each((index, element) => {
+            const $element = $(element);
+            $element.trigger("focusout");
+            if (!$element.valid()) {
+                isValid = false;
+            }
+        });
+
+        if (isValid) {
+            const partialVal = this.partialInput.val();
+            this.mainInput.val(partialVal);
+            this.mainInput.prop("disabled", true);
+            this.modal.modal('hide');
+            return false;
+        }
+
+        return true;
+    }
+}
+
+class StoreModalManager extends ModalManager {
+    setupEvents() {
+        super.setupEvents();
+        this.#setupProvinceChange();
+    }
+
+    #setupProvinceChange() {
+        this.modal.find("#partialStoreProvince").change(() => {
+            const selectedProvinceName = this.modal.find("#partialStoreProvince").val();
+            this.#updateCantonDropdown(selectedProvinceName);
+        });
+    }
+
+    #updateCantonDropdown(selectedProvinceName) {
+        const $cantonDropdown = this.modal.find("#partialStoreCanton");
+        $cantonDropdown.find("option").not(':first').remove();
+        if (!selectedProvinceName) {
+            return;
+        }
+        const selectedProvince = this.data.find(p => p.Name === selectedProvinceName);
+        if (selectedProvince) {
+            const cantons = selectedProvince.Cantons;
+            cantons.forEach(cantonObj => {
+                const option = new Option(cantonObj.Name, cantonObj.Name);
+                $cantonDropdown.append(option);
+            });
+        }
+    }
+}
+
+$(document).ready(function () {
+    const storeManager = new StoreModalManager(
+        $("#addStoreModal"),
+        $("#showAddStoreBtn"),
+        $("#hideAddStoreBtn"),
+        $("#addStoreBtn"),
+        $("#mainStoreName"),
+        $("#partialStoreName"),
+        $("#provincesData")
+    );
+    storeManager.setupEvents();
+
+    const productManager = new ModalManager(
+        $("#addProductModal"),
+        $("#showAddProductBtn"),
+        $("#hideAddProductBtn"),
+        $("#addProductBtn"),
+        $("#mainProductName"),
+        $("#partialProductName"),
+        $("#categoriesData")
+    );
+    productManager.setupEvents();
+
+    // Attach global event listeners for validation
+    $("input, select, textarea").on('input', function () {
+        $(this).valid();
+    });
+});

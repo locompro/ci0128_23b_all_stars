@@ -43,7 +43,15 @@ public class LocomproContext : IdentityDbContext<User>
 
         builder.Entity<Category>()
             .HasKey(c => new { c.Name });
+        
+        builder.Entity<Category>()
+            .HasOne(c => c.Parent)
+            .WithMany(c => c.Children);
 
+        builder.Entity<Product>()
+            .HasMany(p => p.Categories)
+            .WithMany(c => c.Products);
+        
         builder.Entity<Submission>()
             .HasKey(s => new { s.Username, s.EntryTime });
 
@@ -55,7 +63,7 @@ public class LocomproContext : IdentityDbContext<User>
         
         builder.Entity<Submission>()
             .HasOne(s => s.Product)
-            .WithMany()
+            .WithMany(p => p.Submissions)
             .HasForeignKey(s => s.ProductId)
             .IsRequired();
         
