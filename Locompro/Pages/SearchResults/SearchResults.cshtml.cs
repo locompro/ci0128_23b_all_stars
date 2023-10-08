@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
+using Locompro.Common;
 using Locompro.Models;
 using Microsoft.Extensions.Configuration;
 
@@ -21,7 +22,7 @@ public class SearchResultsModel : PageModel
     /// <summary>
     /// Service that handles the advanced search modal
     /// </summary>
-    private readonly AdvancedSearchModalService _advancedSearchServiceHandler;
+    private readonly AdvancedSearchInputService _advancedSearchServiceHandler;
 
     private readonly SearchService _searchService;
 
@@ -77,7 +78,7 @@ public class SearchResultsModel : PageModel
     /// <param name="advancedSearchServiceHandler"></param>
     /// <param name="configuration"></param>
     public SearchResultsModel(
-        AdvancedSearchModalService advancedSearchServiceHandler,
+        AdvancedSearchInputService advancedSearchServiceHandler,
         IConfiguration configuration,
         SearchService searchService)
     {

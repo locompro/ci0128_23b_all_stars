@@ -39,9 +39,9 @@ public class AdvancedSearchModalModel
     /// <summary>
     /// Service that provides all province, canton and category data
     /// </summary>
-    private AdvancedSearchModalService advancedSearchService;
+    private AdvancedSearchInputService advancedSearchService;
 
-    public AdvancedSearchModalModel(AdvancedSearchModalService advancedSearchService)
+    public AdvancedSearchModalModel(AdvancedSearchInputService advancedSearchService)
     {
         this.advancedSearchService = advancedSearchService;
     }

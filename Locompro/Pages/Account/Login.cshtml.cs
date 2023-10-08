@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Locompro.Services;
 using Locompro.Areas.Identity.ViewModels;
+using Locompro.Models.ViewModels;
 
 namespace Locompro.Pages.Account
 {
@@ -78,7 +79,7 @@ namespace Locompro.Pages.Account
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Datos incorrectos de inicio");
                     return Page();
                 }
             }

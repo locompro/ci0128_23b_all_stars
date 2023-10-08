@@ -1,0 +1,97 @@
+.advanced-search-modal-container {
+    padding-left:0px;
+    padding-right:0px;
+}
+
+.advanced-search-modal-secondary-container{
+    margin-top: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    border: 5px solid lightgray;
+}
+
+.advanced-search-modal-card {
+    padding-top: 0px;
+    margin-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 0px;
+}
+
+.advanced-search-modal-card-contents {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.canton-province-input-container {
+    margin-right: 0px;
+}
+
+.province-input-container {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 0px;
+    width: 200px;
+    margin-top: 0px
+}
+
+.province-input {
+    font-family: Roboto, sans-serif;
+}
+
+.canton-input-container {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 0px;
+    width: 200px;
+    margin-top: 0px
+}
+
+.canton-input {
+    font-family: Roboto, sans-serif;
+    padding-right: 10px;
+    margin-right: 0px;
+}
+
+.price-range-input-group {
+    margin-top:0px;
+}
+
+.minValue-input-container {
+    margin-left:5px;
+    margin-right:5px;
+}
+
+.maxValue-input-container {
+    margin-left:5px;
+    margin-right:5px;
+}
+
+.filtering-input-group {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.category-input-container {
+    margin-right: 10px;
+    padding-right: 0px;
+    width: 200px;
+    margin-top: 0px;
+}
+
+.category-input {
+    font-family: Roboto, sans-serif;
+    margin-right: 30px;
+    padding-right: 37px;
+}
+
+.brand-input-container {
+    margin-right: 10px;
+    margin-top: 0px;
+}
+
+.model-input-container {
+    margin-right: 0px;
+    margin-top: 0px;
+}
