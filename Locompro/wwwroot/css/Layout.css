@@ -1,0 +1,19 @@
+.aportar-button {
+    margin-right: 8px;
+}
+
+.body-main-container {
+    margin-bottom: 200px;
+    padding-right:0px;
+    padding-left:0px;
+}
+
+.body-container {
+    min-height: calc(100vh-100px);
+}
+
+.footer-container {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}

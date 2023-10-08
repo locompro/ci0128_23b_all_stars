@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
+using Locompro.Common;
 using Locompro.Models;
 using Microsoft.Extensions.Configuration;
 
@@ -21,7 +22,7 @@ public class SearchResultsModel : PageModel
     /// <summary>
     /// Service that handles the advanced search modal
     /// </summary>
-    private readonly AdvancedSearchModalService _advancedSearchServiceHandler;
+    private readonly AdvancedSearchInputService _advancedSearchServiceHandler;
 
     private readonly SearchService _searchService;
 
@@ -61,6 +62,7 @@ public class SearchResultsModel : PageModel
     public long MinPrice { get; set; }
     public long MaxPrice { get; set; }
     public string ModelSelected { get; set; }
+    public string BrandSelected { get; set; }
         
         
     public string NameSort { get; set; }
@@ -76,7 +78,7 @@ public class SearchResultsModel : PageModel
     /// <param name="advancedSearchServiceHandler"></param>
     /// <param name="configuration"></param>
     public SearchResultsModel(
-        AdvancedSearchModalService advancedSearchServiceHandler,
+        AdvancedSearchInputService advancedSearchServiceHandler,
         IConfiguration configuration,
         SearchService searchService)
     {
@@ -98,6 +100,7 @@ public class SearchResultsModel : PageModel
     /// <param name="maxValue"></param>
     /// <param name="category"></param>
     /// <param name="model"></param>
+    /// <param name="brand"></param>
     /// <param name="currentFilter"></param>
     /// <param name="sortOrder"></param>
     public async Task OnGetAsync(int? pageIndex,
@@ -109,11 +112,12 @@ public class SearchResultsModel : PageModel
         long maxValue,
         string category,
         string model,
+        string brand,
         string currentFilter,
         string sortOrder)
     {
         // validate input
-        this.ValidateInput(province, canton, minValue, maxValue, category, model);
+        this.ValidateInput(province, canton, minValue, maxValue, category, model, brand);
         
         this.ProductName = query;
         
@@ -129,7 +133,8 @@ public class SearchResultsModel : PageModel
                 this.MinPrice,
                 this.MaxPrice,
                 this.CategorySelected,
-                this.ModelSelected)
+                this.ModelSelected,
+                this.BrandSelected)
             ).ToList();
         
         // get amount of items found    
@@ -157,7 +162,8 @@ public class SearchResultsModel : PageModel
         long minValue,
         long maxValue,
         string category,
-        string model)
+        string model,
+        string brand)
     {
         
         if (!string.IsNullOrEmpty(province) && province.Equals("Ninguno"))
@@ -181,6 +187,7 @@ public class SearchResultsModel : PageModel
         this.MaxPrice = maxValue;
         this.CategorySelected = category;
         this.ModelSelected = model;
+        this.BrandSelected = brand;
     }
 
     /// <summary>

@@ -1,12 +1,8 @@
 {
   "dependencies": {
-    "mssql1": {
+    "mssql": {
       "type": "mssql",
       "connectionId": "ConnectionStrings:LocomproContext"
-    },
-    "mssql2": {
-      "type": "mssql",
-      "connectionId": "ConnectionStrings:UserContextConnection"
     }
   }
 }

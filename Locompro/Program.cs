@@ -8,18 +8,18 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Server;
 using System.Xml;
 using Locompro.Models;
+using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-
-var builder = WebApplication.CreateBuilder(args);
-
-registerServices(builder);
+var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
 // Register repositories and services
-var app = builder.Build();
+RegisterServices(webApplicationBuilder);
+
+var app = webApplicationBuilder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -34,27 +34,6 @@ else
     app.UseMigrationsEndPoint();
 }
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-
-    var context = services.GetRequiredService<LocomproContext>();
-
-    // TODO: delete before merge
-    context.Database.EnsureDeleted();
-    
-    if (context.Database.EnsureCreated())
-    {
-        Console.WriteLine("Database created");
-    } else
-    {
-        Console.WriteLine("Database already exists");
-    }
-
-    SeedData.Initialize(context);
-}
-
-
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -68,16 +47,24 @@ app.UseAuthorization();
 app.MapRazorPages();
 
 app.Run();
+return;
 
-void registerServices(WebApplicationBuilder builder)
+void RegisterServices(WebApplicationBuilder builder)
 {
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-    // Add services to the container.
+    // Built in services
     builder.Services.AddLogging();
     builder.Services.AddRazorPages();
-    builder.Services.AddScoped<UnitOfWork>();
-
+    
+    // Add DbContext using SQL Server
+    builder.Services.AddDbContext<LocomproContext>(options =>
+        options.UseLazyLoadingProxies()
+            .UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
+    
+    builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
+        .AddEntityFrameworkStores<LocomproContext>();
+    
     // Register repositories and services
     builder.Services.AddScoped<UnitOfWork>();
     builder.Services.AddScoped<StoreRepository>();
@@ -86,21 +73,13 @@ void registerServices(WebApplicationBuilder builder)
     
     builder.Services.AddTransient<CountryRepository>();
     builder.Services.AddTransient<CountryService>();
-    
-    // Add DbContext using SQL Server
-    builder.Services.AddDbContext<LocomproContext>(options =>
-        options.UseLazyLoadingProxies()
-            .UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
-    builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
-        .AddEntityFrameworkStores<LocomproContext>();
 
     // Register repositories and services
-    builder.Services.AddScoped<UnitOfWork>();
     builder.Services.AddScoped<StoreRepository>();
     builder.Services.AddScoped<StoreService>();
 
     // for advanced search
-    builder.Services.AddScoped<AdvancedSearchModalService>();
+    builder.Services.AddScoped<AdvancedSearchInputService>();
     builder.Services.AddScoped<SearchService>();
     builder.Services.AddScoped<CategoryRepository>();
     builder.Services.AddScoped<CategoryService>();
