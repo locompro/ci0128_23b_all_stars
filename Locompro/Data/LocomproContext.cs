@@ -3,22 +3,58 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Data;
-
+/// <summary>
+/// Provides a context for interacting with the database using entities defined in the Locompro.Models namespace.
+/// It extends the IdentityDbContext with a custom user entity.
+/// </summary>
 public class LocomproContext : IdentityDbContext<User>
 {
+    /// <summary>
+    /// Gets or sets the set of countries.
+    /// </summary>
     public DbSet<Country> Countries { get; set; } = default!;
-    public DbSet<Province> Provinces { get; set; } = default!;
-    public DbSet<Canton> Cantons { get; set; } = default!;
-    public DbSet<Category> Categories { get; set; } = default!;
-    public DbSet<Submission> Submissions { get; set; } = default!;
-    public DbSet<Store> Stores { get; set; } = default!;
-    public DbSet<Product> Products { get; set; } = default!;
 
+    /// <summary>
+    /// Gets or sets the set of provinces.
+    /// </summary>
+    public DbSet<Province> Provinces { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the set of cantons.
+    /// </summary>
+    public DbSet<Canton> Cantons { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the set of categories.
+    /// </summary>
+    public DbSet<Category> Categories { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the set of submissions.
+    /// </summary>
+    public DbSet<Submission> Submissions { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the set of stores.
+    /// </summary>
+    public DbSet<Store> Stores { get; set; } = default!;
+
+    /// <summary>
+    /// Gets or sets the set of products.
+    /// </summary>
+    public DbSet<Product> Products { get; set; } = default!;
+    /// <summary>
+    /// Initializes a new instance of the <see cref="LocomproContext"/> class.
+    /// </summary>
+    /// <param name="options">The options for this context.</param>
     public LocomproContext(DbContextOptions<LocomproContext> options)
         : base(options)
     {
     }
-
+    /// <summary>
+    /// Configures the schema needed for the context.
+    /// </summary>
+    /// <param name="builder">The builder being used to construct the context.</param>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

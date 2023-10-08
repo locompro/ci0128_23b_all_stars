@@ -15,7 +15,8 @@ using Microsoft.Extensions.Configuration;
 namespace Locompro.Pages.SearchResults;
 
 /// <summary>
-/// Page model for the search results page
+/// Represents the page model for the search results page, handling the operations related to 
+/// displaying and sorting the search results.
 /// </summary>
 public class SearchResultsModel : PageModel
 {
@@ -63,15 +64,15 @@ public class SearchResultsModel : PageModel
     public long MaxPrice { get; set; }
     public string ModelSelected { get; set; }
     public string BrandSelected { get; set; }
-        
-        
+
+
     public string NameSort { get; set; }
-        
+
     public string CurrentSort { get; set; }
     public string CantonSort { get; set; }
     public string ProvinceSort { get; set; }
 
-        
+
     public string CurrentFilter { get; set; }
 
     /// <summary>
@@ -92,20 +93,20 @@ public class SearchResultsModel : PageModel
     }
 
     /// <summary>
-    /// Gets the items to be displayed in the search results
+    /// Retrieves and prepares the search results for display on the page.
     /// </summary>
-    /// <param name="pageIndex"></param>
-    /// <param name="sorting"></param>
-    /// <param name="query"></param>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
-    /// <param name="brand"></param>
-    /// <param name="currentFilter"></param>
-    /// <param name="sortOrder"></param>
+    /// <param name="pageIndex">The index of the page to display.</param>
+    /// <param name="sorting">Indicates whether sorting is applied.</param>
+    /// <param name="query">The search query.</param>
+    /// <param name="province">The selected province for search.</param>
+    /// <param name="canton">The selected canton for search.</param>
+    /// <param name="minValue">The minimum price filter.</param>
+    /// <param name="maxValue">The maximum price filter.</param>
+    /// <param name="category">The selected category for search.</param>
+    /// <param name="model">The selected model for search.</param>
+    /// <param name="brand">The selected brand for search.</param>
+    /// <param name="currentFilter">The current filter applied.</param>
+    /// <param name="sortOrder">The order in which to sort the results.</param>
     public async Task OnGetAsync(int? pageIndex,
         bool? sorting,
         string query,
@@ -119,15 +120,14 @@ public class SearchResultsModel : PageModel
         string currentFilter,
         string sortOrder)
     {
-       
         // validate input
         ValidateInput(province, canton, minValue, maxValue, category, model, brand);
-        
+
         ProductName = query;
-        
+
         // set up sorting parameters
-        SetSortingParameters(sortOrder, (sorting is not null));
-        
+        SetSortingParameters(sortOrder, sorting is not null);
+
         // get items from search service
         _items =
             (await _searchService.SearchItems(
@@ -140,26 +140,27 @@ public class SearchResultsModel : PageModel
                 ModelSelected,
                 BrandSelected)
             ).ToList();
-        
+
         // get amount of items found    
         ItemsAmount = _items.Count;
-        
+
         // order items by sort order
         OrderItems();
-        
+
         // create paginated list and set it to be displayed
         DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
     }
 
     /// <summary>
-    /// Changes input from front end into values usable for search engine
+    /// Validates the input received from the user.
     /// </summary>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
+    /// <param name="province">The selected province for search.</param>
+    /// <param name="canton">The selected canton for search.</param>
+    /// <param name="minValue">The minimum price filter.</param>
+    /// <param name="maxValue">The maximum price filter.</param>
+    /// <param name="category">The selected category for search.</param>
+    /// <param name="model">The selected model for search.</param>
+    /// <param name="brand">The selected brand for search.</param>
     private void ValidateInput(
         string province,
         string canton,
@@ -169,47 +170,34 @@ public class SearchResultsModel : PageModel
         string model,
         string brand)
     {
-        
-        if (!string.IsNullOrEmpty(province) && province.Equals("Ninguno"))
-        {
-            province = null;
-        }
-        
-        if (!string.IsNullOrEmpty(canton) && canton.Equals("Ninguno"))
-        {
-            canton = null;
-        }
+        if (!string.IsNullOrEmpty(province) && province.Equals("Ninguno")) province = null;
 
-        if (!string.IsNullOrEmpty(category) && category.Equals("Ninguno"))
-        {
-            category = null;
-        } 
-        
-       ProvinceSelected = province;
-       CantonSelected = canton;
-       MinPrice = minValue;
-       MaxPrice = maxValue;
-       CategorySelected = category;
-       ModelSelected = model;
-       BrandSelected = brand;
+        if (!string.IsNullOrEmpty(canton) && canton.Equals("Ninguno")) canton = null;
+
+        if (!string.IsNullOrEmpty(category) && category.Equals("Ninguno")) category = null;
+
+        ProvinceSelected = province;
+        CantonSelected = canton;
+        MinPrice = minValue;
+        MaxPrice = maxValue;
+        CategorySelected = category;
+        ModelSelected = model;
+        BrandSelected = brand;
     }
 
     /// <summary>
-    /// Manages all sorting done to items in list
+    /// Sets the sorting parameters based on the user's selection.
     /// </summary>
-    /// <param name="sortOrder"></param>
-    /// <param name="sorting"></param>
+    /// <param name="sortOrder">The order in which to sort the results.</param>
+    /// <param name="sorting">Indicates whether sorting is applied.</param>
     private void SetSortingParameters(string sortOrder, bool sorting)
     {
         if (!sorting)
         {
-            if (!string.IsNullOrEmpty(sortOrder))
-            {
-                NameSort = sortOrder;
-            }
+            if (!string.IsNullOrEmpty(sortOrder)) NameSort = sortOrder;
             return;
         }
-    
+
         if (string.IsNullOrEmpty(sortOrder) || sortOrder.Equals("name_asc"))
         {
             NameSort = "name_desc";
@@ -240,9 +228,9 @@ public class SearchResultsModel : PageModel
 
 
     /// <summary>
-    /// Orders items
+    /// Orders the items based on the selected sorting parameters.
     /// </summary>
-    void OrderItems()
+    private void OrderItems()
     {
         switch (NameSort)
         {
@@ -254,8 +242,7 @@ public class SearchResultsModel : PageModel
                 break;
         }
 
-        if(!string.IsNullOrEmpty(ProvinceSort))
-        {
+        if (!string.IsNullOrEmpty(ProvinceSort))
             switch (ProvinceSort)
             {
                 case "province_desc":
@@ -265,10 +252,8 @@ public class SearchResultsModel : PageModel
                     _items = _items.OrderBy(item => item.ProvinceLocation).ToList();
                     break;
             }
-        }
 
-        if(!string.IsNullOrEmpty(CantonSort))
-        {
+        if (!string.IsNullOrEmpty(CantonSort))
             switch (CantonSort)
             {
                 case "canton_desc":
@@ -278,42 +263,44 @@ public class SearchResultsModel : PageModel
                     _items = _items.OrderBy(item => item.CantonLocation).ToList();
                     break;
             }
-        }
     }
 
-        
+
     /// <summary>
-    /// Returns the view component for the advanced search modal
+    /// Retrieves the view component for the advanced search modal.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The view component for the advanced search modal.</returns>
     public IActionResult OnGetAdvancedSearch()
     {
         // generate the view component
-        var viewComponentResult = ViewComponent("AdvancedSearch", this._advancedSearchServiceHandler);
+        var viewComponentResult = ViewComponent("AdvancedSearch", _advancedSearchServiceHandler);
 
         // return it for it to be integrated
         return viewComponentResult;
     }
 
     /// <summary>
-    /// Updates the cantons and province selected for the advanced search modal
+    /// Updates the cantons and province selected for the advanced search modal.
     /// </summary>
-    /// <param name="province"></param>
-    /// <returns></returns>
+    /// <param name="province">The selected province for updating cantons.</param>
+    /// <returns>The updated list of cantons for the selected province.</returns>
     public async Task<IActionResult> OnGetUpdateProvince(string province)
     {
-        string cantonsJson = "";
-        
-        // if province is none
+        var cantonsJson = "";
+
+
         if (province.Equals("Ninguno"))
         {
             // create empty list
-            List<Canton> emptyCantonList = new List<Canton>
+            var emptyCantonList = new List<Canton>
             {
                 // add none back as an option
-                new Canton{CountryName = "Ninguno",
-                    Name = "Ninguno", 
-                    ProvinceName = "Ninguno"}
+                new()
+                {
+                    CountryName = "Ninguno",
+                    Name = "Ninguno",
+                    ProvinceName = "Ninguno"
+                }
             };
 
             // set new list to service canton list
@@ -324,7 +311,7 @@ public class SearchResultsModel : PageModel
             // update the model with all cantons in the given province
             await _advancedSearchServiceHandler.ObtainCantonsAsync(province);
         }
-        
+
         // prevent the json serializer from looping infinitely
         var settings = new JsonSerializerSettings
         {
@@ -333,7 +320,7 @@ public class SearchResultsModel : PageModel
 
         // generate the json file with the cantons
         cantonsJson = JsonConvert.SerializeObject(_advancedSearchServiceHandler.Cantons, settings);
-        
+
         // specify the content type as a json file
         Response.ContentType = "application/json";
 

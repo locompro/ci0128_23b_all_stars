@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Locompro.Areas.Identity.ViewModels;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
 using Locompro.Services;
@@ -12,6 +11,9 @@ using Moq;
 
 namespace Locompro.Tests.Services
 {
+    /// <summary>
+    /// Contains unit tests for the <see cref="AuthService"/> class.
+    /// </summary>
     public class AuthServiceTest
     {
         private Mock<IUserStore<User>>? _userStoreMock;
@@ -54,7 +56,10 @@ namespace Locompro.Tests.Services
                 _loggerMock.Object, _emailStoreMock.Object);
         }
 
-
+        /// <summary>
+        /// Tests the <see cref="AuthService.Register"/> method to ensure it returns a success result when registration succeeds.
+        /// </summary>
+        /// <author> Brandon Alonso Mora Umana </author>
         [Test]
         public async Task Register_UserRegistrationSucceeds_ReturnsIdentityResultSuccess()
         {
@@ -86,7 +91,10 @@ namespace Locompro.Tests.Services
             _userStoreMock?.Verify(x =>
                 x.SetUserNameAsync(It.IsAny<User>(), inputData.UserName, It.IsAny<CancellationToken>()), Times.Once);
         }
-
+        /// <summary>
+        /// Tests the <see cref="AuthService.Register"/> method to ensure it returns a failure result when registration fails.
+        /// </summary>
+        /// <author> Brandon Alonso Mora Umana </author>
         [Test]
         public async Task Register_UserRegistrationFails_ReturnsIdentityResultFailure()
         {
@@ -114,6 +122,10 @@ namespace Locompro.Tests.Services
             _userStoreMock?.Verify(x =>
                 x.SetUserNameAsync(It.IsAny<User>(), inputData.UserName, It.IsAny<CancellationToken>()), Times.Once);
         }
+        /// <summary>
+        /// Tests the <see cref="AuthService.Logout"/> method to ensure it logs out the user successfully.
+        /// </summary>
+        /// <author> A. Badilla Olivas </author>
         [Test]
         public async Task Logout_UserLoggedOut()
         {
@@ -128,6 +140,10 @@ namespace Locompro.Tests.Services
                     It.IsAny<Func<It.IsAnyType, Exception, string>>()!), 
                 Times.Once);        }
 
+        /// <summary>
+        /// Tests the <see cref="AuthService.IsLoggedIn"/> method to ensure it returns true when the user is logged in.
+        /// </summary>
+        /// <author> A. Badilla Olivas </author>
         [Test]
         public void IsLoggedIn_UserIsLoggedIn()
         {
@@ -137,7 +153,10 @@ namespace Locompro.Tests.Services
 
             Assert.That(isLoggedIn, Is.True);
         }
-
+        /// <summary>
+        /// Tests the <see cref="AuthService.IsLoggedIn"/> method to ensure it returns false when the user is not logged in.
+        /// </summary>
+        /// <author> A. Badilla Olivas </author>
         [Test]
         public void IsLoggedIn_UserIsNotLoggedIn()
         {
@@ -147,6 +166,10 @@ namespace Locompro.Tests.Services
 
             Assert.That(isLoggedIn, Is.False);
         }
+        /// <summary>
+        /// Tests the <see cref="AuthService.Login"/> method to ensure it returns a success result when login is successful.
+        /// </summary>
+        /// <author> A. Badilla Olivas </author>
         [Test]
         public async Task Login_SuccessfulLogin()
         {
@@ -171,7 +194,10 @@ namespace Locompro.Tests.Services
                 Times.Once);
         }
 
-
+        /// <summary>
+        /// Tests the <see cref="AuthService.Login"/> method to ensure it returns a failure result when login fails.
+        /// </summary>
+        /// <author> A. Badilla Olivas </author>
         [Test]
         public async Task Login_FailedLogin()
         {

@@ -10,59 +10,66 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Locompro.Services;
-using Locompro.Areas.Identity.ViewModels;
 using Locompro.Models.ViewModels;
 
 namespace Locompro.Pages.Account
 {
+    /// <summary>
+    /// Provides the model logic for user login on the Login page.
+    /// </summary>
     public class LoginModel : PageModel
     {
         private readonly AuthService authService;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="LoginModel"/> class.
+        /// </summary>
         public LoginModel(AuthService authService)
         {
             this.authService = authService;
         }
 
         /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
+        /// Gets or sets the login input model.
         /// </summary>
         [BindProperty]
         public LoginViewModel Input { get; set; }
-
-    /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
-    public string ReturnUrl { get; set; }
-
-    /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
-    [TempData]
-    public string ErrorMessage { get; set; }
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        public string ReturnUrl { get; set; }
 
-    public async Task OnGetAsync(string returnUrl = null)
-    {
-        if (!string.IsNullOrEmpty(ErrorMessage))
+        /// <summary>
+        /// Gets or sets the error message to be displayed.
+        /// </summary>
+        [TempData]
+        public string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Handles the HTTP GET request for the Login page.
+        /// </summary>
+        /// <param name="returnUrl">The URL to redirect to after a successful login, if any.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
+        public async Task OnGetAsync(string returnUrl = null)
         {
-            ModelState.AddModelError(string.Empty, ErrorMessage);
-        }
+            if (!string.IsNullOrEmpty(ErrorMessage))
+            {
+                ModelState.AddModelError(string.Empty, ErrorMessage);
+            }
 
-        returnUrl ??= Url.Content("~/");
+            returnUrl ??= Url.Content("~/");
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
             ReturnUrl = returnUrl;
         }
-
+        /// <summary>
+        /// Handles the HTTP POST request for the Login page when the user submits the login form.
+        /// </summary>
+        /// <param name="returnUrl">The URL to redirect to after a successful login, if any.</param>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -70,8 +77,7 @@ namespace Locompro.Pages.Account
 
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
+                
                 var result = await authService.Login(Input);
                 if (result.Succeeded)
                 {
@@ -84,9 +90,7 @@ namespace Locompro.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
             return Page();
         }
-
     }
 }

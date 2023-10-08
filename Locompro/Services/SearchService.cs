@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,35 +10,41 @@ using System.Text.RegularExpressions;
 
 namespace Locompro.Services;
 
+/// <summary>
+/// Provides services for searching items based on various criteria.
+/// This service aggregates results from multiple queries such as by product name, by product model, and by canton/province,
+/// and returns a list of items that match all the criteria specified.
+/// </summary>
 public class SearchService
 {
     private readonly SubmissionRepository _submissionRepository;
 
     /// <summary>
-    /// Constructor for the search service
+    /// Constructor for the search service.
     /// </summary>
-    /// <param name="submissionRepository"></param>
-    /// <param name="countryRepository"></param>
-    /// <param name="productRepository"></param>
+    /// <param name="submissionRepository">The repository to interact with submissions data.</param>
     public SearchService(SubmissionRepository submissionRepository)
     {
         _submissionRepository = submissionRepository;
     }
 
     /// <summary>
-    /// Searches for items based on the criteria provided in the search view model.
-    /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
-    /// It then returns a list of items that match all the criteria.
+    /// Searches for items based on specified criteria. The method aggregates results from multiple queries,
+    /// such as by product name, model, brand, and location (canton/province). It filters the results based on
+    /// the provided price range and category, then returns a list of items that satisfy all the specified criteria.
     /// </summary>
-    /// <param name="productName"></param>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
-    /// <param name="brand"></param>
-    /// <returns>A list of items that match the search criteria.</returns>
+    /// <param name="productName">The name of the product to search for. Can be null or empty, in which case this criterion is ignored.</param>
+    /// <param name="province">The name of the province to search within. Can be null or empty, in which case this criterion is ignored.</param>
+    /// <param name="canton">The name of the canton to search within. Can be null or empty, in which case this criterion is ignored.</param>
+    /// <param name="minValue">The minimum price of items to search for. Specify 0 to ignore this criterion.</param>
+    /// <param name="maxValue">The maximum price of items to search for. Specify 0 to ignore this criterion.</param>
+    /// <param name="category">The category of items to search for. Can be null or empty, in which case this criterion is ignored.</param>
+    /// <param name="model">The model of the product to search for. Can be null or empty, in which case this criterion is ignored.</param>
+    /// <param name="brand">The brand of the product to search for. Can be null or empty, in which case this criterion is ignored. Defaults to null.</param>
+    /// <returns>
+    /// A task representing the asynchronous operation. The task result contains a list of items that match all the specified criteria.
+    /// If no matching items are found, or if all criteria are ignored (i.e., all criteria are null, empty, or zero), an empty list is returned.
+    /// </returns>
     public async Task<List<Item>> SearchItems(string productName, string province, string canton, long minValue,
         long maxValue, string category, string model, string brand = null)
     {
@@ -101,6 +108,7 @@ public class SearchService
     /// <summary>
     /// Gets submissions containing a specific product model
     /// </summary>
+    /// <param name="productModel">the product model to search the submissions</param>
     /// <remarks> This is just a wrapper for the submission repository </remarks>
     private async Task<IEnumerable<Submission>> GetSubmissionsByProductModel(string productModel)
     {
@@ -110,7 +118,7 @@ public class SearchService
     /// <summary>
     /// Calls the submission repository to get all submissions containing a specific brand name
     /// </summary>
-    /// <param name="brandName"></param>
+    /// <param name="brandName"> the brand to search the submissions by </param>
     /// <returns> An Enumerable with al the submissions tha meet the criteria</returns>
     private async Task<IEnumerable<Submission>> GetSubmissionsByBrand(string brandName)
     {
@@ -131,7 +139,7 @@ public class SearchService
     /// Gets all the items to be displayed in the search results
     /// from a list of submissions
     /// </summary>
-    /// <param name="submissions"></param>
+    /// <param name="submissions"> a list of submissions to build items from</param>
     /// <returns></returns>
     private async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
     {
@@ -163,7 +171,7 @@ public class SearchService
     /// Gets the best submission from the group of items
     /// uses its information for the item to be shown
     /// </summary>
-    /// <param name="itemGrouping"></param>
+    /// <param name="itemGrouping"> a product and submission to make a item from</param>
     /// <returns></returns>
     private async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
     {
@@ -192,7 +200,7 @@ public class SearchService
     /// Extracts from entry time, the date in the format yyyy-mm-dd
     /// to be shown in the results page
     /// </summary>
-    /// <param name="submission"></param>
+    /// <param name="submission"> the submission to format the date from</param>
     /// <returns></returns>
     string GetFormatedDate(Submission submission)
     {
@@ -207,7 +215,7 @@ public class SearchService
     /// According to established heuristics determines best best submission
     /// from among a list of submissions
     /// </summary>
-    /// <param name="submissions"></param>
+    /// <param name="submissions"> the submissions to find the best from</param>
     /// <returns></returns>
     private Submission GetBestSubmission(IEnumerable<Submission> submissions)
     {

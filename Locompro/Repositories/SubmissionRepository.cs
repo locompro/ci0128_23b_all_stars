@@ -9,7 +9,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Locompro.Repositories;
-
+/// <summary>
+/// primary key for the submission entity
+/// </summary>
 public struct SubmissionKey
 {
     public string CountryName { get; set; }

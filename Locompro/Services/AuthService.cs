@@ -3,7 +3,6 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Locompro.Areas.Identity.ViewModels;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -11,6 +10,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Locompro.Services
 {
+    /// <summary>
+    /// Provides services to handle authentication operations such as user registration, login, and logout.
+    /// This service utilizes ASP.NET Core Identity's UserManager, SignInManager, and user stores for managing user data and authentication state.
+    /// </summary>
     public class AuthService
     {
         private readonly SignInManager<User> _signInManager;
@@ -35,12 +38,10 @@ namespace Locompro.Services
         /// <summary>
         /// Creates a new instance of the <see cref="User"/> class.
         /// </summary>
-       
         /// <returns>A new instance of the <see cref="User"/> class.</returns>
         /// <exception cref="InvalidOperationException">
-        /// Thrown when the <see cref="User"/> class cannot be instantiated. This could be due to the class being abstract, 
-        /// lacking a parameterless constructor, or other reflection-related issues. When this exception is thrown, 
-        /// consider overriding the registration page located at /Areas/Identity/Pages/Account/Register.cshtml.
+        /// Thrown when the <see cref="User"/> class cannot be instantiated. This could be due to the class being abstract,
+        /// lacking a parameterless constructor, or other reflection-related issues.
         /// </exception>
         private static User CreateUser()
         {
@@ -57,9 +58,9 @@ namespace Locompro.Services
         }
 
         /// <summary>
-        /// Register a user with the given data using ASP.NET Core Identity.
+        /// Registers a new user with the provided data using ASP.NET Core Identity.
         /// </summary>
-        /// <param name="inputData">Data entered by the user in the view</param>
+        /// <param name="inputData">Data entered by the user in the view.</param>
         /// <returns>The result of the registration attempt.</returns>
         public async Task<IdentityResult> Register(RegisterViewModel inputData)
         {
@@ -79,7 +80,12 @@ namespace Locompro.Services
         }
 
         /// <summary>
-        /// 
+        /// Retrieves the email store associated with the user manager.
+        /// </summary>
+        /// <returns>The email store.</returns>
+        /// <exception cref="NotSupportedException">
+        /// Thrown when the user manager does not support user email.
+        /// </exception>
         private IUserEmailStore<User> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
@@ -95,7 +101,7 @@ namespace Locompro.Services
         /// <param name="inputData">A view model containing the user's login details.</param>
         /// <returns>The result of the sign-in attempt.</returns>
         /// <remarks>
-        /// If the login is successful, a log entry will be created stating "User logged in."
+        /// If the login is successful, a log entry is created stating "User logged in."
         /// The method will not lock out the user even after multiple failed login attempts.
         /// </remarks>
         public async Task<SignInResult> Login(LoginViewModel inputData)
@@ -113,9 +119,6 @@ namespace Locompro.Services
         /// Signs out the current logged-in user.
         /// </summary>
         /// <returns>A task that represents the asynchronous operation.</returns>
-        /// <remarks>
-        /// Once the user is logged out, a log entry will be created stating "User logged out."
-        /// </remarks>
         public async Task Logout()
         {
             await _signInManager.SignOutAsync();
