@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Locompro.Models.ViewModels;
 
 /// <summary>
-/// Represents incoming new product details.
+/// Incoming new product details.
 /// </summary>
 public class ProductViewModel
 {

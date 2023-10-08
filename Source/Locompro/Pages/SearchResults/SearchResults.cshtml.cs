@@ -247,10 +247,10 @@ public class SearchResultsModel : PageModel
         switch (NameSort)
         {
             case "name_desc":
-                _items = _items.OrderByDescending(item => item.ProductName).ToList();
+                _items = _items.OrderByDescending(item => item.Name).ToList();
                 break;
             case "name_asc":
-                _items = _items.OrderBy(item => item.ProductName).ToList();
+                _items = _items.OrderBy(item => item.Name).ToList();
                 break;
         }
 
@@ -259,10 +259,10 @@ public class SearchResultsModel : PageModel
             switch (ProvinceSort)
             {
                 case "province_desc":
-                    _items = _items.OrderByDescending(item => item.ProvinceLocation).ToList();
+                    _items = _items.OrderByDescending(item => item.Province).ToList();
                     break;
                 case "province_asc":
-                    _items = _items.OrderBy(item => item.ProvinceLocation).ToList();
+                    _items = _items.OrderBy(item => item.Province).ToList();
                     break;
             }
         }
@@ -272,10 +272,10 @@ public class SearchResultsModel : PageModel
             switch (CantonSort)
             {
                 case "canton_desc":
-                    _items = _items.OrderByDescending(item => item.CantonLocation).ToList();
+                    _items = _items.OrderByDescending(item => item.Canton).ToList();
                     break;
                 case "canton_asc":
-                    _items = _items.OrderBy(item => item.CantonLocation).ToList();
+                    _items = _items.OrderBy(item => item.Canton).ToList();
                     break;
             }
         }

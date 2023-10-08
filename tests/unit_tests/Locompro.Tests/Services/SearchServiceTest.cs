@@ -40,43 +40,43 @@ public class SearchServiceTest
         List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product2";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product3";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product4";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product5";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product6";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product7";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
     }
 
     /// <summary>
@@ -95,7 +95,7 @@ public class SearchServiceTest
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.IsFalse(searchResults.Exists(i => i.ProductName == productSearchName));
+            Assert.IsFalse(searchResults.Exists(i => i.Name == productSearchName));
             Assert.IsEmpty(searchResults);
         });
     }
@@ -116,7 +116,7 @@ public class SearchServiceTest
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.IsFalse(searchResults.Exists(i => i.ProductName == productSearchName));
+            Assert.IsFalse(searchResults.Exists(i => i.Name == productSearchName));
             Assert.IsEmpty(searchResults);
         });
     }

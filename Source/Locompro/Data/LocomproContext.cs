@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Data;
 
+/// <summary>
+/// ORM interface for Locompro.
+/// </summary>
 public class LocomproContext : IdentityDbContext<User>
 {
     public DbSet<Country> Countries { get; set; } = default!;
@@ -14,11 +17,16 @@ public class LocomproContext : IdentityDbContext<User>
     public DbSet<Store> Stores { get; set; } = default!;
     public DbSet<Product> Products { get; set; } = default!;
 
+    /// <summary>
+    /// Constructs a Locompro context.
+    /// </summary>
+    /// <param name="options">Context creation options.</param>
     public LocomproContext(DbContextOptions<LocomproContext> options)
         : base(options)
     {
     }
 
+    /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
