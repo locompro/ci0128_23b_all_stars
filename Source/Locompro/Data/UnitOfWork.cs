@@ -3,7 +3,7 @@
 namespace Locompro.Data
 {
     /// <summary>
-    /// Encapsulates a given DB transaction.
+    /// DB transaction handler.
     /// </summary>
     public class UnitOfWork
     {

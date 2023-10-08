@@ -12,4 +12,7 @@ public class CreateModel : PageModel
 {
     [BindProperty]
     public StoreViewModel StoreVm { get; set; }
+    
+    [BindProperty]
+    public ProductViewModel ProductVm { get; set; }
 }

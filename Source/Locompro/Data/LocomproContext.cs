@@ -51,10 +51,8 @@ public class LocomproContext : IdentityDbContext<User>
         : base(options)
     {
     }
-    /// <summary>
-    /// Configures the schema needed for the context.
-    /// </summary>
-    /// <param name="builder">The builder being used to construct the context.</param>
+
+    /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
