@@ -67,8 +67,40 @@
                             </th>
                             <th scope="col">Precio</th>
                             <th scope="col">Tienda</th>
-                            <th scope="col">Provincia</th>
-                            <th scope="col">Canton</th>
+                            <th>
+                                <a asp-page="./SearchResults"
+                                   asp-route-sortOrder="@Model.ProvinceSort"
+                                   asp-route-sorting=true
+                                   asp-route-currentFilter="@Model.CurrentFilter"
+                                   asp-route-query=@Model.ProductName
+                                   asp-route-province=@Model.ProvinceSelected
+                                   asp-route-canton=@Model.CantonSelected
+                                   asp-route-minValue=@Model.MinPrice
+                                   asp-route-maxValue=@Model.MaxPrice
+                                   asp-route-category=@Model.CategorySelected
+                                   asp-route-model=@Model.ModelSelected
+                                   asp-route-brand="@Model.BrandSelected">
+                                    Provincia
+                                </a>
+                            </th>
+
+                            <th>
+                                <a asp-page="./SearchResults"
+                                   asp-route-sortOrder="@Model.CantonSort"
+                                   asp-route-sorting=true
+                                   asp-route-currentFilter="@Model.CurrentFilter"
+                                   asp-route-query=@Model.ProductName
+                                   asp-route-province=@Model.ProvinceSelected
+                                   asp-route-canton=@Model.CantonSelected
+                                   asp-route-minValue=@Model.MinPrice
+                                   asp-route-maxValue=@Model.MaxPrice
+                                   asp-route-category=@Model.CategorySelected
+                                   asp-route-model=@Model.ModelSelected
+                                   asp-route-brand="@Model.BrandSelected">
+                                    Canton
+                                </a>
+                            </th>
+
                             <th scope="col">Descripcion</th>
                             <th scope="col">Ultimo Aporte </th>
                         </tr>
