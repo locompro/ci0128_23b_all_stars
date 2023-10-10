@@ -41,6 +41,8 @@ public class SearchService
     public async Task<List<Item>> SearchItems(string productName, string province, string canton, long minValue,
         long maxValue, string category, string model, string brand = null)
     {
+        
+        // List of items to be returned
         List<Item> items = new List<Item>();
 
         // List for submissions to be aggregated

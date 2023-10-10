@@ -323,6 +323,17 @@ public class SearchResultsModel : PageModel
         {
             // update the model with all cantons in the given province
             await _advancedSearchServiceHandler.ObtainCantonsAsync(province);
+            
+            _advancedSearchServiceHandler.Cantons.Add(
+                new Canton{CountryName = "Ninguno",
+                    Name = "Ninguno", 
+                    ProvinceName = "Ninguno"}
+                );
+
+            foreach (var canton in _advancedSearchServiceHandler.Cantons)
+            {
+                Console.WriteLine(canton.Name);
+            }
         }
         
         // prevent the json serializer from looping infinitely

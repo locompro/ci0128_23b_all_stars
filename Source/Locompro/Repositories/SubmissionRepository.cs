@@ -45,6 +45,32 @@ namespace Locompro.Repositories
                 .ThenInclude(st => st.Canton)
                 .Where(s => s.Store.Canton.Name == cantonName && s.Store.Canton.Province.Name == provinceName)
                 .ToListAsync();
+    /// <summary>
+    /// gets all submissions that are in a store in the given canton and province
+    /// <param name="cantonName"></param>
+    /// <param name="provinceName"></param>
+    /// <returns> a task IEnumerable of submissions </returns>
+    public virtual async Task<IEnumerable<Submission>> GetSubmissionsByCantonAsync(string cantonName,
+        string provinceName)
+    {
+        List<Submission> submissions;
+        
+        if (String.IsNullOrEmpty(cantonName))
+        {
+            submissions = await DbSet
+                .Include(s => s.Store)
+                .ThenInclude(st => st.Canton)
+                .Where(s => s.Store.Canton.Province.Name == provinceName)
+                .ToListAsync();
+        }
+        else
+        {
+            submissions = await DbSet
+                .Include(s => s.Store)
+                .ThenInclude(st => st.Canton)
+                .Where(s => s.Store.Canton.Name == cantonName && s.Store.Canton.Province.Name == provinceName)
+                .ToListAsync();
+        }
 
             return submissions;
         }
