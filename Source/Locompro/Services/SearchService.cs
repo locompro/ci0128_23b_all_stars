@@ -61,8 +61,9 @@ public class SearchService
         }
         
         // add results from searching by canton and province
-        if (!string.IsNullOrEmpty(canton) && !string.IsNullOrEmpty(province))
+        if (!string.IsNullOrEmpty(province))
         {
+            Console.WriteLine(">>>>>>>>>>>>>>>\n>>>>>>>>>>>>>>>>>>>>\n>>>>>>>>>>>>>>>>>>>>\n");
             submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
         }
         
