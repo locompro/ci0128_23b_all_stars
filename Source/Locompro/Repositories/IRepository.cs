@@ -34,7 +34,7 @@ namespace Locompro.Repositories
         /// </summary>
         /// <param name="entity">Entity to update.</param>
         Task UpdateAsync(T entity);
-        
+
         /// <summary>
         /// Deletes an entity for this repository asynchronously.
         /// </summary>
