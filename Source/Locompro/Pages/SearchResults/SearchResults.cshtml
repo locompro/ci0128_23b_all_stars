@@ -67,50 +67,19 @@
                             </th>
                             <th scope="col">Precio</th>
                             <th scope="col">Tienda</th>
-                            <th>
-                                <a asp-page="./SearchResults"
-                                   asp-route-sortOrder="@Model.ProvinceSort"
-                                   asp-route-sorting=true
-                                   asp-route-currentFilter="@Model.CurrentFilter"
-                                   asp-route-query=@Model.ProductName
-                                   asp-route-province=@Model.ProvinceSelected
-                                   asp-route-canton=@Model.CantonSelected
-                                   asp-route-minValue=@Model.MinPrice
-                                   asp-route-maxValue=@Model.MaxPrice
-                                   asp-route-category=@Model.CategorySelected
-                                   asp-route-model=@Model.ModelSelected
-                                   asp-route-brand="@Model.BrandSelected">
-                                    Provincia
-                                </a>
-                            </th>
-
-                            <th>
-                                <a asp-page="./SearchResults"
-                                   asp-route-sortOrder="@Model.CantonSort"
-                                   asp-route-sorting=true
-                                   asp-route-currentFilter="@Model.CurrentFilter"
-                                   asp-route-query=@Model.ProductName
-                                   asp-route-province=@Model.ProvinceSelected
-                                   asp-route-canton=@Model.CantonSelected
-                                   asp-route-minValue=@Model.MinPrice
-                                   asp-route-maxValue=@Model.MaxPrice
-                                   asp-route-category=@Model.CategorySelected
-                                   asp-route-model=@Model.ModelSelected
-                                   asp-route-brand="@Model.BrandSelected">
-                                    Canton
-                                </a>
-                            </th>
-
-                            <th scope="col">Descripcion</th>
-                            <th scope="col">Ultimo Aporte </th>
+                            <th scope="col">Provincia</th>
+                            <th scope="col">Cantón</th>
+                            <th scope="col">Descripción</th>
+                            <th scope="col">Último Aporte </th>
                         </tr>
                         </thead>
                         <tbody>
                         @{
+                            int index = 0;
                             PaginatedList<Item> items = Model.DisplayItems;
                             foreach (Item item in Model.DisplayItems)
                             {
-                                <tr onclick="itemSelected()">
+                                <tr onclick="itemSelected(@index)">
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Name)
                                     </td>
@@ -133,10 +102,66 @@
                                         @Html.DisplayFor(modelItem => item.LastSubmissionDate)
                                     </td>
                                 </tr>
+                                index++;
                             }
                         }
                         </tbody>
                     </table>
+                    @{
+                        index = 0;
+                        foreach (Item item in Model.DisplayItems)
+                        {
+                            string modalName = "modal" + @index;
+                            <div class="modal fade" id="@modalName" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
+                                        <div class="modal-body">
+                                            <h4 class="d-xxl-flex align-items-xxl-center card-title">
+                                                <i class="fa fa-envelope" style="margin-right: 12px"></i>
+                                                @item.ProductName
+                                            </h4>
+                                            <h4 class="d-xxl-flex align-items-xxl-center card-title" style="margin-bottom: 0px">
+                                                <i class="fa fa-home" style="margin-right: 14px"></i>
+                                                @item.ProductStore
+                                            </h4>                                            
+                                            <div>
+                                                <div class="table-responsive d-xxl-flex table mb-0 pt-3 pe-2">
+                                                    <table class="table table-striped table-sm my-0 mydatatable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="text-center">Fecha de aporte&nbsp;</th>
+                                                                <th>Precio&nbsp;</th>
+                                                                <th>Descripción&nbsp;</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @{
+                                                                foreach (Submission tempSubmit in item.Submissions)
+                                                                {
+                                                                    <tr>
+                                                                        <td class="text-center">
+                                                                            @Html.DisplayFor(modelSub => tempSubmit.EntryTime)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelSub => tempSubmit.Price)
+                                                                        </td>
+                                                                        <td>
+                                                                            @Html.DisplayFor(modelSub => tempSubmit.Description)
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            index++;
+                        }
+                    }
                 </div>
 
                 @{
