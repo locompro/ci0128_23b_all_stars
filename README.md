@@ -126,26 +126,32 @@ Luego de haber iniciado sesión, para cerrar sesión se debe presionar el botón
 
 ### 2. Funcionalidad de la aplicación
 
-#### Búsqueda simple
-
-#### Búsqueda avanzada
-En la página principal y en la página de resultados se encuentra el botón de búsqueda avanzada. Al presionar sobre el botón de búsqueda avanzada se despliega un menú de opciones para realizar búsquedas más especificas.
+#### Búsqueda simple y Búsqueda avanzada
+En la página principal y en la página de resultados se pueden realizar tanto las busquedas simples como las busquedas avanzadas.
 
 **Vista en la página principal**
 <center>
     <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/de2454b5-7ec7-4f40-9deb-2fb9817126d3" alt="Página Principal con botón de búsqueda avanzada" width="800"/>
 </center>
+La página principal es lo primero que ve el usuario a la hora de ingresar a la aplicación. En ella se encuentran diversas opciones para realizar busquedas. Primero se puede observar la barra de busqueda donde se ingresa en nombre del producto que el usuario desea buscar. Posteriormente, dentro de este se encuentra el botón para realizar la busqueda. Cuando solo se encuentra el nombre del producto, la busqueda será realizada solamente en terminos de esta. Inferior a estos se encuentra el botón de búsqueda avanzada, el cual al presionarlo despliega un menú de opciones para realizar búsquedas más especificas.
+
+**Vista de la página principal con menú de busqueda avanzada**
 <center>
     <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/0c679361-c4e8-466e-be83-05333d7abd31" alt="PaginaDeResultadosBusquedaAvanzadaDespuesDelClick" width="800"/>
 </center>
+De presionar el boton de busqueda avanzada, se despliega el menu de busqueda avanzada. Dentro de este se pueden realizar busquedas por nombre de producto, nombre de tienda, provincia, canton, precio minimo y precio maximo. Al presionar el boton de buscar, se realizara la busqueda con los parametros ingresados. Siendo estos, en esta version y entrega, por provincia y canton, por marca y modelo. Un usuario puede elegir solamente una de estos parametros de busqueda o por combinación de estos. Por ejemplo uno puede buscar solamente por marca y sin ingresar un nombre de producto en la barra de busqueda, con lo cual solo se realizará una busqueda por el parametro de marca. 
 
 **Vista en la página de resultados**
 <center>
     <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/5c7fda27-a623-4b21-b0bf-5f6da8931a9b" alt="PáginaDeResultados" width="800"/>
 </center>
+Dentro de la página de resultados, al igual que en la página principal, se encuentra la barra de busqueda y el botón de busqueda avanzada. Las busquedas correspondientes se pueden realizar de la misma manera que en la página principal.
+
+**Vista en la página de resultados con menú de busqueda avanzada**
 <center>
     <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/2b935d19-844a-4c9f-97e2-2fa1cc7bccce" alt="PaginaDeResultadosBusquedaAvanzadaDespuesDelClick" width="800"/>
 </center>
+La busqueda avanzada en la página de resultados se realiza de la misma manera que en la página principal.
 
 ##### Buscar por provincia y cantón
 Para buscar los aportes hechos en una provincia y cantón especificos, se puede seleccionar la provincia o el cantón en el menú desplegable de nombre "Provincia" y "Cantón" en el menú de busqueda avanzada, luego presione el botón de buscar (la lupa azul en la barra de búsqueda). Se pueden agregar más condiciones para la búsqueda simultaneamente.
