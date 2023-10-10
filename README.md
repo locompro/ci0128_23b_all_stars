@@ -126,6 +126,7 @@ Luego de haber iniciado sesión, para cerrar sesión se debe presionar el botón
 
 ### 2. Funcionalidad de la aplicación
 
+
 #### Búsqueda simple y Búsqueda avanzada
 En la página principal y en la página de resultados se pueden realizar tanto las busquedas simples como las busquedas avanzadas.
 
@@ -133,6 +134,7 @@ En la página principal y en la página de resultados se pueden realizar tanto l
 <center>
     <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/de2454b5-7ec7-4f40-9deb-2fb9817126d3" alt="Página Principal con botón de búsqueda avanzada" width="800"/>
 </center>
+
 La página principal es lo primero que ve el usuario a la hora de ingresar a la aplicación. En ella se encuentran diversas opciones para realizar busquedas. Primero se puede observar la barra de busqueda donde se ingresa en nombre del producto que el usuario desea buscar. Posteriormente, dentro de este se encuentra el botón para realizar la busqueda. Cuando solo se encuentra el nombre del producto, la busqueda será realizada solamente en terminos de esta. Inferior a estos se encuentra el botón de búsqueda avanzada, el cual al presionarlo despliega un menú de opciones para realizar búsquedas más especificas.
 
 **Vista de la página principal con menú de busqueda avanzada**
@@ -145,6 +147,7 @@ De presionar el boton de busqueda avanzada, se despliega el menu de busqueda ava
 <center>
     <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/5c7fda27-a623-4b21-b0bf-5f6da8931a9b" alt="PáginaDeResultados" width="800"/>
 </center>
+
 Dentro de la página de resultados, al igual que en la página principal, se encuentra la barra de busqueda y el botón de busqueda avanzada. Las busquedas correspondientes se pueden realizar de la misma manera que en la página principal.
 
 **Vista en la página de resultados con menú de busqueda avanzada**
@@ -153,9 +156,16 @@ Dentro de la página de resultados, al igual que en la página principal, se enc
 </center>
 La busqueda avanzada en la página de resultados se realiza de la misma manera que en la página principal.
 
+
 ##### Buscar por provincia y cantón
 Para buscar los aportes hechos en una provincia y cantón especificos, se puede seleccionar la provincia o el cantón en el menú desplegable de nombre "Provincia" y "Cantón" en el menú de busqueda avanzada, luego presione el botón de buscar (la lupa azul en la barra de búsqueda). Se pueden agregar más condiciones para la búsqueda simultaneamente.
 
+
+##### Buscar por marca
+Para buscar los aportes hechos a productos de una marca especifica, se debe ingresar el nombre de la marca a consultar en el campo de texto de nombre "Marca" en el menú de busqueda avanzada, luego presione el botón de buscar (la lupa azul en la barra de búsqueda). Se pueden agregar más condiciones para la búsqueda simultaneamente.'
+
+##### Buscar por modelo
+De la misma manera que la búsqueda por marca, para buscar los aportes hechos a productos de un modelo especifico, se debe ingresar el nombre del modelo a consultar en el campo de texto de nombre "Modelo" en el menú de busqueda avanzada, luego presione el botón de buscar. Es posible agregar más filtros para la búsqueda simultaneamente.
 
 
 #### Hacer un aporte
@@ -213,6 +223,7 @@ Para ejecutar el proyecto desde el IDE Visual Studio Community 2022 o Jetbrains 
 dotnet run
 ```
 Según los parametros actuales de configuración del proyecto, este se ejecutará y estará escuchando en el puerto 7249
+
 
 ### Generación de la documentación.
 
