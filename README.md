@@ -224,6 +224,10 @@ dotnet run
 ```
 Según los parametros actuales de configuración del proyecto, este se ejecutará y estará escuchando en el puerto 7249
 
+### Manual de ejecución de pruebas 
+
+El proyecto de pruebas está en la solución principal. Se debe ingresar en el menú superior a Test > Run All Tests. También, por medio de la terminal estando dentro de directorio `Source/Locompro.Tests`
+
 
 ### Generación de la documentación.
 
