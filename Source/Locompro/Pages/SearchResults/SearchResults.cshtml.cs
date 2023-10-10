@@ -303,7 +303,7 @@ public class SearchResultsModel : PageModel
     public async Task<IActionResult> OnGetUpdateProvince(string province)
     {
         string cantonsJson = "";
-        
+
         // if province is none
         if (province.Equals("Ninguno"))
         {
@@ -323,8 +323,19 @@ public class SearchResultsModel : PageModel
         {
             // update the model with all cantons in the given province
             await _advancedSearchServiceHandler.ObtainCantonsAsync(province);
+
+            _advancedSearchServiceHandler.Cantons.Add(
+                new Canton{CountryName = "Ninguno",
+                    Name = "Ninguno", 
+                    ProvinceName = "Ninguno"}
+            );
+
+            foreach (var canton in _advancedSearchServiceHandler.Cantons)
+            {
+                Console.WriteLine(canton.Name);
+            }
         }
-        
+
         // prevent the json serializer from looping infinitely
         var settings = new JsonSerializerSettings
         {
@@ -333,7 +344,7 @@ public class SearchResultsModel : PageModel
 
         // generate the json file with the cantons
         cantonsJson = JsonConvert.SerializeObject(_advancedSearchServiceHandler.Cantons, settings);
-        
+
         // specify the content type as a json file
         Response.ContentType = "application/json";
 

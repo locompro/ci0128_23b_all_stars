@@ -6,6 +6,7 @@ using Locompro.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NuGet.ContentModel;
 
 namespace Locompro.Tests.Services;
 
@@ -24,7 +25,7 @@ public class SearchServiceTest
         _submissionRepositoryMock = new Mock<SubmissionRepository>(_dbContextMock.Object, _loggerFactoryMock.Object);
         _searchService = new SearchService(_submissionRepositoryMock.Object);
     }
-
+    
     /// <summary>
     /// Finds a list of names that are expected to be found
     /// <author>Joseph Stuart Valverde Kong C18100</author>
@@ -132,7 +133,7 @@ public class SearchServiceTest
     public void SearchByName_FindsBestSubmission()
     {
         string productSearchName = "Product1";
-
+        MockDataSetup();
         List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         DateTime dateTimeExpected = new DateTime(2023, 10, 6, 0, 0, 0, DateTimeKind.Utc);
@@ -141,7 +142,57 @@ public class SearchServiceTest
         // Assert
         Assert.That(dateTimeReceived, Is.EqualTo(dateTimeExpected));
     }
+     
+    /// <summary>
+    /// Tests that the number of submissions given by the search are correct
+    /// <author>Gabriel Molina Bulgarelli C14826</author>
+    /// </summary>
+    [Test]
+    public void AmountOfSearchSubmissions()
+    {
+        string productSearchName = "Product1";
+        MockDataSetup();
+        var searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        // Assert
+        Assert.That(searchResults, Is.Not.Null);
+        Assert.That(searchResults.Count, Is.GreaterThan(0));
+        Assert.That(searchResults[0].Submissions.Count, Is.EqualTo(2));
+    }
+    
+    /// <summary>
+    /// Tests that the data given on submissions given by a search are correctly assigned
+    /// <author>Gabriel Molina Bulgarelli C14826</author>
+    /// </summary>
+    [Test]
+    public void DataOfSearchSubmissions()
+    {
+        string productSearchName = "Product1";
+        MockDataSetup();
+        var searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        // Assert
+        Assert.That(searchResults, Is.Not.Null);
+        Assert.That(searchResults.Count, Is.GreaterThan(0));
+        Assert.That(searchResults[0].Submissions.Count, Is.EqualTo(2));
+        
+        Assert.That(searchResults[0].Submissions[0].Username, Is.EqualTo("User1"));
+        DateTime submission1EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
+        Assert.That(searchResults[0].Submissions[0].EntryTime, Is.EqualTo(submission1EntryTime));
+        Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(100));
+        Assert.That(searchResults[0].Submissions[0].Description, Is.EqualTo("Description for Submission 1"));
+        Assert.That(searchResults[0].Submissions[0].StoreName, Is.EqualTo("Store1"));
+        Assert.That(searchResults[0].Submissions[0].ProductId, Is.EqualTo(1));
 
+        Assert.That(searchResults[0].Submissions[1].Username, Is.EqualTo("User8"));
+        DateTime submission2EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc);
+        Assert.That(searchResults[0].Submissions[1].EntryTime, Is.EqualTo(submission2EntryTime));
+        Assert.That(searchResults[0].Submissions[1].Price, Is.EqualTo(180));
+        Assert.That(searchResults[0].Submissions[1].Description, Is.EqualTo("Description for Submission 8"));
+        Assert.That(searchResults[0].Submissions[1].StoreName, Is.EqualTo("Store1"));
+        Assert.That(searchResults[0].Submissions[1].ProductId, Is.EqualTo(1));
+    }
+    
     /// <summary>
     /// Searches for an item with a specific model and the result is the one expected
     /// </summary>
@@ -162,6 +213,33 @@ public class SearchServiceTest
             Is.True); // Verify that all items have the expected model name
     }
 
+    /// <summary>
+    /// Tests that the correct submissions result data is returned when the model is specified in search
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli C14826 </author>
+    [Test]
+    public void SubmissionsDataByModel()
+    {
+        // Arrange
+        string modelName = "Model2";
+        MockDataSetup();
+        // Act
+        List<Item> searchResults = _searchService.SearchItems(null, null, null, 0, 0, null, modelName).Result;
+
+        // Assert
+        Assert.That(searchResults, Is.Not.Null);
+        Assert.That(searchResults.Count, Is.GreaterThan(0));
+        Assert.That(searchResults.TrueForAll(item => item.Submissions[0].Product.Model.Contains(modelName)),
+            Is.True);
+        Assert.That(searchResults[0].Submissions.Count, Is.EqualTo(1));
+
+        Assert.That(searchResults[0].Submissions[0].Username, Is.EqualTo("User2"));
+        Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(200));
+        Assert.That(searchResults[0].Submissions[0].Description, Is.EqualTo("Description for Submission 2"));
+        Assert.That(searchResults[0].Submissions[0].StoreName, Is.EqualTo("Store2"));
+        Assert.That(searchResults[0].Submissions[0].ProductId, Is.EqualTo(2));
+    }
+    
     /// <summary>
     ///  Searches for an item with a specific model and the result is empty
     /// </summary>
@@ -225,7 +303,6 @@ public class SearchServiceTest
                 break;
             }
         }
-
         Assert.That(all, Is.True);
     }
 
@@ -267,7 +344,44 @@ public class SearchServiceTest
         Assert.That(results.Count, Is.GreaterThan(0));
         Assert.That(results.TrueForAll(item => item.Submissions[0].Product.Brand.Contains(brand)), Is.True);
     }
+    
+    /// <summary>
+    /// Tests that the correct submissions result data is returned when the brand is specified in search
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli C14826</author>
+    [Test]
+    public async Task SubmissionsDataByBrand()
+    {
+        // Arrange
+        var brand = "Brand1";
+        MockDataSetup();
+        // Act
+        var searchResults = await _searchService.SearchItems(null, null, null, 0, 0, null, null, brand);
 
+        // Assert
+        Assert.That(searchResults, Is.Not.Null);
+        Assert.That(searchResults.Count, Is.GreaterThan(0));
+        Assert.That(searchResults.TrueForAll(item => item.Submissions[0].Product.Brand.Contains(brand)), Is.True);
+        Assert.That(searchResults[0].Submissions.Count, Is.EqualTo(2));
+
+        Assert.That(searchResults[0].Submissions[0].Username, Is.EqualTo("User1"));
+        DateTime submission1EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
+        Assert.That(searchResults[0].Submissions[0].EntryTime, Is.EqualTo(submission1EntryTime));
+        Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(100));
+        Assert.That(searchResults[0].Submissions[0].Description, Is.EqualTo("Description for Submission 1"));
+        Assert.That(searchResults[0].Submissions[0].StoreName, Is.EqualTo("Store1"));
+        Assert.That(searchResults[0].Submissions[0].ProductId, Is.EqualTo(1));
+
+        Assert.That(searchResults[0].Submissions[1].Username, Is.EqualTo("User8"));
+        DateTime submission2EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc);
+        Assert.That(searchResults[0].Submissions[1].EntryTime, Is.EqualTo(submission2EntryTime));
+        Assert.That(searchResults[0].Submissions[1].Price, Is.EqualTo(180));
+        Assert.That(searchResults[0].Submissions[1].Description, Is.EqualTo("Description for Submission 8"));
+        Assert.That(searchResults[0].Submissions[1].StoreName, Is.EqualTo("Store1"));
+        Assert.That(searchResults[0].Submissions[1].ProductId, Is.EqualTo(1));
+    }
+    
+    
     /// <summary>
     /// Tests that no results are returned when there are no submissions with the specified brand
     /// </summary>
