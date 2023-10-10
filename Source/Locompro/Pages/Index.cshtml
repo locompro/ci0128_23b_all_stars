@@ -1,0 +1,58 @@
+﻿@page
+@model IndexModel
+
+<!-- get the css file with main menu formats -->
+<link rel="stylesheet" href="~/css/MainMenu.css" asp-append-version="true" />
+
+<h1 class="d-flex justify-content-center" style="padding-top: 0px;margin-top: 180px;margin-bottom: 55px;font-size: 75px;">LoCoMPro</h1>
+
+<div class="container  pt-5"
+     style="padding-left: 0px;margin-bottom: 3px;margin-top: -42px; margin-left: 10px; margin-right: 10px">
+    <div class="row justify-content-center">
+        <div class="container">
+            <div class="justify-content-center form-actions input-group" style="max-width: 800px; margin: 0 auto;">
+                <div class="search-box form-control pe-4 rounded-pill input-group"
+                     style="">
+                    <div style="width: 100%; padding-right: 20px">
+                        <input type="text"
+                               class="form-control rounded-pill"
+                               name="query"
+                               placeholder="Ingresar nombre de producto"
+                               required="required"
+                               style="margin-left: 0px; border: none;"
+                               id="searchBox">
+                    </div>
+                    <div class="input-group-prepend justify-content-center"
+                         style="position: absolute; right: 0; top: 0; bottom: 0; display: flex; align-items: center; margin-right: 10px;">
+                        <button class="btn btn-primary ps-2 pe-2 rounded-pill"
+                                role="button"
+                                type="submit"
+                                onclick="performSearchButton()"
+                                style="height: 30px; font-size: 12px;"
+                                id="searchButton">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center; margin-top: 20px; justify-content: center">
+            <button class="index-advanced-search-button-initial"
+                    style="margin-top: 6px; margin-bottom: 0px; "
+                    id="advancedSearchButton"
+            >
+                Búsqueda avanzada
+            </button>
+            
+            <div id="modalContainer"
+                 style="margin-left: auto; margin-right: auto;">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/search.js"></script>
+    <script src="~/js/Index.js"></script>
+}
+
