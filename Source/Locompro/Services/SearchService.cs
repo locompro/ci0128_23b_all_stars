@@ -58,7 +58,7 @@ public class SearchService
             submissions.Add(await GetSubmissionsByProductModel(model));
         }
 
-        if (!string.IsNullOrEmpty(canton) && !string.IsNullOrEmpty(province))  // Results by canton and province
+        if (!string.IsNullOrEmpty(province))  // Results by canton and province
         {
             submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
         }
@@ -170,7 +170,9 @@ public class SearchService
             bestSubmission.Description
         )
         {
-            Submissions = itemGrouping.ToList()
+            Submissions = itemGrouping.ToList(),
+            model = bestSubmission.Product.Model,
+            brand = bestSubmission.Product.Brand
         };
 
         return await Task.FromResult(item);
