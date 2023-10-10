@@ -41,8 +41,8 @@ public class Item
     public string Province { get; init; }
     public string Description { get; init; }
     
-    public string model { get; set; }
+    public string Model { get; set; }
     
-    public string brand { get; set; }
+    public string Brand { get; set; }
     public List<Submission> Submissions { get; set; }
 };

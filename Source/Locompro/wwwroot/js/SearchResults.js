@@ -48,11 +48,11 @@ function performSearchButton() {
     performSearchButtonShared(modalShown);
 }
 
-function itemSelected() {
-    window.location.href = "/SearchResults/SearchResults?query=buttonClicked!";
-}
-
-
 async function loadProvince(optionSelected){
     loadProvinceShared(optionSelected, "SearchResults");
+}
+
+function itemSelected(index) {
+    var modalId = "#modal" + index;
+    $(modalId).modal('show');
 }

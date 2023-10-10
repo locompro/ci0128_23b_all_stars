@@ -171,8 +171,8 @@ public class SearchService
         )
         {
             Submissions = itemGrouping.ToList(),
-            model = bestSubmission.Product.Model,
-            brand = bestSubmission.Product.Brand
+            Model = bestSubmission.Product.Model,
+            Brand = bestSubmission.Product.Brand
         };
 
         return await Task.FromResult(item);
