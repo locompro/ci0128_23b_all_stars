@@ -80,6 +80,10 @@ namespace Locompro.Tests.Services
             _context.SaveChanges();
         }
 
+        /// <summary>
+        /// Tests that all provinces in the database are provided
+        /// <author>Joseph Stuart Valverde Kong C18100</author>
+        /// </summary>
         [Test]
         public async Task GetProvinces_ProvidesProvinces()
         {
@@ -92,6 +96,10 @@ namespace Locompro.Tests.Services
             });
         }
 
+        /// <summary>
+        /// Tests that all cantons in the province selected are shown
+        /// <author>Joseph Stuart Valverde Kong C18100</author>
+        /// </summary>
         [Test]
         public async Task UpdateProvince_GetsCorrectCantons()
         {
@@ -106,7 +114,11 @@ namespace Locompro.Tests.Services
                 Assert.IsTrue(this._advancedSearchService.Cantons.Any(Canton => Canton.Name == "Desamparados"));
             });
         }
-
+        
+        /// <summary>
+        /// Tests that all categories in the database are shown
+        /// <author>Joseph Stuart Valverde Kong C18100</author>
+        /// </summary>
         [Test]
         public async Task GetCategories_ProvidesAllCategories()
         {

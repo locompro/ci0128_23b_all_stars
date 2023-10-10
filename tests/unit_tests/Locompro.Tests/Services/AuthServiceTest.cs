@@ -27,7 +27,8 @@ namespace Locompro.Tests.Services
             _userStoreMock = new Mock<IUserStore<User>>();
             _emailStoreMock = new Mock<IUserEmailStore<User>>();
             _userManagerMock =
-                new Mock<UserManager<User>>(_userStoreMock.Object, null!, null!, null!, null!, null!, null!, null!, null!);
+                new Mock<UserManager<User>>(_userStoreMock.Object, null!, null!, null!, null!, null!, null!, null!,
+                    null!);
             _loggerMock = new Mock<ILogger<RegisterViewModel>>();
 
             var contextAccessorMock = new Mock<IHttpContextAccessor>();
@@ -54,7 +55,10 @@ namespace Locompro.Tests.Services
                 _loggerMock.Object, _emailStoreMock.Object);
         }
 
-
+        /// <summary>
+        /// Test if the user registration succeeds.
+        /// </summary>
+        /// <author>Brandon Alonso Mora Umaña C15179</author>
         [Test]
         public async Task Register_UserRegistrationSucceeds_ReturnsIdentityResultSuccess()
         {
@@ -87,6 +91,10 @@ namespace Locompro.Tests.Services
                 x.SetUserNameAsync(It.IsAny<User>(), inputData.UserName, It.IsAny<CancellationToken>()), Times.Once);
         }
 
+        /// <summary>
+        /// Test if the user registration fails.
+        /// </summary>
+        /// <author>Brandon Alonso Mora Umaña C15179</author>
         [Test]
         public async Task Register_UserRegistrationFails_ReturnsIdentityResultFailure()
         {
@@ -114,6 +122,11 @@ namespace Locompro.Tests.Services
             _userStoreMock?.Verify(x =>
                 x.SetUserNameAsync(It.IsAny<User>(), inputData.UserName, It.IsAny<CancellationToken>()), Times.Once);
         }
+
+        /// <summary>
+        /// Test if the user logout succeeds.
+        /// </summary>
+        /// <author>A. Badilla Olivas B80874</author>
         [Test]
         public async Task Logout_UserLoggedOut()
         {
@@ -121,13 +134,18 @@ namespace Locompro.Tests.Services
 
             _signInManagerMock?.Verify(x => x.SignOutAsync(), Times.Once);
             _loggerMock?.Verify(l => l.Log(
-                    LogLevel.Information, 
-                    It.IsAny<EventId>(), 
-                    It.Is<It.IsAnyType>((v, t) => string.Equals("User logged out.", v.ToString())), 
-                    null, 
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!), 
-                Times.Once);        }
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => string.Equals("User logged out.", v.ToString())),
+                    null,
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
+                Times.Once);
+        }
 
+        /// <summary>
+        /// Test if the user is logged in.
+        /// </summary>
+        /// <author>A. Badilla Olivas B80874</author>
         [Test]
         public void IsLoggedIn_UserIsLoggedIn()
         {
@@ -138,6 +156,10 @@ namespace Locompro.Tests.Services
             Assert.That(isLoggedIn, Is.True);
         }
 
+        /// <summary>
+        /// Test if the user is not logged in.
+        /// </summary>
+        /// <author>A. Badilla Olivas B80874</author>
         [Test]
         public void IsLoggedIn_UserIsNotLoggedIn()
         {
@@ -147,12 +169,18 @@ namespace Locompro.Tests.Services
 
             Assert.That(isLoggedIn, Is.False);
         }
+
+        /// <summary>
+        /// Test if the user login succeeds.
+        /// </summary>
+        /// <author>A. Badilla Olivas B80874</author>
         [Test]
         public async Task Login_SuccessfulLogin()
         {
             var inputData = new LoginViewModel { UserName = "TestUser", Password = "TestPassword123!" };
 
-            _signInManagerMock?.Setup(x => x.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, false))
+            _signInManagerMock?.Setup(x =>
+                    x.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, false))
                 .ReturnsAsync(SignInResult.Success);
 
             if (_service != null)
@@ -163,21 +191,25 @@ namespace Locompro.Tests.Services
             }
 
             _loggerMock?.Verify(l => l.Log(
-                    LogLevel.Information, 
-                    It.IsAny<EventId>(), 
-                    It.Is<It.IsAnyType>((v, t) => string.Equals("User logged in.", v.ToString())), 
-                    It.IsAny<Exception>(), 
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!), 
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => string.Equals("User logged in.", v.ToString())),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
                 Times.Once);
         }
 
-
+        /// <summary>
+        /// Test if the user login fails.
+        /// </summary>
+        /// <author>A. Badilla Olivas B80874</author>
         [Test]
         public async Task Login_FailedLogin()
         {
             var inputData = new LoginViewModel { UserName = "TestUser", Password = "WrongPassword" };
 
-            _signInManagerMock?.Setup(x => x.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, false))
+            _signInManagerMock?.Setup(x =>
+                    x.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, false))
                 .ReturnsAsync(SignInResult.Failed);
 
             if (_service != null)
@@ -188,15 +220,12 @@ namespace Locompro.Tests.Services
             }
 
             _loggerMock?.Verify(l => l.Log(
-                    LogLevel.Information, 
-                    It.IsAny<EventId>(), 
-                    It.Is<It.IsAnyType>((v, t) => string.Equals("User logged in.", v.ToString())), 
-                    It.IsAny<Exception>(), 
-                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!), 
+                    LogLevel.Information,
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => string.Equals("User logged in.", v.ToString())),
+                    It.IsAny<Exception>(),
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
                 Times.Never);
         }
-
-
     }
-    
 }
