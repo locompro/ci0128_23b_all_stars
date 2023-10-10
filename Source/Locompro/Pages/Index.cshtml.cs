@@ -60,24 +60,32 @@ namespace Locompro.Pages
             if (province.Equals("Ninguno"))
             {
                 // create empty list
-                List<Canton> emptyCantonList = new List<Canton>();
-
-                // add none back as an option
-                emptyCantonList.Add(
-                    new Canton
-                    {
-                        CountryName = "Ninguno",
-                        Name = "Ninguno",
-                        ProvinceName = "Ninguno"
-                    });
+                List<Canton> emptyCantonList = new List<Canton>
+                {
+                    // add none back as an option
+                    new Canton{CountryName = "Ninguno",
+                        Name = "Ninguno", 
+                        ProvinceName = "Ninguno"}
+                };
 
                 // set new list to service canton list
-                this._advancedSearchServiceHandler.Cantons = emptyCantonList;
+                _advancedSearchServiceHandler.Cantons = emptyCantonList;
             }
             else
             {
                 // update the model with all cantons in the given province
-                await this._advancedSearchServiceHandler.ObtainCantonsAsync(province);
+                await _advancedSearchServiceHandler.ObtainCantonsAsync(province);
+
+                _advancedSearchServiceHandler.Cantons.Add(
+                    new Canton{CountryName = "Ninguno",
+                        Name = "Ninguno", 
+                        ProvinceName = "Ninguno"}
+                );
+
+                foreach (var canton in _advancedSearchServiceHandler.Cantons)
+                {
+                    Console.WriteLine(canton.Name);
+                }
             }
 
             // prevent the json serializer from looping infinitely
@@ -87,7 +95,7 @@ namespace Locompro.Pages
             };
 
             // generate the json file with the cantons
-            cantonsJson = JsonConvert.SerializeObject(this._advancedSearchServiceHandler.Cantons, settings);
+            cantonsJson = JsonConvert.SerializeObject(_advancedSearchServiceHandler.Cantons, settings);
 
             // specify the content type as a json file
             Response.ContentType = "application/json";
