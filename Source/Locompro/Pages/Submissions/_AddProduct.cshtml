@@ -44,7 +44,7 @@
         <span class="text-danger field-validation-valid pb-2" asp-validation-for="Brand"></span>
         <div class="mb-2">
             <label asp-for="Category" class="form-label d-lg-flex justify-content-lg-start"></label>
-            <select asp-for="Category" id="partialProductCategory" placeholder="Categoría"
+            <select asp-for="Category" id="partialProductCategory"
                     class="form-select" style="font-family:Roboto, sans-serif; min-width: 210px;">
                 <option value="" disabled selected hidden>Seleccionar</option>
                 @foreach (var category in categories)

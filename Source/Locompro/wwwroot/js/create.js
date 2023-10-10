@@ -1,82 +1,22 @@
-class ModalManager {
-    constructor(modal, showButton, hideButton, addButton, mainInput, partialInput, dataElement) {
-        this.modal = modal;
-        this.showButton = showButton;
-        this.hideButton = hideButton;
-        this.addButton = addButton;
-        this.mainInput = mainInput;
-        this.partialInput = partialInput;
-        this.shouldClearFlag = true;
-        this.dataElement = dataElement;
-        this.data = null;
-    }
-
-    setupEvents() {
-        this.modal.on('show.bs.modal', () => this.#loadData());
-        this.modal.on('hidden.bs.modal', () => this.#clearOrHide());
-        this.addButton.click(() => this.#addAndValidate());
-    }
-
-    #loadData() {
-        if (!this.data) {
-            this.data = JSON.parse(this.dataElement.attr("data"));
-        }
-    }
-
-    #clearOrHide() {
-        if (this.shouldClearFlag) {
-            this.#clearModalInputs();
-        } else {
-            this.showButton.hide();
-        }
-    }
-
-    #addAndValidate() {
-        this.shouldClearFlag = this.#validateAndCopyValues();
-    }
-
-    #clearModalInputs() {
-        this.modal.find("input, select, textarea").each((index, element) => {
-            const $element = $(element);
-            if ($element.is("select")) {
-                $element.prop("selectedIndex", 0);
-            } else {
-                $element.val('');
-            }
-            $element.trigger("focusout");
-            const fieldName = $element.attr("name");
-            $(`span[data-valmsg-for='${fieldName}']`).text("")
-                .removeClass("field-validation-error")
-                .addClass("field-validation-valid");
-        });
-    }
-
-    #validateAndCopyValues() {
-        let isValid = true;
-        this.modal.find("input, select, textarea").each((index, element) => {
-            const $element = $(element);
-            $element.trigger("focusout");
-            if (!$element.valid()) {
-                isValid = false;
-            }
-        });
-
-        if (isValid) {
-            const partialVal = this.partialInput.val();
-            this.mainInput.val(partialVal);
-            this.mainInput.prop("disabled", true);
-            this.modal.modal('hide');
-            return false;
-        }
-
-        return true;
-    }
-}
+import { ModalManager } from "./modal-manager.js"
 
 class StoreModalManager extends ModalManager {
     setupEvents() {
         super.setupEvents();
+        
         this.#setupProvinceChange();
+
+        this.modal.find("#partialStoreProvince").select2({
+            placeholder: "Seleccionar",
+            allowClear: true,
+            dropdownParent: $('#addStoreModal .modal-content')
+        });
+
+        this.modal.find("#partialStoreCanton").select2({
+            placeholder: "Seleccionar",
+            allowClear: true,
+            dropdownParent: $('#addStoreModal .modal-content')
+        });
     }
 
     #setupProvinceChange() {
@@ -103,6 +43,17 @@ class StoreModalManager extends ModalManager {
     }
 }
 
+class ProductModalManager extends ModalManager {
+    setupEvents() {
+        super.setupEvents();
+        this.modal.find("#partialProductCategory").select2({
+            placeholder: "Seleccionar",
+            allowClear: true,
+            dropdownParent: $('#addProductModal .modal-content')
+        });
+    }
+}
+
 $(document).ready(function () {
     const storeManager = new StoreModalManager(
         $("#addStoreModal"),
@@ -115,7 +66,7 @@ $(document).ready(function () {
     );
     storeManager.setupEvents();
 
-    const productManager = new ModalManager(
+    const productManager = new ProductModalManager(
         $("#addProductModal"),
         $("#showAddProductBtn"),
         $("#hideAddProductBtn"),
@@ -129,5 +80,50 @@ $(document).ready(function () {
     // Attach global event listeners for validation
     $("input, select, textarea").on('input', function () {
         $(this).valid();
+    });
+
+    $('#mainStoreName').select2({
+        ajax: {
+            url: '/Submissions/Create',
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+                return {
+                    handler: 'FetchStores',
+                    partialName: params.term
+                };
+            },
+            processResults: function(data) {
+                return {
+                    results: data
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Seleccionar',
+        minimumInputLength: 1
+    });
+
+    $('#mainProductName').select2({
+        ajax: {
+            url: '/Submissions/Create',
+            dataType: 'json',
+            delay: 250,
+            data: function(params) {
+                return {
+                    handler: 'FetchProducts',
+                    partialName: params.term,
+                    store: null
+                };
+            },
+            processResults: function(data) {
+                return {
+                    results: data
+                };
+            },
+            cache: true
+        },
+        placeholder: 'Seleccionar',
+        minimumInputLength: 1
     });
 });

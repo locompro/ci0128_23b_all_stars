@@ -1,5 +1,6 @@
 using Locompro.Data;
 using Locompro.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Locompro.Repositories;
@@ -14,7 +15,7 @@ public class CountryRepository : AbstractRepository<Country, string>
     /// </summary>
     /// <param name="context">Context to base the repository on.</param>
     /// <param name="loggerFactory">Factory for repository logger.</param>
-    public CountryRepository(LocomproContext context, ILoggerFactory loggerFactory) :
+    public CountryRepository(DbContext context, ILoggerFactory loggerFactory) :
         base(context, loggerFactory)
     {
     }

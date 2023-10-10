@@ -7,7 +7,7 @@ namespace Locompro.Services.Domain
     /// <summary>
     /// Domain service for Store entities.
     /// </summary>
-    public class StoreService : AbstractDomainService<Store, string, StoreRepository>
+    public class StoreService : StringIdDomainService<Store, StoreRepository>
     {
         /// <summary>
         /// Constructs a Store service for a given repository.

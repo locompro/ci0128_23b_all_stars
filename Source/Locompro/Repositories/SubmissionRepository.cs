@@ -27,7 +27,7 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
     /// </summary>
     /// <param name="context"></param>
     /// <param name="loggerFactory"></param>
-    public SubmissionRepository(LocomproContext context, ILoggerFactory loggerFactory) :
+    public SubmissionRepository(DbContext context, ILoggerFactory loggerFactory) :
         base(context, loggerFactory)
     {
     }
