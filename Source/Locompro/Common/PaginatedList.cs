@@ -3,7 +3,7 @@
 namespace Locompro.Common
 {
     /// <summary>
-    /// List of items that can be paginated
+    /// A paginated list of items.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     public class PaginatedList<T> : List<T>

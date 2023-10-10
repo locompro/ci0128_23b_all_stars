@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Locompro.Models;
 
+/// <summary>
+/// A user submitted product.
+/// </summary>
 public class Product
 {
     [Key] [Required] public int Id { get; set; }

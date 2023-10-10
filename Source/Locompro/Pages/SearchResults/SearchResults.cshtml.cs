@@ -68,6 +68,9 @@ public class SearchResultsModel : PageModel
     public string NameSort { get; set; }
         
     public string CurrentSort { get; set; }
+    public string CantonSort { get; set; }
+    public string ProvinceSort { get; set; }
+
         
     public string CurrentFilter { get; set; }
 
@@ -82,10 +85,10 @@ public class SearchResultsModel : PageModel
         IConfiguration configuration,
         SearchService searchService)
     {
-        this._searchService = searchService;
-        this._advancedSearchServiceHandler = advancedSearchServiceHandler;
-        this._configuration = configuration;
-        this._pageSize = _configuration.GetValue("PageSize", 4);
+        _searchService = searchService;
+        _advancedSearchServiceHandler = advancedSearchServiceHandler;
+        _configuration = configuration;
+        _pageSize = _configuration.GetValue("PageSize", 4);
     }
 
     /// <summary>
@@ -116,35 +119,36 @@ public class SearchResultsModel : PageModel
         string currentFilter,
         string sortOrder)
     {
+       
         // validate input
-        this.ValidateInput(province, canton, minValue, maxValue, category, model, brand);
+        ValidateInput(province, canton, minValue, maxValue, category, model, brand);
         
-        this.ProductName = query;
+        ProductName = query;
         
         // set up sorting parameters
-        this.SetSortingParameters(sortOrder, (sorting is not null));
+        SetSortingParameters(sortOrder, (sorting is not null));
         
         // get items from search service
-        this._items =
+        _items =
             (await _searchService.SearchItems(
-                this.ProductName,
-                this.ProvinceSelected,
-                this.CantonSelected,
-                this.MinPrice,
-                this.MaxPrice,
-                this.CategorySelected,
-                this.ModelSelected,
-                this.BrandSelected)
+                ProductName,
+                ProvinceSelected,
+                CantonSelected,
+                MinPrice,
+                MaxPrice,
+                CategorySelected,
+                ModelSelected,
+                BrandSelected)
             ).ToList();
         
         // get amount of items found    
-        this.ItemsAmount = _items.Count;
+        ItemsAmount = _items.Count;
         
         // order items by sort order
-        this.OrderItems();
+        OrderItems();
         
         // create paginated list and set it to be displayed
-        this.DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
+        DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
     }
 
     /// <summary>
@@ -181,13 +185,13 @@ public class SearchResultsModel : PageModel
             category = null;
         } 
         
-        this.ProvinceSelected = province;
-        this.CantonSelected = canton;
-        this.MinPrice = minValue;
-        this.MaxPrice = maxValue;
-        this.CategorySelected = category;
-        this.ModelSelected = model;
-        this.BrandSelected = brand;
+       ProvinceSelected = province;
+       CantonSelected = canton;
+       MinPrice = minValue;
+       MaxPrice = maxValue;
+       CategorySelected = category;
+       ModelSelected = model;
+       BrandSelected = brand;
     }
 
     /// <summary>
@@ -201,36 +205,82 @@ public class SearchResultsModel : PageModel
         {
             if (!string.IsNullOrEmpty(sortOrder))
             {
-                this.NameSort = sortOrder;
+                NameSort = sortOrder;
             }
             return;
         }
-        
-        if (string.IsNullOrEmpty(sortOrder))
+    
+        if (string.IsNullOrEmpty(sortOrder) || sortOrder.Equals("name_asc"))
         {
-            this.NameSort = "name_asc";
+            NameSort = "name_desc";
+            ProvinceSort = "province_asc";
+            CantonSort = "canton_asc";
         }
-        else
+        else if (sortOrder.Equals("name_desc"))
         {
-            this.NameSort = sortOrder.Contains("name_asc") ? "name_desc" : "name_asc";
+            NameSort = "name_asc";
+        }
+        else if (sortOrder.Equals("province_asc"))
+        {
+            ProvinceSort = "province_desc";
+        }
+        else if (sortOrder.Equals("province_desc"))
+        {
+            ProvinceSort = "province_asc";
+        }
+        else if (sortOrder.Equals("canton_asc"))
+        {
+            CantonSort = "canton_desc";
+        }
+        else if (sortOrder.Equals("canton_desc"))
+        {
+            CantonSort = "canton_asc";
         }
     }
+
 
     /// <summary>
     /// Orders items
     /// </summary>
     void OrderItems()
     {
-        switch (this.NameSort)
+        switch (NameSort)
         {
             case "name_desc":
-                _items = _items.OrderByDescending(item => item.ProductName).ToList();
+                _items = _items.OrderByDescending(item => item.Name).ToList();
                 break;
             case "name_asc":
-                _items = _items.OrderBy(item => item.ProductName).ToList();
+                _items = _items.OrderBy(item => item.Name).ToList();
                 break;
         }
+
+        if(!string.IsNullOrEmpty(ProvinceSort))
+        {
+            switch (ProvinceSort)
+            {
+                case "province_desc":
+                    _items = _items.OrderByDescending(item => item.Province).ToList();
+                    break;
+                case "province_asc":
+                    _items = _items.OrderBy(item => item.Province).ToList();
+                    break;
+            }
+        }
+
+        if(!string.IsNullOrEmpty(CantonSort))
+        {
+            switch (CantonSort)
+            {
+                case "canton_desc":
+                    _items = _items.OrderByDescending(item => item.Canton).ToList();
+                    break;
+                case "canton_asc":
+                    _items = _items.OrderBy(item => item.Canton).ToList();
+                    break;
+            }
+        }
     }
+
         
     /// <summary>
     /// Returns the view component for the advanced search modal
@@ -253,7 +303,7 @@ public class SearchResultsModel : PageModel
     public async Task<IActionResult> OnGetUpdateProvince(string province)
     {
         string cantonsJson = "";
-        
+
         // if province is none
         if (province.Equals("Ninguno"))
         {
@@ -267,14 +317,25 @@ public class SearchResultsModel : PageModel
             };
 
             // set new list to service canton list
-            this._advancedSearchServiceHandler.Cantons = emptyCantonList;
+            _advancedSearchServiceHandler.Cantons = emptyCantonList;
         }
         else
         {
             // update the model with all cantons in the given province
-            await this._advancedSearchServiceHandler.ObtainCantonsAsync(province);
+            await _advancedSearchServiceHandler.ObtainCantonsAsync(province);
+
+            _advancedSearchServiceHandler.Cantons.Add(
+                new Canton{CountryName = "Ninguno",
+                    Name = "Ninguno", 
+                    ProvinceName = "Ninguno"}
+            );
+
+            foreach (var canton in _advancedSearchServiceHandler.Cantons)
+            {
+                Console.WriteLine(canton.Name);
+            }
         }
-        
+
         // prevent the json serializer from looping infinitely
         var settings = new JsonSerializerSettings
         {
@@ -282,8 +343,8 @@ public class SearchResultsModel : PageModel
         };
 
         // generate the json file with the cantons
-        cantonsJson = JsonConvert.SerializeObject(this._advancedSearchServiceHandler.Cantons, settings);
-        
+        cantonsJson = JsonConvert.SerializeObject(_advancedSearchServiceHandler.Cantons, settings);
+
         // specify the content type as a json file
         Response.ContentType = "application/json";
 

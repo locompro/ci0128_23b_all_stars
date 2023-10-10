@@ -44,50 +44,46 @@ public class SearchService
         
         // List of items to be returned
         List<Item> items = new List<Item>();
-        
+
         // List for submissions to be aggregated
         List<IEnumerable<Submission>> submissions = new List<IEnumerable<Submission>>();
 
-        // add results from searching by product name
-        if (!string.IsNullOrEmpty(productName))
+        if (!string.IsNullOrEmpty(productName))  // Results by product name
         {
             submissions.Add(await GetSubmissionsByProductName(productName));
         }
-        
-        // add results from searching by product model
-        if (!string.IsNullOrEmpty(model))
+
+        if (!string.IsNullOrEmpty(model))  // Results by product model
         {
             submissions.Add(await GetSubmissionsByProductModel(model));
         }
-        
-        // add results from searching by canton and province
-        if (!string.IsNullOrEmpty(canton) && !string.IsNullOrEmpty(province))
+
+        if (!string.IsNullOrEmpty(province))  // Results by canton and province
         {
             submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
         }
-        
-        // add results from searching by brand
-        if (!string.IsNullOrEmpty(brand))
+
+        if (!string.IsNullOrEmpty(brand)) // Results by product brand
         {
             submissions.Add(await GetSubmissionsByBrand(brand));
         }
-        
+
         // if there are no submissions
         if (submissions.Count == 0)
         {
             // just return an empty list
             return items;
-        } 
-        
-        // aggregate results (look for intersection of all results)
+        }
+
+        // Look for intersection of all results
         IEnumerable<Submission> result = submissions.Aggregate((x, y) => x.Intersect(y));
-        
-        // get items from the submissions
+
+        // Get items from the submissions
         items.AddRange(await GetItems(result));
 
         return items;
     }
-    
+
     /// <summary>
     /// Gets submissions containing a specific product name
     /// </summary>
@@ -97,7 +93,7 @@ public class SearchService
     {
         return await _submissionRepository.GetSubmissionsByProductNameAsync(productName);
     }
-    
+
     /// <summary>
     /// Gets submissions containing a specific product model
     /// </summary>
@@ -106,7 +102,7 @@ public class SearchService
     {
         return await _submissionRepository.GetSubmissionsByProductModelAsync(productModel);
     }
-    
+
     /// <summary>
     /// Calls the submission repository to get all submissions containing a specific brand name
     /// </summary>
@@ -116,17 +112,17 @@ public class SearchService
     {
         return await _submissionRepository.GetSubmissionByBrandAsync(brandName);
     }
- 
+
     public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAndProvince(string canton, string province)
     {
         return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
     }
-    
+
     public async Task<IEnumerable<Submission>> GetSubmissionByCanton(string canton, string province)
     {
         return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
     }
-    
+
     /// <summary>
     /// Gets all the items to be displayed in the search results
     /// from a list of submissions
@@ -135,22 +131,16 @@ public class SearchService
     /// <returns></returns>
     private async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
     {
-        // list to contain the items
         List<Item> items = new List<Item>();
-        
-        // group submissions by store
-        IEnumerable<IGrouping<Store,Submission>> submissionsByStore = submissions.GroupBy(s => s.Store);
 
-        // for each store
-        foreach (IGrouping<Store,Submission> store in submissionsByStore)
+        // Group submissions by store
+        IEnumerable<IGrouping<Store, Submission>> submissionsByStore = submissions.GroupBy(s => s.Store);
+
+        foreach (IGrouping<Store, Submission> store in submissionsByStore)
         {
-            // group submissions by product
-            IEnumerable<IGrouping<Product,Submission>> submissionsByProduct = store.GroupBy(s => s.Product);
-            
-            // for each product
-            foreach (IGrouping<Product,Submission> product in submissionsByProduct)
+            IEnumerable<IGrouping<Product, Submission>> submissionsByProduct = store.GroupBy(s => s.Product);
+            foreach (IGrouping<Product, Submission> product in submissionsByProduct)
             {
-                // add it as an item to the list
                 items.Add(await this.GetItem(product));
             }
         }
@@ -167,10 +157,9 @@ public class SearchService
     /// <returns></returns>
     private async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
     {
-        // get best submission for its information
+        // Get best submission for its information
         Submission bestSubmission = this.GetBestSubmission(itemGrouping);
 
-        // create an item
         Item item = new Item(
             GetFormatedDate(bestSubmission),
             bestSubmission.Product.Name,
@@ -181,13 +170,14 @@ public class SearchService
             bestSubmission.Description
         )
         {
-            // add all submissions to list
-            Submissions = itemGrouping.ToList()
+            Submissions = itemGrouping.ToList(),
+            Model = bestSubmission.Product.Model,
+            Brand = bestSubmission.Product.Brand
         };
 
         return await Task.FromResult(item);
     }
-    
+
     /// <summary>
     /// Extracts from entry time, the date in the format yyyy-mm-dd
     /// to be shown in the results page
@@ -199,10 +189,10 @@ public class SearchService
         Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture), @"[0-9]*/[0-9.]*/[0-9]*");
 
         string date = regexMatch.Success ? regexMatch.Groups[0].Value : submission.EntryTime.ToString(CultureInfo.InvariantCulture);
-        
+
         return date;
     }
-    
+
     /// <summary>
     /// According to established heuristics determines best best submission
     /// from among a list of submissions
@@ -211,7 +201,7 @@ public class SearchService
     /// <returns></returns>
     private Submission GetBestSubmission(IEnumerable<Submission> submissions)
     {
-        // for the time being, the best submission is the one with the most recent entry time
+        // For the time being, the best submission is the one with the most recent entry time
         return submissions.MaxBy(s => s.EntryTime);
     }
 }

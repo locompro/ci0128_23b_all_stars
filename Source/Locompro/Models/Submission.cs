@@ -3,6 +3,9 @@ using Microsoft.Build.Framework;
 
 namespace Locompro.Models;
 
+/// <summary>
+/// A price submission by a user.
+/// </summary>
 public class Submission
 {
     [Required]
