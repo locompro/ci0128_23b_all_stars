@@ -62,6 +62,7 @@ void RegisterServices(WebApplicationBuilder builder)
     // Built in services
     builder.Services.AddLogging();
     builder.Services.AddRazorPages();
+    builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 
     // Add DbContext using SQL Server
     builder.Services.AddDbContext<LocomproContext>(options =>
@@ -75,21 +76,34 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
         .AddEntityFrameworkStores<LocomproContext>();
 
+    // Configure application cookie after setting up Identity
+    builder.Services.ConfigureApplicationCookie(config =>
+    {
+        config.Cookie.Name = "Identity.Cookie";
+        config.LoginPath = "/Account/Login";
+    });
+
     // Register repositories
     builder.Services.AddScoped<UnitOfWork>();
     builder.Services.AddScoped<StoreRepository>();
     builder.Services.AddScoped<CountryRepository>();
+    builder.Services.AddScoped<CantonRepository>();
     builder.Services.AddScoped<CategoryRepository>();
     builder.Services.AddScoped<ProductRepository>();
     builder.Services.AddScoped<SubmissionRepository>();
+    builder.Services.AddScoped<UserRepository>();
 
     // Register domain services
     builder.Services.AddScoped<StoreService>();
     builder.Services.AddScoped<CountryService>();
+    builder.Services.AddScoped<CantonService>();
     builder.Services.AddScoped<CategoryService>();
     builder.Services.AddScoped<ProductService>();
+    builder.Services.AddScoped<SubmissionService>();
+    builder.Services.AddScoped<UserService>();
 
     // Register application services
+    builder.Services.AddScoped<ContributionService>();
     builder.Services.AddScoped<AuthService>();
     builder.Services.AddScoped<AdvancedSearchInputService>();
     builder.Services.AddScoped<SearchService>();

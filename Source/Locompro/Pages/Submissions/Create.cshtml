@@ -20,18 +20,19 @@
     </fieldset>
     <form class="text-center" method="post">
         <div class="mb-3">
-            <label class="form-label text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Tienda</label>
-            <select class="form-control" asp-for="StoreVm.Name" id="mainStoreName" style="margin-bottom: 10px;">
-                <option value="" disabled selected hidden>Seleccionar</option>
-                <!-- Contents loaded here -->
-            </select>
-            <span class="text-danger field-validation-valid" asp-validation-for="StoreVm.Name"></span>
-            <div class="container">
+            <div class="mb-3">
+                <label class="form-label text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Tienda</label>
+                <select class="form-control" asp-for="StoreVm.Name" id="mainStoreName" style="margin-bottom: 10px">
+                    <option value="" disabled selected hidden>Seleccionar</option>
+                    <!-- Contents loaded here -->
+                </select>
+            </div>
+            <div class="container" id="showAddStoreContainer">
                 <div class="row">
-                    <div class="col-md-6" style="margin-right: 0px;">
+                    <div class="col-md-7" style="margin-right: 0px;">
                         <label class="col-form-label">¿No encontró la tienda?&nbsp;</label>
                     </div>
-                    <div class="col-md-6 d-xl-flex justify-content-xl-start align-items-xl-center">
+                    <div class="col-md-5 d-xl-flex justify-content-xl-start align-items-xl-center">
                         <!-- Store trigger button -->
                         <button type="button" id="showAddStoreBtn" data-bs-toggle="modal" data-bs-target="#addStoreModal"
                                 class="btn btn-primary d-xl-flex justify-content-xl-start btn-sm"
@@ -57,22 +58,23 @@
                     </div>
                 </div>
             </div>
+            <span class="text-danger field-validation-valid" asp-validation-for="StoreVm.Name"></span>
         </div>
 
-
         <div class="mb-3">
-            <label class="form-label text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Producto</label>
-            <select class="form-control" asp-for="ProductVm.Name" id="mainProductName" style="margin-bottom: 10px;">
-                <span class="text-danger field-validation-valid" asp-validation-for="ProductVm.Name"></span>
-                <option value="" disabled selected hidden>Seleccionar</option>
-                <!-- Contents loaded here -->
-            </select>
-            <div class="container">
+            <div class="mb-3">
+                <label class="form-label text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Producto</label>
+                <select class="form-control" asp-for="ProductVm.Id" id="mainProductName" style="margin-bottom: 10px;">
+                    <option value="" disabled selected hidden>Seleccionar</option>
+                    <!-- Contents loaded here -->
+                </select>
+            </div>
+            <div class="container" id="showAddProductContainer">
                 <div class="row">
-                    <div class="col-md-6" style="margin-right: 0px;">
+                    <div class="col-md-7">
                         <label class="col-form-label">¿No encontró el producto?&nbsp;</label>
                     </div>
-                    <div class="col-md-6 d-xl-flex justify-content-xl-start align-items-xl-center">
+                    <div class="col-md-5 d-xl-flex justify-content-xl-start align-items-xl-center">
                         <!-- Product trigger button -->
                         <button type="button" id="showAddProductBtn" data-bs-toggle="modal" data-bs-target="#addProductModal"
                                 class="btn btn-primary d-xl-flex justify-content-xl-start btn-sm"
@@ -98,14 +100,25 @@
                     </div>
                 </div>
             </div>
+            <span class="text-danger field-validation-valid" asp-validation-for="ProductVm.Id"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Descripción</label>
+            <textarea class="form-control" asp-for="Description" type="text" id="mainDescription" placeholder="Descripción" 
+                        style="margin-bottom: 10px;"></textarea>
         </div>
 
         <div class="mb-3" style="margin-top: 15px;">
-            <label class="form-label d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Precio</label>
-            <input class="form-control" asp-for="Price" type="text" placeholder="Precio">
+            <label class="form-label d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Precio (₡)</label>
+            <input class="form-control mb-2" asp-for="Price" type="text" placeholder="Precio">
+            <span class="text-danger field-validation-valid" asp-validation-for="Price"></span>
         </div>
         <div>
-            <a class="btn btn-primary d-block w-100" role="button" href="../MainMenu/index-user.html" style="margin-top: 32px;">Agregar registro</a>
+            <button type="submit" id="addSubmissionBtn"
+                    class="btn btn-primary d-block w-100" style="margin-top: 32px;">
+                Agregar registro
+            </button>
         </div>
     </form>
 

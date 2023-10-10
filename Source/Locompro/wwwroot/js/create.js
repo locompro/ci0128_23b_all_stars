@@ -1,21 +1,55 @@
-import { ModalManager } from "./modal-manager.js"
+import {ModalManager} from "./modal-manager.js"
+
+const select2SpanishLanguageSettings = {
+    errorLoading: function () {
+        return 'No se pudieron cargar los resultados.';
+    },
+    inputTooLong: function (args) {
+        var remainingChars = args.input.length - args.maximum;
+        return 'Por favor, elimine ' + remainingChars + ' caracter(es)';
+    },
+    inputTooShort: function (args) {
+        var remainingChars = args.minimum - args.input.length;
+        return 'Por favor, introduzca ' + remainingChars + ' o más caracteres';
+    },
+    loadingMore: function () {
+        return 'Cargando más resultados...';
+    },
+    maximumSelected: function (args) {
+        return 'Sólo puede seleccionar ' + args.maximum + ' elemento(s)';
+    },
+    noResults: function () {
+        return 'No se encontraron resultados';
+    },
+    searching: function () {
+        return 'Buscando...';
+    }
+};
 
 class StoreModalManager extends ModalManager {
     setupEvents() {
         super.setupEvents();
-        
+
         this.#setupProvinceChange();
 
         this.modal.find("#partialStoreProvince").select2({
             placeholder: "Seleccionar",
             allowClear: true,
-            dropdownParent: $('#addStoreModal .modal-content')
+            dropdownParent: $('#addStoreModal .modal-content'),
+            language: select2SpanishLanguageSettings
         });
 
         this.modal.find("#partialStoreCanton").select2({
             placeholder: "Seleccionar",
             allowClear: true,
-            dropdownParent: $('#addStoreModal .modal-content')
+            dropdownParent: $('#addStoreModal .modal-content'),
+            language: select2SpanishLanguageSettings
+        });
+
+        $("#partialStoreName").rules("add", {
+            messages: {
+                required: "Ingresar el nombre de la tienda."
+            }
         });
     }
 
@@ -49,15 +83,29 @@ class ProductModalManager extends ModalManager {
         this.modal.find("#partialProductCategory").select2({
             placeholder: "Seleccionar",
             allowClear: true,
-            dropdownParent: $('#addProductModal .modal-content')
+            dropdownParent: $('#addProductModal .modal-content'),
+            language: select2SpanishLanguageSettings
         });
+        
+        $("#partialProductName").rules("add", {
+            messages: {
+                required: "Ingresar el nombre del producto."
+            }
+        });
+    }
+
+    addAndValidate() {
+        super.addAndValidate();
+        if(!this.shouldClearFlag) {
+         $("#partialProductId").val(-1)   
+        }
     }
 }
 
 $(document).ready(function () {
     const storeManager = new StoreModalManager(
         $("#addStoreModal"),
-        $("#showAddStoreBtn"),
+        $("#showAddStoreContainer"),
         $("#hideAddStoreBtn"),
         $("#addStoreBtn"),
         $("#mainStoreName"),
@@ -68,7 +116,7 @@ $(document).ready(function () {
 
     const productManager = new ProductModalManager(
         $("#addProductModal"),
-        $("#showAddProductBtn"),
+        $("#showAddProductContainer"),
         $("#hideAddProductBtn"),
         $("#addProductBtn"),
         $("#mainProductName"),
@@ -86,14 +134,14 @@ $(document).ready(function () {
         ajax: {
             url: '/Submissions/Create',
             dataType: 'json',
-            delay: 250,
-            data: function(params) {
+            delay: 100,
+            data: function (params) {
                 return {
                     handler: 'FetchStores',
                     partialName: params.term
                 };
             },
-            processResults: function(data) {
+            processResults: function (data) {
                 return {
                     results: data
                 };
@@ -101,22 +149,23 @@ $(document).ready(function () {
             cache: true
         },
         placeholder: 'Seleccionar',
-        minimumInputLength: 1
+        minimumInputLength: 1,
+        language: select2SpanishLanguageSettings
     });
 
     $('#mainProductName').select2({
         ajax: {
             url: '/Submissions/Create',
             dataType: 'json',
-            delay: 250,
-            data: function(params) {
+            delay: 100,
+            data: function (params) {
                 return {
                     handler: 'FetchProducts',
                     partialName: params.term,
                     store: null
                 };
             },
-            processResults: function(data) {
+            processResults: function (data) {
                 return {
                     results: data
                 };
@@ -124,6 +173,15 @@ $(document).ready(function () {
             cache: true
         },
         placeholder: 'Seleccionar',
-        minimumInputLength: 1
+        minimumInputLength: 1,
+        language: select2SpanishLanguageSettings
+    });
+
+    $("#addSubmissionBtn").click(() => {
+        $("input, select, textarea").each((index, element) => {
+            const $element = $(element);
+            $element.trigger("focusout");
+            $element.valid();
+        });
     });
 });

@@ -1,7 +1,7 @@
 export class ModalManager {
-    constructor(modal, showButton, hideButton, addButton, mainInput, partialInput, dataElement) {
+    constructor(modal, showContainer, hideButton, addButton, mainInput, partialInput, dataElement) {
         this.modal = modal;
-        this.showButton = showButton;
+        this.showContainer = showContainer;
         this.hideButton = hideButton;
         this.addButton = addButton;
         this.mainInput = mainInput;
@@ -14,7 +14,11 @@ export class ModalManager {
     setupEvents() {
         this.modal.on('show.bs.modal', () => this.#loadData());
         this.modal.on('hidden.bs.modal', () => this.#clearOrHide());
-        this.addButton.click(() => this.#addAndValidate());
+        this.addButton.click(() => this.addAndValidate());
+    }
+
+    addAndValidate() {
+        this.shouldClearFlag = this.#validateAndCopyValues();
     }
 
     #loadData() {
@@ -27,12 +31,9 @@ export class ModalManager {
         if (this.shouldClearFlag) {
             this.#clearModalInputs();
         } else {
-            this.showButton.hide();
+            this.showContainer.hide();
+            this.shouldClearFlag = true;
         }
-    }
-
-    #addAndValidate() {
-        this.shouldClearFlag = this.#validateAndCopyValues();
     }
 
     #clearModalInputs() {
@@ -64,6 +65,18 @@ export class ModalManager {
         if (isValid) {
             const partialVal = this.partialInput.val();
             this.mainInput.val(partialVal);
+
+            // Directly update the select2 text
+            const select2Container = this.mainInput.siblings('.select2-container');
+            const selectionTextSpan = select2Container.find('.select2-selection__rendered');
+            selectionTextSpan.text(partialVal);
+
+            // // Clear any validation messages for mainInput
+            // const fieldName = this.mainInput.attr("name");
+            // $(`span[data-valmsg-for='${fieldName}']`).text("")
+            //     .removeClass("field-validation-error")
+            //     .addClass("field-validation-valid");
+
             this.mainInput.prop("disabled", true);
             this.modal.modal('hide');
             return false;

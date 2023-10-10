@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Locompro.Common;
 
 namespace Locompro.Models.ViewModels;
 
@@ -9,7 +10,7 @@ namespace Locompro.Models.ViewModels;
 public class StoreViewModel
 {
     // Store Entity properties
-    [Required(ErrorMessage = "Ingresar el nombre de la tienda.")]
+    [Required(ErrorMessage = "Seleccionar una tienda.")]
     [StringLength(60)]
     [DisplayName("Nombre")]
     public string Name { get; set; }
@@ -33,4 +34,13 @@ public class StoreViewModel
     [Required(ErrorMessage = "Seleccionar el cantón de la tienda.")]
     [DisplayName("Cantón")]
     public string Canton { get; set; }
+    
+    public bool IsExistingStore()
+    {
+        return !string.IsNullOrEmpty(Name) &&
+               string.IsNullOrEmpty(Address) &&
+               string.IsNullOrEmpty(Telephone) &&
+               string.IsNullOrEmpty(Province) &&
+               string.IsNullOrEmpty(Canton);
+    }
 }

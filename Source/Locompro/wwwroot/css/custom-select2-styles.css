@@ -1,8 +1,8 @@
+/* General select2 styles */
 .select2-container .select2-selection--single {
     display: flex;
     align-items: center;
     border-radius: 0.25rem;
-    width: 210px;
     box-sizing: border-box;
     overflow-wrap: break-word;
     height: auto !important;
@@ -49,7 +49,6 @@
     padding: .375rem .75rem;
     font-size: 1rem;
     line-height: 1.5;
-    min-width: 210px;
 }
 
 .select2-selection__rendered {
@@ -66,4 +65,13 @@
     position: relative;
     top: -2px;
     margin-right: 10px;
+}
+
+/* Modal-specific select2 styles */
+.modal-select2 .select2-container .select2-selection--single {
+    width: 210px;
+}
+
+.modal-select2 .select2-container--default .select2-selection--single {
+    min-width: 210px;
 }

@@ -16,7 +16,7 @@
     var provincesJson = JsonConvert.SerializeObject(provinces, settings);
 }
 
-<div class="row d-flex justify-content-center">
+<div class="row d-flex justify-content-center modal-select2">
     <div id="partialStore" class="card-body d-flex flex-column align-items-center" style="padding-bottom: 20px;">
         <div class="bs-icon-xl bs-icon-circle bs-icon-primary bs-icon my-4">
             <i class="material-icons" style="font-size: 40px;">store</i>
@@ -30,7 +30,7 @@
             <label asp-for="Name" class="form-label d-lg-flex justify-content-lg-start"></label>
             <input asp-for="Name" class="form-control" placeholder="Nombre" id="partialStoreName">
         </div>
-        <span class="text-danger field-validation-valid pb-2" asp-validation-for="Name"></span>
+        <span class="text-danger field-validation-valid pb-2" id="partialStoreNameValid" asp-validation-for="Name"></span>
         <div class="mb-2">
             <label asp-for="Province" class="form-label d-lg-flex justify-content-lg-start"></label>
             <select asp-for="Province" id="partialStoreProvince"
