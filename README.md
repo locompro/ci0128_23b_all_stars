@@ -214,6 +214,9 @@ dotnet run
 ```
 Según los parametros actuales de configuración del proyecto, este se ejecutará y estará escuchando en el puerto 7249
 
+### Generación de la documentación.
+
+Usar el `Doxyfile` que se encuentra en  `Source/Locompro`, abrirlo con doxygenwizard y ejecutarlo. Esto genera documentación en una carpeta `Docs` en la raíz del repositorio.
 
 ### Manual de ejecución de los casos de prueba
 1. **Paquetes o Bibliotecas Necesarias para Pruebas:**  
