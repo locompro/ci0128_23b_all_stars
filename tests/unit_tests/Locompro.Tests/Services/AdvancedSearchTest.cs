@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Locompro.Services;
+using Locompro.Services.Domain;
 
 namespace Locompro.Tests.Services
 {
@@ -15,7 +16,7 @@ namespace Locompro.Tests.Services
         private LocomproContext _context;
         private CountryService _countryService;
         private CategoryService _categoryService;
-        private AdvancedSearchModalService _advancedSearchService;
+        private AdvancedSearchInputService _advancedSearchService;
 
         [SetUp]
         public void SetUp()
@@ -64,7 +65,7 @@ namespace Locompro.Tests.Services
             this._categoryService = new CategoryService(unitOfWork, categoryRepository, _loggerFactory);
             this._countryService = new CountryService(unitOfWork, countryRepostory, _loggerFactory);
 
-            this._advancedSearchService = new AdvancedSearchModalService(_countryService, _categoryService);
+            this._advancedSearchService = new AdvancedSearchInputService(_countryService, _categoryService);
             
             Category category1 = new Category { Name = "Sombreros" };
             Category category2 = new Category { Name = "Zapatos" };
