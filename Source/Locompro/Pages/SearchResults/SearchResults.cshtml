@@ -1,0 +1,196 @@
+﻿@page
+@using Locompro.Models
+@using Locompro.Services
+@using Locompro.Common
+@model Locompro.Pages.SearchResults.SearchResultsModel
+
+<link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
+
+<div class="container  pt-5 seach-results-page-container">
+    <div class="container">
+        <div class="justify-content-center form-actions input-group search-input-group">
+            <div class="search-box form-control pe-4 rounded-pill input-group">
+                <div class="search-bar-encapsulate">
+                    <input type="text"
+                           value="@Model.ProductName"
+                           class="form-control rounded-pill search-bar"
+                           name="query"
+                           placeholder="Ingresar nombre de producto"
+                           required="required"
+                           id="searchBox">
+                </div>
+                <div class="input-group-prepend justify-content-center search-button-inside-search-bar">
+                    <button class="btn btn-primary ps-2 pe-2 rounded-pill search-button-circle"
+                            role="button"
+                            type="submit"
+                            onclick="performSearchButton()"
+                            id="searchButton">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
+                    id="advancedSearchButton"
+                    style = "margin-left: 15px;"
+                    onclick="advancedSearchButtonPressed()"
+                    type="button">
+                Búsqueda avanzada
+            </button>
+        </div>
+        <div>
+            <div id="modalContainer" class="justify-content-center">
+            </div>
+        </div>    
+        <div class="card border search-results-card" border="5px solid black;">
+            <div>
+                <h2>@Model.ProductName</h2>
+                <h6> @Model.ItemsAmount resultados encontrados </h6>
+                <div class="table-encapsulate-for-results">
+                    <table class="table table-hover search-results-table">
+                        <thead>
+                        <tr>
+                            <th>
+                                <a asp-page="./SearchResults"
+                                   asp-route-sortOrder="@Model.NameSort"
+                                   asp-route-sorting=true
+                                   asp-route-currentFilter="@Model.CurrentFilter"
+                                   asp-route-query=@Model.ProductName
+                                   asp-route-province=@Model.ProvinceSelected
+                                   asp-route-canton=@Model.CantonSelected
+                                   asp-route-minValue=@Model.MinPrice
+                                   asp-route-maxValue=@Model.MaxPrice
+                                   asp-route-category=@Model.CategorySelected
+                                   asp-route-model=@Model.ModelSelected
+                                   asp-route-brand="@Model.BrandSelected">
+                                    Producto
+                                </a>
+                            </th>
+                            <th scope="col">Precio</th>
+                            <th scope="col">Tienda</th>
+                            <th>
+                                <a asp-page="./SearchResults"
+                                   asp-route-sortOrder="@Model.ProvinceSort"
+                                   asp-route-sorting=true
+                                   asp-route-currentFilter="@Model.CurrentFilter"
+                                   asp-route-query=@Model.ProductName
+                                   asp-route-province=@Model.ProvinceSelected
+                                   asp-route-canton=@Model.CantonSelected
+                                   asp-route-minValue=@Model.MinPrice
+                                   asp-route-maxValue=@Model.MaxPrice
+                                   asp-route-category=@Model.CategorySelected
+                                   asp-route-model=@Model.ModelSelected
+                                   asp-route-brand="@Model.BrandSelected">
+                                    Provincia
+                                </a>
+                            </th>
+
+                            <th>
+                                <a asp-page="./SearchResults"
+                                   asp-route-sortOrder="@Model.CantonSort"
+                                   asp-route-sorting=true
+                                   asp-route-currentFilter="@Model.CurrentFilter"
+                                   asp-route-query=@Model.ProductName
+                                   asp-route-province=@Model.ProvinceSelected
+                                   asp-route-canton=@Model.CantonSelected
+                                   asp-route-minValue=@Model.MinPrice
+                                   asp-route-maxValue=@Model.MaxPrice
+                                   asp-route-category=@Model.CategorySelected
+                                   asp-route-model=@Model.ModelSelected
+                                   asp-route-brand="@Model.BrandSelected">
+                                    Canton
+                                </a>
+                            </th>
+
+                            <th scope="col">Descripcion</th>
+                            <th scope="col">Ultimo Aporte </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @{
+                            PaginatedList<Item> items = Model.DisplayItems;
+                            foreach (Item item in Model.DisplayItems)
+                            {
+                                <tr onclick="itemSelected()">
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Price)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Store)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Province)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Canton)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Description)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.LastSubmissionDate)
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+
+                @{
+                    var prevDisabled = !Model.DisplayItems.HasPreviousPage ? "disabled" : "";
+                    var nextDisabled = !Model.DisplayItems.HasNextPage ? "disabled" : "";
+                }
+
+                <div class="previous-next-button-area">
+                    <a asp-page=""
+                       asp-route-query=@Model.ProductName
+                       asp-route-province=@Model.ProvinceSelected
+                       asp-route-canton=@Model.CantonSelected
+                       asp-route-minValue=@Model.MinPrice
+                       asp-route-maxValue=@Model.MaxPrice
+                       asp-route-category=@Model.CategorySelected
+                       asp-route-model=@Model.ModelSelected
+                       asp-route-brand="@Model.BrandSelected"
+                       asp-route-pageIndex="@(Model.DisplayItems.PageIndex - 1)"
+                       asp-route-sortOrder="@Model.NameSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"
+                       class="btn btn-primary @prevDisabled">
+                        Previo
+                    </a>
+
+                    <input type="number"
+                           class="number-input-pages"
+                           min=1
+                           max="@Model.DisplayItems.TotalPages"
+                           value="@Model.DisplayItems.PageIndex"
+                           onchange="changeIndexPage(this)">
+
+                    <a asp-page=""
+                       asp-route-query=@Model.ProductName
+                       asp-route-province=@Model.ProvinceSelected
+                       asp-route-canton=@Model.CantonSelected
+                       asp-route-minValue=@Model.MinPrice
+                       asp-route-maxValue=@Model.MaxPrice
+                       asp-route-category=@Model.CategorySelected
+                       asp-route-model=@Model.ModelSelected
+                       asp-route-brand="@Model.BrandSelected"
+                       asp-route-pageIndex="@(Model.DisplayItems.PageIndex + 1)"
+                       asp-route-sortOrder="@Model.NameSort"
+                       asp-route-currentFilter="@Model.CurrentFilter"
+                       class="btn btn-primary @nextDisabled">
+                        Siguiente
+                    </a>
+                    <h6 class="page-amount-text"> @Model.DisplayItems.TotalPages paginas de resultados </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/js/SearchResults.js"></script>
+    <script src="~/js/search.js"></script>
+}

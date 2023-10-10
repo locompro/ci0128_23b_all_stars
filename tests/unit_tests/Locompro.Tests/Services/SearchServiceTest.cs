@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NuGet.ContentModel;
+using Locompro.Models;
 
 namespace Locompro.Tests.Services;
 
@@ -39,43 +40,43 @@ public class SearchServiceTest
         List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product2";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product3";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product4";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product5";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product6";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product7";
         searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.ProductName == productSearchName));
+        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
     }
 
     /// <summary>
@@ -94,7 +95,7 @@ public class SearchServiceTest
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.IsFalse(searchResults.Exists(i => i.ProductName == productSearchName));
+            Assert.IsFalse(searchResults.Exists(i => i.Name == productSearchName));
             Assert.IsEmpty(searchResults);
         });
     }
@@ -115,7 +116,7 @@ public class SearchServiceTest
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.IsFalse(searchResults.Exists(i => i.ProductName == productSearchName));
+            Assert.IsFalse(searchResults.Exists(i => i.Name == productSearchName));
             Assert.IsEmpty(searchResults);
         });
     }
@@ -251,6 +252,62 @@ public class SearchServiceTest
     }
 
     /// <summary>
+    /// Tests that the correct result is returned when the brand is specified in search
+    /// </summary>
+    /// <author> Brandon Mora Umaña C15179 </author>
+    [Test]
+    public async Task GetSubmissionsByBrand_ValidBrand_SubmissionsReturned()
+    {
+        // Arrange
+        var brand = "Brand1";
+        MockDataSetup();
+        // Act
+        var results = await _searchService.SearchItems(null, null, null, 0, 0, null, null, brand);
+
+        // Assert
+        Assert.That(results, Is.Not.Null);
+        Assert.That(results.Count, Is.GreaterThan(0));
+        Assert.That(results.TrueForAll(item => item.Submissions[0].Product.Brand.Contains(brand)), Is.True);
+    }
+
+    /// <summary>
+    /// Tests that no results are returned when there are no submissions with the specified brand
+    /// </summary>
+    /// <author> Brandon Mora Umaña C15179 </author>
+    [Test]
+    public async Task GetSubmissionsByBrand_InvalidBrand_EmptyListReturned()
+    {
+        // Arrange
+        string brand = "InvalidBrand";
+        MockDataSetup();
+        // Act
+        var results = await _searchService.SearchItems(null, null, null, 0, 0, null, null, brand);
+
+        // Assert
+        Assert.That(results, Is.Not.Null);
+        Assert.That(results.Count, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    /// Tests that no results are returned when the brand is empty
+    /// </summary>
+    /// <author> Brandon Mora Umaña C15179 </author>
+    [Test]
+    public async Task GetSubmissionsByBrand_EmptyBrand_EmptyListReturned()
+    {
+        // Arrange
+        string brand = string.Empty;
+        MockDataSetup();
+        // Act
+        var results = await _searchService.SearchItems(null, null, null, 0, 0, null, null, brand);
+
+        // Assert
+        Assert.That(results, Is.Not.Null);
+        Assert.That(results.Count, Is.EqualTo(0));
+    }
+
+
+    /// <summary>
     /// Sets up the mock for the submission repository so that it behaves as expected for the tests
     /// </summary>
     void MockDataSetup()
@@ -320,43 +377,50 @@ public class SearchServiceTest
             {
                 Id = 1,
                 Name = "Product1",
-                Model = "Model1"
+                Model = "Model1",
+                Brand = "Brand1"
             },
             new Product
             {
                 Id = 2,
                 Name = "Product2",
-                Model = "Model2"
+                Model = "Model2",
+                Brand = "Brand2"
             },
             new Product
             {
                 Id = 3,
                 Name = "Product3",
-                Model = "Model3"
+                Model = "Model3",
+                Brand = "Brand3"
             },
             new Product
             {
                 Id = 4,
                 Name = "Product4",
-                Model = "Model4"
+                Model = "Model4",
+                Brand = "Brand4"
             },
             new Product
             {
                 Id = 5,
                 Name = "Product5",
-                Model = "Model5"
+                Model = "Model5",
+                Brand = "Brand5"
             },
             new Product
             {
                 Id = 6,
                 Name = "Product6",
-                Model = "Model6"
+                Model = "Model6",
+                Brand = "Brand6"
             },
             new Product
             {
                 Id = 7,
                 Name = "Product7",
-                Model = "Model7"
+                Model = "Model7",
+                Brand = "Brand7"
             }
         };
 
@@ -642,5 +706,7 @@ public class SearchServiceTest
             {
                 return submissions.Where(s => s.Product.Name == productName).ToList();
             });
+        _submissionRepositoryMock.Setup(repo => repo.GetSubmissionByBrandAsync(It.IsAny<string>()))
+            .ReturnsAsync((string brand) => { return submissions.Where(s => s.Product.Brand == brand).ToList(); });
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using Locompro.Areas.Identity.ViewModels;
 using Locompro.Models;
+using Locompro.Models.ViewModels;
 using Locompro.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -13,24 +14,21 @@ namespace Locompro.Tests.Services
 {
     public class AuthServiceTest
     {
-        private Mock<IUserStore<User>> _userStoreMock;
-        private Mock<IUserEmailStore<User>> _emailStoreMock;
-        private Mock<UserManager<User>> _userManagerMock;
-        private Mock<ILogger<RegisterViewModel>> _loggerMock;
-        private Mock<SignInManager<User>> _signInManagerMock;
-        private AuthService _service;
+        private Mock<IUserStore<User>>? _userStoreMock;
+        private Mock<IUserEmailStore<User>>? _emailStoreMock;
+        private Mock<UserManager<User>>? _userManagerMock;
+        private Mock<ILogger<RegisterViewModel>>? _loggerMock;
+        private Mock<SignInManager<User>>? _signInManagerMock;
+        private AuthService? _service;
 
-        /// <summary>
-        /// Sets up the mocks for the tests. Mocks Identity services and the logger.
-        /// </summary>
-        /// <author> Brandon Alonso Mora Umaña C15179 </author>
         [SetUp]
         public void SetUp()
         {
             _userStoreMock = new Mock<IUserStore<User>>();
             _emailStoreMock = new Mock<IUserEmailStore<User>>();
             _userManagerMock =
-                new Mock<UserManager<User>>(_userStoreMock.Object, null, null, null, null, null, null, null, null);
+                new Mock<UserManager<User>>(_userStoreMock.Object, null!, null!, null!, null!, null!, null!, null!,
+                    null!);
             _loggerMock = new Mock<ILogger<RegisterViewModel>>();
 
             var contextAccessorMock = new Mock<IHttpContextAccessor>();
@@ -58,9 +56,9 @@ namespace Locompro.Tests.Services
         }
 
         /// <summary>
-        /// Tests the behavior of the Register method when the user registration succeeds.
+        /// Test if the user registration succeeds.
         /// </summary>
-        /// <author> Brandon Alonso Mora Umaña C15179 </author>
+        /// <author>Brandon Alonso Mora Umaña C15179</author>
         [Test]
         public async Task Register_UserRegistrationSucceeds_ReturnsIdentityResultSuccess()
         {
@@ -69,26 +67,34 @@ namespace Locompro.Tests.Services
                 { UserName = "TestUser", Email = "test@example.com", Password = "TestPassword123!" };
             var identityResult = IdentityResult.Success;
 
-            _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), inputData.Password))
-                .ReturnsAsync(identityResult);
+            if (_userManagerMock != null)
+            {
+                _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), inputData.Password))
+                    .ReturnsAsync(identityResult);
 
-            // Act
-            var result = await _service.Register(inputData);
+                // Act
+                if (_service != null)
+                {
+                    var result = await _service.Register(inputData);
 
-            // Assert
-            Assert.That(result.Succeeded, Is.True);
-            _userManagerMock.Verify(x => x.CreateAsync(It.IsAny<User>(), inputData.Password), Times.Once);
-            _signInManagerMock.Verify(x => x.SignInAsync(It.IsAny<User>(), false, null), Times.Once);
-            _emailStoreMock.Verify(x =>
+                    // Assert
+                    Assert.That(result.Succeeded, Is.True);
+                }
+
+                _userManagerMock.Verify(x => x.CreateAsync(It.IsAny<User>(), inputData.Password), Times.Once);
+            }
+
+            _signInManagerMock?.Verify(x => x.SignInAsync(It.IsAny<User>(), false, null), Times.Once);
+            _emailStoreMock?.Verify(x =>
                 x.SetEmailAsync(It.IsAny<User>(), inputData.Email, It.IsAny<CancellationToken>()), Times.Once);
-            _userStoreMock.Verify(x =>
+            _userStoreMock?.Verify(x =>
                 x.SetUserNameAsync(It.IsAny<User>(), inputData.UserName, It.IsAny<CancellationToken>()), Times.Once);
         }
 
         /// <summary>
-        /// Tests the behavior of the Register method when the user registration fails.
+        /// Test if the user registration fails.
         /// </summary>
-        /// <author> Brandon Alonso Mora Umaña C15179 </author>
+        /// <author>Brandon Alonso Mora Umaña C15179</author>
         [Test]
         public async Task Register_UserRegistrationFails_ReturnsIdentityResultFailure()
         {
@@ -97,32 +103,37 @@ namespace Locompro.Tests.Services
                 { UserName = "TestUser", Email = "test@example.com", Password = "Test" };
             var identityResult = IdentityResult.Failed();
 
-            _userManagerMock.Setup(x => x.CreateAsync(It.IsAny<User>(), inputData.Password))
+            _userManagerMock?.Setup(x => x.CreateAsync(It.IsAny<User>(), inputData.Password))
                 .ReturnsAsync(identityResult);
 
             // Act
-            var result = await _service.Register(inputData);
+            if (_service != null)
+            {
+                var result = await _service.Register(inputData);
 
-            // Assert
-            Assert.That(result.Succeeded, Is.False);
-            _userManagerMock.Verify(x => x.CreateAsync(It.IsAny<User>(), inputData.Password), Times.Once);
-            _emailStoreMock.Verify(x =>
+                // Assert
+                Assert.That(result.Succeeded, Is.False);
+            }
+
+            _userManagerMock?.Verify(x => x.CreateAsync(It.IsAny<User>(), inputData.Password), Times.Once);
+            _emailStoreMock?.Verify(x =>
                 x.SetEmailAsync(It.IsAny<User>(), inputData.Email, It.IsAny<CancellationToken>()), Times.Once);
-            _signInManagerMock.Verify(x => x.SignInAsync(It.IsAny<User>(), false, null), Times.Never);
-            _userStoreMock.Verify(x =>
+            _signInManagerMock?.Verify(x => x.SignInAsync(It.IsAny<User>(), false, null), Times.Never);
+            _userStoreMock?.Verify(x =>
                 x.SetUserNameAsync(It.IsAny<User>(), inputData.UserName, It.IsAny<CancellationToken>()), Times.Once);
         }
+
         /// <summary>
-        ///  test that the logout method logs the user out
-        /// <author> A. Badilla Olivas <\author>
+        /// Test if the user logout succeeds.
         /// </summary>
+        /// <author>A. Badilla Olivas B80874</author>
         [Test]
         public async Task Logout_UserLoggedOut()
         {
-            await _service.Logout();
+            if (_service != null) await _service.Logout();
 
-            _signInManagerMock.Verify(x => x.SignOutAsync(), Times.Once);
-            _loggerMock.Verify(l => l.Log(
+            _signInManagerMock?.Verify(x => x.SignOutAsync(), Times.Once);
+            _loggerMock?.Verify(l => l.Log(
                     LogLevel.Information,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, t) => string.Equals("User logged out.", v.ToString())),
@@ -132,50 +143,54 @@ namespace Locompro.Tests.Services
         }
 
         /// <summary>
-        ///  test that the login method returns a true result when the user is logged in
-        /// <author> A. Badilla Olivas <\author>
+        /// Test if the user is logged in.
         /// </summary>
+        /// <author>A. Badilla Olivas B80874</author>
         [Test]
         public void IsLoggedIn_UserIsLoggedIn()
         {
-            _signInManagerMock.Setup(x => x.IsSignedIn(It.IsAny<ClaimsPrincipal>())).Returns(true);
+            _signInManagerMock?.Setup(x => x.IsSignedIn(It.IsAny<ClaimsPrincipal>())).Returns(true);
 
-            var isLoggedIn = _service.IsLoggedIn();
+            var isLoggedIn = _service != null && _service.IsLoggedIn();
 
             Assert.That(isLoggedIn, Is.True);
         }
 
         /// <summary>
-        ///  test that the login method returns a false result when the user is not logged in
-        /// <author> A. Badilla Olivas <\author>
+        /// Test if the user is not logged in.
         /// </summary>
+        /// <author>A. Badilla Olivas B80874</author>
         [Test]
         public void IsLoggedIn_UserIsNotLoggedIn()
         {
-            _signInManagerMock.Setup(x => x.IsSignedIn(It.IsAny<ClaimsPrincipal>())).Returns(false);
+            _signInManagerMock?.Setup(x => x.IsSignedIn(It.IsAny<ClaimsPrincipal>())).Returns(false);
 
-            var isLoggedIn = _service.IsLoggedIn();
+            var isLoggedIn = _service != null && _service.IsLoggedIn();
 
             Assert.That(isLoggedIn, Is.False);
         }
 
         /// <summary>
-        ///  test that the login method returns a successful result when the user is found
-        /// <author> A. Badilla Olivas <\author>
+        /// Test if the user login succeeds.
         /// </summary>
+        /// <author>A. Badilla Olivas B80874</author>
         [Test]
         public async Task Login_SuccessfulLogin()
         {
             var inputData = new LoginViewModel { UserName = "TestUser", Password = "TestPassword123!" };
 
-            _signInManagerMock.Setup(x =>
+            _signInManagerMock?.Setup(x =>
                     x.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, false))
                 .ReturnsAsync(SignInResult.Success);
 
-            var result = await _service.Login(inputData);
+            if (_service != null)
+            {
+                var result = await _service.Login(inputData);
 
-            Assert.That(result.Succeeded, Is.True);
-            _loggerMock.Verify(l => l.Log(
+                Assert.That(result.Succeeded, Is.True);
+            }
+
+            _loggerMock?.Verify(l => l.Log(
                     LogLevel.Information,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, t) => string.Equals("User logged in.", v.ToString())),
@@ -185,22 +200,26 @@ namespace Locompro.Tests.Services
         }
 
         /// <summary>
-        ///  test that the login method returns a failed result when the user is not found
-        /// <author> A. Badilla Olivas <\author>
+        /// Test if the user login fails.
         /// </summary>
+        /// <author>A. Badilla Olivas B80874</author>
         [Test]
         public async Task Login_FailedLogin()
         {
             var inputData = new LoginViewModel { UserName = "TestUser", Password = "WrongPassword" };
 
-            _signInManagerMock.Setup(x =>
+            _signInManagerMock?.Setup(x =>
                     x.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, false))
                 .ReturnsAsync(SignInResult.Failed);
 
-            var result = await _service.Login(inputData);
+            if (_service != null)
+            {
+                var result = await _service.Login(inputData);
 
-            Assert.That(result.Succeeded, Is.False);
-            _loggerMock.Verify(l => l.Log(
+                Assert.That(result.Succeeded, Is.False);
+            }
+
+            _loggerMock?.Verify(l => l.Log(
                     LogLevel.Information,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, t) => string.Equals("User logged in.", v.ToString())),
