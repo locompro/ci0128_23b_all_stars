@@ -79,7 +79,16 @@ namespace Locompro.Services
         }
 
         /// <summary>
-        /// 
+        /// Retrieves the user email store associated with the current user manager instance.
+        /// </summary>
+        /// <returns>
+        /// An instance of the user email store implementing the <see cref="IUserEmailStore{TUser}"/> interface.
+        /// </returns>
+        /// <remarks>
+        /// This method is used to obtain an instance of the user email store, which allows managing user email addresses
+        /// and related operations such as email confirmation and password reset.
+        /// </remarks>
+
         private IUserEmailStore<User> GetEmailStore()
         {
             if (!_userManager.SupportsUserEmail)
