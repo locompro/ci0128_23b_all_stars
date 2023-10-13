@@ -6,7 +6,8 @@
 trigger:
 - azure-dummy
 
-pool: Default
+pool:
+  vmImage: 'windows-latest'
 
 variables:
   solution: '**/*.sln'
