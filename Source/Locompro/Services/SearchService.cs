@@ -9,19 +9,70 @@ using System.Text.RegularExpressions;
 
 namespace Locompro.Services;
 
+public class searchParam
+{
+    public enum SearchParameterTypes
+    {
+        NAME,
+        PROVINCE,
+        CANTON,
+        MINVALUE,
+        MAXVALUE,
+        CATEGORY,
+        MODEL,
+        BRAND
+    }
+    
+    public Func<Submission, string, bool> SearchQuery { get; set; }
+    public Func<string, bool> ActivationQualifier { get; set; }
+}
+
 public class SearchService
 {
     private readonly SubmissionRepository _submissionRepository;
+
+    private Dictionary<searchParam.SearchParameterTypes, searchParam> _searchParameters;
 
     /// <summary>
     /// Constructor for the search service
     /// </summary>
     /// <param name="submissionRepository"></param>
-    /// <param name="countryRepository"></param>
-    /// <param name="productRepository"></param>
     public SearchService(SubmissionRepository submissionRepository)
     {
         _submissionRepository = submissionRepository;
+        _searchParameters = new Dictionary<searchParam.SearchParameterTypes, searchParam>();
+        this.SubscribeAllSearchParameters();
+    }
+    
+    public void SubscribeNewSearchParameter(searchParam.SearchParameterTypes parameterName, Func<Submission, string, bool> searchQuery, Func<string, bool> activationQualifier)
+    {
+        _searchParameters.Add(parameterName, new searchParam { SearchQuery = searchQuery, ActivationQualifier = activationQualifier });
+    }
+
+    /// <summary>
+    /// Placeholder
+    /// </summary>
+    public void SubscribeAllSearchParameters()
+    {
+        SubscribeNewSearchParameter(searchParam.SearchParameterTypes.NAME
+            , (submission, productName) => submission.Product.Name.ToLower().Contains(productName.ToLower())
+            , productName => !string.IsNullOrEmpty(productName));
+        
+        SubscribeNewSearchParameter(searchParam.SearchParameterTypes.MODEL
+            , (submission, model) => submission.Product.Model.ToLower().Contains(model.ToLower())
+            , model => !string.IsNullOrEmpty(model));
+        
+        SubscribeNewSearchParameter(searchParam.SearchParameterTypes.PROVINCE
+            , (submission, province) => submission.Store.Canton.Province.Name.ToLower().Contains(province.ToLower())
+            , province => !string.IsNullOrEmpty(province));
+        
+        SubscribeNewSearchParameter(searchParam.SearchParameterTypes.CANTON
+            , (submission, canton) => submission.Store.Canton.Name.ToLower().Contains(canton.ToLower())
+            , canton => !string.IsNullOrEmpty(canton));
+        
+        SubscribeNewSearchParameter(searchParam.SearchParameterTypes.BRAND
+            , (submission, brand) => submission.Product.Brand.ToLower().Contains(brand.ToLower())
+            , brand => !string.IsNullOrEmpty(brand));
     }
 
     /// <summary>
@@ -29,98 +80,41 @@ public class SearchService
     /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
     /// It then returns a list of items that match all the criteria.
     /// </summary>
-    /// <param name="productName"></param>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
-    /// <param name="brand"></param>
-    /// <returns>A list of items that match the search criteria.</returns>
-    public async Task<List<Item>> SearchItems(string productName, string province, string canton, long minValue,
-        long maxValue, string category, string model, string brand = null)
+    public async Task<List<Item>> GetSearchResults(List<(searchParam.SearchParameterTypes, string)> unfilteredSearchCriteria)
     {
+        List<Func<Submission, bool>> searchCriteria = new List<Func<Submission, bool>>();
         
-        // List of items to be returned
-        List<Item> items = new List<Item>();
-
-        // List for submissions to be aggregated
-        List<IEnumerable<Submission>> submissions = new List<IEnumerable<Submission>>();
-
-        if (!string.IsNullOrEmpty(productName))  // Results by product name
-        {
-            submissions.Add(await GetSubmissionsByProductName(productName));
-        }
-
-        if (!string.IsNullOrEmpty(model))  // Results by product model
-        {
-            submissions.Add(await GetSubmissionsByProductModel(model));
-        }
-
-        if (!string.IsNullOrEmpty(province))  // Results by canton and province
-        {
-            submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
-        }
-
-        if (!string.IsNullOrEmpty(brand)) // Results by product brand
-        {
-            submissions.Add(await GetSubmissionsByBrand(brand));
-        }
-
-        // if there are no submissions
-        if (submissions.Count == 0)
-        {
-            // just return an empty list
-            return items;
-        }
-
-        // Look for intersection of all results
-        IEnumerable<Submission> result = submissions.Aggregate((x, y) => x.Intersect(y));
-
-        // Get items from the submissions
-        items.AddRange(await GetItems(result));
-
-        return items;
+        FilterSearchCriteria(unfilteredSearchCriteria, searchCriteria);
+        
+        IEnumerable<Submission> submissions = await this._submissionRepository.GetSearchResults(searchCriteria);
+        
+        return this.GetItems(submissions).Result.ToList();
     }
 
-    /// <summary>
-    /// Gets submissions containing a specific product name
-    /// </summary>
-    /// <param name="productName"></param>
-    /// <returns></returns>
-    private async Task<IEnumerable<Submission>> GetSubmissionsByProductName(string productName)
+    private void FilterSearchCriteria(
+        List<(searchParam.SearchParameterTypes, string)> unfilteredSearchCriteria,
+        List<Func<Submission, bool>> filteredSearchCriteriaTarget)
     {
-        return await _submissionRepository.GetSubmissionsByProductNameAsync(productName);
-    }
-
-    /// <summary>
-    /// Gets submissions containing a specific product model
-    /// </summary>
-    /// <remarks> This is just a wrapper for the submission repository </remarks>
-    private async Task<IEnumerable<Submission>> GetSubmissionsByProductModel(string productModel)
-    {
-        return await _submissionRepository.GetSubmissionsByProductModelAsync(productModel);
-    }
-
-    /// <summary>
-    /// Calls the submission repository to get all submissions containing a specific brand name
-    /// </summary>
-    /// <param name="brandName"></param>
-    /// <returns> An Enumerable with al the submissions tha meet the criteria</returns>
-    private async Task<IEnumerable<Submission>> GetSubmissionsByBrand(string brandName)
-    {
-        return await _submissionRepository.GetSubmissionByBrandAsync(brandName);
-    }
-
-    public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAndProvince(string canton, string province)
-    {
-        return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
-    }
-
-    public async Task<IEnumerable<Submission>> GetSubmissionByCanton(string canton, string province)
-    {
-        return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
+        // for each of the criterion in the unfiltered list
+        foreach ((searchParam.SearchParameterTypes, string) searchCriterion in unfilteredSearchCriteria)
+        {
+            // if not within the internal map
+            if (!this._searchParameters.ContainsKey(searchCriterion.Item1))
+            {
+                // might be better to throw an exception here, for now just ignore
+                continue;
+            }
+            
+            // get the search parameter that corresponds to the criterion
+            searchParam searchParameter = this._searchParameters[searchCriterion.Item1];
+            
+            // if according to its activation qualifier
+            if (searchParameter.ActivationQualifier(searchCriterion.Item2))
+            {
+                // add its search query to the filtered list
+                filteredSearchCriteriaTarget.Add(submission => searchParameter.SearchQuery(submission, searchCriterion.Item2));
+            }
+        }
     }
 
     /// <summary>

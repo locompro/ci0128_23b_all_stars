@@ -129,17 +129,19 @@ public class SearchResultsModel : PageModel
         SetSortingParameters(sortOrder, (sorting is not null));
         
         // get items from search service
-        _items =
-            (await _searchService.SearchItems(
-                ProductName,
-                ProvinceSelected,
-                CantonSelected,
-                MinPrice,
-                MaxPrice,
-                CategorySelected,
-                ModelSelected,
-                BrandSelected)
-            ).ToList();
+        List<(searchParam.SearchParameterTypes, string)> searchParameters = new List<(searchParam.SearchParameterTypes, string)>()
+        {
+            (searchParam.SearchParameterTypes.NAME, ProductName),
+            (searchParam.SearchParameterTypes.PROVINCE, ProvinceSelected),
+            (searchParam.SearchParameterTypes.CANTON, CantonSelected),
+            (searchParam.SearchParameterTypes.MINVALUE, MinPrice.ToString()),
+            (searchParam.SearchParameterTypes.MAXVALUE, MaxPrice.ToString()),
+            (searchParam.SearchParameterTypes.CATEGORY, CategorySelected),
+            (searchParam.SearchParameterTypes.MODEL, ModelSelected),
+            (searchParam.SearchParameterTypes.BRAND, BrandSelected),
+        };
+
+        _items = await this._searchService.GetSearchResults(searchParameters);
         
         // get amount of items found    
         ItemsAmount = _items.Count;
@@ -160,6 +162,7 @@ public class SearchResultsModel : PageModel
     /// <param name="maxValue"></param>
     /// <param name="category"></param>
     /// <param name="model"></param>
+    /// <param name="brand"></param>
     private void ValidateInput(
         string province,
         string canton,
@@ -169,7 +172,6 @@ public class SearchResultsModel : PageModel
         string model,
         string brand)
     {
-        
         if (!string.IsNullOrEmpty(province) && province.Equals("Ninguno"))
         {
             province = null;

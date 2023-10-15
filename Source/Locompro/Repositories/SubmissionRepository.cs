@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Locompro.Models;
 using Locompro.Data;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -32,76 +33,17 @@ namespace Locompro.Repositories
         {
         }
         
-        /// <summary>
-        /// gets all submissions that are in a store in the given canton and province
-        /// <param name="cantonName"></param>
-        /// <param name="provinceName"></param>
-        /// <returns> a task IEnumerable of submissions </returns>
-        public virtual async Task<IEnumerable<Submission>> GetSubmissionsByCantonAsync(string cantonName,
-            string provinceName)
+        public virtual async Task<IEnumerable<Submission>> GetSearchResults(List<Func<Submission, bool>> searchCriteria)
         {
-            List<Submission> submissions;
+            Func<Submission, bool> searchQuery =
+                searchCriteria.Aggregate(
+                    (current, next) => (submission => current(submission) && next(submission)));
             
-            if (String.IsNullOrEmpty(cantonName))
-            {
-                submissions = await DbSet
-                    .Include(s => s.Store)
-                    .ThenInclude(st => st.Canton)
-                    .Where(s => s.Store.Canton.Province.Name == provinceName)
-                    .ToListAsync();
-            }
-            else
-            {
-                submissions = await DbSet
-                    .Include(s => s.Store)
-                    .ThenInclude(st => st.Canton)
-                    .Where(s => s.Store.Canton.Name == cantonName && s.Store.Canton.Province.Name == provinceName)
-                    .ToListAsync();
-            }
+            IEnumerable<Submission> submissionsResults = this.DbSet
+                .Include(submission => submission.Product)
+                .Where(searchQuery);
 
-            return submissions;
-        }
-
-        /// <summary>
-        /// Gets all submissions that contain the given product model
-        /// </summary>
-        /// <param name="productModel"></param>
-        /// <returns> a task IEnumerable of submissions that contain the model</returns>
-        public virtual async Task<IEnumerable<Submission>> GetSubmissionsByProductModelAsync(string productModel)
-        {
-            var submissions = await DbSet
-                .Include(s => s.Product)
-                .Where(s => s.Product.Model.Contains(productModel))
-                .ToListAsync();
-
-            return submissions;
-        }
-
-        /// <summary>
-        /// Gets all submissions that contain the given product name
-        /// </summary>
-        /// <param name="productName"></param>
-        /// <returns></returns>
-        public virtual async Task<IEnumerable<Submission>> GetSubmissionsByProductNameAsync(string productName)
-        {
-            IQueryable<Submission> submissionsQuery = this.DbSet
-                .Include(s => s.Product)
-                .Where(s => s.Product.Name.Contains(productName));
-
-            return await submissionsQuery.ToListAsync();
-        }
-
-        /// <summary>
-        /// Gets all submissions that contain the given brand name, case insensitive
-        /// </summary>
-        /// <param name="brandName"></param>
-        public virtual async Task<IEnumerable<Submission>> GetSubmissionByBrandAsync(string brandName)
-        {
-            IQueryable<Submission> submissionsQuery = this.DbSet
-                .Include(s => s.Product)
-                .Where(s => s.Product.Brand.Contains(brandName));
-
-            return await submissionsQuery.ToListAsync();
+            return await Task.FromResult(submissionsResults.ToList());
         }
     }
 }
