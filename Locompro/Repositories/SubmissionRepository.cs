@@ -7,6 +7,7 @@ using Locompro.Models;
 using Locompro.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NuGet.ContentModel;
 
 namespace Locompro.Repositories;
 
@@ -45,7 +46,6 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
             .ThenInclude(st => st.Canton)
             .Where(s => s.Store.Canton.Name == cantonName && s.Store.Canton.Province.Name == provinceName)
             .ToListAsync();
-
         return submissions;
     }
 
@@ -90,4 +90,13 @@ public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey
 
         return await submissionsQuery.ToListAsync();
     }
+    public virtual async Task<IEnumerable<Submission>> GetSubmissionsByUsernameAsync(string username)
+    {
+        IQueryable<Submission> submissionsQuery = this.DbSet
+            .Include(s => s.User)
+            .Where(s => s.Username.Contains(username));
+
+        return await submissionsQuery.ToListAsync();
+    }
 }
+

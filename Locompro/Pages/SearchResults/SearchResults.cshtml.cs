@@ -127,11 +127,11 @@ public class SearchResultsModel : PageModel
         // get items from search service
         this._items =
             (await _searchService.SearchItems(
+                this.MinPrice,
+                this.MaxPrice,
                 this.ProductName,
                 this.ProvinceSelected,
                 this.CantonSelected,
-                this.MinPrice,
-                this.MaxPrice,
                 this.CategorySelected,
                 this.ModelSelected,
                 this.BrandSelected)

@@ -38,56 +38,54 @@ public class SearchService
     /// <param name="model"></param>
     /// <param name="brand"></param>
     /// <returns>A list of items that match the search criteria.</returns>
-    public async Task<List<Item>> SearchItems(string productName, string province, string canton, long minValue,
-        long maxValue, string category, string model, string brand = null)
+    public async Task<List<Item>> SearchItems(long minValue, long maxValue, string productName = null, string province = null, string canton = null, string category = null, string model = null, string brand = null, string username = null)
     {
-        
-        // List of items to be returned
         List<Item> items = new List<Item>();
-        
-        // List for submissions to be aggregated
         List<IEnumerable<Submission>> submissions = new List<IEnumerable<Submission>>();
 
-        // add results from searching by product name
         if (!string.IsNullOrEmpty(productName))
         {
             submissions.Add(await GetSubmissionsByProductName(productName));
         }
-        
-        // add results from searching by product model
+
         if (!string.IsNullOrEmpty(model))
         {
             submissions.Add(await GetSubmissionsByProductModel(model));
         }
-        
-        // add results from searching by canton and province
+
         if (!string.IsNullOrEmpty(canton) && !string.IsNullOrEmpty(province))
         {
             submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
         }
-        
-        // add results from searching by brand
+
         if (!string.IsNullOrEmpty(brand))
         {
             submissions.Add(await GetSubmissionsByBrand(brand));
         }
-        
-        // if there are no submissions
+
+        if (!string.IsNullOrEmpty(username))
+        {
+            submissions.Add(await GetSubmissionsByUsername(username));
+        }
+
         if (submissions.Count == 0)
         {
-            // just return an empty list
             return items;
-        } 
-        
-        // aggregate results (look for intersection of all results)
+        }
+
         IEnumerable<Submission> result = submissions.Aggregate((x, y) => x.Intersect(y));
-        
-        // get items from the submissions
         items.AddRange(await GetItems(result));
 
         return items;
     }
-    
+
+
+    private async Task<IEnumerable<Submission>> GetSubmissionsByUsername(string username)
+    {
+        return await _submissionRepository.GetSubmissionsByUsernameAsync(username);
+    }
+
+
     /// <summary>
     /// Gets submissions containing a specific product name
     /// </summary>
