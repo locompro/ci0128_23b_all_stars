@@ -2,6 +2,7 @@ using System.Reflection.PortableExecutable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Locompro.Models;
 using Locompro.Data;
@@ -33,11 +34,8 @@ namespace Locompro.Repositories
         {
         }
         
-        public virtual async Task<IEnumerable<Submission>> GetSearchResults(List<Func<Submission, bool>> searchCriteria)
+        public virtual async Task<IEnumerable<Submission>> GetSearchResults(Func<Submission, bool> searchQuery)
         {
-            Func<Submission, bool> searchQuery =
-                searchCriteria.Aggregate(
-                    (current, next) => (submission => current(submission) && next(submission)));
             
             IEnumerable<Submission> submissionsResults = this.DbSet
                 .Include(submission => submission.Product)
