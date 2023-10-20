@@ -103,3 +103,17 @@
     margin-left: 10px;
     margin-bottom:0px;
 }
+
+.sort-asc::after {
+    content: '▲';
+    color: #007BFF; /* match the bootstrap primary color, change if needed */
+}
+
+.sort-desc::after {
+    content: '▼';
+    color: #007BFF; /* match the bootstrap primary color, change if needed */
+}
+
+.sort-none::after {
+    content: '';
+}
