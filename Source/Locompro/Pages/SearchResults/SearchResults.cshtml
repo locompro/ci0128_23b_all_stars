@@ -47,7 +47,6 @@
                 <h6> @Model.ItemsAmount resultados encontrados </h6>
                 <div class="table-encapsulate-for-results">
                     <table class="table table-hover search-results-table">
-                        <caption>Resultados de búsqueda</caption>
                         <thead>
                         <tr>
                             <th>
@@ -62,8 +61,9 @@
                                    asp-route-maxValue=@Model.MaxPrice
                                    asp-route-category=@Model.CategorySelected
                                    asp-route-model=@Model.ModelSelected
-                                   asp-route-brand="@Model.BrandSelected">
-                                    Producto
+                                   asp-route-brand="@Model.BrandSelected" 
+                                   class="no-underline-link @(Model.CurrentSort == "name_desc" ? "sort-desc" : (Model.CurrentSort == "name_asc" ? "sort-asc" : "sort-none"))">
+                                      Producto
                                 </a>
                             </th>
                             <th scope="col">Precio</th>
@@ -81,28 +81,30 @@
                                    asp-route-maxValue=@Model.MaxPrice
                                    asp-route-category=@Model.CategorySelected
                                    asp-route-model=@Model.ModelSelected
-                                   asp-route-brand="@Model.BrandSelected">
-                                    Provincia
+                                   asp-route-brand="@Model.BrandSelected" 
+                                   class="no-underline-link @(Model.CurrentSort == "province_desc" ? "sort-desc" : (Model.CurrentSort == "province_asc" ? "sort-asc" : "sort-none"))">
+                                       Provincia
                                 </a>
-                            </th>
+                             </th>
 
-                            <th>
-                                <a asp-page="./SearchResults"
-                                   asp-route-sortOrder="@Model.CantonSort"
-                                   asp-route-sorting=true
-                                   asp-route-currentFilter="@Model.CurrentFilter"
-                                   asp-route-query=@Model.ProductName
-                                   asp-route-province=@Model.ProvinceSelected
-                                   asp-route-canton=@Model.CantonSelected
-                                   asp-route-minValue=@Model.MinPrice
-                                   asp-route-maxValue=@Model.MaxPrice
-                                   asp-route-category=@Model.CategorySelected
-                                   asp-route-model=@Model.ModelSelected
-                                   asp-route-brand="@Model.BrandSelected">
-                                    Canton
-                                </a>
-                            </th>
-                            <th scope="col">Descripción</th>
+                                <th>
+                                    <a asp-page="./SearchResults"
+                                       asp-route-sortOrder="@Model.CantonSort"
+                                       asp-route-sorting=true
+                                       asp-route-currentFilter="@Model.CurrentFilter"
+                                       asp-route-query=@Model.ProductName
+                                       asp-route-province=@Model.ProvinceSelected
+                                       asp-route-canton=@Model.CantonSelected
+                                       asp-route-minValue=@Model.MinPrice
+                                       asp-route-maxValue=@Model.MaxPrice
+                                       asp-route-category=@Model.CategorySelected
+                                       asp-route-model=@Model.ModelSelected
+                                       asp-route-brand="@Model.BrandSelected"
+                                       class="no-underline-link @(Model.CurrentSort == "canton_desc" ? "sort-desc" : (Model.CurrentSort == "canton_asc" ? "sort-asc" : "sort-none"))">
+                                           Cantón
+                                    </a>
+                                </th>
+                                <th scope="col">Descripción</th>
                             <th scope="col">Último Aporte </th>
                         </tr>
                         </thead>
@@ -241,11 +243,12 @@
                        asp-route-model=@Model.ModelSelected
                        asp-route-brand="@Model.BrandSelected"
                        asp-route-pageIndex="@(Model.DisplayItems.PageIndex + 1)"
-                       asp-route-sortOrder="@Model.NameSort"
+                       asp-route-sortOrder="@Model.CurrentSort"
                        asp-route-currentFilter="@Model.CurrentFilter"
                        class="btn btn-primary @nextDisabled">
                         Siguiente
                     </a>
+
                     <h6 class="page-amount-text"> @Model.DisplayItems.TotalPages paginas de resultados </h6>
                 </div>
             </div>

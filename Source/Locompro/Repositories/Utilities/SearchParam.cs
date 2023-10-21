@@ -14,6 +14,7 @@ public class SearchParam
     /// </summary>
     public enum SearchParameterTypes
     {
+        Default,
         Name,
         Province,
         Canton,

@@ -9,14 +9,14 @@ namespace Locompro.Repositories.Utilities;
 public class SearchMethods
 {
     private static SearchMethods _instance;
-    private Dictionary<SearchParam.SearchParameterTypes, SearchParam> SearchParameters { get; }
+    private readonly Dictionary<SearchParam.SearchParameterTypes, SearchParam> _searchParameters;
     
     /// <summary>
     /// Singleton private constructor
     /// </summary>
     private SearchMethods()
     {
-        this.SearchParameters = new Dictionary<SearchParam.SearchParameterTypes, SearchParam>();
+        this._searchParameters = new Dictionary<SearchParam.SearchParameterTypes, SearchParam>();
         this.AddAllSearchParameters();
     }
     
@@ -33,7 +33,7 @@ public class SearchMethods
     /// <param name="activationQualifier"> a function used to determine whether the search is to be performed or not. e.g. if string is not null then search </param>
     private void AddSearchParameter(SearchParam.SearchParameterTypes parameterName, Expression<Func<Submission, string, bool>> searchQuery, Func<string, bool> activationQualifier)
     {
-        SearchParameters.Add(parameterName, new SearchParam { SearchQuery = searchQuery, ActivationQualifier = activationQualifier });
+        _searchParameters.Add(parameterName, new SearchParam { SearchQuery = searchQuery, ActivationQualifier = activationQualifier });
     }
 
     /// <summary>
@@ -42,14 +42,11 @@ public class SearchMethods
     /// </summary>
     /// <param name="parameterName"> name of the parameter whose strategy or method is sought</param>
     /// <returns> search strategy or method </returns>
-    public SearchParam getSearchMethodByName(SearchParam.SearchParameterTypes parameterName)
+    public SearchParam GetSearchMethodByName(SearchParam.SearchParameterTypes parameterName)
     {
-        if (!this.SearchParameters.ContainsKey(parameterName))
-        {
-            return null;
-        }
+        this._searchParameters.TryGetValue(parameterName, out SearchParam searchParameter);
         
-        return SearchParameters[parameterName];
+        return searchParameter;
     }
   
     
