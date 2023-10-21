@@ -22,7 +22,8 @@ public class Item
         string store,
         string canton,
         string province,
-        string description)
+        string description,
+        string model)
     {
         this.LastSubmissionDate = lastSubmissionDate;
         this.Name = name;
@@ -31,6 +32,7 @@ public class Item
         this.Canton = canton;
         this.Province = province;
         this.Description = description;
+        this.Model = model;
     }
     
     public string LastSubmissionDate { get; init; }
@@ -41,7 +43,7 @@ public class Item
     public string Province { get; init; }
     public string Description { get; init; }
     
-    public string Model { get; set; }
+    public string Model { get; init; }
     
     public string Brand { get; set; }
     public List<Submission> Submissions { get; set; }

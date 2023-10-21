@@ -167,11 +167,12 @@ public class SearchService
             bestSubmission.Store.Name,
             bestSubmission.Store.Canton.Name,
             bestSubmission.Store.Canton.Province.Name,
-            bestSubmission.Description
+            bestSubmission.Description,
+            bestSubmission.Product.Model
         )
         {
             Submissions = itemGrouping.ToList(),
-            Model = bestSubmission.Product.Model,
+            Model = bestSubmission.Product.Model, // We need to refactor. This is not needed anymore
             Brand = bestSubmission.Product.Brand
         };
 
