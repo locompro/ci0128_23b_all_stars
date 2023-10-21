@@ -41,24 +41,23 @@ public class SearchService
     public async Task<List<Item>> SearchItems(string productName, string province, string canton, long minValue,
         long maxValue, string category, string model, string brand = null)
     {
-        
         // List of items to be returned
         List<Item> items = new List<Item>();
 
         // List for submissions to be aggregated
         List<IEnumerable<Submission>> submissions = new List<IEnumerable<Submission>>();
 
-        if (!string.IsNullOrEmpty(productName))  // Results by product name
+        if (!string.IsNullOrEmpty(productName)) // Results by product name
         {
             submissions.Add(await GetSubmissionsByProductName(productName));
         }
 
-        if (!string.IsNullOrEmpty(model))  // Results by product model
+        if (!string.IsNullOrEmpty(model)) // Results by product model
         {
             submissions.Add(await GetSubmissionsByProductModel(model));
         }
 
-        if (!string.IsNullOrEmpty(province))  // Results by canton and province
+        if (!string.IsNullOrEmpty(province)) // Results by canton and province
         {
             submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
         }
@@ -167,11 +166,11 @@ public class SearchService
             bestSubmission.Store.Name,
             bestSubmission.Store.Canton.Name,
             bestSubmission.Store.Canton.Province.Name,
-            bestSubmission.Description
+            bestSubmission.Description,
+            bestSubmission.Product.Model
         )
         {
             Submissions = itemGrouping.ToList(),
-            Model = bestSubmission.Product.Model,
             Brand = bestSubmission.Product.Brand
         };
 
@@ -186,9 +185,12 @@ public class SearchService
     /// <returns></returns>
     string GetFormatedDate(Submission submission)
     {
-        Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture), @"[0-9]*/[0-9.]*/[0-9]*");
+        Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture),
+            @"[0-9]*/[0-9.]*/[0-9]*");
 
-        string date = regexMatch.Success ? regexMatch.Groups[0].Value : submission.EntryTime.ToString(CultureInfo.InvariantCulture);
+        string date = regexMatch.Success
+            ? regexMatch.Groups[0].Value
+            : submission.EntryTime.ToString(CultureInfo.InvariantCulture);
 
         return date;
     }
