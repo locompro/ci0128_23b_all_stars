@@ -10,7 +10,7 @@
 }
 
 <!DOCTYPE html>
-<html data-bs-theme="light" lang="en">
+<html data-bs-theme="light" lang="es">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
@@ -42,6 +42,7 @@
     <link rel="stylesheet" href="~/assets/css/Table-With-Search.css">
     <!-- for the plus sign  -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    @RenderSection("Head", required: false)
 </head>
 <body>
 <header>
@@ -62,7 +63,7 @@
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
                             <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Submissions/Create">
-                                <i class="fa fa-plus" style="margin-right: 8px;">
+                                <i class="fa fa-plus " style="margin-right: 8px;">
                                 </i>
                                 Aportar
                             </a>
@@ -75,6 +76,7 @@
                     </div>
                 </div>
                 <div class="d-none d-md-block">
+                    
                     <form asp-page="/Account/Logout" method="post" class="d-inline-block">
                         <button type="submit" class="btn btn-primary">Cerrar sesión</button>
                     </form>
@@ -91,11 +93,9 @@
                         <li class="nav-item"></li>
                         <li class="nav-item"></li>
                         <li class="nav-item"></li>
-                    </ul>
-                    @if (currentPage != "/Account/Login")
+                    </ul>@if (currentPage != "/Account/Login")
                     {
-                        <a class="btn btn-primary" role="button" asp-page="/Account/Login">Iniciar sesión</a>
-                    }
+                    <a class="btn btn-primary" role="button" asp-page="/Account/Login">Iniciar sesión</a>}
                 </div>
             }
 
@@ -103,7 +103,7 @@
     </nav>
 </header>
 <div class="container" style="margin-bottom: 200px;padding-right:0px; padding-left:0px">
-    <main role="main" class="pb-3" style="min-height: calc(100vh-100px)">
+    <main role="main" class="pb-3 " style="min-height: calc(100vh-100px)">
         @RenderBody()
     </main>
 </div>

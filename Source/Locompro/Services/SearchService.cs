@@ -1,19 +1,14 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Locompro.Repositories;
 using Locompro.Models;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Text.RegularExpressions;
-using Locompro.Repositories.Utilities;
 
 namespace Locompro.Services;
 
-/// <summary>
-/// Service responsible for all searches
-/// </summary>
 public class SearchService
 {
     private readonly SubmissionRepository _submissionRepository;
@@ -24,6 +19,8 @@ public class SearchService
     /// Constructor for the search service
     /// </summary>
     /// <param name="submissionRepository"></param>
+    /// <param name="countryRepository"></param>
+    /// <param name="productRepository"></param>
     public SearchService(SubmissionRepository submissionRepository)
     {
         _submissionRepository = submissionRepository;
@@ -98,7 +95,8 @@ public class SearchService
             bestSubmission.Store.Name,
             bestSubmission.Store.Canton.Name,
             bestSubmission.Store.Canton.Province.Name,
-            bestSubmission.Description
+            bestSubmission.Description,
+            bestSubmission.Product.Model
         )
         {
             Submissions = itemGrouping.ToList(),
@@ -117,9 +115,12 @@ public class SearchService
     /// <returns></returns>
     string GetFormatedDate(Submission submission)
     {
-        Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture), @"[0-9]*/[0-9.]*/[0-9]*");
+        Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture),
+            @"[0-9]*/[0-9.]*/[0-9]*");
 
-        string date = regexMatch.Success ? regexMatch.Groups[0].Value : submission.EntryTime.ToString(CultureInfo.InvariantCulture);
+        string date = regexMatch.Success
+            ? regexMatch.Groups[0].Value
+            : submission.EntryTime.ToString(CultureInfo.InvariantCulture);
 
         return date;
     }

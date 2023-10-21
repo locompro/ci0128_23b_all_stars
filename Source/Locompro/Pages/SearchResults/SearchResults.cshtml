@@ -47,6 +47,7 @@
                 <h6> @Model.ItemsAmount resultados encontrados </h6>
                 <div class="table-encapsulate-for-results">
                     <table class="table table-hover search-results-table">
+                        <caption>Resultados de búsqueda</caption>
                         <thead>
                         <tr>
                             <th>
@@ -67,6 +68,7 @@
                             </th>
                             <th scope="col">Precio</th>
                             <th scope="col">Tienda</th>
+                            <th scope="col">Modelo</th>
                             <th>
                                 <a asp-page="./SearchResults"
                                    asp-route-sortOrder="@Model.ProvinceSort"
@@ -82,25 +84,25 @@
                                    asp-route-brand="@Model.BrandSelected">
                                     Provincia
                                 </a>
-                             </th>
+                            </th>
 
-                                <th>
-                                    <a asp-page="./SearchResults"
-                                       asp-route-sortOrder="@Model.CantonSort"
-                                       asp-route-sorting=true
-                                       asp-route-currentFilter="@Model.CurrentFilter"
-                                       asp-route-query=@Model.ProductName
-                                       asp-route-province=@Model.ProvinceSelected
-                                       asp-route-canton=@Model.CantonSelected
-                                       asp-route-minValue=@Model.MinPrice
-                                       asp-route-maxValue=@Model.MaxPrice
-                                       asp-route-category=@Model.CategorySelected
-                                       asp-route-model=@Model.ModelSelected
-                                       asp-route-brand="@Model.BrandSelected">
-                                        Canton
-                                    </a>
-                                </th>
-                                <th scope="col">Descripción</th>
+                            <th>
+                                <a asp-page="./SearchResults"
+                                   asp-route-sortOrder="@Model.CantonSort"
+                                   asp-route-sorting=true
+                                   asp-route-currentFilter="@Model.CurrentFilter"
+                                   asp-route-query=@Model.ProductName
+                                   asp-route-province=@Model.ProvinceSelected
+                                   asp-route-canton=@Model.CantonSelected
+                                   asp-route-minValue=@Model.MinPrice
+                                   asp-route-maxValue=@Model.MaxPrice
+                                   asp-route-category=@Model.CategorySelected
+                                   asp-route-model=@Model.ModelSelected
+                                   asp-route-brand="@Model.BrandSelected">
+                                    Canton
+                                </a>
+                            </th>
+                            <th scope="col">Descripción</th>
                             <th scope="col">Último Aporte </th>
                         </tr>
                         </thead>
@@ -119,6 +121,9 @@
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Store)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Model)
                                     </td>
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Province)
@@ -249,6 +254,6 @@
 </div>
 
 @section Scripts{
-    <script src="~/js/SearchResults.js"></script>
+    <script src="~/js/search-results.js"></script>
     <script src="~/js/search.js"></script>
 }
