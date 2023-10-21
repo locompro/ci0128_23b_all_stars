@@ -27,13 +27,13 @@ namespace Locompro.Repositories
         /// </summary>
         /// <param name="context"></param>
         /// <param name="loggerFactory"></param>
-        public SubmissionRepository(LocomproContext context, ILoggerFactory loggerFactory) :
+        public SubmissionRepository(DbContext context, ILoggerFactory loggerFactory) :
             base(context, loggerFactory)
         {
         }
         
         /// <summary>
-        /// gets all submissions that are in a store in the given canton and province
+        /// Gets all submissions that are in a store in the given canton and province
         /// <param name="cantonName"></param>
         /// <param name="provinceName"></param>
         /// <returns> a task IEnumerable of submissions </returns>
