@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Locompro.Common;
 using Locompro.Models;
 using Microsoft.Extensions.Configuration;
+using Locompro.Repositories.Utilities;
 
 namespace Locompro.Pages.SearchResults;
 
@@ -129,17 +130,19 @@ public class SearchResultsModel : PageModel
         SetSortingParameters(sortOrder, (sorting is not null));
         
         // get items from search service
-        _items =
-            (await _searchService.SearchItems(
-                ProductName,
-                ProvinceSelected,
-                CantonSelected,
-                MinPrice,
-                MaxPrice,
-                CategorySelected,
-                ModelSelected,
-                BrandSelected)
-            ).ToList();
+        List<SearchCriterion> searchParameters = new List<SearchCriterion>()
+        {
+            new SearchCriterion(SearchParam.SearchParameterTypes.Name, ProductName),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Province, ProvinceSelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Canton, CantonSelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Minvalue, MinPrice.ToString()),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Maxvalue, MaxPrice.ToString()),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Category, CategorySelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Model, ModelSelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Brand, BrandSelected),
+        };
+
+        _items = await this._searchService.GetSearchResults(searchParameters);
         
         // get amount of items found    
         ItemsAmount = _items.Count;
@@ -160,6 +163,7 @@ public class SearchResultsModel : PageModel
     /// <param name="maxValue"></param>
     /// <param name="category"></param>
     /// <param name="model"></param>
+    /// <param name="brand"></param>
     private void ValidateInput(
         string province,
         string canton,
@@ -169,7 +173,6 @@ public class SearchResultsModel : PageModel
         string model,
         string brand)
     {
-        
         if (!string.IsNullOrEmpty(province) && province.Equals("Ninguno"))
         {
             province = null;
