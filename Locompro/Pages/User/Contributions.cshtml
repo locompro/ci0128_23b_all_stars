@@ -2,41 +2,25 @@
 @using Locompro.Models
 @using Locompro.Services
 @using Locompro.Common
-@model Locompro.Pages.SearchResults.SearchResultsModel
+@model Locompro.Pages.User.Contributions.ContributionsPageModel
 
 <link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
 
 <div class="container"> 
-    <div class="card border search-results-card" border="5px solid black;">
         <div>
-            <h2>@Model.ProductName</h2>
+            <h2>Mis Contribuciones</h2>
             <h6> @Model.ItemsAmount resultados encontrados </h6>
             <div class="table-encapsulate-for-results">
                 <table class="table table-hover search-results-table">
                     <thead>
                     <tr>
-                        <th>
-                            <a asp-page="./SearchResults"
-                                asp-route-sortOrder="@Model.NameSort"
-                                asp-route-sorting=true
-                                asp-route-currentFilter="@Model.CurrentFilter"
-                                asp-route-query=@Model.ProductName
-                                asp-route-province=@Model.ProvinceSelected
-                                asp-route-canton=@Model.CantonSelected
-                                asp-route-minValue=@Model.MinPrice
-                                asp-route-maxValue=@Model.MaxPrice
-                                asp-route-category=@Model.CategorySelected
-                                asp-route-model=@Model.ModelSelected
-                                asp-route-brand="@Model.BrandSelected">
-                                Producto
-                            </a>
-                        </th>
+                        <th scope="col">Fecha de aporte </th>
+                        <th scope="col">Producto</th>
+                        <th scope="col">Descripción</th>
                         <th scope="col">Precio</th>
                         <th scope="col">Tienda</th>
                         <th scope="col">Provincia</th>
                         <th scope="col">Canton</th>
-                        <th scope="col">Descripcion</th>
-                        <th scope="col">Ultimo Aporte </th>
                     </tr>
                     </thead>
                     <tbody>
@@ -44,9 +28,15 @@
                         PaginatedList<Item> items = Model.DisplayItems;
                         foreach (Item item in Model.DisplayItems)
                         {
-                            <tr onclick="itemSelected()">
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.LastSubmissionDate)
+                                </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.ProductName)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ProductDescription)
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.ProductPrice)
@@ -60,37 +50,20 @@
                                 <td>
                                     @Html.DisplayFor(modelItem => item.CantonLocation)
                                 </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.ProductDescription)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.LastSubmissionDate)
-                                </td>
                             </tr>
                         }
                     }
                     </tbody>
                 </table>
             </div>
-
             @{
                 var prevDisabled = !Model.DisplayItems.HasPreviousPage ? "disabled" : "";
                 var nextDisabled = !Model.DisplayItems.HasNextPage ? "disabled" : "";
             }
-
             <div class="previous-next-button-area">
                 <a asp-page=""
-                    asp-route-query=@Model.ProductName
-                    asp-route-province=@Model.ProvinceSelected
-                    asp-route-canton=@Model.CantonSelected
-                    asp-route-minValue=@Model.MinPrice
-                    asp-route-maxValue=@Model.MaxPrice
-                    asp-route-category=@Model.CategorySelected
-                    asp-route-model=@Model.ModelSelected
-                    asp-route-brand="@Model.BrandSelected"
+                    asp-route-query=@Model.CurrentUser
                     asp-route-pageIndex="@(Model.DisplayItems.PageIndex - 1)"
-                    asp-route-sortOrder="@Model.NameSort"
-                    asp-route-currentFilter="@Model.CurrentFilter"
                     class="btn btn-primary @prevDisabled">
                     Previo
                 </a>
@@ -103,22 +76,12 @@
                         onchange="changeIndexPage(this)">
 
                 <a asp-page=""
-                    asp-route-query=@Model.ProductName
-                    asp-route-province=@Model.ProvinceSelected
-                    asp-route-canton=@Model.CantonSelected
-                    asp-route-minValue=@Model.MinPrice
-                    asp-route-maxValue=@Model.MaxPrice
-                    asp-route-category=@Model.CategorySelected
-                    asp-route-model=@Model.ModelSelected
-                    asp-route-brand="@Model.BrandSelected"
+                    asp-route-query=@Model.CurrentUser
                     asp-route-pageIndex="@(Model.DisplayItems.PageIndex + 1)"
-                    asp-route-sortOrder="@Model.NameSort"
-                    asp-route-currentFilter="@Model.CurrentFilter"
                     class="btn btn-primary @nextDisabled">
                     Siguiente
                 </a>
-                <h6 class="page-amount-text"> @Model.DisplayItems.TotalPages paginas de resultados </h6>
+                <h6 class="page-amount-text"> @Model.DisplayItems.TotalPages páginas de resultados </h6>
             </div>
         </div>
-    </div>
 </div>

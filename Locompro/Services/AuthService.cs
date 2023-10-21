@@ -104,11 +104,18 @@ namespace Locompro.Services
                 inputData.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                _logger.LogInformation("User logged in.");
+                string currentUsername = GetCurrentUsername() + "user logged in.";
+                _logger.LogInformation(currentUsername);
             }
 
             return result;
         }
+
+        public string GetCurrentUsername()
+        {
+            return _signInManager.Context.User.Identity.Name;
+        }
+
         /// <summary>
         /// Signs out the current logged-in user.
         /// </summary>

@@ -7,6 +7,7 @@
 @{
     var currentPage = Context.Request.Path.Value;
     var isLoggedIn = AuthService.IsLoggedIn();
+    var currentUser = AuthService.GetCurrentUsername();
 }
 
 <!DOCTYPE html>
@@ -70,7 +71,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/User/Contributions">
+                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/User/Contributions" asp-route-query="@currentUser">
                                     <i class="lista-contribuciones-button">
                                     </i>
                                     Mis Contribuciones
