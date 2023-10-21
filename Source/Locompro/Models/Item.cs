@@ -16,6 +16,7 @@ public class Item
     /// <param name="canton">Canton where item store is located.</param>
     /// <param name="province">Province where item store is located.</param>
     /// <param name="description">Description of the last submission for this item.</param>
+    /// <param name="model">Model of the product</param>
     public Item(string lastSubmissionDate,
         string name,
         double price,
@@ -42,9 +43,9 @@ public class Item
     public string Canton { get; init; }
     public string Province { get; init; }
     public string Description { get; init; }
-    
+
     public string Model { get; init; }
-    
+
     public string Brand { get; set; }
     public List<Submission> Submissions { get; set; }
 };
