@@ -130,16 +130,16 @@ public class SearchResultsModel : PageModel
         SetSortingParameters(sortOrder, (sorting is not null));
         
         // get items from search service
-        List<(SearchParam.SearchParameterTypes, string)> searchParameters = new List<(SearchParam.SearchParameterTypes, string)>()
+        List<SearchCriterion> searchParameters = new List<SearchCriterion>()
         {
-            (SearchParam.SearchParameterTypes.Name, ProductName),
-            (SearchParam.SearchParameterTypes.Province, ProvinceSelected),
-            (SearchParam.SearchParameterTypes.Canton, CantonSelected),
-            (SearchParam.SearchParameterTypes.Minvalue, MinPrice.ToString()),
-            (SearchParam.SearchParameterTypes.Maxvalue, MaxPrice.ToString()),
-            (SearchParam.SearchParameterTypes.Category, CategorySelected),
-            (SearchParam.SearchParameterTypes.Model, ModelSelected),
-            (SearchParam.SearchParameterTypes.Brand, BrandSelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Name, ProductName),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Province, ProvinceSelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Canton, CantonSelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Minvalue, MinPrice.ToString()),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Maxvalue, MaxPrice.ToString()),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Category, CategorySelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Model, ModelSelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Brand, BrandSelected),
         };
 
         _items = await this._searchService.GetSearchResults(searchParameters);

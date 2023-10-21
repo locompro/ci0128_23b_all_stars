@@ -35,16 +35,16 @@ public class SearchService
     /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
     /// It then returns a list of items that match all the criteria.
     /// </summary>
-    public async Task<List<Item>> GetSearchResults(List<(SearchParam.SearchParameterTypes, string)> unfilteredSearchCriteria)
+    public async Task<List<Item>> GetSearchResults(List<SearchCriterion> unfilteredSearchCriteria)
     {
         // add the list of unfiltered search criteria to the query builder
-        foreach ((SearchParam.SearchParameterTypes, string) searchCriterion in unfilteredSearchCriteria)
+        foreach (SearchCriterion searchCriterion in unfilteredSearchCriteria)
         {
-            this._queryBuilder.AddSearchCriterion(searchCriterion.Item1, searchCriterion.Item2);
+            this._queryBuilder.AddSearchCriterion(searchCriterion);
         }
 
         // compose the list of search functions
-        List<Expression<Func<Submission, bool>>> searchQuery = this._queryBuilder.GetSearchFunction();
+        SearchQuery searchQuery = this._queryBuilder.GetSearchFunction();
         
         // get the submissions that match the search functions
         IEnumerable<Submission> submissions = await this._submissionRepository.GetSearchResults(searchQuery);

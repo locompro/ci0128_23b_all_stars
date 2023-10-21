@@ -8,4 +8,15 @@ public class SearchCriterion
 {
     public SearchParam.SearchParameterTypes ParameterName { get; init; }
     public string SearchValue { get; init; }
+    
+    
+    public SearchCriterion()
+    {
+    }
+    
+    public SearchCriterion(SearchParam.SearchParameterTypes parameterName, string searchValue)
+    {
+        this.ParameterName = parameterName;
+        this.SearchValue = searchValue;
+    }
 }

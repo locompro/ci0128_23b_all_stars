@@ -10,6 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
+using Locompro.Repositories.Utilities;
 
 namespace Locompro.Repositories
 {
@@ -40,18 +41,15 @@ namespace Locompro.Repositories
         /// </summary>
         /// <param name="searchQueries"> search queries, criteria or strategies to be used to find the desired submissions</param>
         /// <returns></returns>
-        public virtual async Task<IEnumerable<Submission>> GetSearchResults(List<Expression<Func<Submission, bool>>> searchQueries)
+        public virtual async Task<IEnumerable<Submission>> GetSearchResults(SearchQuery searchQueries)
         {
             // initiate the query
             IQueryable<Submission> submissionsResults = this.DbSet
                 .Include(submission => submission.Product);
             
             // append the search queries to the query
-            foreach (var query in searchQueries)
-            {
-                submissionsResults = submissionsResults.Where(query);
-            }
-            
+            submissionsResults = searchQueries.searchQueryFunctions.Aggregate(submissionsResults, (current, query) => current.Where(query));
+
             // get and return the results
             return await submissionsResults.ToListAsync();
         }

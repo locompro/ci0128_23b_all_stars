@@ -9,7 +9,7 @@ namespace Locompro.Repositories.Utilities;
 public class SearchMethods
 {
     private static SearchMethods _instance;
-    public Dictionary<SearchParam.SearchParameterTypes, SearchParam> SearchParameters { get; }
+    private Dictionary<SearchParam.SearchParameterTypes, SearchParam> SearchParameters { get; }
     
     /// <summary>
     /// Singleton private constructor
@@ -23,18 +23,8 @@ public class SearchMethods
     /// <summary>
     /// returns instance of the singleton class
     /// </summary>
-    public static SearchMethods GetInstance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                _instance = new SearchMethods();
-            }
-            return _instance;
-        }
-    }
-    
+    public static SearchMethods GetInstance => SearchMethods._instance ??= new SearchMethods();
+
     /// <summary>
     /// Adds a new search parameter, strategy or way to search for a submission
     /// </summary>
@@ -45,6 +35,23 @@ public class SearchMethods
     {
         SearchParameters.Add(parameterName, new SearchParam { SearchQuery = searchQuery, ActivationQualifier = activationQualifier });
     }
+
+    /// <summary>
+    /// returns the search strategy or method that corresponds to the parameter name
+    /// if the parameter name is not found, returns null
+    /// </summary>
+    /// <param name="parameterName"> name of the parameter whose strategy or method is sought</param>
+    /// <returns> search strategy or method </returns>
+    public SearchParam getSearchMethodByName(SearchParam.SearchParameterTypes parameterName)
+    {
+        if (!this.SearchParameters.ContainsKey(parameterName))
+        {
+            return null;
+        }
+        
+        return SearchParameters[parameterName];
+    }
+  
     
     /// <summary>
     /// Method where all the search parameters are to be added
