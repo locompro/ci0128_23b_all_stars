@@ -8,6 +8,7 @@ using Locompro.Models;
 using Locompro.Data;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
 
 namespace Locompro.Repositories
@@ -25,7 +26,7 @@ namespace Locompro.Repositories
     public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey>
     {
         /// <summary>
-        /// 
+        /// Construtor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="loggerFactory"></param>
@@ -34,14 +35,25 @@ namespace Locompro.Repositories
         {
         }
         
-        public virtual async Task<IEnumerable<Submission>> GetSearchResults(Func<Submission, bool> searchQuery)
+        /// <summary>
+        /// Gets the search results submissions according to the list of search criteria or queries to be used
+        /// </summary>
+        /// <param name="searchQueries"> search queries, criteria or strategies to be used to find the desired submissions</param>
+        /// <returns></returns>
+        public virtual async Task<IEnumerable<Submission>> GetSearchResults(List<Expression<Func<Submission, bool>>> searchQueries)
         {
+            // initiate the query
+            IQueryable<Submission> submissionsResults = this.DbSet
+                .Include(submission => submission.Product);
             
-            IEnumerable<Submission> submissionsResults = this.DbSet
-                .Include(submission => submission.Product)
-                .Where(searchQuery);
-
-            return await Task.FromResult(submissionsResults.ToList());
+            // append the search queries to the query
+            foreach (var query in searchQueries)
+            {
+                submissionsResults = submissionsResults.Where(query);
+            }
+            
+            // get and return the results
+            return await submissionsResults.ToListAsync();
         }
     }
 }

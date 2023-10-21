@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Locompro.Repositories;
 using Locompro.Models;
@@ -8,9 +9,11 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Text.RegularExpressions;
 using Locompro.Repositories.Utilities;
 
-
 namespace Locompro.Services;
 
+/// <summary>
+/// Service responsible for all searches
+/// </summary>
 public class SearchService
 {
     private readonly SubmissionRepository _submissionRepository;
@@ -26,7 +29,6 @@ public class SearchService
         _submissionRepository = submissionRepository;
         _queryBuilder = new QueryBuilder();
     }
-    
 
     /// <summary>
     /// Searches for items based on the criteria provided in the search view model.
@@ -35,20 +37,23 @@ public class SearchService
     /// </summary>
     public async Task<List<Item>> GetSearchResults(List<(SearchParam.SearchParameterTypes, string)> unfilteredSearchCriteria)
     {
+        // add the list of unfiltered search criteria to the query builder
         foreach ((SearchParam.SearchParameterTypes, string) searchCriterion in unfilteredSearchCriteria)
         {
             this._queryBuilder.AddSearchCriterion(searchCriterion.Item1, searchCriterion.Item2);
         }
 
-        Func<Submission, bool> searchQuery = this._queryBuilder.GetSearchFunction();
+        // compose the list of search functions
+        List<Expression<Func<Submission, bool>>> searchQuery = this._queryBuilder.GetSearchFunction();
         
+        // get the submissions that match the search functions
         IEnumerable<Submission> submissions = await this._submissionRepository.GetSearchResults(searchQuery);
+        
+        this._queryBuilder.Reset();
         
         return this.GetItems(submissions).Result.ToList();
     }
-
     
-
     /// <summary>
     /// Gets all the items to be displayed in the search results
     /// from a list of submissions
