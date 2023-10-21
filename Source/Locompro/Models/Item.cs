@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Locompro.Models;
 
 /// <summary>
@@ -35,7 +37,7 @@ public class Item
         this.Description = description;
         this.Model = model;
     }
-    
+
     public string LastSubmissionDate { get; init; }
     public string Name { get; init; }
     public double Price { get; init; }
@@ -44,6 +46,7 @@ public class Item
     public string Province { get; init; }
     public string Description { get; init; }
 
+    [DisplayFormat(NullDisplayText = "N/A")]
     public string Model { get; init; }
 
     public string Brand { get; set; }
