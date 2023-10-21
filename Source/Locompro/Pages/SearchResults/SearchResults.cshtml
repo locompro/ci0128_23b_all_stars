@@ -62,7 +62,7 @@
                                    asp-route-category=@Model.CategorySelected
                                    asp-route-model=@Model.ModelSelected
                                    asp-route-brand="@Model.BrandSelected" 
-                                   class="@(Model.CurrentSort == "name_desc" ? "sort-desc" : (Model.CurrentSort == "name_asc" ? "sort-asc" : "sort-none"))">
+                                   class="no-underline-link @(Model.CurrentSort == "name_desc" ? "sort-desc" : (Model.CurrentSort == "name_asc" ? "sort-asc" : "sort-none"))">
                                       Producto
                                 </a>
                             </th>
@@ -81,7 +81,7 @@
                                    asp-route-category=@Model.CategorySelected
                                    asp-route-model=@Model.ModelSelected
                                    asp-route-brand="@Model.BrandSelected" 
-                                   class="@(Model.CurrentSort == "province_desc" ? "sort-desc" : (Model.CurrentSort == "province_asc" ? "sort-asc" : "sort-none"))">
+                                   class="no-underline-link @(Model.CurrentSort == "province_desc" ? "sort-desc" : (Model.CurrentSort == "province_asc" ? "sort-asc" : "sort-none"))">
                                        Provincia
                                 </a>
                              </th>
@@ -99,7 +99,7 @@
                                        asp-route-category=@Model.CategorySelected
                                        asp-route-model=@Model.ModelSelected
                                        asp-route-brand="@Model.BrandSelected"
-                                       class="@(Model.CurrentSort == "canton_desc" ? "sort-desc" : (Model.CurrentSort == "canton_asc" ? "sort-asc" : "sort-none"))">
+                                       class="no-underline-link @(Model.CurrentSort == "canton_desc" ? "sort-desc" : (Model.CurrentSort == "canton_asc" ? "sort-asc" : "sort-none"))">
                                            Cantón
                                     </a>
                                 </th>

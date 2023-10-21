@@ -117,3 +117,7 @@
 .sort-none::after {
     content: '';
 }
+
+.no-underline-link {
+    text-decoration: none;
+}
