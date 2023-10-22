@@ -64,17 +64,14 @@ public class SearchResultsModel : PageModel
     public long MaxPrice { get; set; }
     public string ModelSelected { get; set; }
     public string BrandSelected { get; set; }
-        
+    public string CurrentFilter { get; set; }
         
     public string NameSort { get; set; }
         
     public string CurrentSort { get; set; }
     public string CantonSort { get; set; }
     public string ProvinceSort { get; set; }
-
-        
-    public string CurrentFilter { get; set; }
-
+    
     /// <summary>
     /// Constructor
     /// </summary>
@@ -125,6 +122,10 @@ public class SearchResultsModel : PageModel
         ValidateInput(province, canton, minValue, maxValue, category, model, brand);
         
         ProductName = query;
+
+        string sort = (sorting is null) ? "y" : "n";
+        
+        Console.WriteLine("sorting: " +  sort + "\ncurrentFilter: " + currentFilter + "\nsortOrder: " + sortOrder);
         
         // set up sorting parameters
         SetSortingParameters(sortOrder, (sorting is not null));
@@ -151,7 +152,7 @@ public class SearchResultsModel : PageModel
         OrderItems();
         
         // create paginated list and set it to be displayed
-        DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
+        this.DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
     }
 
     /// <summary>
@@ -292,8 +293,7 @@ public class SearchResultsModel : PageModel
             }
         }
     }
-
-        
+    
     /// <summary>
     /// Returns the view component for the advanced search modal
     /// </summary>
