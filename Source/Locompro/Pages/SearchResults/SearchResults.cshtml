@@ -31,7 +31,7 @@
             </div>
             <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
                     id="advancedSearchButton"
-                    style = "margin-left: 15px;"
+                    style="margin-left: 15px;"
                     onclick="advancedSearchButtonPressed()"
                     type="button">
                 Búsqueda avanzada
@@ -40,56 +40,17 @@
         <div>
             <div id="modalContainer" class="justify-content-center">
             </div>
-        </div>    
+        </div>
         <div class="card border search-results-card" border="5px solid black;">
             <div>
-                <h2>@Model.ProductName</h2>
                 <h6> @Model.ItemsAmount resultados encontrados </h6>
                 <div class="table-encapsulate-for-results">
                     <table class="table table-hover search-results-table">
                         <thead>
-                        <tr>
-                            <th>
-                                <a asp-page="./SearchResults"
-                                   asp-route-sortOrder="@Model.NameSort"
-                                   asp-route-sorting=true
-                                   asp-route-currentFilter="@Model.CurrentFilter"
-                                   asp-route-query=@Model.ProductName
-                                   asp-route-province=@Model.ProvinceSelected
-                                   asp-route-canton=@Model.CantonSelected
-                                   asp-route-minValue=@Model.MinPrice
-                                   asp-route-maxValue=@Model.MaxPrice
-                                   asp-route-category=@Model.CategorySelected
-                                   asp-route-model=@Model.ModelSelected
-                                   asp-route-brand="@Model.BrandSelected" 
-                                   class="no-underline-link @(Model.CurrentSort == "name_desc" ? "sort-desc" : (Model.CurrentSort == "name_asc" ? "sort-asc" : "sort-none"))">
-                                      Producto
-                                </a>
-                            </th>
-                            <th scope="col">Precio</th>
-                            <th scope="col">Tienda</th>
-                            <th scope="col">Modelo</th>
-                            <th>
-                                <a asp-page="./SearchResults"
-                                   asp-route-sortOrder="@Model.ProvinceSort"
-                                   asp-route-sorting=true
-                                   asp-route-currentFilter="@Model.CurrentFilter"
-                                   asp-route-query=@Model.ProductName
-                                   asp-route-province=@Model.ProvinceSelected
-                                   asp-route-canton=@Model.CantonSelected
-                                   asp-route-minValue=@Model.MinPrice
-                                   asp-route-maxValue=@Model.MaxPrice
-                                   asp-route-category=@Model.CategorySelected
-                                   asp-route-model=@Model.ModelSelected
-                                   asp-route-brand="@Model.BrandSelected" 
-                                   class="no-underline-link @(Model.CurrentSort == "province_desc" ? "sort-desc" : (Model.CurrentSort == "province_asc" ? "sort-asc" : "sort-none"))">
-                                       Provincia
-                                </a>
-                             </th>
-
+                            <tr>
                                 <th>
                                     <a asp-page="./SearchResults"
-                                       asp-route-sortOrder="@Model.CantonSort"
+                                       asp-route-sortOrder="@Model.NameSort"
                                        asp-route-sorting=true
                                        asp-route-currentFilter="@Model.CurrentFilter"
                                        asp-route-query=@Model.ProductName
@@ -99,14 +60,51 @@
                                        asp-route-maxValue=@Model.MaxPrice
                                        asp-route-category=@Model.CategorySelected
                                        asp-route-model=@Model.ModelSelected
-                                       asp-route-brand="@Model.BrandSelected"
-                                       class="no-underline-link @(Model.CurrentSort == "canton_desc" ? "sort-desc" : (Model.CurrentSort == "canton_asc" ? "sort-asc" : "sort-none"))">
-                                           Cantón
+                                       asp-route-brand="@Model.BrandSelected" 
+                                       class="no-underline-link @(Model.CurrentSort == "name_desc" ? "sort-desc" : (Model.CurrentSort == "name_asc" ? "sort-asc" : "sort-none"))">
+                                        Producto
                                     </a>
                                 </th>
-                                <th scope="col">Descripción</th>
-                            <th scope="col">Último Aporte </th>
-                        </tr>
+                                <th scope="col">Precio</th>
+                                <th scope="col">Tienda</th>
+                                <th scope="col">Modelo</th>
+                                <th>
+                                    <a asp-page="./SearchResults"
+                                       asp-route-sortOrder="@Model.ProvinceSort"
+                                       asp-route-sorting=true
+                                       asp-route-currentFilter="@Model.CurrentFilter"
+                                       asp-route-query=@Model.ProductName
+                                       asp-route-province=@Model.ProvinceSelected
+                                       asp-route-canton=@Model.CantonSelected
+                                       asp-route-minValue=@Model.MinPrice
+                                       asp-route-maxValue=@Model.MaxPrice
+                                       asp-route-category=@Model.CategorySelected
+                                       asp-route-model=@Model.ModelSelected
+                                       asp-route-brand="@Model.BrandSelected" 
+                                       class="no-underline-link @(Model.CurrentSort == "province_desc" ? "sort-desc" : (Model.CurrentSort == "province_asc" ? "sort-asc" : "sort-none"))">
+                                        Provincia
+                                    </a>
+                                </th>
+                                    <th>
+                                        <a asp-page="./SearchResults"
+                                           asp-route-sortOrder="@Model.CantonSort"
+                                           asp-route-sorting=true
+                                           asp-route-currentFilter="@Model.CurrentFilter"
+                                           asp-route-query=@Model.ProductName
+                                           asp-route-province=@Model.ProvinceSelected
+                                           asp-route-canton=@Model.CantonSelected
+                                           asp-route-minValue=@Model.MinPrice
+                                           asp-route-maxValue=@Model.MaxPrice
+                                           asp-route-category=@Model.CategorySelected
+                                           asp-route-model=@Model.ModelSelected
+                                           asp-route-brand="@Model.BrandSelected"
+                                           class="no-underline-link @(Model.CurrentSort == "canton_desc" ? "sort-desc" : (Model.CurrentSort == "canton_asc" ? "sort-asc" : "sort-none"))">
+                                               Cantón
+                                        </a>
+                                    </th>
+                                    <th scope="col">Descripción</th>
+                                <th scope="col">Último Aporte </th>
+                            </tr>
                         </thead>
                         <tbody>
                         @{
@@ -204,34 +202,34 @@
                     }
                 </div>
 
-                @{
-                    var prevDisabled = !Model.DisplayItems.HasPreviousPage ? "disabled" : "";
-                    var nextDisabled = !Model.DisplayItems.HasNextPage ? "disabled" : "";
-                }
+            @{
+                var prevDisabled = !Model.DisplayItems.HasPreviousPage ? "disabled" : "";
+                var nextDisabled = !Model.DisplayItems.HasNextPage ? "disabled" : "";
+            }
 
-                <div class="previous-next-button-area">
-                    <a asp-page=""
-                       asp-route-query=@Model.ProductName
-                       asp-route-province=@Model.ProvinceSelected
-                       asp-route-canton=@Model.CantonSelected
-                       asp-route-minValue=@Model.MinPrice
-                       asp-route-maxValue=@Model.MaxPrice
-                       asp-route-category=@Model.CategorySelected
-                       asp-route-model=@Model.ModelSelected
-                       asp-route-brand="@Model.BrandSelected"
-                       asp-route-pageIndex="@(Model.DisplayItems.PageIndex - 1)"
-                       asp-route-sortOrder="@Model.NameSort"
-                       asp-route-currentFilter="@Model.CurrentFilter"
-                       class="btn btn-primary @prevDisabled">
-                        Previo
-                    </a>
+            <div class="previous-next-button-area">
+                <a asp-page=""
+                   asp-route-query=@Model.ProductName
+                   asp-route-province=@Model.ProvinceSelected
+                   asp-route-canton=@Model.CantonSelected
+                   asp-route-minValue=@Model.MinPrice
+                   asp-route-maxValue=@Model.MaxPrice
+                   asp-route-category=@Model.CategorySelected
+                   asp-route-model=@Model.ModelSelected
+                   asp-route-brand="@Model.BrandSelected"
+                   asp-route-pageIndex="@(Model.DisplayItems.PageIndex - 1)"
+                   asp-route-sortOrder="@Model.NameSort"
+                   asp-route-currentFilter="@Model.CurrentFilter"
+                   class="btn btn-primary @prevDisabled">
+                    Previo
+                </a>
 
-                    <input type="number"
-                           class="number-input-pages"
-                           min=1
-                           max="@Model.DisplayItems.TotalPages"
-                           value="@Model.DisplayItems.PageIndex"
-                           onchange="changeIndexPage(this)">
+                <input type="number"
+                       class="number-input-pages"
+                       min=1
+                       max="@Model.DisplayItems.TotalPages"
+                       value="@Model.DisplayItems.PageIndex"
+                       onchange="changeIndexPage(this)">
 
                     <a asp-page=""
                        asp-route-query=@Model.ProductName
@@ -259,4 +257,41 @@
 @section Scripts{
     <script src="~/js/search-results.js"></script>
     <script src="~/js/search.js"></script>
+    
+    <script>
+    function changeIndexPage(field) {
+        if (field.value > @Model.DisplayItems.TotalPages) {
+            field.value = @Model.DisplayItems.TotalPages;
+        }
+
+        if (field.value < 1) {
+            field.value = 1;
+        }
+        
+        // if no province is selected, then it is a simple search
+        const provinceForEmptyCheck = "@Model.ProvinceSelected";
+
+        if (provinceForEmptyCheck.length === 0) {
+            // redirect to search results page
+            window.location.href = "/SearchResults/SearchResults?query=" + "@Model.ProductName" +
+                "&pageIndex=" + field.value +
+                "&sortOrder=" + "@Model.CurrentSort" +
+                "&currentFilter=" + "@Model.CurrentFilter";
+        } else {
+            // redirect to search results page
+            window.location.href =
+                "/SearchResults/SearchResults?query=" + "@Model.ProductName" +
+                "&province=" + "@Model.ProvinceSelected" +
+                "&canton=" + "@Model.CantonSelected" +
+                "&minValue=" + @Model.MinPrice +
+                "&maxValue=" + @Model.MaxPrice +
+                "&category=" + "@Model.CategorySelected" +
+                "&model=" + "@Model.ModelSelected" +
+                "&brand=" + "@Model.BrandSelected" +
+                "&sortOrder=" + "@Model.CurrentSort" +
+                "&currentFilter=" + "@Model.CurrentFilter" +
+                "&pageIndex=" + field.value;                      
+        }
+    }
+    </script>
 }
