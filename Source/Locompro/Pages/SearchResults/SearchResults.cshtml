@@ -47,6 +47,7 @@
         <h6> @Model.ItemsAmount resultados encontrados </h6>
         <div class="table-encapsulate-for-results">
             <table class="table table-hover search-results-table">
+                <caption>Resultados de búsqueda</caption>
                 <thead>
                 <tr>
                     <th>
@@ -67,6 +68,7 @@
                     </th>
                     <th scope="col">Precio</th>
                     <th scope="col">Tienda</th>
+                    <th scope="col">Modelo</th>
                     <th scope="col">Marca</th>
 
                     <th>
@@ -121,6 +123,9 @@
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Store)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Model)
                             </td>
                             <td>
                                 @Html.DisplayFor(modelItem => item.Brand)

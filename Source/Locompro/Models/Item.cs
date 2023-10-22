@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 
+using System.ComponentModel.DataAnnotations;
+
 namespace Locompro.Models;
 
 /// <summary>
@@ -18,6 +20,8 @@ public class Item
     /// <param name="canton">Canton where item store is located.</param>
     /// <param name="province">Province where item store is located.</param>
     /// <param name="description">Description of the last submission for this item.</param>
+    /// <param name="model">Model of the product</param>
+    /// <param name="brand">Brand of the product</param>
     public Item(string lastSubmissionDate,
         string name,
         double price,
@@ -25,6 +29,7 @@ public class Item
         string canton,
         string province,
         string description,
+        string model,
         string brand)
     {
         this.LastSubmissionDate = lastSubmissionDate;
@@ -35,8 +40,9 @@ public class Item
         this.Province = province;
         this.Description = description;
         this.Brand = brand;
+        this.Model = model;
     }
-    
+
     public string LastSubmissionDate { get; init; }
     public string Name { get; init; }
     public double Price { get; init; }
@@ -44,10 +50,12 @@ public class Item
     public string Canton { get; init; }
     public string Province { get; init; }
     public string Description { get; init; }
-    
-    public string Model { get; set; }
-    
+
+    [DisplayFormat(NullDisplayText = "N/A")]
+    public string Model { get; init; }
+
     [DisplayFormat(NullDisplayText = "N/A")]
     public string Brand { get; init; }
+
     public List<Submission> Submissions { get; set; }
 };
