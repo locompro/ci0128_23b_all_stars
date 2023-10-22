@@ -69,7 +69,8 @@ VALUES ('Laptop', 'Inspiron 15', 'Dell', 1),
        ('Tablet', 'Tab S7', 'Samsung', 1),
        ('Afeitadora', 'Series 9', 'Braun', 1),
        ('Lavadora', 'TurboDrum', 'LG', 1),
-       ('Cámara', 'EOS 2000D', 'Canon', 1);
+       ('Cámara', 'EOS 2000D', 'Canon', 1),
+       ('Cámara', 'EOS 2000D', null, 1);
 
 
 DECLARE @userId int = 1;
@@ -86,7 +87,7 @@ BEGIN
     SET @productTimeOffset = 0;
 
     -- Loop through products
-    WHILE @productId <= 12
+    WHILE @productId <= 13
 BEGIN
         -- Calculate the total time offset
         DECLARE @totalTimeOffset int = @userTimeOffset + @productTimeOffset;

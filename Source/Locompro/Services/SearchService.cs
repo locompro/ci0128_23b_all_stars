@@ -167,12 +167,12 @@ public class SearchService
             bestSubmission.Store.Name,
             bestSubmission.Store.Canton.Name,
             bestSubmission.Store.Canton.Province.Name,
-            bestSubmission.Description
+            bestSubmission.Description,
+            bestSubmission.Product.Brand
         )
         {
             Submissions = itemGrouping.ToList(),
             Model = bestSubmission.Product.Model,
-            Brand = bestSubmission.Product.Brand
         };
 
         return await Task.FromResult(item);
