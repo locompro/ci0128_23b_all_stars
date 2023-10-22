@@ -122,10 +122,6 @@ public class SearchResultsModel : PageModel
         ValidateInput(province, canton, minValue, maxValue, category, model, brand);
         
         ProductName = query;
-
-        string sort = (sorting is null) ? "y" : "n";
-        
-        Console.WriteLine("sorting: " +  sort + "\ncurrentFilter: " + currentFilter + "\nsortOrder: " + sortOrder);
         
         // set up sorting parameters
         SetSortingParameters(sortOrder, (sorting is not null));
