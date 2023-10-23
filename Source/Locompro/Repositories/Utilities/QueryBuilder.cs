@@ -28,8 +28,22 @@ public class QueryBuilder
     /// <param name="searchCriterion"></param>
     public void AddSearchCriterion(SearchCriterion searchCriterion)
     {
-        // if the criterion is valid
-        if (searchCriterion != null && !string.IsNullOrEmpty(searchCriterion.SearchValue) && searchCriterion.ParameterName != default)
+        if (searchCriterion == null)
+        {
+            throw new System.ArgumentException("Invalid search criterion addition attempt\n"
+                                               + "Null search criterion passed");
+        }
+        
+        // if invalid parameter type then notify along with exception
+        if (searchCriterion.ParameterName == default
+            || !Enum.IsDefined(typeof(SearchParam.SearchParameterTypes), searchCriterion.ParameterName))
+        {
+            throw new System.ArgumentException("Invalid search criterion addition attempt\n"
+                                               + "Search criterion: " + nameof(searchCriterion.SearchValue));
+        }
+        
+        // if has no search value then just continue, otherwise add it to the list
+        if (!string.IsNullOrEmpty(searchCriterion.SearchValue))
         {
             this._searchCriteria.Add(searchCriterion);
         }
