@@ -45,7 +45,10 @@ public class SearchService
         SearchQuery searchQuery = this._queryBuilder.GetSearchFunction();
         
         // get the submissions that match the search functions
-        IEnumerable<Submission> submissions = await this._submissionRepository.GetSearchResults(searchQuery);
+        IEnumerable<Submission> submissions = 
+            searchQuery.IsEmpty?
+                Enumerable.Empty<Submission>() :
+                await this._submissionRepository.GetSearchResults(searchQuery);
         
         this._queryBuilder.Reset();
         

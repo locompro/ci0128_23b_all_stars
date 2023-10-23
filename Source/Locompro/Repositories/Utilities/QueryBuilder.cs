@@ -29,7 +29,10 @@ public class QueryBuilder
     public void AddSearchCriterion(SearchCriterion searchCriterion)
     {
         // if the criterion is valid
-        if (searchCriterion != null && !string.IsNullOrEmpty(searchCriterion.SearchValue) && searchCriterion.ParameterName != default)
+        if (searchCriterion != null
+            && !string.IsNullOrEmpty(searchCriterion.SearchValue)
+            && searchCriterion.ParameterName != default
+            && Enum.IsDefined(typeof(SearchParam.SearchParameterTypes), searchCriterion.ParameterName))
         {
             this._searchCriteria.Add(searchCriterion);
         }
