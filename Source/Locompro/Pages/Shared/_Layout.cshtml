@@ -1,0 +1,136 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Locompro.Data
+@using Locompro.Models
+@using Locompro.Services
+
+@inject AuthService AuthService
+@{
+    var currentPage = Context.Request.Path.Value;
+    var isLoggedIn = AuthService.IsLoggedIn();
+}
+
+<!DOCTYPE html>
+<html data-bs-theme="light" lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>LoCoMPro</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/Locompro.styles.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="~/assets/fonts/font-awesome.min.css">
+    <link rel="stylesheet" href="~/assets/fonts/material-icons.min.css">
+    <link rel="stylesheet" href="~/assets/css/Animated-Menu-Icon.css">
+    <link rel="stylesheet" href="~/assets/css/Articles-Cards-images.css">
+    <link rel="stylesheet" href="~/assets/css/Bootstrap-4---Payment-Form.css">
+    <link rel="stylesheet" href="~/assets/css/Bootstrap-4---Product-List.css">
+    <link rel="stylesheet" href="~/assets/css/Burger-Menu-burger.min.css">
+    <link rel="stylesheet" href="~/assets/css/Burger-Menu.css">
+    <link rel="stylesheet" href="~/assets/css/Contact-FormModal-Contact-Form-with-Google-Map.css">
+    <link rel="stylesheet" href="~/assets/css/Forum---Thread-listing-forum.css">
+    <link rel="stylesheet" href="~/assets/css/Forum---Thread-listing.css">
+    <link rel="stylesheet" href="~/assets/css/Ludens---1-Index-Table-with-Search--Sort-Filters-v20.css">
+    <link rel="stylesheet" href="~/assets/css/Ludens-Users---3-Profile.css">
+    <link rel="stylesheet" href="~/assets/css/Mega-Menu-Dropdown-100-Editable---Ambrodu.css">
+    <link rel="stylesheet" href="~/assets/css/Pretty-Search-Form-.css">
+    <link rel="stylesheet" href="~/assets/css/Profile-with-data-and-skills.css">
+    <link rel="stylesheet" href="~/assets/css/Responsive-Form-Contact-Form-Clean.css">
+    <link rel="stylesheet" href="~/assets/css/Responsive-Form.css">
+    <link rel="stylesheet" href="~/assets/css/Stats-icons.css">
+    <link rel="stylesheet" href="~/assets/css/Table-With-Search-search-table.css">
+    <link rel="stylesheet" href="~/assets/css/Table-With-Search.css">
+    <!-- for the plus sign  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    @RenderSection("Head", required: false)
+</head>
+<body>
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container">
+
+            <!-- if the current site is not the main menu  -->
+            @if (!currentPage.EndsWith("/"))
+            {
+                // show the title
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-page="/Index">LoCoMPro</a>
+            }
+
+            <!-- if logged in  -->
+            @if (isLoggedIn)
+            {
+                <div class="collapse navbar-collapse flex-grow-0 order-md-first" id="navcol-4">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Submissions/Create">
+                                <i class="fa fa-plus " style="margin-right: 8px;">
+                                </i>
+                                Aportar
+                            </a>
+                        </li>
+                        <li class="nav-item"></li>
+                    </ul>
+                    <div class="d-md-none my-2">
+                        <button class="btn btn-light me-2" type="button">Button</button>
+                        <button class="btn btn-primary" type="button">Button</button>
+                    </div>
+                </div>
+                <div class="d-none d-md-block">
+                    
+                    <form asp-page="/Account/Logout" method="post" class="d-inline-block">
+                        <button type="submit" class="btn btn-primary">Cerrar sesión</button>
+                    </form>
+                </div>
+            }
+            else
+            {
+                <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-3">
+                    <span class="visually-hidden">Toggle navigation</span>
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navcol-3">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item"></li>
+                        <li class="nav-item"></li>
+                        <li class="nav-item"></li>
+                    </ul>@if (currentPage != "/Account/Login")
+                    {
+                    <a class="btn btn-primary" role="button" asp-page="/Account/Login">Iniciar sesión</a>}
+                </div>
+            }
+
+        </div>
+    </nav>
+</header>
+<div class="container" style="margin-bottom: 200px;padding-right:0px; padding-left:0px">
+    <main role="main" class="pb-3 " style="min-height: calc(100vh-100px)">
+        @RenderBody()
+    </main>
+</div>
+
+<footer class="text-center py-4 border-top footer text-muted"
+        style="position: absolute; bottom: 0; width: 100%;">
+    <div class="container">
+        Copyright &copy; 2023 LoCoMPro
+    </div>
+    <div class="container">
+        <ul class="list-inline my-2">
+            <li class="list-inline-item">
+                <a class="link-secondary" href="/Privacy">Política de privacidad</a>
+            </li>
+            <li class="list-inline-item">
+                <a class="link-secondary" href="#">Terminos y condiciones</a>
+            </li>
+        </ul>
+    </div>
+</footer>
+
+<script src="~/lib/jquery/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+<partial name="_ValidationScriptsPartial"/>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

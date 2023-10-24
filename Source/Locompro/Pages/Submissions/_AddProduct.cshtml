@@ -1,0 +1,61 @@
+@using Locompro.Models.ViewModels
+@using Locompro.Services.Domain
+@using Newtonsoft.Json
+@inject CategoryService CategoryService
+@model ProductViewModel
+
+@{
+    var categories = await CategoryService.GetAll();
+
+    var settings = new JsonSerializerSettings
+    {
+        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+    };
+
+    var categoriesJson = JsonConvert.SerializeObject(categories, settings);
+}
+
+<div class="row d-flex justify-content-center modal-select2">
+    <div id="partialProduct" class="card-body d-flex flex-column align-items-center" style="padding-bottom: 20px;">
+        <div class="bs-icon-xl bs-icon-circle bs-icon-primary bs-icon my-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-bag-fill" style="font-size: 40px;">
+                <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5z"></path>
+            </svg>
+        </div>
+        <div class="mb-3">
+            <fieldset>
+                <legend style="padding-bottom: 0;margin-bottom: 20px;">Agregar Producto</legend>
+            </fieldset>
+        </div>
+        <input type="hidden" asp-for="Id" id="partialProductId"/>
+        <div class="mb-2">
+            <label asp-for="Name" class="form-label d-lg-flex justify-content-lg-start"></label>
+            <input asp-for="Name" class="form-control" placeholder="Nombre" id="partialProductName">
+        </div>
+        <span class="text-danger field-validation-valid pb-2" id="partialProductNameValid" asp-validation-for="Name"></span>
+        <div class="mb-2">
+            <label asp-for="Model" class="form-label d-lg-flex justify-content-lg-start"></label>
+            <input asp-for="Model" class="form-control" placeholder="Modelo">
+        </div>
+        <span class="text-danger field-validation-valid pb-2" asp-validation-for="Model"></span>
+        <div class="mb-2">
+            <label asp-for="Brand" class="form-label d-lg-flex justify-content-lg-start"></label>
+            <input asp-for="Brand" class="form-control" placeholder="Marca">
+        </div>
+        <span class="text-danger field-validation-valid pb-2" asp-validation-for="Brand"></span>
+        <div class="mb-2">
+            <label asp-for="Category" class="form-label d-lg-flex justify-content-lg-start"></label>
+            <select asp-for="Category" id="partialProductCategory"
+                    class="form-select" style="font-family:Roboto, sans-serif; min-width: 210px;">
+                <option value="" disabled selected hidden>Seleccionar</option>
+                @foreach (var category in categories)
+                {
+                    <option value="@category.Name">@category.Name</option>
+                }
+            </select>
+        </div>
+        <span class="text-danger field-validation-valid pb-2" asp-validation-for="Category"></span>
+    </div>
+</div>
+
+<div id="categoriesData" data='@Html.Raw(categoriesJson)' style="display: none;"></div>
