@@ -21,7 +21,8 @@ public class SearchParam
         Maxvalue,
         Category,
         Model,
-        Brand
+        Brand,
+        Username
     }
     
     /// <summary>

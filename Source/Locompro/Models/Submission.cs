@@ -10,7 +10,6 @@ public class Submission
 {
     [Required]
     public string Username { get; set; }
-    // TODO: Rename to UserID
     
     [Required]
     public DateTime EntryTime { get; set; }
@@ -37,5 +36,4 @@ public class Submission
     
     public virtual Product Product { get; set; }
     
-    // TODO: Add pictures to submission
 }

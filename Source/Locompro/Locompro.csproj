@@ -53,4 +53,8 @@
 	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.woff" />
 	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.woff2" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="Pages\SearchResults\Contributions.cshtml" />
+	</ItemGroup>
 </Project>
