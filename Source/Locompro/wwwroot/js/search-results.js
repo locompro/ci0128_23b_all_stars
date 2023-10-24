@@ -1,19 +1,24 @@
 var modalShown = false;
 async function advancedSearchButtonPressed() {
-    var button = document.getElementById("advancedSearchButton");
-    var modalContainer = document.getElementById("modalContainer");
-
+    const button = document.getElementById("advancedSearchButton");
+    const modalContainer = document.getElementById("modalContainer");
+    const inputGroup = document.getElementById("inputGroup");
+    const searchBarGroup = document.getElementById("searchBarGroup");
+    
     // if the modal is currently been shown, close it
-    if (modalShown == true) {
+    if (modalShown === true) {
         // get the modal
     
         // erase the contents
         modalContainer.innerHTML = "";
-        button.classList.remove("search-results-button-rounded-top");
-        button.classList.add("search-results-advanced-search-button-initial");
-        button.classList.add("btn-primary");
-        button.classList.add("rounded-pill");
-    
+
+        inputGroup.classList.remove("search-input-group-on-advanced-search");
+        searchBarGroup.classList.remove("search-bar-group-on-advanced-search");
+        
+        button.textContent = "Búsqueda avanzada";
+        button.classList.remove("advanced-search-button-on-modal-shown");
+        button.classList.add("col-sm-2");
+        
         // change state to modal not shown
         modalShown = false;
         return;
@@ -22,10 +27,8 @@ async function advancedSearchButtonPressed() {
     try {
         const response = await fetch("SearchResults?handler=AdvancedSearch");
         if (response.ok) {
-            const modalContent = await response.text();
-    
-                // Append the modal content to the modal container
-                modalContainer.innerHTML = modalContent;
+            // Append the modal content to the modal container
+            modalContainer.innerHTML = await response.text();
         } else {
             console.error('Failed to load modal content.');
         }
@@ -34,14 +37,12 @@ async function advancedSearchButtonPressed() {
     }
 
     modalShown = true;
-    modalContainer.classList.remove("modal-advanced-search");
-    modalContainer.classList.add("modal-search-results-on-advanced-search");
-
-    button.classList.remove("rounded-pill");
-    button.classList.remove("btn-primary");
-    button.classList.remove("search-results-advanced-search-button-initial");
-    button.classList.add("search-results-button-rounded-top");
-
+    
+    inputGroup.classList.add("search-input-group-on-advanced-search");
+    searchBarGroup.classList.add("search-bar-group-on-advanced-search");
+    button.textContent = "X";
+    button.classList.remove("col-sm-2");
+    button.classList.add("advanced-search-button-on-modal-shown");
 }
 
 function performSearchButton() {

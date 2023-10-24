@@ -1,11 +1,33 @@
-.seach-results-page-container {
+.search-results-page-container {
     margin-bottom: 3px;
     margin-top: -52px;
 }
 
 .search-input-group {
     margin: 0 auto;
-    margin-right: 10px;
+    margin-right: 0px;
+}
+
+.search-input-group-on-advanced-search {
+    .card;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-color: #b9deff;
+    border-width: 2px;
+    border-radius: 30px;
+    background-color: #b9deff;
+}
+
+.search-bar-group-default {
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.search-bar-group-on-advanced-search {
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .search-results-button-rounded-top {
@@ -61,7 +83,11 @@
 
 .advanced-search-results-base {
     margin-bottom: 0px;
-    
+}
+
+.advanced-search-button-on-modal-shown {
+    .col-1;
+    width: 50px;
 }
 
 .search-results-card {
