@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Locompro.Data
 {
@@ -31,7 +32,7 @@ namespace Locompro.Data
         public async Task BeginTransaction()
         {
             if (_isTesting) return;
-            
+
             _transaction = await _dbContext.Database.BeginTransactionAsync();
             _logger.Log(LogLevel.Information, "Beginning transaction {}", _transaction.TransactionId);
         }
@@ -44,13 +45,13 @@ namespace Locompro.Data
         public async Task Commit()
         {
             if (_isTesting) return;
-            
+
             try
             {
                 await _dbContext.SaveChangesAsync();
                 await _transaction.CommitAsync();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 _logger.Log(LogLevel.Error, e, "Commit failed for transaction {}", _transaction.TransactionId);
                 await Rollback();
@@ -72,7 +73,7 @@ namespace Locompro.Data
         public async Task Rollback()
         {
             if (_isTesting) return;
-            
+
             try
             {
                 await _transaction.RollbackAsync();
@@ -93,8 +94,18 @@ namespace Locompro.Data
         public void Dispose()
         {
             if (_isTesting) return;
-            
+
             DisposeAsync().AsTask().Wait();
+        }
+
+        public void Attach(object entity)
+        {
+            _dbContext.Attach(entity);
+        }
+
+        public void MarkUnchanged(object entity)
+        {
+            _dbContext.Entry(entity).State = EntityState.Unchanged;
         }
 
         /// <summary>

@@ -1,6 +1,5 @@
-﻿using Locompro.Data;
-using Locompro.Models;
-using Microsoft.Extensions.Logging;
+﻿using Locompro.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Repositories
 {
@@ -14,7 +13,7 @@ namespace Locompro.Repositories
         /// </summary>
         /// <param name="context"></param>
         /// <param name="loggerFactory"></param>
-        public CategoryRepository(LocomproContext context, ILoggerFactory loggerFactory)
+        public CategoryRepository(DbContext context, ILoggerFactory loggerFactory)
             : base(context, loggerFactory)
         {
         }
