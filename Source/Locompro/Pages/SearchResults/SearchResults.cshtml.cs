@@ -24,11 +24,6 @@ public class SearchResultsModel : SearchPageModel
     private readonly SearchService _searchService;
 
     /// <summary>
-    /// Configuration to get the page size
-    /// </summary>
-    private readonly IConfiguration _configuration;
-
-    /// <summary>
     /// Buffer for page size according to Paginated List and configuration
     /// </summary>
     private readonly int _pageSize;
@@ -80,8 +75,7 @@ public class SearchResultsModel : SearchPageModel
         SearchService searchService) : base(advancedSearchServiceHandler)
     {
         _searchService = searchService;
-        _configuration = configuration;
-        _pageSize = _configuration.GetValue("PageSize", 4);
+        _pageSize = configuration.GetValue("PageSize", 4);
     }
 
     /// <summary>
@@ -124,14 +118,14 @@ public class SearchResultsModel : SearchPageModel
         // get items from search service
         List<SearchCriterion> searchParameters = new List<SearchCriterion>()
         {
-            new SearchCriterion(SearchParam.SearchParameterTypes.Name, ProductName),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Province, ProvinceSelected),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Canton, CantonSelected),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Minvalue, MinPrice.ToString()),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Maxvalue, MaxPrice.ToString()),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Category, CategorySelected),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Model, ModelSelected),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Brand, BrandSelected),
+            new (SearchParam.SearchParameterTypes.Name, ProductName),
+            new (SearchParam.SearchParameterTypes.Province, ProvinceSelected),
+            new (SearchParam.SearchParameterTypes.Canton, CantonSelected),
+            new (SearchParam.SearchParameterTypes.Minvalue, MinPrice.ToString()),
+            new (SearchParam.SearchParameterTypes.Maxvalue, MaxPrice.ToString()),
+            new (SearchParam.SearchParameterTypes.Category, CategorySelected),
+            new (SearchParam.SearchParameterTypes.Model, ModelSelected),
+            new (SearchParam.SearchParameterTypes.Brand, BrandSelected),
         };
 
         _items = await this._searchService.GetSearchResults(searchParameters);

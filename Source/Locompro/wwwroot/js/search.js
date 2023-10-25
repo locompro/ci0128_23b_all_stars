@@ -1,11 +1,11 @@
 const invalidSimpleSearch = "/SearchResults/SearchResults?query=";
 
 const invalidAdvancedSearch = "/SearchResults/SearchResults?query="
-    + "&province=Ninguno"
-    + "&canton=Ninguno"
+    + "&province=Todos"
+    + "&canton=Todos"
     + "&minValue=0"
     + "&maxValue=0"
-    + "&category=Ninguno"
+    + "&category=Todos"
     + "&model="
     + "&brand=";
 

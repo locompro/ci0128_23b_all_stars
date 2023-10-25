@@ -27,7 +27,7 @@ namespace Locompro.Repositories
     public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey>
     {
         /// <summary>
-        /// Construtor
+        /// Constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="loggerFactory"></param>
@@ -48,7 +48,7 @@ namespace Locompro.Repositories
                 .Include(submission => submission.Product);
             
             // append the search queries to the query
-            submissionsResults = searchQueries.searchQueryFunctions.Aggregate(submissionsResults, (current, query) => current.Where(query));
+            submissionsResults = searchQueries.SearchQueryFunctions.Aggregate(submissionsResults, (current, query) => current.Where(query));
 
             // get and return the results
             return await submissionsResults.ToListAsync();

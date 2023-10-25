@@ -6,23 +6,24 @@ using Locompro.Repositories;
 using Locompro.Models;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Text.RegularExpressions;
+using Locompro.Data;
 using Locompro.Repositories.Utilities;
 
 namespace Locompro.Services;
 
-public class SearchService
+public class SearchService : AbstractService
 {
     private readonly SubmissionRepository _submissionRepository;
-
     private readonly QueryBuilder _queryBuilder;
 
     /// <summary>
     /// Constructor for the search service
     /// </summary>
-    /// <param name="submissionRepository"></param>
-    /// <param name="countryRepository"></param>
-    /// <param name="productRepository"></param>
-    public SearchService(SubmissionRepository submissionRepository)
+    /// <param name="submissionRepository"> submission repository used for searches</param>
+    /// <param name="unitOfWork"> generic unit of work</param>
+    /// <param name="loggerFactory"> logger </param>
+    public SearchService(SubmissionRepository submissionRepository, UnitOfWork unitOfWork, ILoggerFactory loggerFactory) :
+        base(unitOfWork, loggerFactory)
     {
         _submissionRepository = submissionRepository;
         _queryBuilder = new QueryBuilder();
@@ -38,14 +39,24 @@ public class SearchService
         // add the list of unfiltered search criteria to the query builder
         foreach (SearchCriterion searchCriterion in unfilteredSearchCriteria)
         {
-            this._queryBuilder.AddSearchCriterion(searchCriterion);
+            try
+            {
+                this._queryBuilder.AddSearchCriterion(searchCriterion);
+            } catch (System.ArgumentException exception)
+            {
+                // if the search criterion is invalid, report on it but continue execution
+                this.Logger.LogWarning(exception.ToString());
+            }
         }
 
         // compose the list of search functions
         SearchQuery searchQuery = this._queryBuilder.GetSearchFunction();
         
         // get the submissions that match the search functions
-        IEnumerable<Submission> submissions = await this._submissionRepository.GetSearchResults(searchQuery);
+        IEnumerable<Submission> submissions = 
+            searchQuery.IsEmpty?
+                Enumerable.Empty<Submission>() :
+                await this._submissionRepository.GetSearchResults(searchQuery);
         
         this._queryBuilder.Reset();
         
