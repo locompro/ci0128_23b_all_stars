@@ -45,7 +45,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         shell: powershell
         run: |
-          .\.sonar\scanner\dotnet-sonarscanner begin /k:"locompro_ci0128_23b_all_stars" /o:"locompro" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.exclusions="ci0128_23b_all_stars/Source/Locompro/wwwroot/lib/**/*"
+          .\.sonar\scanner\dotnet-sonarscanner begin /k:"locompro_ci0128_23b_all_stars" /o:"locompro" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.exclusions="**/wwwroot/lib/**/*"
           dotnet build
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+
 
