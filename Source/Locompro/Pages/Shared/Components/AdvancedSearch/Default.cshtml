@@ -60,7 +60,7 @@
                     <label class="form-label d-lg-flex justify-content-lg-start">Categoría</label>
                     <select class="form-select category-input"
                             id="categoryDropdown">
-                        <option>Ninguno</option>
+                        <option>@Model.EmptyValue</option>
                         @foreach (var category in Model.categories)
                         {
                             <option>@category.Name</option>

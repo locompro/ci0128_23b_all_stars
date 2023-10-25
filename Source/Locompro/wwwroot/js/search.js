@@ -1,6 +1,8 @@
 const invalidSimpleSearch = "/SearchResults/SearchResults?query=";
 
-const invalidAdvancedSearch = "/SearchResults/SearchResults?query="
+const invalidAdvancedSearch =
+    "/SearchResults/SearchResults?"
+    + "query="
     + "&province=Todos"
     + "&canton=Todos"
     + "&minValue=0"
