@@ -18,8 +18,8 @@ public class SearchParam
         Name,
         Province,
         Canton,
-        Minvalue,
-        Maxvalue,
+        MinValue,
+        MaxValue,
         Category,
         Model,
         Brand
