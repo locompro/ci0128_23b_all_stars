@@ -87,7 +87,9 @@
 
 .advanced-search-button-on-modal-shown {
     .col-1;
-    width: 50px;
+    width: 30px;
+    background-color: #b9deff;
+    border-color: #b9deff;
 }
 
 .search-results-card {
@@ -145,4 +147,29 @@
 
 .no-underline-link {
     text-decoration: none;
+}
+
+.close-modal-button-hidden {
+    border: 2px solid #b9deff;
+    background-color: #b9deff;
+    width: 95%;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    height: 10px; 
+    color: white;
+    display: none;
+}
+
+.close-modal-button-shown {
+    border: 2px solid #b9deff;
+    background-color: #b9deff;
+    width: 95%;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height: 5px;
+    color: white;
+    display: block;
+    margin: 0 auto;
 }

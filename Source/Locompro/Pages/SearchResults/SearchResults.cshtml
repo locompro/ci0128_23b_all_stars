@@ -9,8 +9,8 @@
 <div class="container  pt-5 search-results-page-container">
 <div class="container">
 <div id="inputGroup" class="justify-content-center search-input-group">
-    <div id="searchBarGroup" class="row search-bar-group-default">
-        <div class="col-xxl search-box form-control pe-4 rounded-pill input-group" style="width:100%">
+    <div id="searchBarGroup" class="justify-content-center form-actions input-group search-bar-group-default">
+        <div class=" search-box form-control pe-4 rounded-pill input-group">
             <div class="search-bar-encapsulate">
                 <input type="text"
                        value="@Model.ProductName"
@@ -30,18 +30,20 @@
                 </button>
             </div>
         </div>
-        <button class="col-sm-2 advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
+        <button class=" advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
                 id="advancedSearchButton"
                 style="margin-left: 15px;"
                 onclick="advancedSearchButtonPressed()"
                 type="button">
             Búsqueda avanzada
         </button>
+        
     </div>
     <div>
         <div id="modalContainer" class="justify-content-center">
         </div>
     </div>
+    <button id="closeModalButton" class = "close-modal-button-hidden" onclick="closeModal()"></button>
 </div>
 
 <div class="card border search-results-card" border="5px solid black;">

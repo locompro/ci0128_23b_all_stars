@@ -34,6 +34,7 @@
 .advanced-search-button-in-modal {
     text-align: center;
     justify-content: center;
+    height: 10px;
 }
 
 .index-advanced-search-button-initial {
@@ -53,6 +54,18 @@
     border-bottom-right-radius: 30px; /* Rounded bottom-right corner */
     
     border: 2px solid #0d6efd;
+}
+
+.index-advanced-search-button-in-modal {
+    border: 2px solid #b9deff;
+    background-color: #b9deff;
+    width: 95%;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    height: 10px;
+    color: white;
 }
 
 .index-advanced-search-button {

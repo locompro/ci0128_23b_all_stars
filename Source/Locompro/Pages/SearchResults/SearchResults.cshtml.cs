@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Locompro.Common;
 using Locompro.Models;
+using Locompro.Pages.Shared;
 using Microsoft.Extensions.Configuration;
 using Locompro.Repositories.Utilities;
 
@@ -18,13 +19,8 @@ namespace Locompro.Pages.SearchResults;
 /// <summary>
 /// Page model for the search results page
 /// </summary>
-public class SearchResultsModel : PageModel
+public class SearchResultsModel : SearchPageModel
 {
-    /// <summary>
-    /// Service that handles the advanced search modal
-    /// </summary>
-    private readonly AdvancedSearchInputService _advancedSearchServiceHandler;
-
     private readonly SearchService _searchService;
 
     /// <summary>
@@ -81,10 +77,9 @@ public class SearchResultsModel : PageModel
     public SearchResultsModel(
         AdvancedSearchInputService advancedSearchServiceHandler,
         IConfiguration configuration,
-        SearchService searchService)
+        SearchService searchService) : base(advancedSearchServiceHandler)
     {
         _searchService = searchService;
-        _advancedSearchServiceHandler = advancedSearchServiceHandler;
         _configuration = configuration;
         _pageSize = _configuration.GetValue("PageSize", 4);
     }
@@ -170,28 +165,28 @@ public class SearchResultsModel : PageModel
         string model,
         string brand)
     {
-        if (!string.IsNullOrEmpty(province) && province.Equals("Ninguno"))
+        if (!string.IsNullOrEmpty(province) && province.Equals(SearchPageModel.EmptyValue))
         {
             province = null;
         }
         
-        if (!string.IsNullOrEmpty(canton) && canton.Equals("Ninguno"))
+        if (!string.IsNullOrEmpty(canton) && canton.Equals(SearchPageModel.EmptyValue))
         {
             canton = null;
         }
 
-        if (!string.IsNullOrEmpty(category) && category.Equals("Ninguno"))
+        if (!string.IsNullOrEmpty(category) && category.Equals(SearchPageModel.EmptyValue))
         {
             category = null;
         } 
         
-       ProvinceSelected = province;
-       CantonSelected = canton;
-       MinPrice = minValue;
-       MaxPrice = maxValue;
-       CategorySelected = category;
-       ModelSelected = model;
-       BrandSelected = brand;
+        ProvinceSelected = province;
+        CantonSelected = canton;
+        MinPrice = minValue;
+        MaxPrice = maxValue;
+        CategorySelected = category;
+        ModelSelected = model;
+        BrandSelected = brand;
     }
 
     /// <summary>
@@ -245,9 +240,6 @@ public class SearchResultsModel : PageModel
         }
     }
 
-
-
-
     /// <summary>
     /// Orders items
     /// </summary>
@@ -288,75 +280,5 @@ public class SearchResultsModel : PageModel
                     break;
             }
         }
-    }
-    
-    /// <summary>
-    /// Returns the view component for the advanced search modal
-    /// </summary>
-    /// <returns></returns>
-    public IActionResult OnGetAdvancedSearch()
-    {
-        // generate the view component
-        var viewComponentResult = ViewComponent("AdvancedSearch", this._advancedSearchServiceHandler);
-
-        // return it for it to be integrated
-        return viewComponentResult;
-    }
-
-    /// <summary>
-    /// Updates the cantons and province selected for the advanced search modal
-    /// </summary>
-    /// <param name="province"></param>
-    /// <returns></returns>
-    public async Task<IActionResult> OnGetUpdateProvince(string province)
-    {
-        string cantonsJson = "";
-
-        // if province is none
-        if (province.Equals("Ninguno"))
-        {
-            // create empty list
-            List<Canton> emptyCantonList = new List<Canton>
-            {
-                // add none back as an option
-                new Canton{CountryName = "Ninguno",
-                    Name = "Ninguno", 
-                    ProvinceName = "Ninguno"}
-            };
-
-            // set new list to service canton list
-            _advancedSearchServiceHandler.Cantons = emptyCantonList;
-        }
-        else
-        {
-            // update the model with all cantons in the given province
-            await _advancedSearchServiceHandler.ObtainCantonsAsync(province);
-
-            _advancedSearchServiceHandler.Cantons.Add(
-                new Canton{CountryName = "Ninguno",
-                    Name = "Ninguno", 
-                    ProvinceName = "Ninguno"}
-            );
-
-            foreach (var canton in _advancedSearchServiceHandler.Cantons)
-            {
-                Console.WriteLine(canton.Name);
-            }
-        }
-
-        // prevent the json serializer from looping infinitely
-        var settings = new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        };
-
-        // generate the json file with the cantons
-        cantonsJson = JsonConvert.SerializeObject(_advancedSearchServiceHandler.Cantons, settings);
-
-        // specify the content type as a json file
-        Response.ContentType = "application/json";
-
-        // send to client
-        return Content(cantonsJson);
     }
 }

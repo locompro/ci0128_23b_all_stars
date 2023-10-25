@@ -4,6 +4,7 @@ async function advancedSearchButtonPressed() {
     const modalContainer = document.getElementById("modalContainer");
     const inputGroup = document.getElementById("inputGroup");
     const searchBarGroup = document.getElementById("searchBarGroup");
+    const closeModalButton = document.getElementById("closeModalButton");
     
     // if the modal is currently been shown, close it
     if (modalShown === true) {
@@ -17,7 +18,7 @@ async function advancedSearchButtonPressed() {
         
         button.textContent = "Búsqueda avanzada";
         button.classList.remove("advanced-search-button-on-modal-shown");
-        button.classList.add("col-sm-2");
+        button.classList.add("btn-primary");
         
         // change state to modal not shown
         modalShown = false;
@@ -40,9 +41,15 @@ async function advancedSearchButtonPressed() {
     
     inputGroup.classList.add("search-input-group-on-advanced-search");
     searchBarGroup.classList.add("search-bar-group-on-advanced-search");
+    
     button.textContent = "X";
-    button.classList.remove("col-sm-2");
+    button.style.display = "none";
     button.classList.add("advanced-search-button-on-modal-shown");
+    button.classList.remove("btn-primary");
+    
+    closeModalButton.classList.remove("close-modal-button-hidden");
+    closeModalButton.classList.add("close-modal-button-shown");
+    
 }
 
 function performSearchButton() {
@@ -56,4 +63,26 @@ async function loadProvince(optionSelected){
 function itemSelected(index) {
     var modalId = "#modal" + index;
     $(modalId).modal('show');
+}
+
+function closeModal() {
+    const button = document.getElementById("advancedSearchButton");
+    const modalContainer = document.getElementById("modalContainer");
+    const inputGroup = document.getElementById("inputGroup");
+    const searchBarGroup = document.getElementById("searchBarGroup");
+    const closeModalButton = document.getElementById("closeModalButton");
+    
+    modalContainer.innerHTML = "";
+    inputGroup.classList.remove("search-input-group-on-advanced-search");
+    searchBarGroup.classList.remove("search-bar-group-on-advanced-search");
+
+    button.textContent = "Búsqueda avanzada";
+    button.classList.remove("advanced-search-button-on-modal-shown");
+    button.classList.add("btn-primary");
+    button.style.display = "block";
+
+    closeModalButton.classList.add("close-modal-button-hidden");
+    closeModalButton.classList.remove("close-modal-button-shown");
+    
+    modalShown = false;
 }

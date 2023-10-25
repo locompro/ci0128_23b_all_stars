@@ -35,6 +35,8 @@ public class AdvancedSearchModalModel
     /// Canton that was selected
     /// </summary>
     public string cantonSelected { get; set; }
+    
+    public string EmptyValue { get; set; }
 
     /// <summary>
     /// Service that provides all province, canton and category data
@@ -44,6 +46,7 @@ public class AdvancedSearchModalModel
     public AdvancedSearchModalModel(AdvancedSearchInputService advancedSearchService)
     {
         this.advancedSearchService = advancedSearchService;
+        this.EmptyValue = advancedSearchService.EmptyValue;
     }
 
     /// <summary>
