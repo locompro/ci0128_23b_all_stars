@@ -10,12 +10,13 @@ public class Submission
 {
     [Required]
     public string Username { get; set; }
+    // TODO: Rename to UserID
     
     [Required]
     public DateTime EntryTime { get; set; }
     
     [Required]
-    public Status Status { get; set; }
+    public Status Status { get; set; } = Status.Active;
     
     [Required]
     public int Price { get; set; }
@@ -27,6 +28,7 @@ public class Submission
     [Required]
     public string StoreName { get; set; }
     
+    [Required]
     public int ProductId { get; set; }
     
     public virtual User User { get; set; }

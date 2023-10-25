@@ -66,7 +66,7 @@
 
 .search-results-card {
     margin-top: 15px;
-    padding-top: 15px;
+    padding-top: 25px;
     padding-bottom: 0px;
     padding-left: 25px;
     padding-right: 25px;
@@ -74,7 +74,6 @@
 }
 
 .table-encapsulate-for-results {
-    margin-top: 15px;
     overflow-y:auto;
 }
 
@@ -102,4 +101,22 @@
 .page-amount-text {
     margin-left: 10px;
     margin-bottom:0px;
+}
+
+.sort-asc::after {
+    content: '▲';
+    color: #007BFF; /* match the bootstrap primary color, change if needed */
+}
+
+.sort-desc::after {
+    content: '▼';
+    color: #007BFF; /* match the bootstrap primary color, change if needed */
+}
+
+.sort-none::after {
+    content: '';
+}
+
+.no-underline-link {
+    text-decoration: none;
 }

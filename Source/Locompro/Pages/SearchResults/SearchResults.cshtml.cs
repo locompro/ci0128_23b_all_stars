@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Locompro.Common;
 using Locompro.Models;
 using Microsoft.Extensions.Configuration;
+using Locompro.Repositories.Utilities;
 
 namespace Locompro.Pages.SearchResults;
 
@@ -63,17 +64,14 @@ public class SearchResultsModel : PageModel
     public long MaxPrice { get; set; }
     public string ModelSelected { get; set; }
     public string BrandSelected { get; set; }
-        
+    public string CurrentFilter { get; set; }
         
     public string NameSort { get; set; }
         
     public string CurrentSort { get; set; }
     public string CantonSort { get; set; }
     public string ProvinceSort { get; set; }
-
-        
-    public string CurrentFilter { get; set; }
-
+    
     /// <summary>
     /// Constructor
     /// </summary>
@@ -129,17 +127,19 @@ public class SearchResultsModel : PageModel
         SetSortingParameters(sortOrder, (sorting is not null));
         
         // get items from search service
-        _items =
-            (await _searchService.SearchItems(
-                ProductName,
-                ProvinceSelected,
-                CantonSelected,
-                MinPrice,
-                MaxPrice,
-                CategorySelected,
-                ModelSelected,
-                BrandSelected)
-            ).ToList();
+        List<SearchCriterion> searchParameters = new List<SearchCriterion>()
+        {
+            new SearchCriterion(SearchParam.SearchParameterTypes.Name, ProductName),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Province, ProvinceSelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Canton, CantonSelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Minvalue, MinPrice.ToString()),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Maxvalue, MaxPrice.ToString()),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Category, CategorySelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Model, ModelSelected),
+            new SearchCriterion(SearchParam.SearchParameterTypes.Brand, BrandSelected),
+        };
+
+        _items = await this._searchService.GetSearchResults(searchParameters);
         
         // get amount of items found    
         ItemsAmount = _items.Count;
@@ -148,7 +148,7 @@ public class SearchResultsModel : PageModel
         OrderItems();
         
         // create paginated list and set it to be displayed
-        DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
+        this.DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
     }
 
     /// <summary>
@@ -160,6 +160,7 @@ public class SearchResultsModel : PageModel
     /// <param name="maxValue"></param>
     /// <param name="category"></param>
     /// <param name="model"></param>
+    /// <param name="brand"></param>
     private void ValidateInput(
         string province,
         string canton,
@@ -169,7 +170,6 @@ public class SearchResultsModel : PageModel
         string model,
         string brand)
     {
-        
         if (!string.IsNullOrEmpty(province) && province.Equals("Ninguno"))
         {
             province = null;
@@ -201,42 +201,51 @@ public class SearchResultsModel : PageModel
     /// <param name="sorting"></param>
     private void SetSortingParameters(string sortOrder, bool sorting)
     {
-        if (!sorting)
+        if (!sorting && !string.IsNullOrEmpty(sortOrder))
         {
-            if (!string.IsNullOrEmpty(sortOrder))
-            {
-                NameSort = sortOrder;
-            }
+            CurrentSort = NameSort = sortOrder;
             return;
         }
-    
-        if (string.IsNullOrEmpty(sortOrder) || sortOrder.Equals("name_asc"))
+
+        // Define a dictionary to hold the reverse sortOrder mappings
+        Dictionary<string, string> sortMappings = new Dictionary<string, string>
         {
-            NameSort = "name_desc";
+            { "name_asc", "name_desc" },
+            { "name_desc", "name_asc" },
+            { "province_asc", "province_desc" },
+            { "province_desc", "province_asc" },
+            { "canton_asc", "canton_desc" },
+            { "canton_desc", "canton_asc" },
+        };
+
+        // If sortOrder is null or not in the dictionary, set default values
+        if (string.IsNullOrEmpty(sortOrder) || !sortMappings.ContainsKey(sortOrder))
+        {
+            CurrentSort = NameSort = "name_desc";
             ProvinceSort = "province_asc";
             CantonSort = "canton_asc";
+            return;
         }
-        else if (sortOrder.Equals("name_desc"))
+
+        // Update sorting based on the mapping and set CurrentSort
+        switch (sortOrder)
         {
-            NameSort = "name_asc";
-        }
-        else if (sortOrder.Equals("province_asc"))
-        {
-            ProvinceSort = "province_desc";
-        }
-        else if (sortOrder.Equals("province_desc"))
-        {
-            ProvinceSort = "province_asc";
-        }
-        else if (sortOrder.Equals("canton_asc"))
-        {
-            CantonSort = "canton_desc";
-        }
-        else if (sortOrder.Equals("canton_desc"))
-        {
-            CantonSort = "canton_asc";
+            case "name_asc":
+            case "name_desc":
+                CurrentSort = NameSort = sortMappings[sortOrder];
+                break;
+            case "province_asc":
+            case "province_desc":
+                CurrentSort = ProvinceSort = sortMappings[sortOrder];
+                break;
+            case "canton_asc":
+            case "canton_desc":
+                CurrentSort = CantonSort = sortMappings[sortOrder];
+                break;
         }
     }
+
+
 
 
     /// <summary>
@@ -280,8 +289,7 @@ public class SearchResultsModel : PageModel
             }
         }
     }
-
-        
+    
     /// <summary>
     /// Returns the view component for the advanced search modal
     /// </summary>
