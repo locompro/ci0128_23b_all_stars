@@ -17,7 +17,7 @@
                                 style="font-family: Roboto, sans-serif;"
                                 name=province
                                 id="provinceDropdown">
-                            <option>Ninguno</option>
+                            <option>@Model.EmptyValue</option>
                             @foreach (var provincia in Model.provinces)
                             {
                                 <option>@provincia.Name</option>
@@ -30,7 +30,7 @@
                                 style="font-family: Roboto, sans-serif;padding-right: 10px;margin-right: 0px;"
                                 name=canton
                                 id="cantonDropdown">
-                            <option>Ninguno</option>
+                            <option>@Model.EmptyValue</option>
                         </select>
                     </div>
                 </div>

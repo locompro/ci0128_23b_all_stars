@@ -4,8 +4,8 @@ var modalShown = false;
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("advancedSearchButton").addEventListener("click", async function () {
         // get button for advanced search button
-        var button = document.getElementById("advancedSearchButton");
-        var buttonContainer = document.getElementById("advancedSearchButtonContainer");
+        const button = document.getElementById("advancedSearchButton");
+        const buttonContainer = document.getElementById("advancedSearchButtonContainer");
         
         const searchGroup = document.getElementById("mainPageSearchGroup");
         const modalContainer = document.getElementById("modalContainer");
@@ -22,6 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
             buttonContainer.classList.remove("advanced-search-button-in-modal");
             buttonContainer.classList.add("advanced-search-button");
             button.textContent = "Búsqueda avanzada";
+            button.classList.add("index-advanced-search-button-initial");
+            button.classList.remove("index-advanced-search-button-in-modal");
 
             modalContainer.classList.remove("index-modal-advanced-search");
             modalContainer.classList.add("advanced-search-modal-default");
@@ -58,7 +60,9 @@ document.addEventListener("DOMContentLoaded", function () {
         // change the button style
         buttonContainer.classList.remove("advanced-search-button");
         buttonContainer.classList.add("advanced-search-button-in-modal");
-        button.textContent = "▲";
+        button.classList.remove("index-advanced-search-button-initial");
+        button.classList.add("index-advanced-search-button-in-modal");
+        button.textContent = "";
         
         // change the search bar
         searchBar.classList.remove("search-bar-default");
