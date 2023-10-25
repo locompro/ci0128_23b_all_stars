@@ -9,12 +9,12 @@ public class SearchCriterion
     public SearchParam.SearchParameterTypes ParameterName { get; init; }
     public string SearchValue { get; init; }
     
-    
-    public SearchCriterion()
-    {
-    }
-    
-    public SearchCriterion(SearchParam.SearchParameterTypes parameterName, string searchValue)
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="parameterName"></param>
+    /// <param name="searchValue"></param>
+    public SearchCriterion(SearchParam.SearchParameterTypes parameterName = default, string searchValue = "")
     {
         this.ParameterName = parameterName;
         this.SearchValue = searchValue;
