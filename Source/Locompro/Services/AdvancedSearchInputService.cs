@@ -42,6 +42,8 @@ namespace Locompro.Services
         /// Province that was selected
         /// </summary>
         public string ProvinceSelected { get; set; }
+        
+        public string EmptyValue { get; set; }
 
         /// <summary>
         /// Constructor
