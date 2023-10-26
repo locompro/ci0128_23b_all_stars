@@ -37,13 +37,13 @@
                 type="button">
             Búsqueda avanzada
         </button>
-        
+
     </div>
     <div>
         <div id="modalContainer" class="justify-content-center">
         </div>
     </div>
-    <button id="closeModalButton" class = "close-modal-button-hidden" onclick="closeModal()"></button>
+    <button id="closeModalButton" class="close-modal-button-hidden" onclick="closeModal()"></button>
 </div>
 
 <div class="card border search-results-card" border="5px solid black;">
@@ -71,7 +71,7 @@
                         </a>
                     </th>
                     <th scope="col">Precio</th>
-                    <th scope="col">Tienda</th>
+                    <th scope="col" style="padding-left: 30px">Tienda</th>
                     <th scope="col">Modelo</th>
                     <th>
                         <a asp-page="./SearchResults"
@@ -121,10 +121,10 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>
-                            <td>
+                            <td style="text-align: right; padding-left: 0px">
                                 @Html.DisplayFor(modelItem => item.Price)
                             </td>
-                            <td>
+                            <td style="padding-left: 30px">
                                 @Html.DisplayFor(modelItem => item.Store)
                             </td>
                             <td>
@@ -178,21 +178,19 @@
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                @{
-                                                    foreach (Submission tempSubmit in item.Submissions)
-                                                    {
-                                                        <tr>
-                                                            <td class="text-center">
-                                                                @Html.DisplayFor(modelSub => tempSubmit.EntryTime)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelSub => tempSubmit.Price)
-                                                            </td>
-                                                            <td>
-                                                                @Html.DisplayFor(modelSub => tempSubmit.Description)
-                                                            </td>
-                                                        </tr>
-                                                    }
+                                                @foreach (Submission tempSubmit in item.Submissions)
+                                                {
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            @Html.DisplayFor(modelSub => tempSubmit.EntryTime)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelSub => tempSubmit.Price)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelSub => tempSubmit.Description)
+                                                        </td>
+                                                    </tr>
                                                 }
                                                 </tbody>
                                             </table>
@@ -300,3 +298,4 @@
     }
     </script>
 }
+
