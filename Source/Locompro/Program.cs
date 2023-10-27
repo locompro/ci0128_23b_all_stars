@@ -1,6 +1,6 @@
 using System;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
-
 using Locompro.Data;
 using Locompro.Repositories;
 using Locompro.Services;
@@ -46,6 +46,12 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
+app.Use(async (context, next) =>
+{
+    Console.WriteLine($"Incoming request: {context.Request.Path}");
+    await next();
+});
+
 app.Run();
 return;
 
@@ -56,39 +62,48 @@ void RegisterServices(WebApplicationBuilder builder)
     // Built in services
     builder.Services.AddLogging();
     builder.Services.AddRazorPages();
+    builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
+
+    string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
+                             throw new InvalidOperationException("Env environment variable not found.");
+    
+    var connectionString = builder.Configuration.GetValue<string>($"{environmentName}_ConnectionString__LocomproContext") ??
+                           throw new InvalidOperationException("Secret connection string not found.");
     
     // Add DbContext using SQL Server
-    builder.Services.AddDbContext<LocomproContext>(options =>
-        options.UseLazyLoadingProxies()
-            .UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ?? throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
-    
+    builder.Services.AddDbContext<LocomproContext>(options => options.UseLazyLoadingProxies()
+        .UseSqlServer(connectionString));
+
+    // Set LocomproContext as the default DbContext
+    builder.Services.AddScoped<DbContext, LocomproContext>();
+
     builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
         .AddEntityFrameworkStores<LocomproContext>();
-    
-    // Register repositories and services
+
+    // Configure application cookie after setting up Identity
+    builder.Services.ConfigureApplicationCookie(config =>
+    {
+        config.Cookie.Name = "Identity.Cookie";
+        config.LoginPath = "/Account/Login";
+    });
+
+    // Register repositories
     builder.Services.AddScoped<UnitOfWork>();
     builder.Services.AddScoped<StoreRepository>();
-    builder.Services.AddScoped<StoreService>();
-    builder.Services.AddScoped<AuthService>();
-    
-    builder.Services.AddTransient<CountryRepository>();
-    builder.Services.AddTransient<CountryService>();
-
-    // Register repositories and services
-    builder.Services.AddScoped<StoreRepository>();
-    builder.Services.AddScoped<StoreService>();
-
-    // for advanced search
-    builder.Services.AddScoped<AdvancedSearchInputService>();
-    builder.Services.AddScoped<SearchService>();
+    builder.Services.AddScoped<CountryRepository>();
     builder.Services.AddScoped<CategoryRepository>();
-    builder.Services.AddScoped<CategoryService>();
-    
-    // for searching
     builder.Services.AddScoped<ProductRepository>();
     builder.Services.AddScoped<SubmissionRepository>();
+    builder.Services.AddScoped<UserRepository>();
+
+    // Register domain services
+    builder.Services.AddScoped<StoreService>();
+    builder.Services.AddScoped<CountryService>();
+    builder.Services.AddScoped<CategoryService>();
+    builder.Services.AddScoped<UserService>();
+
+    // Register application services
+    builder.Services.AddScoped<AuthService>();
+    builder.Services.AddScoped<AdvancedSearchInputService>();
     builder.Services.AddScoped<SearchService>();
-    builder.Services.AddScoped<SubmissionRepository>();
 }
-
-
