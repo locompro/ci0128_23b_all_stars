@@ -32,7 +32,7 @@ public class CreateModel : PageModel
     [Required(ErrorMessage = "Ingresar el precio del producto.")]
     [Range(100, 10000000, ErrorMessage = "El precio debe estar entre ₡100 y ₡10.000.000.")]
     [RegularExpression(@"^\d+$", ErrorMessage = "El precio debe contener solamente números enteros.")]
-    public int? Price { get; set; }
+    public int Price { get; set; }
 
     private readonly StoreService _storeService;
 
@@ -40,14 +40,11 @@ public class CreateModel : PageModel
     
     private readonly ContributionService _contributionService;
 
-    private readonly UserManager<User> _userManager;
-
-    public CreateModel(StoreService storeService, ProductService productService, ContributionService contributionService, UserManager<User> userManager)
+    public CreateModel(StoreService storeService, ProductService productService, ContributionService contributionService)
     {
         _storeService = storeService;
         _productService = productService;
         _contributionService = contributionService;
-        _userManager = userManager;
     }
 
     public async Task<IActionResult> OnGetFetchStores(string partialName)
@@ -98,7 +95,7 @@ public class CreateModel : PageModel
 
         string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        await _contributionService.AddSubmission(StoreVm, ProductVm, Description, Price.GetValueOrDefault(), userId);
+        await _contributionService.AddSubmission(StoreVm, ProductVm, Description, Price, userId);
 
         return RedirectToPage("/Index");
     }

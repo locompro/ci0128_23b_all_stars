@@ -10,12 +10,12 @@ namespace Locompro.Models.ViewModels;
 public class ProductViewModel
 {
     [Required(ErrorMessage = "Seleccionar un producto.")]
-    public int? Id { get; set; }
+    public int Id { get; set; }
     
-    [RequiredIf("IsNewProduct", true, "Ingresar el nombre del producto.")]
+    [RequiredIf("IsExistingProduct", false, "Ingresar el nombre del producto.")]
     [StringLength(60, MinimumLength = 1)]
     [DisplayName("Nombre")]
-    public string Name { get; set; }
+    public string PName { get; set; } // not a typo
     
     [StringLength(60)]
     [DisplayName("Modelo")]
@@ -29,8 +29,8 @@ public class ProductViewModel
     [DisplayName("Categoría")]
     public string Category { get; set; }
     
-    public bool IsNewProduct()
+    public bool IsExistingProduct()
     {
-        return -1 == Id;
+        return -1 != Id;
     }
 }

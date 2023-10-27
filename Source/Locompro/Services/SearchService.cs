@@ -1,27 +1,21 @@
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Locompro.Repositories;
 using Locompro.Models;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Text.RegularExpressions;
+using Locompro.Services.Domain;
 
 namespace Locompro.Services;
 
 public class SearchService
 {
-    private readonly SubmissionRepository _submissionRepository;
+    private readonly ISubmissionService _submissionService;
 
     /// <summary>
     /// Constructor for the search service
     /// </summary>
-    /// <param name="submissionRepository"></param>
-    /// <param name="countryRepository"></param>
-    /// <param name="productRepository"></param>
-    public SearchService(SubmissionRepository submissionRepository)
+    /// <param name="submissionService"></param>
+    public SearchService(ISubmissionService submissionService)
     {
-        _submissionRepository = submissionRepository;
+        _submissionService = submissionService;
     }
 
     /// <summary>
@@ -41,31 +35,30 @@ public class SearchService
     public async Task<List<Item>> SearchItems(string productName, string province, string canton, long minValue,
         long maxValue, string category, string model, string brand = null)
     {
-        
         // List of items to be returned
-        List<Item> items = new List<Item>();
+        var items = new List<Item>();
 
         // List for submissions to be aggregated
-        List<IEnumerable<Submission>> submissions = new List<IEnumerable<Submission>>();
+        var submissions = new List<IEnumerable<Submission>>();
 
         if (!string.IsNullOrEmpty(productName))  // Results by product name
         {
-            submissions.Add(await GetSubmissionsByProductName(productName));
+            submissions.Add(await _submissionService.GetByProductName(productName));
         }
 
         if (!string.IsNullOrEmpty(model))  // Results by product model
         {
-            submissions.Add(await GetSubmissionsByProductModel(model));
+            submissions.Add(await _submissionService.GetByProductModel(model));
         }
 
         if (!string.IsNullOrEmpty(province))  // Results by canton and province
         {
-            submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
+            submissions.Add(await _submissionService.GetByCantonAndProvince(canton, province));
         }
 
         if (!string.IsNullOrEmpty(brand)) // Results by product brand
         {
-            submissions.Add(await GetSubmissionsByBrand(brand));
+            submissions.Add(await _submissionService.GetByBrand(brand));
         }
 
         // if there are no submissions
@@ -76,7 +69,7 @@ public class SearchService
         }
 
         // Look for intersection of all results
-        IEnumerable<Submission> result = submissions.Aggregate((x, y) => x.Intersect(y));
+        var result = submissions.Aggregate((x, y) => x.Intersect(y));
 
         // Get items from the submissions
         items.AddRange(await GetItems(result));
@@ -85,63 +78,24 @@ public class SearchService
     }
 
     /// <summary>
-    /// Gets submissions containing a specific product name
-    /// </summary>
-    /// <param name="productName"></param>
-    /// <returns></returns>
-    private async Task<IEnumerable<Submission>> GetSubmissionsByProductName(string productName)
-    {
-        return await _submissionRepository.GetSubmissionsByProductNameAsync(productName);
-    }
-
-    /// <summary>
-    /// Gets submissions containing a specific product model
-    /// </summary>
-    /// <remarks> This is just a wrapper for the submission repository </remarks>
-    private async Task<IEnumerable<Submission>> GetSubmissionsByProductModel(string productModel)
-    {
-        return await _submissionRepository.GetSubmissionsByProductModelAsync(productModel);
-    }
-
-    /// <summary>
-    /// Calls the submission repository to get all submissions containing a specific brand name
-    /// </summary>
-    /// <param name="brandName"></param>
-    /// <returns> An Enumerable with al the submissions tha meet the criteria</returns>
-    private async Task<IEnumerable<Submission>> GetSubmissionsByBrand(string brandName)
-    {
-        return await _submissionRepository.GetSubmissionByBrandAsync(brandName);
-    }
-
-    public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAndProvince(string canton, string province)
-    {
-        return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
-    }
-
-    public async Task<IEnumerable<Submission>> GetSubmissionByCanton(string canton, string province)
-    {
-        return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
-    }
-
-    /// <summary>
     /// Gets all the items to be displayed in the search results
     /// from a list of submissions
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>
-    private async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
+    private static async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
     {
-        List<Item> items = new List<Item>();
+        var items = new List<Item>();
 
         // Group submissions by store
-        IEnumerable<IGrouping<Store, Submission>> submissionsByStore = submissions.GroupBy(s => s.Store);
+        var submissionsByStore = submissions.GroupBy(s => s.Store);
 
-        foreach (IGrouping<Store, Submission> store in submissionsByStore)
+        foreach (var store in submissionsByStore)
         {
-            IEnumerable<IGrouping<Product, Submission>> submissionsByProduct = store.GroupBy(s => s.Product);
-            foreach (IGrouping<Product, Submission> product in submissionsByProduct)
+            var submissionsByProduct = store.GroupBy(s => s.Product);
+            foreach (var product in submissionsByProduct)
             {
-                items.Add(await this.GetItem(product));
+                items.Add(await GetItem(product));
             }
         }
 
@@ -155,13 +109,13 @@ public class SearchService
     /// </summary>
     /// <param name="itemGrouping"></param>
     /// <returns></returns>
-    private async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
+    private static async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
     {
         // Get best submission for its information
-        Submission bestSubmission = this.GetBestSubmission(itemGrouping);
+        var bestSubmission = GetBestSubmission(itemGrouping);
 
-        Item item = new Item(
-            GetFormatedDate(bestSubmission),
+        var item = new Item(
+            GetFormattedDate(bestSubmission),
             bestSubmission.Product.Name,
             bestSubmission.Price,
             bestSubmission.Store.Name,
@@ -184,11 +138,11 @@ public class SearchService
     /// </summary>
     /// <param name="submission"></param>
     /// <returns></returns>
-    string GetFormatedDate(Submission submission)
+    private static string GetFormattedDate(Submission submission)
     {
-        Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture), @"[0-9]*/[0-9.]*/[0-9]*");
+        var regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture), @"[0-9]*/[0-9.]*/[0-9]*");
 
-        string date = regexMatch.Success ? regexMatch.Groups[0].Value : submission.EntryTime.ToString(CultureInfo.InvariantCulture);
+        var date = regexMatch.Success ? regexMatch.Groups[0].Value : submission.EntryTime.ToString(CultureInfo.InvariantCulture);
 
         return date;
     }
@@ -199,7 +153,7 @@ public class SearchService
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>
-    private Submission GetBestSubmission(IEnumerable<Submission> submissions)
+    private static Submission GetBestSubmission(IEnumerable<Submission> submissions)
     {
         // For the time being, the best submission is the one with the most recent entry time
         return submissions.MaxBy(s => s.EntryTime);

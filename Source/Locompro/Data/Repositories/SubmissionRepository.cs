@@ -8,7 +8,7 @@ using Locompro.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Locompro.Repositories
+namespace Locompro.Data.Repositories
 {
     public struct SubmissionKey
     {
@@ -20,7 +20,7 @@ namespace Locompro.Repositories
     /// Repository for Submission entities.
     /// Key is a tuple of the country name and the Datetime of the submission.
     /// </summary>
-    public class SubmissionRepository : AbstractRepository<Submission, SubmissionKey>
+    public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, ISubmissionRepository
     {
         /// <summary>
         /// 
@@ -32,19 +32,15 @@ namespace Locompro.Repositories
         {
         }
         
-        /// <summary>
-        /// Gets all submissions that are in a store in the given canton and province
-        /// <param name="cantonName"></param>
-        /// <param name="provinceName"></param>
-        /// <returns> a task IEnumerable of submissions </returns>
-        public virtual async Task<IEnumerable<Submission>> GetSubmissionsByCantonAsync(string cantonName,
+        /// <inheritdoc />
+        public virtual async Task<IEnumerable<Submission>> GetByCantonAsync(string cantonName,
             string provinceName)
         {
             List<Submission> submissions;
             
             if (String.IsNullOrEmpty(cantonName))
             {
-                submissions = await DbSet
+                submissions = await Set
                     .Include(s => s.Store)
                     .ThenInclude(st => st.Canton)
                     .Where(s => s.Store.Canton.Province.Name == provinceName)
@@ -52,7 +48,7 @@ namespace Locompro.Repositories
             }
             else
             {
-                submissions = await DbSet
+                submissions = await Set
                     .Include(s => s.Store)
                     .ThenInclude(st => st.Canton)
                     .Where(s => s.Store.Canton.Name == cantonName && s.Store.Canton.Province.Name == provinceName)
@@ -62,14 +58,10 @@ namespace Locompro.Repositories
             return submissions;
         }
 
-        /// <summary>
-        /// Gets all submissions that contain the given product model
-        /// </summary>
-        /// <param name="productModel"></param>
-        /// <returns> a task IEnumerable of submissions that contain the model</returns>
-        public virtual async Task<IEnumerable<Submission>> GetSubmissionsByProductModelAsync(string productModel)
+        /// <inheritdoc />
+        public virtual async Task<IEnumerable<Submission>> GetByProductModelAsync(string productModel)
         {
-            var submissions = await DbSet
+            var submissions = await Set
                 .Include(s => s.Product)
                 .Where(s => s.Product.Model.Contains(productModel))
                 .ToListAsync();
@@ -77,27 +69,20 @@ namespace Locompro.Repositories
             return submissions;
         }
 
-        /// <summary>
-        /// Gets all submissions that contain the given product name
-        /// </summary>
-        /// <param name="productName"></param>
-        /// <returns></returns>
-        public virtual async Task<IEnumerable<Submission>> GetSubmissionsByProductNameAsync(string productName)
+        /// <inheritdoc />
+        public virtual async Task<IEnumerable<Submission>> GetByProductNameAsync(string productName)
         {
-            IQueryable<Submission> submissionsQuery = this.DbSet
+            IQueryable<Submission> submissionsQuery = Set
                 .Include(s => s.Product)
                 .Where(s => s.Product.Name.Contains(productName));
 
             return await submissionsQuery.ToListAsync();
         }
 
-        /// <summary>
-        /// Gets all submissions that contain the given brand name, case insensitive
-        /// </summary>
-        /// <param name="brandName"></param>
-        public virtual async Task<IEnumerable<Submission>> GetSubmissionByBrandAsync(string brandName)
+        /// <inheritdoc />
+        public virtual async Task<IEnumerable<Submission>> GetByBrandAsync(string brandName)
         {
-            IQueryable<Submission> submissionsQuery = this.DbSet
+            IQueryable<Submission> submissionsQuery = Set
                 .Include(s => s.Product)
                 .Where(s => s.Product.Brand.Contains(brandName));
 
