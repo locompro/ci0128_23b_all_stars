@@ -70,6 +70,8 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<StoreRepository>();
     builder.Services.AddScoped<StoreService>();
     builder.Services.AddScoped<AuthService>();
+    builder.Services.AddScoped<UserService>();
+    builder.Services.AddScoped<UserRepository>();
     
     builder.Services.AddTransient<CountryRepository>();
     builder.Services.AddTransient<CountryService>();

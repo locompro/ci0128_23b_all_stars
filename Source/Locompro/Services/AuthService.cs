@@ -1,6 +1,7 @@
 ﻿#nullable disable
 
 using System;
+using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Locompro.Areas.Identity.ViewModels;
@@ -138,6 +139,12 @@ namespace Locompro.Services
         {
          var result =  _signInManager.IsSignedIn(_signInManager.Context.User);
          return result;
+        }
+        
+        public string GetUserId()
+        {
+            var result = _signInManager.Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return result;
         }
     }
 }
