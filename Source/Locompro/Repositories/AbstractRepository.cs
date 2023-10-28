@@ -14,7 +14,7 @@ namespace Locompro.Repositories
     public abstract class AbstractRepository<T, I> : IRepository<T, I> where T: class
     {
         protected readonly ILogger Logger;
-        protected readonly LocomproContext Context;
+        protected readonly DbContext Context;
         protected readonly DbSet<T> DbSet;
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Locompro.Repositories
         /// </summary>
         /// <param name="context">Context to base the repository on.</param>
         /// <param name="loggerFactory">Factory for repository logger.</param>
-        protected AbstractRepository(LocomproContext context, ILoggerFactory loggerFactory)
+        protected AbstractRepository(DbContext context, ILoggerFactory loggerFactory)
         {
             Logger = loggerFactory.CreateLogger(GetType());
             Context = context;

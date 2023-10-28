@@ -34,7 +34,7 @@ namespace Locompro.Migrations
 
                     b.HasIndex("ProductsId");
 
-                    b.ToTable("CategoryProduct");
+                    b.ToTable("CategoryProduct", (string)null);
                 });
 
             modelBuilder.Entity("Locompro.Models.Canton", b =>
@@ -51,7 +51,7 @@ namespace Locompro.Migrations
 
                     b.HasKey("CountryName", "ProvinceName", "Name");
 
-                    b.ToTable("Cantons");
+                    b.ToTable("Cantons", (string)null);
                 });
 
             modelBuilder.Entity("Locompro.Models.Category", b =>
@@ -67,7 +67,7 @@ namespace Locompro.Migrations
 
                     b.HasIndex("ParentName");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Locompro.Models.Country", b =>
@@ -77,7 +77,7 @@ namespace Locompro.Migrations
 
                     b.HasKey("Name");
 
-                    b.ToTable("Countries");
+                    b.ToTable("Countries", (string)null);
                 });
 
             modelBuilder.Entity("Locompro.Models.Product", b =>
@@ -106,7 +106,7 @@ namespace Locompro.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Locompro.Models.Province", b =>
@@ -120,7 +120,7 @@ namespace Locompro.Migrations
 
                     b.HasKey("CountryName", "Name");
 
-                    b.ToTable("Provinces");
+                    b.ToTable("Provinces", (string)null);
                 });
 
             modelBuilder.Entity("Locompro.Models.Store", b =>
@@ -166,7 +166,7 @@ namespace Locompro.Migrations
 
                     b.HasIndex("CantonCountryName", "CantonProvinceName", "CantonName");
 
-                    b.ToTable("Stores");
+                    b.ToTable("Stores", (string)null);
                 });
 
             modelBuilder.Entity("Locompro.Models.Submission", b =>
@@ -202,7 +202,7 @@ namespace Locompro.Migrations
 
                     b.HasIndex("StoreName");
 
-                    b.ToTable("Submissions");
+                    b.ToTable("Submissions", (string)null);
                 });
 
             modelBuilder.Entity("Locompro.Models.User", b =>
