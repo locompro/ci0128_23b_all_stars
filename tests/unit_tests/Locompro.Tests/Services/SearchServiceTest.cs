@@ -1,43 +1,37 @@
 using System.Globalization;
 using Locompro.Data;
 using Locompro.Models;
-using Locompro.Repositories;
+using Locompro.Data.Repositories;
 using Locompro.Repositories.Utilities;
 using Locompro.Services;
-using Locompro.Services.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NuGet.ContentModel;
 
 namespace Locompro.Tests.Services;
 
 [TestFixture]
 public class SearchServiceTest
 {
-    private readonly Mock<SubmissionRepository> _submissionRepositoryMock;
-    private readonly SearchService _searchService;
+    private Mock<ISubmissionRepository> _submissionRepositoryMock;
+    private Mock<IUnitOfWork> _unitOfWorkMock;
+    private SearchService _searchService;
 
-    public SearchServiceTest()
+    [SetUp]
+    public void Setup()
     {
-        ILoggerFactory loggerFactoryMock = LoggerFactory.Create(builder => { });
-        DbContextOptions<LocomproContext> options = new DbContextOptionsBuilder<LocomproContext>()
-            .UseInMemoryDatabase(databaseName: "InMemoryDbForTesting")
-            .Options;
+        var loggerFactoryMock = new Mock<ILoggerFactory>();
         
-        LocomproContext dbContextMock = new LocomproContext(options);
-        LoggerFactory.Create(builder => { });
+        _submissionRepositoryMock = new Mock<ISubmissionRepository>();
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
+
+        _unitOfWorkMock.Setup(u => u.GetRepository<ISubmissionRepository>())
+            .Returns(_submissionRepositoryMock.Object);
         
-        this._submissionRepositoryMock = new Mock<SubmissionRepository>(dbContextMock, loggerFactoryMock);
-        this._searchService =
-            new SearchService(_submissionRepositoryMock.Object,
-                new UnitOfWork(
-                    new Logger<UnitOfWork>(loggerFactoryMock),
-                    dbContextMock),
-                loggerFactoryMock);
+        _searchService = new SearchService(_unitOfWorkMock.Object, loggerFactoryMock.Object);
     }
-    
-   /// <summary>
+
+    /// <summary>
     /// Finds a list of names that are expected to be found
     /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
@@ -954,8 +948,8 @@ public class SearchServiceTest
         // setting up mock repository behavior requires the methods to be virtual on class being mocked or using interface, in this case
         // the methods are virtual because interface does not have the methods being implemented.
         _submissionRepositoryMock
-            .Setup(repo => repo.GetSearchResults(It.IsAny<SearchQuery>()))
-            .ReturnsAsync((SearchQuery searchQueries) =>
+            .Setup(repo => repo.GetSearchResults(It.IsAny<SearchQueries>()))
+            .ReturnsAsync((SearchQueries searchQueries) =>
             {
                 // initiate the query
                 IQueryable<Submission> submissionsResults = submissions.AsQueryable().Include(submission => submission.Product);

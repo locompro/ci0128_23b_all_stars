@@ -1,9 +1,7 @@
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models;
-using Locompro.Services;
 using Locompro.Services.Domain;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -12,17 +10,14 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class SubmissionServiceTest
 {
-    private Mock<LocomproContext> _dbContextMock;
     private Mock<IUnitOfWork> _unitOfWorkMock;
-    private Mock<ILoggerFactory> _loggerFactoryMock;
     private Mock<ISubmissionRepository> _submissionCrudRepositoryMock;
     private SubmissionService _submissionService;
     
     [SetUp]
     public void Setup()
     {
-        _dbContextMock = new Mock<LocomproContext>(new DbContextOptions<LocomproContext>());
-        _loggerFactoryMock = new Mock<ILoggerFactory>();
+        var loggerFactoryMock = new Mock<ILoggerFactory>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _submissionCrudRepositoryMock = new Mock<ISubmissionRepository>();
         
@@ -30,7 +25,7 @@ public class SubmissionServiceTest
             .Setup(unit => unit.GetRepository<ISubmissionRepository>())
             .Returns(_submissionCrudRepositoryMock.Object);
         
-        _submissionService = new SubmissionService(_unitOfWorkMock.Object, _loggerFactoryMock.Object);
+        _submissionService = new SubmissionService(_unitOfWorkMock.Object, loggerFactoryMock.Object);
     }
     
     /// <summary>

@@ -1,11 +1,20 @@
 using Locompro.Models;
+using Locompro.Repositories.Utilities;
 
 namespace Locompro.Data.Repositories;
 
 public interface ISubmissionRepository : ICrudRepository<Submission, SubmissionKey>
 {
     /// <summary>
+    /// Gets the search results submissions according to the list of search criteria or queries to be used
+    /// </summary>
+    /// <param name="searchQueries"> search queries, criteria or strategies to be used to find the desired submissions</param>
+    /// <returns></returns>
+    Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries);
+    
+    /// <summary>
     /// Gets all submissions that are in a store in the given canton and province
+    /// </summary>
     /// <param name="cantonName"></param>
     /// <param name="provinceName"></param>
     /// <returns> a task IEnumerable of submissions </returns>

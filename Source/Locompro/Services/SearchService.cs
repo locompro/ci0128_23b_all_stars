@@ -2,25 +2,25 @@ using System.Globalization;
 using Locompro.Models;
 using System.Text.RegularExpressions;
 using Locompro.Data;
+using Locompro.Data.Repositories;
 using Locompro.Repositories.Utilities;
 
 namespace Locompro.Services;
 
 public class SearchService : AbstractService
 {
-    private readonly SubmissionRepository _submissionRepository;
+    private readonly ISubmissionRepository _submissionRepository;
     private readonly QueryBuilder _queryBuilder;
 
     /// <summary>
     /// Constructor for the search service
     /// </summary>
-    /// <param name="submissionRepository"> submission repository used for searches</param>
     /// <param name="unitOfWork"> generic unit of work</param>
     /// <param name="loggerFactory"> logger </param>
-    public SearchService(SubmissionRepository submissionRepository, UnitOfWork unitOfWork, ILoggerFactory loggerFactory) :
+    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) :
         base(unitOfWork, loggerFactory)
     {
-        _submissionRepository = submissionRepository;
+        _submissionRepository = UnitOfWork.GetRepository<ISubmissionRepository>();
         _queryBuilder = new QueryBuilder();
     }
 
@@ -37,7 +37,7 @@ public class SearchService : AbstractService
             try
             {
                 this._queryBuilder.AddSearchCriterion(searchCriterion);
-            } catch (System.ArgumentException exception)
+            } catch (ArgumentException exception)
             {
                 // if the search criterion is invalid, report on it but continue execution
                 this.Logger.LogWarning(exception.ToString());
@@ -45,17 +45,17 @@ public class SearchService : AbstractService
         }
 
         // compose the list of search functions
-        SearchQuery searchQuery = this._queryBuilder.GetSearchFunction();
+        SearchQueries searchQueries = this._queryBuilder.GetSearchFunction();
         
         // get the submissions that match the search functions
         IEnumerable<Submission> submissions = 
-            searchQuery.IsEmpty?
+            searchQueries.IsEmpty?
                 Enumerable.Empty<Submission>() :
-                await this._submissionRepository.GetSearchResults(searchQuery);
+                await this._submissionRepository.GetSearchResults(searchQueries);
         
         this._queryBuilder.Reset();
         
-        return this.GetItems(submissions).Result.ToList();
+        return GetItems(submissions).Result.ToList();
     }
     
     /// <summary>
