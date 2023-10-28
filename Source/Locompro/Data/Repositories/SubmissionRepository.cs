@@ -2,11 +2,15 @@ using System.Reflection.PortableExecutable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Locompro.Models;
 using Locompro.Data;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.Extensions.Logging;
+using Locompro.Repositories.Utilities;
 
 namespace Locompro.Data.Repositories
 {
@@ -23,7 +27,7 @@ namespace Locompro.Data.Repositories
     public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, ISubmissionRepository
     {
         /// <summary>
-        /// 
+        /// Constructor
         /// </summary>
         /// <param name="context"></param>
         /// <param name="loggerFactory"></param>
@@ -32,61 +36,22 @@ namespace Locompro.Data.Repositories
         {
         }
         
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<Submission>> GetByCantonAsync(string cantonName,
-            string provinceName)
+        /// <summary>
+        /// Gets the search results submissions according to the list of search criteria or queries to be used
+        /// </summary>
+        /// <param name="searchQueries"> search queries, criteria or strategies to be used to find the desired submissions</param>
+        /// <returns></returns>
+        public virtual async Task<IEnumerable<Submission>> GetSearchResults(SearchQuery searchQueries)
         {
-            List<Submission> submissions;
+            // initiate the query
+            IQueryable<Submission> submissionsResults = this.DbSet
+                .Include(submission => submission.Product);
             
-            if (String.IsNullOrEmpty(cantonName))
-            {
-                submissions = await Set
-                    .Include(s => s.Store)
-                    .ThenInclude(st => st.Canton)
-                    .Where(s => s.Store.Canton.Province.Name == provinceName)
-                    .ToListAsync();
-            }
-            else
-            {
-                submissions = await Set
-                    .Include(s => s.Store)
-                    .ThenInclude(st => st.Canton)
-                    .Where(s => s.Store.Canton.Name == cantonName && s.Store.Canton.Province.Name == provinceName)
-                    .ToListAsync();
-            }
+            // append the search queries to the query
+            submissionsResults = searchQueries.SearchQueryFunctions.Aggregate(submissionsResults, (current, query) => current.Where(query));
 
-            return submissions;
-        }
-
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<Submission>> GetByProductModelAsync(string productModel)
-        {
-            var submissions = await Set
-                .Include(s => s.Product)
-                .Where(s => s.Product.Model.Contains(productModel))
-                .ToListAsync();
-
-            return submissions;
-        }
-
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<Submission>> GetByProductNameAsync(string productName)
-        {
-            IQueryable<Submission> submissionsQuery = Set
-                .Include(s => s.Product)
-                .Where(s => s.Product.Name.Contains(productName));
-
-            return await submissionsQuery.ToListAsync();
-        }
-
-        /// <inheritdoc />
-        public virtual async Task<IEnumerable<Submission>> GetByBrandAsync(string brandName)
-        {
-            IQueryable<Submission> submissionsQuery = Set
-                .Include(s => s.Product)
-                .Where(s => s.Product.Brand.Contains(brandName));
-
-            return await submissionsQuery.ToListAsync();
+            // get and return the results
+            return await submissionsResults.ToListAsync();
         }
     }
 }
