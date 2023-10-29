@@ -1,27 +1,27 @@
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Locompro.Repositories;
 using Locompro.Models;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Text.RegularExpressions;
+using Locompro.Data;
+using Locompro.Data.Repositories;
+using Locompro.Repositories.Utilities;
 
 namespace Locompro.Services;
 
-public class SearchService
+public class SearchService : AbstractService
 {
-    private readonly SubmissionRepository _submissionRepository;
+    private readonly ISubmissionRepository _submissionRepository;
+    private readonly QueryBuilder _queryBuilder;
 
     /// <summary>
     /// Constructor for the search service
     /// </summary>
-    /// <param name="submissionRepository"></param>
-    /// <param name="countryRepository"></param>
-    /// <param name="productRepository"></param>
-    public SearchService(SubmissionRepository submissionRepository)
+    /// <param name="unitOfWork"> generic unit of work</param>
+    /// <param name="loggerFactory"> logger </param>
+    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) :
+        base(unitOfWork, loggerFactory)
     {
-        _submissionRepository = submissionRepository;
+        _submissionRepository = UnitOfWork.GetRepository<ISubmissionRepository>();
+        _queryBuilder = new QueryBuilder();
     }
 
     /// <summary>
@@ -29,119 +29,54 @@ public class SearchService
     /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
     /// It then returns a list of items that match all the criteria.
     /// </summary>
-    /// <param name="productName"></param>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
-    /// <param name="brand"></param>
-    /// <returns>A list of items that match the search criteria.</returns>
-    public async Task<List<Item>> SearchItems(string productName, string province, string canton, long minValue,
-        long maxValue, string category, string model, string brand = null)
+    public async Task<List<Item>> GetSearchResults(List<SearchCriterion> unfilteredSearchCriteria)
     {
+        // add the list of unfiltered search criteria to the query builder
+        foreach (SearchCriterion searchCriterion in unfilteredSearchCriteria)
+        {
+            try
+            {
+                this._queryBuilder.AddSearchCriterion(searchCriterion);
+            } catch (ArgumentException exception)
+            {
+                // if the search criterion is invalid, report on it but continue execution
+                this.Logger.LogWarning(exception.ToString());
+            }
+        }
+
+        // compose the list of search functions
+        SearchQueries searchQueries = this._queryBuilder.GetSearchFunction();
         
-        // List of items to be returned
-        List<Item> items = new List<Item>();
-
-        // List for submissions to be aggregated
-        List<IEnumerable<Submission>> submissions = new List<IEnumerable<Submission>>();
-
-        if (!string.IsNullOrEmpty(productName))  // Results by product name
-        {
-            submissions.Add(await GetSubmissionsByProductName(productName));
-        }
-
-        if (!string.IsNullOrEmpty(model))  // Results by product model
-        {
-            submissions.Add(await GetSubmissionsByProductModel(model));
-        }
-
-        if (!string.IsNullOrEmpty(province))  // Results by canton and province
-        {
-            submissions.Add(await GetSubmissionsByCantonAndProvince(canton, province));
-        }
-
-        if (!string.IsNullOrEmpty(brand)) // Results by product brand
-        {
-            submissions.Add(await GetSubmissionsByBrand(brand));
-        }
-
-        // if there are no submissions
-        if (submissions.Count == 0)
-        {
-            // just return an empty list
-            return items;
-        }
-
-        // Look for intersection of all results
-        IEnumerable<Submission> result = submissions.Aggregate((x, y) => x.Intersect(y));
-
-        // Get items from the submissions
-        items.AddRange(await GetItems(result));
-
-        return items;
+        // get the submissions that match the search functions
+        IEnumerable<Submission> submissions = 
+            searchQueries.IsEmpty?
+                Enumerable.Empty<Submission>() :
+                await this._submissionRepository.GetSearchResults(searchQueries);
+        
+        this._queryBuilder.Reset();
+        
+        return GetItems(submissions).Result.ToList();
     }
-
-    /// <summary>
-    /// Gets submissions containing a specific product name
-    /// </summary>
-    /// <param name="productName"></param>
-    /// <returns></returns>
-    private async Task<IEnumerable<Submission>> GetSubmissionsByProductName(string productName)
-    {
-        return await _submissionRepository.GetSubmissionsByProductNameAsync(productName);
-    }
-
-    /// <summary>
-    /// Gets submissions containing a specific product model
-    /// </summary>
-    /// <remarks> This is just a wrapper for the submission repository </remarks>
-    private async Task<IEnumerable<Submission>> GetSubmissionsByProductModel(string productModel)
-    {
-        return await _submissionRepository.GetSubmissionsByProductModelAsync(productModel);
-    }
-
-    /// <summary>
-    /// Calls the submission repository to get all submissions containing a specific brand name
-    /// </summary>
-    /// <param name="brandName"></param>
-    /// <returns> An Enumerable with al the submissions tha meet the criteria</returns>
-    private async Task<IEnumerable<Submission>> GetSubmissionsByBrand(string brandName)
-    {
-        return await _submissionRepository.GetSubmissionByBrandAsync(brandName);
-    }
-
-    public async Task<IEnumerable<Submission>> GetSubmissionsByCantonAndProvince(string canton, string province)
-    {
-        return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
-    }
-
-    public async Task<IEnumerable<Submission>> GetSubmissionByCanton(string canton, string province)
-    {
-        return await _submissionRepository.GetSubmissionsByCantonAsync(canton, province);
-    }
-
+    
     /// <summary>
     /// Gets all the items to be displayed in the search results
     /// from a list of submissions
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>
-    private async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
+    private static async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
     {
-        List<Item> items = new List<Item>();
+        var items = new List<Item>();
 
         // Group submissions by store
-        IEnumerable<IGrouping<Store, Submission>> submissionsByStore = submissions.GroupBy(s => s.Store);
+        var submissionsByStore = submissions.GroupBy(s => s.Store);
 
-        foreach (IGrouping<Store, Submission> store in submissionsByStore)
+        foreach (var store in submissionsByStore)
         {
-            IEnumerable<IGrouping<Product, Submission>> submissionsByProduct = store.GroupBy(s => s.Product);
-            foreach (IGrouping<Product, Submission> product in submissionsByProduct)
+            var submissionsByProduct = store.GroupBy(s => s.Product);
+            foreach (var product in submissionsByProduct)
             {
-                items.Add(await this.GetItem(product));
+                items.Add(await GetItem(product));
             }
         }
 
@@ -155,19 +90,20 @@ public class SearchService
     /// </summary>
     /// <param name="itemGrouping"></param>
     /// <returns></returns>
-    private async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
+    private static async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
     {
         // Get best submission for its information
-        Submission bestSubmission = this.GetBestSubmission(itemGrouping);
+        var bestSubmission = GetBestSubmission(itemGrouping);
 
-        Item item = new Item(
-            GetFormatedDate(bestSubmission),
+        var item = new Item(
+            GetFormattedDate(bestSubmission),
             bestSubmission.Product.Name,
             bestSubmission.Price,
             bestSubmission.Store.Name,
             bestSubmission.Store.Canton.Name,
             bestSubmission.Store.Canton.Province.Name,
-            bestSubmission.Description
+            bestSubmission.Description,
+            bestSubmission.Product.Model
         )
         {
             Submissions = itemGrouping.ToList(),
@@ -184,11 +120,14 @@ public class SearchService
     /// </summary>
     /// <param name="submission"></param>
     /// <returns></returns>
-    string GetFormatedDate(Submission submission)
+    private static string GetFormattedDate(Submission submission)
     {
-        Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture), @"[0-9]*/[0-9.]*/[0-9]*");
+        Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture),
+            @"[0-9]*/[0-9.]*/[0-9]*");
 
-        string date = regexMatch.Success ? regexMatch.Groups[0].Value : submission.EntryTime.ToString(CultureInfo.InvariantCulture);
+        string date = regexMatch.Success
+            ? regexMatch.Groups[0].Value
+            : submission.EntryTime.ToString(CultureInfo.InvariantCulture);
 
         return date;
     }
@@ -199,7 +138,7 @@ public class SearchService
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>
-    private Submission GetBestSubmission(IEnumerable<Submission> submissions)
+    private static Submission GetBestSubmission(IEnumerable<Submission> submissions)
     {
         // For the time being, the best submission is the one with the most recent entry time
         return submissions.MaxBy(s => s.EntryTime);

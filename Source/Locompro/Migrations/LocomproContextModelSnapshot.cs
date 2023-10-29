@@ -171,7 +171,7 @@ namespace Locompro.Migrations
 
             modelBuilder.Entity("Locompro.Models.Submission", b =>
                 {
-                    b.Property<string>("Username")
+                    b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("EntryTime")
@@ -196,7 +196,7 @@ namespace Locompro.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(60)");
 
-                    b.HasKey("Username", "EntryTime");
+                    b.HasKey("UserId", "EntryTime");
 
                     b.HasIndex("ProductId");
 
@@ -494,7 +494,7 @@ namespace Locompro.Migrations
 
                     b.HasOne("Locompro.Models.User", "User")
                         .WithMany("Submissions")
-                        .HasForeignKey("Username")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

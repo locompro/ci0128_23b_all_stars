@@ -2,7 +2,7 @@ using System;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Locompro.Data;
-using Locompro.Repositories;
+using Locompro.Data.Repositories;
 using Locompro.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Server;
@@ -87,22 +87,26 @@ void RegisterServices(WebApplicationBuilder builder)
         config.LoginPath = "/Account/Login";
     });
 
+
     // Register repositories
-    builder.Services.AddScoped<UnitOfWork>();
-    builder.Services.AddScoped<StoreRepository>();
-    builder.Services.AddScoped<CountryRepository>();
-    builder.Services.AddScoped<CategoryRepository>();
+    builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+    builder.Services.AddScoped(typeof(ICrudRepository<,>), typeof(CrudRepository<,>));
+    builder.Services.AddScoped(typeof(INamedEntityRepository<,>), typeof(NamedEntityRepository<,>));
+    builder.Services.AddScoped<ICantonRepository, CantonRepository>();
     builder.Services.AddScoped<ProductRepository>();
-    builder.Services.AddScoped<SubmissionRepository>();
-    builder.Services.AddScoped<UserRepository>();
+    builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 
     // Register domain services
     builder.Services.AddScoped<StoreService>();
     builder.Services.AddScoped<CountryService>();
+    builder.Services.AddScoped<CantonService>();
     builder.Services.AddScoped<CategoryService>();
+    builder.Services.AddScoped<ProductService>();
+    builder.Services.AddScoped<ISubmissionService, SubmissionService>();
     builder.Services.AddScoped<UserService>();
 
     // Register application services
+    builder.Services.AddScoped<ContributionService>();
     builder.Services.AddScoped<AuthService>();
     builder.Services.AddScoped<AdvancedSearchInputService>();
     builder.Services.AddScoped<SearchService>();
