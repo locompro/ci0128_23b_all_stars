@@ -10,7 +10,7 @@ public class SearchMethods
 {
     private static SearchMethods _instance;
     private readonly Dictionary<SearchParam.SearchParameterTypes, SearchParam> _searchParameters;
-    
+
     /// <summary>
     /// Singleton private constructor
     /// </summary>
@@ -19,7 +19,7 @@ public class SearchMethods
         this._searchParameters = new Dictionary<SearchParam.SearchParameterTypes, SearchParam>();
         this.AddAllSearchParameters();
     }
-    
+
     /// <summary>
     /// returns instance of the singleton class
     /// </summary>
@@ -31,9 +31,11 @@ public class SearchMethods
     /// <param name="parameterName"> the name to find which strategy to use </param>
     /// <param name="searchQuery"> the strategy of how to find a submission </param>
     /// <param name="activationQualifier"> a function used to determine whether the search is to be performed or not. e.g. if string is not null then search </param>
-    private void AddSearchParameter(SearchParam.SearchParameterTypes parameterName, Expression<Func<Submission, string, bool>> searchQuery, Func<string, bool> activationQualifier)
+    private void AddSearchParameter(SearchParam.SearchParameterTypes parameterName,
+        Expression<Func<Submission, string, bool>> searchQuery, Func<string, bool> activationQualifier)
     {
-        _searchParameters.Add(parameterName, new SearchParam { SearchQuery = searchQuery, ActivationQualifier = activationQualifier });
+        _searchParameters.Add(parameterName,
+            new SearchParam { SearchQuery = searchQuery, ActivationQualifier = activationQualifier });
     }
 
     /// <summary>
@@ -45,10 +47,10 @@ public class SearchMethods
     public SearchParam GetSearchMethodByName(SearchParam.SearchParameterTypes parameterName)
     {
         this._searchParameters.TryGetValue(parameterName, out SearchParam searchParameter);
-        
+
         return searchParameter;
     }
-    
+
     /// <summary>
     /// Returns whether the parameter type has been mapped to a search method
     /// </summary>
@@ -58,7 +60,7 @@ public class SearchMethods
     {
         return this._searchParameters.ContainsKey(parameterName);
     }
-    
+
     /// <summary>
     /// Method where all the search parameters are to be added
     /// </summary>
@@ -68,25 +70,31 @@ public class SearchMethods
         AddSearchParameter(SearchParam.SearchParameterTypes.Name
             , (submission, productName) => submission.Product.Name.Contains(productName)
             , productName => !string.IsNullOrEmpty(productName));
-        
+
         // find by model
         AddSearchParameter(SearchParam.SearchParameterTypes.Model
             , (submission, model) => submission.Product.Model.Contains(model)
             , model => !string.IsNullOrEmpty(model));
-        
+
         // find by province
         AddSearchParameter(SearchParam.SearchParameterTypes.Province
             , (submission, province) => submission.Store.Canton.Province.Name.Contains(province)
             , province => !string.IsNullOrEmpty(province));
-        
+
         // find by canton
         AddSearchParameter(SearchParam.SearchParameterTypes.Canton
             , (submission, canton) => submission.Store.Canton.Name.Contains(canton)
             , canton => !string.IsNullOrEmpty(canton));
-        
+
         // find by brand
         AddSearchParameter(SearchParam.SearchParameterTypes.Brand
             , (submission, brand) => submission.Product.Brand.ToLower().Contains(brand.ToLower())
             , brand => !string.IsNullOrEmpty(brand));
+
+        // find by category
+        AddSearchParameter(SearchParam.SearchParameterTypes.Category,
+            ((submission, category) =>
+                submission.Product.Categories.Any(existingCategory => existingCategory.Name.Equals(category))),
+            category => !string.IsNullOrEmpty(category));
     }
 }

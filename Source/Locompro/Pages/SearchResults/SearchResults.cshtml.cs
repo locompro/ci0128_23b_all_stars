@@ -56,13 +56,13 @@ public class SearchResultsModel : SearchPageModel
     public string ModelSelected { get; set; }
     public string BrandSelected { get; set; }
     public string CurrentFilter { get; set; }
-        
+
     public string NameSort { get; set; }
-        
+
     public string CurrentSort { get; set; }
     public string CantonSort { get; set; }
     public string ProvinceSort { get; set; }
-    
+
     /// <summary>
     /// Constructor
     /// </summary>
@@ -106,36 +106,35 @@ public class SearchResultsModel : SearchPageModel
         string currentFilter,
         string sortOrder)
     {
-       
         // validate input
         ValidateInput(province, canton, minValue, maxValue, category, model, brand);
-        
+
         ProductName = query;
-        
+
         // set up sorting parameters
         SetSortingParameters(sortOrder, (sorting is not null));
-        
+
         // get items from search service
         List<SearchCriterion> searchParameters = new List<SearchCriterion>()
         {
-            new (SearchParam.SearchParameterTypes.Name, ProductName),
-            new (SearchParam.SearchParameterTypes.Province, ProvinceSelected),
-            new (SearchParam.SearchParameterTypes.Canton, CantonSelected),
-            new (SearchParam.SearchParameterTypes.MinValue, MinPrice.ToString()),
-            new (SearchParam.SearchParameterTypes.MaxValue, MaxPrice.ToString()),
-            new (SearchParam.SearchParameterTypes.Category, CategorySelected),
-            new (SearchParam.SearchParameterTypes.Model, ModelSelected),
-            new (SearchParam.SearchParameterTypes.Brand, BrandSelected),
+            new(SearchParam.SearchParameterTypes.Name, ProductName),
+            new(SearchParam.SearchParameterTypes.Province, ProvinceSelected),
+            new(SearchParam.SearchParameterTypes.Canton, CantonSelected),
+            new(SearchParam.SearchParameterTypes.MinValue, MinPrice.ToString()),
+            new(SearchParam.SearchParameterTypes.MaxValue, MaxPrice.ToString()),
+            new(SearchParam.SearchParameterTypes.Category, CategorySelected),
+            new(SearchParam.SearchParameterTypes.Model, ModelSelected),
+            new(SearchParam.SearchParameterTypes.Brand, BrandSelected),
         };
 
         _items = await this._searchService.GetSearchResults(searchParameters);
-        
+
         // get amount of items found    
         ItemsAmount = _items.Count;
-        
+
         // order items by sort order
         OrderItems();
-        
+
         // create paginated list and set it to be displayed
         this.DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
     }
@@ -163,7 +162,7 @@ public class SearchResultsModel : SearchPageModel
         {
             province = null;
         }
-        
+
         if (!string.IsNullOrEmpty(canton) && canton.Equals(SearchPageModel.EmptyValue))
         {
             canton = null;
@@ -172,8 +171,8 @@ public class SearchResultsModel : SearchPageModel
         if (!string.IsNullOrEmpty(category) && category.Equals(SearchPageModel.EmptyValue))
         {
             category = null;
-        } 
-        
+        }
+
         ProvinceSelected = province;
         CantonSelected = canton;
         MinPrice = minValue;
@@ -249,7 +248,7 @@ public class SearchResultsModel : SearchPageModel
                 break;
         }
 
-        if(!string.IsNullOrEmpty(ProvinceSort))
+        if (!string.IsNullOrEmpty(ProvinceSort))
         {
             switch (ProvinceSort)
             {
@@ -262,7 +261,7 @@ public class SearchResultsModel : SearchPageModel
             }
         }
 
-        if(!string.IsNullOrEmpty(CantonSort))
+        if (!string.IsNullOrEmpty(CantonSort))
         {
             switch (CantonSort)
             {
