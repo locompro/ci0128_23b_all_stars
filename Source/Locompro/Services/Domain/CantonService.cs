@@ -1,31 +1,20 @@
 using Locompro.Data;
 using Locompro.Models;
-using Locompro.Repositories;
+using Locompro.Data.Repositories;
 
 namespace Locompro.Services.Domain;
 
-public class CantonService : AbstractDomainService<Canton, string, CantonRepository>
+public class CantonService : DomainService<Canton, string>
 {
-    public CantonService(UnitOfWork unitOfWork, CantonRepository repository, ILoggerFactory loggerFactory) : base(unitOfWork, repository, loggerFactory)
+    private readonly ICantonRepository _cantonRepository;
+
+    public CantonService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
     {
+        _cantonRepository = UnitOfWork.GetRepository<ICantonRepository>();
     }
-    
+
     public async Task<Canton> Get(string country, string province, string canton)
     {
-        await UnitOfWork.BeginTransaction();
-
-        try
-        {
-            return await Repository.GetByIdAsync(country, province, canton);
-        }
-        catch (Exception)
-        {
-            await UnitOfWork.Rollback();
-            throw;
-        }
-        finally
-        {
-            await UnitOfWork.Commit();
-        }
+        return await _cantonRepository.GetByIdAsync(country, province, canton);
     }
 }

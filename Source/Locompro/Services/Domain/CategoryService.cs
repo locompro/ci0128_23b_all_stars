@@ -1,22 +1,20 @@
 ﻿using Locompro.Data;
 using Locompro.Models;
-using Locompro.Repositories;
+using Locompro.Data.Repositories;
 
 namespace Locompro.Services.Domain
 {
     /// <summary>
     /// Service for Category
     /// </summary>
-    public class CategoryService : AbstractDomainService<Category, string, CategoryRepository>
+    public class CategoryService : DomainService<Category, string>
     {
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="unitOfWork"></param>
-        /// <param name="repository"></param>
         /// <param name="loggerFactory"></param>
-        public CategoryService(UnitOfWork unitOfWork, CategoryRepository repository, ILoggerFactory loggerFactory)
-            : base(unitOfWork, repository, loggerFactory)
+        public CategoryService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
         {
         }
     }

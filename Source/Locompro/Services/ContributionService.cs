@@ -2,7 +2,6 @@ using Locompro.Data;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
-using Microsoft.AspNetCore.Identity;
 
 namespace Locompro.Services;
 
@@ -18,11 +17,11 @@ public class ContributionService : AbstractService
 
     private readonly CategoryService _categoryService;
 
-    private readonly SubmissionService _submissionService;
+    private readonly ISubmissionService _submissionService;
 
-    public ContributionService(UnitOfWork unitOfWork, ILoggerFactory loggerFactory, CantonService cantonService,
+    public ContributionService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, CantonService cantonService,
         StoreService storeService, ProductService productService, CategoryService categoryService,
-        SubmissionService submissionService) : base(unitOfWork, loggerFactory)
+        ISubmissionService submissionService) : base(unitOfWork, loggerFactory)
     {
         _cantonService = cantonService;
         _storeService = storeService;
@@ -40,7 +39,7 @@ public class ContributionService : AbstractService
 
         Submission submission = new Submission()
         {
-            Username = userId,
+            UserId = userId,
             EntryTime = DateTime.Now,
             Price = price,
             Description = description,
@@ -55,49 +54,44 @@ public class ContributionService : AbstractService
     {
         if (storeViewModel.IsExistingStore())
         {
-            return await _storeService.Get(storeViewModel.Name);
+            return await _storeService.Get(storeViewModel.SName);
         }
-        else
+
+        Canton canton = await _cantonService.Get(OnlyCountry, storeViewModel.Province, storeViewModel.Canton);
+
+        Store store = new Store
         {
-            Canton canton = await _cantonService.Get(OnlyCountry, storeViewModel.Province, storeViewModel.Canton);
+            Name = storeViewModel.SName,
+            Canton = canton,
+            Address = storeViewModel.Address,
+            Telephone = storeViewModel.Telephone
+        };
 
-            Store store = new Store
-            {
-                Name = storeViewModel.Name,
-                Canton = canton,
-                Address = storeViewModel.Address,
-                Telephone = storeViewModel.Telephone
-            };
-
-            return store;
-        }
+        return store;
     }
 
     private async Task<Product> BuildProduct(ProductViewModel productViewModel)
     {
-        if (productViewModel.IsNewProduct())
+        if (productViewModel.IsExistingProduct())
         {
-            // TODO: Set up to add new category through select2
-
-            Category category = await _categoryService.Get(productViewModel.Category);
-
-            Product product = new Product()
-            {
-                Name = productViewModel.Name,
-                Model = productViewModel.Model,
-                Brand = productViewModel.Brand,
-            };
-
-            if (category != null)
-            {
-                product.Categories.Add(category);
-            }
-
-            return product;
+            return await _productService.Get(productViewModel.Id);
         }
-        else
+        
+        Category category = await _categoryService.Get(productViewModel.Category);
+
+        Product product = new Product()
         {
-            return await _productService.Get(productViewModel.Id.GetValueOrDefault());
+            Name = productViewModel.PName,
+            Model = productViewModel.Model,
+            Brand = productViewModel.Brand,
+            Categories = new List<Category>()
+        };
+
+        if (category != null)
+        {
+            product.Categories.Add(category);
         }
+
+        return product;
     }
 }
