@@ -2,7 +2,7 @@ using System;
 using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Locompro.Data;
-using Locompro.Repositories;
+using Locompro.Data.Repositories;
 using Locompro.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Components.Server;
@@ -64,11 +64,15 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddRazorPages();
     builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 
+    string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
+                             throw new InvalidOperationException("Env environment variable not found.");
+    
+    var connectionString = builder.Configuration.GetValue<string>($"{environmentName}_ConnectionString__LocomproContext") ??
+                           throw new InvalidOperationException("Secret connection string not found.");
+    
     // Add DbContext using SQL Server
-    builder.Services.AddDbContext<LocomproContext>(options =>
-        options.UseLazyLoadingProxies()
-            .UseSqlServer(builder.Configuration.GetConnectionString("LocomproContext") ??
-                          throw new InvalidOperationException("Connection string 'LocomproContext' not found.")));
+    builder.Services.AddDbContext<LocomproContext>(options => options.UseLazyLoadingProxies()
+        .UseSqlServer(connectionString));
 
     // Set LocomproContext as the default DbContext
     builder.Services.AddScoped<DbContext, LocomproContext>();
@@ -83,15 +87,14 @@ void RegisterServices(WebApplicationBuilder builder)
         config.LoginPath = "/Account/Login";
     });
 
+
     // Register repositories
-    builder.Services.AddScoped<UnitOfWork>();
-    builder.Services.AddScoped<StoreRepository>();
-    builder.Services.AddScoped<CountryRepository>();
-    builder.Services.AddScoped<CantonRepository>();
-    builder.Services.AddScoped<CategoryRepository>();
+    builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+    builder.Services.AddScoped(typeof(ICrudRepository<,>), typeof(CrudRepository<,>));
+    builder.Services.AddScoped(typeof(INamedEntityRepository<,>), typeof(NamedEntityRepository<,>));
+    builder.Services.AddScoped<ICantonRepository, CantonRepository>();
     builder.Services.AddScoped<ProductRepository>();
-    builder.Services.AddScoped<SubmissionRepository>();
-    builder.Services.AddScoped<UserRepository>();
+    builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 
     // Register domain services
     builder.Services.AddScoped<StoreService>();
@@ -99,7 +102,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<CantonService>();
     builder.Services.AddScoped<CategoryService>();
     builder.Services.AddScoped<ProductService>();
-    builder.Services.AddScoped<SubmissionService>();
+    builder.Services.AddScoped<ISubmissionService, SubmissionService>();
     builder.Services.AddScoped<UserService>();
 
     // Register application services

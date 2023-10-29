@@ -9,8 +9,7 @@ namespace Locompro.Models;
 public class Submission
 {
     [Required]
-    public string Username { get; set; }
-    // TODO: Rename to UserID
+    public string UserId { get; set; }
     
     [Required]
     public DateTime EntryTime { get; set; }

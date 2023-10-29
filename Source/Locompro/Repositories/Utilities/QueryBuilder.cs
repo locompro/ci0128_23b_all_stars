@@ -94,10 +94,10 @@ public class QueryBuilder
     /// Returns the list of search functions that can be used to filter the results of a query
     /// </summary>
     /// <returns></returns>
-    public SearchQuery GetSearchFunction()
+    public SearchQueries GetSearchFunction()
     {
         this.Compose();
-        return new SearchQuery() { SearchQueryFunctions = this._searchCriteriaFunctions };
+        return new SearchQueries() { SearchQueryFunctions = this._searchCriteriaFunctions };
     }
     
     /// <summary>
