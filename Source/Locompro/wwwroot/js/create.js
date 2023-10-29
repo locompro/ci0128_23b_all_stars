@@ -180,8 +180,11 @@ $(document).ready(function () {
     $("#addSubmissionBtn").click(() => {
         $("input, select, textarea").each((index, element) => {
             const $element = $(element);
-            $element.trigger("focusout");
-            $element.valid();
+            // Skip validation for disabled elements
+            if (!$element.is(":disabled")) {
+                $element.trigger("focusout");
+                $element.valid();
+            }
         });
     });
 });
