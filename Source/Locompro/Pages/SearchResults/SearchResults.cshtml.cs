@@ -10,26 +10,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Locompro.Common;
 using Locompro.Models;
+using Locompro.Pages.Shared;
 using Microsoft.Extensions.Configuration;
+using Locompro.Repositories.Utilities;
 
 namespace Locompro.Pages.SearchResults;
 
 /// <summary>
 /// Page model for the search results page
 /// </summary>
-public class SearchResultsModel : PageModel
+public class SearchResultsModel : SearchPageModel
 {
-    /// <summary>
-    /// Service that handles the advanced search modal
-    /// </summary>
-    private readonly AdvancedSearchInputService _advancedSearchServiceHandler;
-
     private readonly SearchService _searchService;
-
-    /// <summary>
-    /// Configuration to get the page size
-    /// </summary>
-    private readonly IConfiguration _configuration;
 
     /// <summary>
     /// Buffer for page size according to Paginated List and configuration
@@ -63,17 +55,14 @@ public class SearchResultsModel : PageModel
     public long MaxPrice { get; set; }
     public string ModelSelected { get; set; }
     public string BrandSelected { get; set; }
-        
+    public string CurrentFilter { get; set; }
         
     public string NameSort { get; set; }
         
     public string CurrentSort { get; set; }
     public string CantonSort { get; set; }
     public string ProvinceSort { get; set; }
-
-        
-    public string CurrentFilter { get; set; }
-
+    
     /// <summary>
     /// Constructor
     /// </summary>
@@ -83,12 +72,10 @@ public class SearchResultsModel : PageModel
     public SearchResultsModel(
         AdvancedSearchInputService advancedSearchServiceHandler,
         IConfiguration configuration,
-        SearchService searchService)
+        SearchService searchService) : base(advancedSearchServiceHandler)
     {
         _searchService = searchService;
-        _advancedSearchServiceHandler = advancedSearchServiceHandler;
-        _configuration = configuration;
-        _pageSize = _configuration.GetValue("PageSize", 4);
+        _pageSize = configuration.GetValue("PageSize", 4);
     }
 
     /// <summary>
@@ -129,17 +116,19 @@ public class SearchResultsModel : PageModel
         SetSortingParameters(sortOrder, (sorting is not null));
         
         // get items from search service
-        _items =
-            (await _searchService.SearchItems(
-                ProductName,
-                ProvinceSelected,
-                CantonSelected,
-                MinPrice,
-                MaxPrice,
-                CategorySelected,
-                ModelSelected,
-                BrandSelected)
-            ).ToList();
+        List<SearchCriterion> searchParameters = new List<SearchCriterion>()
+        {
+            new (SearchParam.SearchParameterTypes.Name, ProductName),
+            new (SearchParam.SearchParameterTypes.Province, ProvinceSelected),
+            new (SearchParam.SearchParameterTypes.Canton, CantonSelected),
+            new (SearchParam.SearchParameterTypes.MinValue, MinPrice.ToString()),
+            new (SearchParam.SearchParameterTypes.MaxValue, MaxPrice.ToString()),
+            new (SearchParam.SearchParameterTypes.Category, CategorySelected),
+            new (SearchParam.SearchParameterTypes.Model, ModelSelected),
+            new (SearchParam.SearchParameterTypes.Brand, BrandSelected),
+        };
+
+        _items = await this._searchService.GetSearchResults(searchParameters);
         
         // get amount of items found    
         ItemsAmount = _items.Count;
@@ -148,7 +137,7 @@ public class SearchResultsModel : PageModel
         OrderItems();
         
         // create paginated list and set it to be displayed
-        DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
+        this.DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
     }
 
     /// <summary>
@@ -160,6 +149,7 @@ public class SearchResultsModel : PageModel
     /// <param name="maxValue"></param>
     /// <param name="category"></param>
     /// <param name="model"></param>
+    /// <param name="brand"></param>
     private void ValidateInput(
         string province,
         string canton,
@@ -169,29 +159,28 @@ public class SearchResultsModel : PageModel
         string model,
         string brand)
     {
-        
-        if (!string.IsNullOrEmpty(province) && province.Equals("Ninguno"))
+        if (!string.IsNullOrEmpty(province) && province.Equals(SearchPageModel.EmptyValue))
         {
             province = null;
         }
         
-        if (!string.IsNullOrEmpty(canton) && canton.Equals("Ninguno"))
+        if (!string.IsNullOrEmpty(canton) && canton.Equals(SearchPageModel.EmptyValue))
         {
             canton = null;
         }
 
-        if (!string.IsNullOrEmpty(category) && category.Equals("Ninguno"))
+        if (!string.IsNullOrEmpty(category) && category.Equals(SearchPageModel.EmptyValue))
         {
             category = null;
         } 
         
-       ProvinceSelected = province;
-       CantonSelected = canton;
-       MinPrice = minValue;
-       MaxPrice = maxValue;
-       CategorySelected = category;
-       ModelSelected = model;
-       BrandSelected = brand;
+        ProvinceSelected = province;
+        CantonSelected = canton;
+        MinPrice = minValue;
+        MaxPrice = maxValue;
+        CategorySelected = category;
+        ModelSelected = model;
+        BrandSelected = brand;
     }
 
     /// <summary>
@@ -201,43 +190,49 @@ public class SearchResultsModel : PageModel
     /// <param name="sorting"></param>
     private void SetSortingParameters(string sortOrder, bool sorting)
     {
-        if (!sorting)
+        if (!sorting && !string.IsNullOrEmpty(sortOrder))
         {
-            if (!string.IsNullOrEmpty(sortOrder))
-            {
-                NameSort = sortOrder;
-            }
+            CurrentSort = NameSort = sortOrder;
             return;
         }
-    
-        if (string.IsNullOrEmpty(sortOrder) || sortOrder.Equals("name_asc"))
+
+        // Define a dictionary to hold the reverse sortOrder mappings
+        Dictionary<string, string> sortMappings = new Dictionary<string, string>
         {
-            NameSort = "name_desc";
+            { "name_asc", "name_desc" },
+            { "name_desc", "name_asc" },
+            { "province_asc", "province_desc" },
+            { "province_desc", "province_asc" },
+            { "canton_asc", "canton_desc" },
+            { "canton_desc", "canton_asc" },
+        };
+
+        // If sortOrder is null or not in the dictionary, set default values
+        if (string.IsNullOrEmpty(sortOrder) || !sortMappings.ContainsKey(sortOrder))
+        {
+            CurrentSort = NameSort = "name_desc";
             ProvinceSort = "province_asc";
             CantonSort = "canton_asc";
+            return;
         }
-        else if (sortOrder.Equals("name_desc"))
+
+        // Update sorting based on the mapping and set CurrentSort
+        switch (sortOrder)
         {
-            NameSort = "name_asc";
-        }
-        else if (sortOrder.Equals("province_asc"))
-        {
-            ProvinceSort = "province_desc";
-        }
-        else if (sortOrder.Equals("province_desc"))
-        {
-            ProvinceSort = "province_asc";
-        }
-        else if (sortOrder.Equals("canton_asc"))
-        {
-            CantonSort = "canton_desc";
-        }
-        else if (sortOrder.Equals("canton_desc"))
-        {
-            CantonSort = "canton_asc";
+            case "name_asc":
+            case "name_desc":
+                CurrentSort = NameSort = sortMappings[sortOrder];
+                break;
+            case "province_asc":
+            case "province_desc":
+                CurrentSort = ProvinceSort = sortMappings[sortOrder];
+                break;
+            case "canton_asc":
+            case "canton_desc":
+                CurrentSort = CantonSort = sortMappings[sortOrder];
+                break;
         }
     }
-
 
     /// <summary>
     /// Orders items
@@ -279,76 +274,5 @@ public class SearchResultsModel : PageModel
                     break;
             }
         }
-    }
-
-        
-    /// <summary>
-    /// Returns the view component for the advanced search modal
-    /// </summary>
-    /// <returns></returns>
-    public IActionResult OnGetAdvancedSearch()
-    {
-        // generate the view component
-        var viewComponentResult = ViewComponent("AdvancedSearch", this._advancedSearchServiceHandler);
-
-        // return it for it to be integrated
-        return viewComponentResult;
-    }
-
-    /// <summary>
-    /// Updates the cantons and province selected for the advanced search modal
-    /// </summary>
-    /// <param name="province"></param>
-    /// <returns></returns>
-    public async Task<IActionResult> OnGetUpdateProvince(string province)
-    {
-        string cantonsJson = "";
-
-        // if province is none
-        if (province.Equals("Ninguno"))
-        {
-            // create empty list
-            List<Canton> emptyCantonList = new List<Canton>
-            {
-                // add none back as an option
-                new Canton{CountryName = "Ninguno",
-                    Name = "Ninguno", 
-                    ProvinceName = "Ninguno"}
-            };
-
-            // set new list to service canton list
-            _advancedSearchServiceHandler.Cantons = emptyCantonList;
-        }
-        else
-        {
-            // update the model with all cantons in the given province
-            await _advancedSearchServiceHandler.ObtainCantonsAsync(province);
-
-            _advancedSearchServiceHandler.Cantons.Add(
-                new Canton{CountryName = "Ninguno",
-                    Name = "Ninguno", 
-                    ProvinceName = "Ninguno"}
-            );
-
-            foreach (var canton in _advancedSearchServiceHandler.Cantons)
-            {
-                Console.WriteLine(canton.Name);
-            }
-        }
-
-        // prevent the json serializer from looping infinitely
-        var settings = new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        };
-
-        // generate the json file with the cantons
-        cantonsJson = JsonConvert.SerializeObject(_advancedSearchServiceHandler.Cantons, settings);
-
-        // specify the content type as a json file
-        Response.ContentType = "application/json";
-
-        // send to client
-        return Content(cantonsJson);
     }
 }
