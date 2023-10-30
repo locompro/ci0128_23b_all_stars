@@ -129,22 +129,49 @@ namespace Locompro.Services
         public async Task Logout()
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation("User logged out.");
+            _logger.LogInformation("User {id} logged out.", GetUserId());
         }
         /// <summary>
         /// Checks if a user is currently logged in.
         /// </summary>
         /// <returns>True if a user is logged in, otherwise false.</returns>
-        public bool IsLoggedIn()
+        public bool IsLoggedIn() => _signInManager.IsSignedIn(_signInManager.Context.User);
+         
+        /// <summary>
+        /// Gets the ID of the currently logged-in user.
+        /// </summary>
+        /// <returns> returns a string with the user id</returns>
+        public string GetUserId() => _signInManager.Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        /// <summary>
+        ///  checks if a given password is correct for a given user
+        /// </summary>
+        /// <param name="user"> user to check the password</param>
+        /// <param name="password"></param>
+        /// <returns></returns>
+        public async Task<bool> IsCurrentPasswordCorrect(string password)
         {
-         var result =  _signInManager.IsSignedIn(_signInManager.Context.User);
-         return result;
+            var user = await _userManager.GetUserAsync(_signInManager.Context.User);
+            return await _userManager.CheckPasswordAsync(user, password);
         }
-        
-        public string GetUserId()
+
+        /// <summary>
+        ///  changes the password of a given user
+        /// </summary>
+        /// <param name="currentPassword"> current user password</param>
+        /// <param name="newPassword"> new password </param>
+        /// <returns> results of the operation </returns>
+        public async Task<IdentityResult> ChangePassword(string currentPassword, string newPassword)
         {
-            var result = _signInManager.Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return result;
+            var user = await _userManager.GetUserAsync(_signInManager.Context.User);
+            return await _userManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        }
+
+
+        public async Task RefreshUserLogin()
+        {
+            var user = await _userManager.GetUserAsync(_signInManager.Context.User);
+            await _signInManager.RefreshSignInAsync(user);
         }
     }
 }
