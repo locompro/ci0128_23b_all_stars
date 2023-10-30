@@ -4,23 +4,30 @@ using System.Text.RegularExpressions;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Repositories.Utilities;
+using Locompro.Services.Domain;
 
 namespace Locompro.Services;
 
 public class SearchService : AbstractService
 {
     private readonly ISubmissionRepository _submissionRepository;
+
+    private readonly IPicturesService _picturesService;
+    
     private readonly QueryBuilder _queryBuilder;
+
+    public const int ImageAmountPerItem = 5;
 
     /// <summary>
     /// Constructor for the search service
     /// </summary>
     /// <param name="unitOfWork"> generic unit of work</param>
     /// <param name="loggerFactory"> logger </param>
-    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) :
+    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, IPicturesService picturesService) :
         base(unitOfWork, loggerFactory)
     {
         _submissionRepository = UnitOfWork.GetRepository<ISubmissionRepository>();
+        _picturesService = picturesService;
         _queryBuilder = new QueryBuilder();
     }
 
@@ -64,7 +71,7 @@ public class SearchService : AbstractService
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>
-    private static async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
+    private async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
     {
         var items = new List<Item>();
 
@@ -90,10 +97,17 @@ public class SearchService : AbstractService
     /// </summary>
     /// <param name="itemGrouping"></param>
     /// <returns></returns>
-    private static async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
+    private async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
     {
         // Get best submission for its information
         var bestSubmission = GetBestSubmission(itemGrouping);
+
+        List<Picture> picturesToBeDisplayed = bestSubmission.Pictures.ToList();
+            /*
+            _picturesService.GetItemPictures(
+                SearchService.ImageAmountPerItem,
+                bestSubmission.UserId,
+                bestSubmission.EntryTime); */
 
         var item = new Item(
             GetFormattedDate(bestSubmission),
@@ -108,7 +122,8 @@ public class SearchService : AbstractService
         {
             Submissions = itemGrouping.ToList(),
             Model = bestSubmission.Product.Model,
-            Brand = bestSubmission.Product.Brand
+            Brand = bestSubmission.Product.Brand,
+            Pictures = picturesToBeDisplayed
         };
 
         return await Task.FromResult(item);

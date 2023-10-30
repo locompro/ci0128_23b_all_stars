@@ -62,7 +62,9 @@ public class SearchResultsModel : SearchPageModel
     public string CurrentSort { get; set; }
     public string CantonSort { get; set; }
     public string ProvinceSort { get; set; }
-    
+
+    public List<Picture> Pictures { get; set; }
+
     /// <summary>
     /// Constructor
     /// </summary>

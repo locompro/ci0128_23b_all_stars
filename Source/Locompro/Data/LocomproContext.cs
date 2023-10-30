@@ -16,6 +16,7 @@ public class LocomproContext : IdentityDbContext<User>
     public DbSet<Submission> Submissions { get; set; } = default!;
     public DbSet<Store> Stores { get; set; } = default!;
     public DbSet<Product> Products { get; set; } = default!;
+    public DbSet<Picture> Pictures { get; set; } = default!;
 
     /// <summary>
     /// Constructs a Locompro context.
@@ -30,7 +31,7 @@ public class LocomproContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        
+
         builder.Entity<Province>()
             .HasKey(p => new { p.CountryName, p.Name });
 
@@ -39,7 +40,7 @@ public class LocomproContext : IdentityDbContext<User>
             .WithMany(c => c.Provinces)
             .HasForeignKey(p => p.CountryName)
             .IsRequired();
-        
+
         builder.Entity<Canton>()
             .HasKey(c => new { c.CountryName, c.ProvinceName, c.Name });
 
@@ -51,7 +52,7 @@ public class LocomproContext : IdentityDbContext<User>
 
         builder.Entity<Category>()
             .HasKey(c => new { c.Name });
-        
+
         builder.Entity<Category>()
             .HasOne(c => c.Parent)
             .WithMany(c => c.Children);
@@ -59,7 +60,7 @@ public class LocomproContext : IdentityDbContext<User>
         builder.Entity<Product>()
             .HasMany(p => p.Categories)
             .WithMany(c => c.Products);
-        
+
         builder.Entity<Submission>()
             .HasKey(s => new { Username = s.UserId, s.EntryTime });
 
@@ -68,13 +69,13 @@ public class LocomproContext : IdentityDbContext<User>
             .WithMany()
             .HasForeignKey(s => s.StoreName)
             .IsRequired();
-        
+
         builder.Entity<Submission>()
             .HasOne(s => s.Product)
             .WithMany(p => p.Submissions)
             .HasForeignKey(s => s.ProductId)
             .IsRequired();
-        
+
         builder.Entity<Submission>()
             .HasOne(s => s.User)
             .WithMany()
@@ -84,5 +85,14 @@ public class LocomproContext : IdentityDbContext<User>
         builder.Entity<User>()
             .HasMany(u => u.Submissions)
             .WithOne(s => s.User);
+
+        builder.Entity<Picture>()
+            .HasKey(p => new { p.SubmissionUserId, p.SubmissionEntryTime, p.Index});
+
+        builder.Entity<Picture>()
+            .HasOne<Submission>(p => p.Submission)
+            .WithMany(s => s.Pictures)
+            .HasForeignKey(p => new {p.SubmissionUserId, p.SubmissionEntryTime})
+            .IsRequired();
     }
 }

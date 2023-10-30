@@ -18,7 +18,7 @@
     <fieldset>
         <legend>Producto</legend>
     </fieldset>
-    <form class="text-center" method="post">
+    <form class="text-center" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <div class="mb-3">
                 <label class="form-label text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Tienda</label>
@@ -105,16 +105,38 @@
 
         <div class="mb-3">
             <label class="form-label text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Descripción</label>
-            <textarea class="form-control" asp-for="Description" type="text" id="mainDescription" placeholder="Descripción" 
+            <textarea class="form-control" asp-for="SubmissionViewModel.Description" type="text" id="mainDescription" placeholder="Descripción" 
                         style="margin-bottom: 10px;"></textarea>
         </div>
 
         <div class="mb-3" style="margin-top: 15px;">
             <label class="form-label d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Precio (₡)</label>
-            <input class="form-control mb-2" asp-for="Price" type="text" placeholder="Precio">
-            <span class="text-danger field-validation-valid" asp-validation-for="Price"></span>
+            <input class="form-control mb-2" asp-for="SubmissionViewModel.Price" type="text" placeholder="Precio">
+            <span class="text-danger field-validation-valid" asp-validation-for="SubmissionViewModel.Price"></span>
         </div>
         <!-- placeholder for image submit -->
+        <div class="row">
+            <div class="col justify-content-xl-center align-items-xl-center" style="margin-right: 0px">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="1em"
+                     height="1em"
+                     fill="currentColor"
+                     viewBox="0 0 16 16"
+                     class="bi bi-image-fill text-center d-xl-flex justify-content-xl-center"
+                     style="font-size: 33px;">
+                    <path d="M.002 3a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-12a2 2 0 0 1-2-2V3zm1 9v1a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12zm5-6.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0z"
+                          color="#0d6efd"></path>
+                </svg>
+            </div>
+            <div class="col-md-10 col-xl-10"
+                 style = "margin-left: 0px">
+                <input class="form-control"
+                       id="file"
+                       name="file"
+                       type="file"
+                       multiple="multiple">
+            </div>
+        </div>
         <div>
             <button type="submit" id="addSubmissionBtn"
                     class="btn btn-primary d-block w-100" style="margin-top: 32px;">

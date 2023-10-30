@@ -110,4 +110,5 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<AuthService>();
     builder.Services.AddScoped<AdvancedSearchInputService>();
     builder.Services.AddScoped<SearchService>();
+    builder.Services.AddScoped<IPicturesService, PicturesService>();
 }
