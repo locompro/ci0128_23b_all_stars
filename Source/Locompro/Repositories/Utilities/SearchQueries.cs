@@ -7,7 +7,7 @@ namespace Locompro.Repositories.Utilities;
 /// Class for encapsulating all data related to a search criterion
 /// If there were other types of criteria or functions to be used, then add to this class
 /// </summary>
-public class SearchQuery
+public class SearchQueries
 {
     public List<Expression<Func<Submission, bool>>> SearchQueryFunctions { get; init; }
     

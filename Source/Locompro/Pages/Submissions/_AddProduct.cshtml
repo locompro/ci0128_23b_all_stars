@@ -1,7 +1,8 @@
 @using Locompro.Models.ViewModels
 @using Locompro.Services.Domain
 @using Newtonsoft.Json
-@inject CategoryService CategoryService
+@using Locompro.Models
+@inject INamedEntityDomainService<Category, string> CategoryService
 @model ProductViewModel
 
 @{
@@ -29,10 +30,10 @@
         </div>
         <input type="hidden" asp-for="Id" id="partialProductId"/>
         <div class="mb-2">
-            <label asp-for="Name" class="form-label d-lg-flex justify-content-lg-start"></label>
-            <input asp-for="Name" class="form-control" placeholder="Nombre" id="partialProductName">
+            <label asp-for="PName" class="form-label d-lg-flex justify-content-lg-start"></label>
+            <input asp-for="PName" class="form-control" placeholder="Nombre" id="partialProductName">
         </div>
-        <span class="text-danger field-validation-valid pb-2" id="partialProductNameValid" asp-validation-for="Name"></span>
+        <span class="text-danger field-validation-valid pb-2" id="partialProductNameValid" asp-validation-for="PName"></span>
         <div class="mb-2">
             <label asp-for="Model" class="form-label d-lg-flex justify-content-lg-start"></label>
             <input asp-for="Model" class="form-control" placeholder="Modelo">

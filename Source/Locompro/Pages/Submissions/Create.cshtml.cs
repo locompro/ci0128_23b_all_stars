@@ -32,27 +32,25 @@ public class CreateModel : PageModel
     [Required(ErrorMessage = "Ingresar el precio del producto.")]
     [Range(100, 10000000, ErrorMessage = "El precio debe estar entre ₡100 y ₡10.000.000.")]
     [RegularExpression(@"^\d+$", ErrorMessage = "El precio debe contener solamente números enteros.")]
-    public int? Price { get; set; }
+    public int Price { get; set; }
 
-    private readonly StoreService _storeService;
+    private readonly INamedEntityDomainService<Store, string> _storeService;
 
-    private readonly ProductService _productService;
+    private readonly INamedEntityDomainService<Product, int> _productService;
     
-    private readonly ContributionService _contributionService;
+    private readonly IContributionService _contributionService;
 
-    private readonly UserManager<User> _userManager;
-
-    public CreateModel(StoreService storeService, ProductService productService, ContributionService contributionService, UserManager<User> userManager)
+    public CreateModel(INamedEntityDomainService<Store, string> storeService,
+        INamedEntityDomainService<Product, int> productService, IContributionService contributionService)
     {
         _storeService = storeService;
         _productService = productService;
         _contributionService = contributionService;
-        _userManager = userManager;
     }
 
     public async Task<IActionResult> OnGetFetchStores(string partialName)
     {
-        var stores = await _storeService.GetByPartialId(partialName);
+        var stores = await _storeService.GetByPartialName(partialName);
         
         var result = stores.Select(s => new 
         {
@@ -98,7 +96,7 @@ public class CreateModel : PageModel
 
         string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-        await _contributionService.AddSubmission(StoreVm, ProductVm, Description, Price.GetValueOrDefault(), userId);
+        await _contributionService.AddSubmission(StoreVm, ProductVm, Description, Price, userId);
 
         return RedirectToPage("/Index");
     }

@@ -16,12 +16,12 @@ namespace Locompro.Services
         /// <summary>
         /// Service for fetching location data
         /// </summary>
-        private readonly CountryService _countryService;
+        private readonly INamedEntityDomainService<Country, string> _countryService;
 
         /// <summary>
         /// Service for fetching category data
         /// </summary>
-        private readonly CategoryService _categoryService;
+        private readonly INamedEntityDomainService<Category, string> _categoryService;
 
         /// <summary>
         /// List of provinces
@@ -50,7 +50,8 @@ namespace Locompro.Services
         /// </summary>
         /// <param name="countryService"></param>
         /// <param name="categoryService"></param>
-        public AdvancedSearchInputService(CountryService countryService, CategoryService categoryService)
+        public AdvancedSearchInputService(INamedEntityDomainService<Country, string> countryService, 
+            INamedEntityDomainService<Category, string> categoryService)
         {
             this._countryService = countryService;
             this._categoryService = categoryService;
