@@ -8,7 +8,7 @@ namespace Locompro.Services.Domain
     /// </summary>
     /// <typeparam name="T">Type of entity handled by service.</typeparam>
     /// <typeparam name="I">Type of key used by entity.</typeparam>
-    public class DomainService<T, I> : AbstractService, IDomainService<T, I>
+    public class DomainService<T, I> : Service, IDomainService<T, I>
         where T : class
     {
         protected readonly ICrudRepository<T, I> CrudRepository;
@@ -18,7 +18,7 @@ namespace Locompro.Services.Domain
         /// </summary>
         /// <param name="unitOfWork">Unit of work to handle transactions.</param>
         /// <param name="loggerFactory">Factory for service logger.</param>
-        protected DomainService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory)
+        public DomainService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory)
             : base(unitOfWork, loggerFactory)
         {
             this.CrudRepository = UnitOfWork.GetRepository<T, I>();

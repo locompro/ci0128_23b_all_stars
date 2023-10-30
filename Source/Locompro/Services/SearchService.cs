@@ -7,7 +7,7 @@ using Locompro.Repositories.Utilities;
 
 namespace Locompro.Services;
 
-public class SearchService : AbstractService
+public class SearchService : Service
 {
     private readonly ISubmissionRepository _submissionRepository;
     private readonly QueryBuilder _queryBuilder;
