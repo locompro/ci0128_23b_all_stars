@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Locompro.Common;
 
 namespace Locompro.Models.ViewModels;
 
@@ -8,10 +9,13 @@ namespace Locompro.Models.ViewModels;
 /// </summary>
 public class ProductViewModel
 {
-    [Required(ErrorMessage = "Ingresar el nombre del producto.")]
+    [Required(ErrorMessage = "Seleccionar un producto.")]
+    public int Id { get; set; }
+    
+    [RequiredIf("IsExistingProduct", false, "Ingresar el nombre del producto.")]
     [StringLength(60, MinimumLength = 1)]
     [DisplayName("Nombre")]
-    public string Name { get; set; }
+    public string PName { get; set; } // not a typo
     
     [StringLength(60)]
     [DisplayName("Modelo")]
@@ -24,4 +28,9 @@ public class ProductViewModel
     [StringLength(60)]
     [DisplayName("Categoría")]
     public string Category { get; set; }
+    
+    public bool IsExistingProduct()
+    {
+        return -1 != Id;
+    }
 }

@@ -1,78 +1,111 @@
 using System.Globalization;
 using Locompro.Data;
 using Locompro.Models;
-using Locompro.Repositories;
+using Locompro.Data.Repositories;
+using Locompro.Repositories.Utilities;
 using Locompro.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
-using NuGet.ContentModel;
 
 namespace Locompro.Tests.Services;
 
 [TestFixture]
 public class SearchServiceTest
 {
-    private readonly Mock<LocomproContext> _dbContextMock;
-    private readonly Mock<ILoggerFactory> _loggerFactoryMock;
-    private readonly Mock<SubmissionRepository> _submissionRepositoryMock;
-    private readonly SearchService _searchService;
+    private Mock<ISubmissionRepository> _submissionRepositoryMock;
+    private Mock<IUnitOfWork> _unitOfWorkMock;
+    private SearchService _searchService;
 
-    public SearchServiceTest()
+    [SetUp]
+    public void Setup()
     {
-        _dbContextMock = new Mock<LocomproContext>(new DbContextOptions<LocomproContext>());
-        _loggerFactoryMock = new Mock<ILoggerFactory>();
-        _submissionRepositoryMock = new Mock<SubmissionRepository>(_dbContextMock.Object, _loggerFactoryMock.Object);
-        _searchService = new SearchService(_submissionRepositoryMock.Object);
+        var loggerFactoryMock = new Mock<ILoggerFactory>();
+        
+        _submissionRepositoryMock = new Mock<ISubmissionRepository>();
+        _unitOfWorkMock = new Mock<IUnitOfWork>();
+
+        _unitOfWorkMock.Setup(u => u.GetRepository<ISubmissionRepository>())
+            .Returns(_submissionRepositoryMock.Object);
+        
+        _searchService = new SearchService(_unitOfWorkMock.Object, loggerFactoryMock.Object);
     }
-    
+
     /// <summary>
     /// Finds a list of names that are expected to be found
     /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
-    public void SearchByName_NameIsFound()
+    public async Task SearchByName_NameIsFound()
     {
         // Arrange
         string productSearchName = "Product1";
+        
         MockDataSetup();
-        List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        {
+            new(SearchParam.SearchParameterTypes.Name, productSearchName)
+        };
+        
+        // Act
+        var searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product2";
-        searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        searchCriteria.Clear();
+        searchCriteria.Add(new(SearchParam.SearchParameterTypes.Name, productSearchName));
+        
+        searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
-        Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
-
+        Assert.That(searchResults.Exists(i => i.Name == productSearchName), Is.True);
+        
+        
         productSearchName = "Product3";
-        searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        searchCriteria.Clear();
+        searchCriteria.Add(new(SearchParam.SearchParameterTypes.Name, productSearchName));
+        
+        searchResults = await _searchService.GetSearchResults(searchCriteria); 
 
         // Assert
         Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product4";
-        searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        searchCriteria.Clear();
+        searchCriteria.Add(new(SearchParam.SearchParameterTypes.Name, productSearchName));
+        
+        searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product5";
-        searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        searchCriteria.Clear();
+        searchCriteria.Add(new(SearchParam.SearchParameterTypes.Name, productSearchName));
+        
+        searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product6";
-        searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        searchCriteria.Clear();
+        searchCriteria.Add(new(SearchParam.SearchParameterTypes.Name, productSearchName));
+        
+        searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
 
         productSearchName = "Product7";
-        searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        searchCriteria.Clear();
+        searchCriteria.Add(new(SearchParam.SearchParameterTypes.Name, productSearchName));
+        
+        searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.IsTrue(searchResults.Exists(i => i.Name == productSearchName));
@@ -84,12 +117,20 @@ public class SearchServiceTest
     /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
-    public void SearchByNameForNonExistent_NameIsNotFound()
+    public async Task SearchByNameForNonExistent_NameIsNotFound()
     {
         // Arrange
         string productSearchName = "ProductNonExistent";
+        
         MockDataSetup();
-        List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        {
+            new(SearchParam.SearchParameterTypes.Name, productSearchName)
+        };
+        
+        // Act
+        var searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.Multiple(() =>
@@ -105,12 +146,20 @@ public class SearchServiceTest
     /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
-    public void SearchByNameForEmptyString_NameIsNotFound()
+    public async Task SearchByNameForEmptyString_NameIsNotFound()
     {
         // Arrange
         string productSearchName = "";
+        
         MockDataSetup();
-        List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        {
+            new(SearchParam.SearchParameterTypes.Name, productSearchName)
+        };
+        
+        // Act
+        var searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.Multiple(() =>
@@ -130,11 +179,19 @@ public class SearchServiceTest
     /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
-    public void SearchByName_FindsBestSubmission()
+    public async Task SearchByName_FindsBestSubmission()
     {
         string productSearchName = "Product1";
+        
         MockDataSetup();
-        List<Item> searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        {
+            new(SearchParam.SearchParameterTypes.Name, productSearchName)
+        };
+        
+        // Act
+        var searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         DateTime dateTimeExpected = new DateTime(2023, 10, 6, 0, 0, 0, DateTimeKind.Utc);
         DateTime dateTimeReceived = DateTime.Parse(searchResults[0].LastSubmissionDate, new CultureInfo("en-US"));
@@ -148,11 +205,19 @@ public class SearchServiceTest
     /// <author>Gabriel Molina Bulgarelli C14826</author>
     /// </summary>
     [Test]
-    public void AmountOfSearchSubmissions()
+    public async Task AmountOfSearchSubmissions()
     {
         string productSearchName = "Product1";
+        
         MockDataSetup();
-        var searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        {
+            new(SearchParam.SearchParameterTypes.Name, productSearchName)
+        };
+        
+        // Act
+        var searchResults = await _searchService.GetSearchResults(searchCriteria);
         
         // Assert
         Assert.That(searchResults, Is.Not.Null);
@@ -165,18 +230,26 @@ public class SearchServiceTest
     /// <author>Gabriel Molina Bulgarelli C14826</author>
     /// </summary>
     [Test]
-    public void DataOfSearchSubmissions()
+    public async Task DataOfSearchSubmissions()
     {
         string productSearchName = "Product1";
+        
         MockDataSetup();
-        var searchResults = _searchService.SearchItems(productSearchName, null, null, 0, 0, null, null).Result;
+        
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        {
+            new(SearchParam.SearchParameterTypes.Name, productSearchName)
+        };
+        
+        // Act
+        var searchResults = await _searchService.GetSearchResults(searchCriteria);
         
         // Assert
         Assert.That(searchResults, Is.Not.Null);
         Assert.That(searchResults.Count, Is.GreaterThan(0));
         Assert.That(searchResults[0].Submissions.Count, Is.EqualTo(2));
         
-        Assert.That(searchResults[0].Submissions[0].Username, Is.EqualTo("User1"));
+        Assert.That(searchResults[0].Submissions[0].UserId, Is.EqualTo("User1"));
         DateTime submission1EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
         Assert.That(searchResults[0].Submissions[0].EntryTime, Is.EqualTo(submission1EntryTime));
         Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(100));
@@ -184,7 +257,7 @@ public class SearchServiceTest
         Assert.That(searchResults[0].Submissions[0].StoreName, Is.EqualTo("Store1"));
         Assert.That(searchResults[0].Submissions[0].ProductId, Is.EqualTo(1));
 
-        Assert.That(searchResults[0].Submissions[1].Username, Is.EqualTo("User8"));
+        Assert.That(searchResults[0].Submissions[1].UserId, Is.EqualTo("User8"));
         DateTime submission2EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc);
         Assert.That(searchResults[0].Submissions[1].EntryTime, Is.EqualTo(submission2EntryTime));
         Assert.That(searchResults[0].Submissions[1].Price, Is.EqualTo(180));
@@ -198,13 +271,21 @@ public class SearchServiceTest
     /// </summary>
     /// <author> Brandon Alonso Mora Umaña C15179 </author>
     [Test]
-    public void SearchByModel_ModelIsFound()
+    public async Task SearchByModel_ModelIsFound()
     {
         // Arrange
         string modelName = "Model1";
+        
         MockDataSetup();
+        
         // Act
-        List<Item> searchResults = _searchService.SearchItems(null, null, null, 0, 0, null, modelName).Result;
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        {
+            new(SearchParam.SearchParameterTypes.Model, modelName),
+        };
+        
+        // Act
+        var searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.That(searchResults, Is.Not.Null);
@@ -218,13 +299,21 @@ public class SearchServiceTest
     /// </summary>
     /// <author> Gabriel Molina Bulgarelli C14826 </author>
     [Test]
-    public void SubmissionsDataByModel()
+    public async Task SubmissionsDataByModel()
     {
         // Arrange
         string modelName = "Model2";
+        
         MockDataSetup();
+        
         // Act
-        List<Item> searchResults = _searchService.SearchItems(null, null, null, 0, 0, null, modelName).Result;
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        {
+            new(SearchParam.SearchParameterTypes.Model, modelName),
+        };
+        
+        // Act
+        var searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.That(searchResults, Is.Not.Null);
@@ -233,7 +322,7 @@ public class SearchServiceTest
             Is.True);
         Assert.That(searchResults[0].Submissions.Count, Is.EqualTo(1));
 
-        Assert.That(searchResults[0].Submissions[0].Username, Is.EqualTo("User2"));
+        Assert.That(searchResults[0].Submissions[0].UserId, Is.EqualTo("User2"));
         Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(200));
         Assert.That(searchResults[0].Submissions[0].Description, Is.EqualTo("Description for Submission 2"));
         Assert.That(searchResults[0].Submissions[0].StoreName, Is.EqualTo("Store2"));
@@ -245,13 +334,21 @@ public class SearchServiceTest
     /// </summary>
     /// <author> Brandon Alonso Mora Umaña C15179 </author>
     [Test]
-    public void SearchByModel_ModelIsNotFound()
+    public async Task SearchByModel_ModelIsNotFound()
     {
         // Arrange
         string modelName = "NonExistentModel";
+        
         MockDataSetup();
+        
         // Act
-        List<Item> searchResults = _searchService.SearchItems(null, null, null, 0, 0, null, modelName).Result;
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        {
+            new(SearchParam.SearchParameterTypes.Model, modelName),
+        };
+        
+        // Act
+        var searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.IsNotNull(searchResults);
@@ -263,13 +360,20 @@ public class SearchServiceTest
     /// </summary>
     /// <author> Brandon Alonso Mora Umaña C15179 </author>
     [Test]
-    public void SearchByModel_EmptyModelName()
+    public async Task SearchByModel_EmptyModelName()
     {
         // Arrange
         string modelName = string.Empty;
+        
         MockDataSetup();
+        
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        {
+            new(SearchParam.SearchParameterTypes.Model, modelName),
+        };
+        
         // Act
-        List<Item> searchResults = _searchService.SearchItems(null, null, null, 0, 0, null, modelName).Result;
+        var searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.IsNotNull(searchResults);
@@ -286,21 +390,32 @@ public class SearchServiceTest
         // Arrange
         string canton = "Canton1";
         string province = "Province1";
+        
         MockDataSetup();
+        
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        {
+            new(SearchParam.SearchParameterTypes.Province, province),
+            new(SearchParam.SearchParameterTypes.Canton, canton)
+        };
+        
         // Act
-        var results = await _searchService.GetSubmissionsByCantonAndProvince(canton, province);
+        var results = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
-        var submissions = results as Submission[] ?? results.ToArray();
-        Assert.That(submissions, Is.Not.Null);
-        Assert.That(submissions.Count(), Is.GreaterThan(0));
+        Assert.That(results, Is.Not.Null);
+        Assert.That(results.Count(), Is.GreaterThan(0));
+        
         bool all = true;
-        foreach (var sub in submissions)
+        foreach (var item in results)
         {
-            if (sub.Store.Canton.Name != canton || sub.Store.Canton.ProvinceName != province)
+            foreach (var sub in item.Submissions)
             {
-                all = false;
-                break;
+                if (sub. Store.Canton.Name != canton || sub.Store.Canton.ProvinceName != province)
+                {
+                    all = false;
+                    break;
+                }
             }
         }
         Assert.That(all, Is.True);
@@ -317,13 +432,20 @@ public class SearchServiceTest
         string canton = "InvalidCanton";
         string province = "InvalidProvince";
         MockDataSetup();
+        
         // Act
-        var results = await _searchService.GetSubmissionsByCantonAndProvince(canton, province);
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        {
+            new(SearchParam.SearchParameterTypes.Province, province),
+            new(SearchParam.SearchParameterTypes.Canton, canton)
+        };
+        
+        // Act
+        var results = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
-        var submissions = results as Submission[] ?? results.ToArray();
-        Assert.That(submissions, Is.Not.Null);
-        Assert.That(submissions.Count(), Is.EqualTo(0));
+        Assert.That(results, Is.Not.Null);
+        Assert.That(results.Count(), Is.EqualTo(0));
     }
 
     /// <summary>
@@ -336,8 +458,12 @@ public class SearchServiceTest
         // Arrange
         var brand = "Brand1";
         MockDataSetup();
+        
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+            { new(SearchParam.SearchParameterTypes.Brand, brand)};
+        
         // Act
-        var results = await _searchService.SearchItems(null, null, null, 0, 0, null, null, brand);
+        var results = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.That(results, Is.Not.Null);
@@ -355,8 +481,12 @@ public class SearchServiceTest
         // Arrange
         var brand = "Brand1";
         MockDataSetup();
+        
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+            { new(SearchParam.SearchParameterTypes.Brand, brand)};
+        
         // Act
-        var searchResults = await _searchService.SearchItems(null, null, null, 0, 0, null, null, brand);
+        var searchResults = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.That(searchResults, Is.Not.Null);
@@ -364,7 +494,7 @@ public class SearchServiceTest
         Assert.That(searchResults.TrueForAll(item => item.Submissions[0].Product.Brand.Contains(brand)), Is.True);
         Assert.That(searchResults[0].Submissions.Count, Is.EqualTo(2));
 
-        Assert.That(searchResults[0].Submissions[0].Username, Is.EqualTo("User1"));
+        Assert.That(searchResults[0].Submissions[0].UserId, Is.EqualTo("User1"));
         DateTime submission1EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
         Assert.That(searchResults[0].Submissions[0].EntryTime, Is.EqualTo(submission1EntryTime));
         Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(100));
@@ -372,7 +502,7 @@ public class SearchServiceTest
         Assert.That(searchResults[0].Submissions[0].StoreName, Is.EqualTo("Store1"));
         Assert.That(searchResults[0].Submissions[0].ProductId, Is.EqualTo(1));
 
-        Assert.That(searchResults[0].Submissions[1].Username, Is.EqualTo("User8"));
+        Assert.That(searchResults[0].Submissions[1].UserId, Is.EqualTo("User8"));
         DateTime submission2EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc);
         Assert.That(searchResults[0].Submissions[1].EntryTime, Is.EqualTo(submission2EntryTime));
         Assert.That(searchResults[0].Submissions[1].Price, Is.EqualTo(180));
@@ -392,8 +522,12 @@ public class SearchServiceTest
         // Arrange
         string brand = "InvalidBrand";
         MockDataSetup();
+        
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+            { new(SearchParam.SearchParameterTypes.Brand, brand)};
+        
         // Act
-        var results = await _searchService.SearchItems(null, null, null, 0, 0, null, null, brand);
+        var results = await _searchService.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.That(results, Is.Not.Null);
@@ -409,18 +543,28 @@ public class SearchServiceTest
     {
         // Arrange
         string brand = string.Empty;
+        
         MockDataSetup();
+        
+        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+            { new(SearchParam.SearchParameterTypes.Brand, brand)};
+        
         // Act
-        var results = await _searchService.SearchItems(null, null, null, 0, 0, null, null, brand);
+        var results = await _searchService.GetSearchResults(searchCriteria);
+
+        foreach (var item in results)
+        {
+            Console.WriteLine(item.Name + " : " + item.Brand);
+        }
 
         // Assert
         Assert.That(results, Is.Not.Null);
         Assert.That(results.Count, Is.EqualTo(0));
     }
-
-
+    
+    
     /// <summary>
-    /// Sets up the mock for the submission repository so that it behaves as expected for the tests
+    /// Sets up the mock for the submission service so that it behaves as expected for the tests
     /// </summary>
     void MockDataSetup()
     {
@@ -541,7 +685,7 @@ public class SearchServiceTest
         {
             new Submission
             {
-                Username = "User1",
+                UserId = "User1",
                 EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
                 Price = 100,
                 Rating = 4.5f,
@@ -554,7 +698,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User2",
+                UserId = "User2",
                 EntryTime = DateTime.Now.AddDays(-1),
                 Price = 200,
                 Rating = 3.8f,
@@ -567,7 +711,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User3",
+                UserId = "User3",
                 EntryTime = DateTime.Now.AddDays(-3),
                 Price = 50,
                 Rating = 4.2f,
@@ -580,7 +724,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User4",
+                UserId = "User4",
                 EntryTime = DateTime.Now.AddDays(-4),
                 Price = 150,
                 Rating = 4.0f,
@@ -593,7 +737,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User5",
+                UserId = "User5",
                 EntryTime = DateTime.Now.AddDays(-5),
                 Price = 75,
                 Rating = 3.9f,
@@ -606,7 +750,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User6",
+                UserId = "User6",
                 EntryTime = DateTime.Now.AddDays(-6),
                 Price = 220,
                 Rating = 4.6f,
@@ -619,7 +763,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User7",
+                UserId = "User7",
                 EntryTime = DateTime.Now.AddDays(-7),
                 Price = 90,
                 Rating = 3.7f,
@@ -632,7 +776,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User8",
+                UserId = "User8",
                 EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
                 Price = 180,
                 Rating = 4.3f,
@@ -645,7 +789,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User9",
+                UserId = "User9",
                 EntryTime = DateTime.Now.AddDays(-9),
                 Price = 120,
                 Rating = 4.1f,
@@ -658,7 +802,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User10",
+                UserId = "User10",
                 EntryTime = DateTime.Now.AddDays(-10),
                 Price = 70,
                 Rating = 3.5f,
@@ -671,7 +815,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User11",
+                UserId = "User11",
                 EntryTime = DateTime.Now.AddDays(-11),
                 Price = 110,
                 Rating = 4.4f,
@@ -684,7 +828,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User12",
+                UserId = "User12",
                 EntryTime = DateTime.Now.AddDays(-12),
                 Price = 240,
                 Rating = 4.8f,
@@ -697,7 +841,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User13",
+                UserId = "User13",
                 EntryTime = DateTime.Now.AddDays(-13),
                 Price = 85,
                 Rating = 3.6f,
@@ -710,7 +854,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User14",
+                UserId = "User14",
                 EntryTime = DateTime.Now.AddDays(-14),
                 Price = 130,
                 Rating = 4.0f,
@@ -723,7 +867,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User15",
+                UserId = "User15",
                 EntryTime = DateTime.Now.AddDays(-15),
                 Price = 190,
                 Rating = 4.2f,
@@ -736,7 +880,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User16",
+                UserId = "User16",
                 EntryTime = DateTime.Now.AddDays(-16),
                 Price = 65,
                 Rating = 3.4f,
@@ -749,7 +893,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User17",
+                UserId = "User17",
                 EntryTime = DateTime.Now.AddDays(-17),
                 Price = 160,
                 Rating = 4.1f,
@@ -762,7 +906,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User18",
+                UserId = "User18",
                 EntryTime = DateTime.Now.AddDays(-18),
                 Price = 210,
                 Rating = 4.6f,
@@ -775,7 +919,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User19",
+                UserId = "User19",
                 EntryTime = DateTime.Now.AddDays(-19),
                 Price = 80,
                 Rating = 3.7f,
@@ -788,7 +932,7 @@ public class SearchServiceTest
             },
             new Submission
             {
-                Username = "User20",
+                UserId = "User20",
                 EntryTime = DateTime.Now.AddDays(-20),
                 Price = 140,
                 Rating = 3.9f,
@@ -800,25 +944,23 @@ public class SearchServiceTest
                 Product = products[5]
             }
         };
+        
         // setting up mock repository behavior requires the methods to be virtual on class being mocked or using interface, in this case
         // the methods are virtual because interface does not have the methods being implemented.
         _submissionRepositoryMock
-            .Setup(repo => repo.GetSubmissionsByCantonAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync((string canton, string province) =>
+            .Setup(repo => repo.GetSearchResults(It.IsAny<SearchQueries>()))
+            .ReturnsAsync((SearchQueries searchQueries) =>
             {
-                return submissions
-                    .Where(s => s.Store.Canton.Name == canton && s.Store.Canton.ProvinceName == province).ToList();
-            });
+                // initiate the query
+                IQueryable<Submission> submissionsResults = submissions.AsQueryable().Include(submission => submission.Product);
 
-        _submissionRepositoryMock.Setup(repo => repo.GetSubmissionsByProductModelAsync(It.IsAny<string>()))
-            .ReturnsAsync((string model) => { return submissions.Where(s => s.Product.Model == model).ToList(); });
+                // append the search queries to the query
+                submissionsResults =
+                    searchQueries.SearchQueryFunctions.Aggregate(submissionsResults,
+                        (current, query) => current.Where(query));
 
-        _submissionRepositoryMock.Setup(repo => repo.GetSubmissionsByProductNameAsync(It.IsAny<string>()))
-            .ReturnsAsync((string productName) =>
-            {
-                return submissions.Where(s => s.Product.Name == productName).ToList();
+                // get and return the results
+                return submissionsResults.ToList();
             });
-        _submissionRepositoryMock.Setup(repo => repo.GetSubmissionByBrandAsync(It.IsAny<string>()))
-            .ReturnsAsync((string brand) => { return submissions.Where(s => s.Product.Brand == brand).ToList(); });
     }
 }

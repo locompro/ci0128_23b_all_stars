@@ -1,17 +1,17 @@
 using Locompro.Data;
 using Locompro.Models;
-using Locompro.Repositories;
+using Locompro.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Locompro.Tests.Repositories
 {
     [TestFixture]
-    public class AbstractRepositoryTests
+    public class CrudRepositoryTests
     {
         private ILoggerFactory _loggerFactory;
         private LocomproContext _context;
-        private UserRepository _repository;
+        private ICrudRepository<User, string> _userRepository;
 
         [SetUp]
         public void SetUp()
@@ -30,7 +30,7 @@ namespace Locompro.Tests.Repositories
             _context.Set<User>().Add(new User { Id = "2", Name = "UserB", Address = "AddressB", Rating = 3.0f, Status = Status.Active });
             _context.SaveChanges();
 
-            _repository = new UserRepository(_context, _loggerFactory);
+            _userRepository = new CrudRepository<User, string>(_context, _loggerFactory);
         }
 
         [Test]
@@ -42,7 +42,7 @@ namespace Locompro.Tests.Repositories
             string expectedAddress = "AddressA";
 
             // Act
-            var result = await _repository.GetByIdAsync(id);
+            var result = await _userRepository.GetByIdAsync(id);
 
             // Assert
             Assert.Multiple(() =>
@@ -58,7 +58,7 @@ namespace Locompro.Tests.Repositories
         public async Task GetAllAsync_ShouldReturnAllEntities()
         {
             // Act
-            var result = await _repository.GetAllAsync();
+            var result = await _userRepository.GetAllAsync();
 
             // Assert
             Assert.Multiple(() =>
@@ -75,8 +75,8 @@ namespace Locompro.Tests.Repositories
             var newUser = new User { Id = "3", Name = "UserC", Address = "AddressC", Rating = 4.0f, Status = Status.Active };
 
             // Act
-            await _repository.AddAsync(newUser);
-            var result = await _repository.GetByIdAsync("3");
+            await _userRepository.AddAsync(newUser);
+            var result = await _userRepository.GetByIdAsync("3");
 
             // Assert
             Assert.Multiple(() =>
@@ -92,12 +92,12 @@ namespace Locompro.Tests.Repositories
         public async Task UpdateAsync_ShouldUpdateEntity()
         {
             // Arrange
-            var userToUpdate = await _repository.GetByIdAsync("1");
+            var userToUpdate = await _userRepository.GetByIdAsync("1");
             userToUpdate.Address = "NewAddressA";
 
             // Act
-            await _repository.UpdateAsync(userToUpdate);
-            var updatedUser = await _repository.GetByIdAsync("1");
+            await _userRepository.UpdateAsync(userToUpdate);
+            var updatedUser = await _userRepository.GetByIdAsync("1");
 
             // Assert
             Assert.Multiple(() =>
@@ -115,8 +115,8 @@ namespace Locompro.Tests.Repositories
             string id = "2";
 
             // Act
-            await _repository.DeleteAsync(id);
-            var result = await _repository.GetByIdAsync(id);
+            await _userRepository.DeleteAsync(id);
+            var result = await _userRepository.GetByIdAsync(id);
 
             // Assert
             Assert.That(result, Is.Null);
