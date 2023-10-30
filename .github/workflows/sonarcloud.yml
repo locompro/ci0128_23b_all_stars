@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: 17
-          distribution: 'zulu' # Alternative distribution options are available.
+          distribution: 'zulu'  # Alternative distribution options are available.
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
@@ -39,13 +39,11 @@ jobs:
         run: |
           New-Item -Path .\.sonar\scanner -ItemType Directory
           dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
-      - name: Build and analyze
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Install Coverage Tool
         shell: powershell
         run: |
-      - name: Build and analyze
+          dotnet tool install --global coverlet.console
+      - name: Build, Test and Analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -53,6 +51,8 @@ jobs:
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"locompro_ci0128_23b_all_stars" /o:"locompro" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.branch.name="${{ github.ref_name }}"
           dotnet build
-          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+          dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+          .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+
 
 
