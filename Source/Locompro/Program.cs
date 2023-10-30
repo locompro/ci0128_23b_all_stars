@@ -87,6 +87,7 @@ void RegisterServices(WebApplicationBuilder builder)
         config.LoginPath = "/Account/Login";
     });
 
+
     // Register repositories
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped(typeof(ICrudRepository<,>), typeof(CrudRepository<,>));
