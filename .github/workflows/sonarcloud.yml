@@ -43,6 +43,8 @@ jobs:
         shell: powershell
         run: |
           dotnet tool install --global coverlet.console
+          dotnet add package NUnit --version 3.13.3
+          dotnet add package NUnit3TestAdapter --version 4.2.0
       - name: Build, Test and Analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
