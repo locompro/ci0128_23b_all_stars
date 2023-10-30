@@ -13,7 +13,7 @@ public class StoreViewModel
     [Required(ErrorMessage = "Seleccionar una tienda.")]
     [StringLength(60)]
     [DisplayName("Nombre")]
-    public string Name { get; set; }
+    public string SName { get; set; }   // not a typo
 
     [Required(ErrorMessage = "Ingresar la dirección de la tienda.")]
     [StringLength(35)]
@@ -37,7 +37,7 @@ public class StoreViewModel
     
     public bool IsExistingStore()
     {
-        return !string.IsNullOrEmpty(Name) &&
+        return !string.IsNullOrEmpty(SName) &&
                string.IsNullOrEmpty(Address) &&
                string.IsNullOrEmpty(Telephone) &&
                string.IsNullOrEmpty(Province) &&

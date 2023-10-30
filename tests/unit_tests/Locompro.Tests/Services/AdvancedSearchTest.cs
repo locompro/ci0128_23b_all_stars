@@ -1,11 +1,12 @@
 ﻿using Locompro.Data;
 using Locompro.Models;
-using Locompro.Repositories;
+using Locompro.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using Locompro.Services;
 using Locompro.Services.Domain;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Locompro.Tests.Services
 {
@@ -14,8 +15,8 @@ namespace Locompro.Tests.Services
     {
         private ILoggerFactory _loggerFactory;
         private LocomproContext _context;
-        private CountryService _countryService;
-        private CategoryService _categoryService;
+        private INamedEntityDomainService<Country, string> _countryService;
+        private INamedEntityDomainService<Category, string> _categoryService;
         private AdvancedSearchInputService _advancedSearchService;
 
         [SetUp]
@@ -31,39 +32,39 @@ namespace Locompro.Tests.Services
             _context.Database.EnsureDeleted(); // Make sure the db is clean
             _context.Database.EnsureCreated();
             
-            Country CostaRica = new Country { Name = "Costa Rica" };
+            Country costaRica = new Country { Name = "Costa Rica" };
 
-            _context.Set<Country>().Add(CostaRica);
+            _context.Set<Country>().Add(costaRica);
 
-            Province SanJose = new Province { CountryName = "Costa Rica", Name = "San José", Country = CostaRica };
-            Province Alajuela = new Province { CountryName = "Costa Rica", Name = "Alajuela", Country = CostaRica };
+            Province sanJose = new Province { CountryName = "Costa Rica", Name = "San José", Country = costaRica };
+            Province alajuela = new Province { CountryName = "Costa Rica", Name = "Alajuela", Country = costaRica };
 
-            _context.Set<Province>().Add(SanJose);
-            _context.Set<Province>().Add(Alajuela);
+            _context.Set<Province>().Add(sanJose);
+            _context.Set<Province>().Add(alajuela);
 
-            Canton SanJoseCanton = new Canton { ProvinceName = "San José", Name = "San José", Province = SanJose };
-            Canton TibasCanton = new Canton { ProvinceName = "San José", Name = "Tibás", Province = SanJose };
-            Canton DesamparadosCanton = new Canton { ProvinceName = "San José", Name = "Desamparados", Province = SanJose };
-            Canton AlajuelaCanton = new Canton { ProvinceName = "Alajuela", Name = "Alajuela", Province = Alajuela };
-            Canton SanRamonCanton = new Canton { ProvinceName = "Alajuela", Name = "San Ramón", Province = Alajuela };
+            Canton sanJoseCanton = new Canton { ProvinceName = "San José", Name = "San José", Province = sanJose };
+            Canton tibasCanton = new Canton { ProvinceName = "San José", Name = "Tibás", Province = sanJose };
+            Canton desamparadosCanton = new Canton { ProvinceName = "San José", Name = "Desamparados", Province = sanJose };
+            Canton alajuelaCanton = new Canton { ProvinceName = "Alajuela", Name = "Alajuela", Province = alajuela };
+            Canton sanRamonCanton = new Canton { ProvinceName = "Alajuela", Name = "San Ramón", Province = alajuela };
 
-            _context.Set<Canton>().Add(SanJoseCanton);
-            _context.Set<Canton>().Add(TibasCanton);
-            _context.Set<Canton>().Add(DesamparadosCanton);
-            _context.Set<Canton>().Add(AlajuelaCanton);
-            _context.Set<Canton>().Add(SanRamonCanton);
+            _context.Set<Canton>().Add(sanJoseCanton);
+            _context.Set<Canton>().Add(tibasCanton);
+            _context.Set<Canton>().Add(desamparadosCanton);
+            _context.Set<Canton>().Add(alajuelaCanton);
+            _context.Set<Canton>().Add(sanRamonCanton);
 
-            new UserRepository(_context, _loggerFactory);
+            new CrudRepository<User, string>(_context, _loggerFactory);
 
-            CountryRepository countryRepostory = new CountryRepository(_context, _loggerFactory);
-            CategoryRepository categoryRepository = new CategoryRepository(_context, _loggerFactory);
-
-            ILogger<UnitOfWork> unitOfWorkLogger = _loggerFactory.CreateLogger<UnitOfWork>();
+            ICrudRepository<Country, string> countryRepostory = new CrudRepository<Country, string>(_context, _loggerFactory);
+            ICrudRepository<Category, string> categoryRepository = new CrudRepository<Category, string>(_context, _loggerFactory);
             
-            UnitOfWork unitOfWork = new UnitOfWork(unitOfWorkLogger, _context);
+            UnitOfWork unitOfWork = new UnitOfWork(null, _loggerFactory, _context);
+            unitOfWork.RegisterRepository(countryRepostory);
+            unitOfWork.RegisterRepository(categoryRepository);
 
-            this._categoryService = new CategoryService(unitOfWork, categoryRepository, _loggerFactory);
-            this._countryService = new CountryService(unitOfWork, countryRepostory, _loggerFactory);
+            this._categoryService = new NamedEntityDomainService<Category, string>(unitOfWork, _loggerFactory);
+            this._countryService = new NamedEntityDomainService<Country, string>(unitOfWork, _loggerFactory);
 
             this._advancedSearchService = new AdvancedSearchInputService(_countryService, _categoryService);
             
@@ -91,8 +92,8 @@ namespace Locompro.Tests.Services
 
             Assert.Multiple(()=>
             {
-                Assert.IsTrue(this._advancedSearchService.Provinces.Any(Province=>Province.Name == "San José"));
-                Assert.IsTrue(this._advancedSearchService.Provinces.Any(Province => Province.Name == "Alajuela"));
+                Assert.IsTrue(this._advancedSearchService.Provinces.Any(province=>province.Name == "San José"));
+                Assert.IsTrue(this._advancedSearchService.Provinces.Any(province => province.Name == "Alajuela"));
             });
         }
 
@@ -109,9 +110,9 @@ namespace Locompro.Tests.Services
 
             Assert.Multiple(() =>
             {
-                Assert.IsTrue(this._advancedSearchService.Cantons.Any(Canton => Canton.Name == "San José"));
-                Assert.IsTrue(this._advancedSearchService.Cantons.Any(Canton => Canton.Name == "Tibás"));
-                Assert.IsTrue(this._advancedSearchService.Cantons.Any(Canton => Canton.Name == "Desamparados"));
+                Assert.IsTrue(this._advancedSearchService.Cantons.Any(canton => canton.Name == "San José"));
+                Assert.IsTrue(this._advancedSearchService.Cantons.Any(canton => canton.Name == "Tibás"));
+                Assert.IsTrue(this._advancedSearchService.Cantons.Any(canton => canton.Name == "Desamparados"));
             });
         }
         
@@ -128,10 +129,10 @@ namespace Locompro.Tests.Services
             
             Assert.Multiple(() =>
             {
-                Assert.IsTrue(this._advancedSearchService.Categories.Any(Category => Category.Name == "Sombreros"));
-                Assert.IsTrue(this._advancedSearchService.Categories.Any(Category => Category.Name == "Zapatos"));
-                Assert.IsTrue(this._advancedSearchService.Categories.Any(Category => Category.Name == "Ropa"));
-                Assert.IsTrue(this._advancedSearchService.Categories.Any(Category => Category.Name == "Accesorios"));
+                Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Sombreros"));
+                Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Zapatos"));
+                Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Ropa"));
+                Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Accesorios"));
             });
         }
     }
