@@ -39,6 +39,35 @@ VALUES ('Laptop', 'Inspiron 15', 'Dell', 0),
        ('Cámara', 'EOS 2000D', 'Canon', 0),
        ('Laptop', null, 'Toshiba', 1);
 
+-- Insert data into ProductCategories table
+INSERT INTO ProductCategories (CategoriesName, ProductID)
+VALUES
+    -- Electronics
+    ('Electrónica', 1), -- Laptop
+    ('Electrónica', 2), -- Celular
+    ('Electrónica', 4), -- Cafetera
+    ('Electrónica', 5), -- Televisor
+    ('Electrónica', 6), -- Microondas
+    ('Electrónica', 8), -- Consola
+    ('Electrónica', 9), -- Tablet
+    ('Electrónica', 12), -- Laptop (Toshiba)
+
+    -- Ropa
+    ('Ropa', 10), -- Afeitadora
+
+    -- Hogar y Jardín
+    ('Hogar y Jardín', 3), -- Refrigeradora
+
+    -- Deportes y Aire Libre
+    ('Deportes y Aire Libre', 7), -- Bicicleta
+
+    -- Libros
+    ('Libros', 11), -- Lavadora
+
+    -- Cámaras y Fotografía
+    ('Cámaras y Fotografía', 13); -- Cámara
+
+
 
 DECLARE @userId int = 1;
 DECLARE @productId int = 1;
@@ -60,7 +89,7 @@ BEGIN
         DECLARE @totalTimeOffset int = @userTimeOffset + @productTimeOffset;
 
         -- Inserting submissions for each user and product
-INSERT INTO dbo.Submissions (Username, EntryTime, Status, Price, Rating, Description, StoreName, ProductId)
+INSERT INTO dbo.Submissions (UserId, EntryTime, Status, Price, Rating, Description, StoreName, ProductId)
 VALUES
     (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -@totalTimeOffset, GETDATE()), 0, 300000, 4.5, 'Excelente producto', 'Super San José', @productId),
     (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 100), GETDATE()), 0, 310000, 4.7, 'Muy buena calidad', 'Tienda Escazú', @productId),
