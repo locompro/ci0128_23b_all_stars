@@ -50,7 +50,16 @@ namespace Locompro.Tests.Services
                 schemesMock.Object,
                 confirmationMock.Object
             );
-
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, "someUserId"),
+                // Add other claims as needed
+            };
+            var identity = new ClaimsIdentity(claims, "TestAuthType");
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+            
+            contextAccessorMock.Setup(ca => ca.HttpContext).Returns(httpContextMock.Object);
+            httpContextMock.Setup(hc => hc.User).Returns(claimsPrincipal);
             _service = new AuthService(_signInManagerMock.Object, _userManagerMock.Object, _userStoreMock.Object,
                 _loggerMock.Object, _emailStoreMock.Object);
         }
@@ -133,14 +142,16 @@ namespace Locompro.Tests.Services
             if (_service != null) await _service.Logout();
 
             _signInManagerMock?.Verify(x => x.SignOutAsync(), Times.Once);
+
             _loggerMock?.Verify(l => l.Log(
                     LogLevel.Information,
                     It.IsAny<EventId>(),
-                    It.Is<It.IsAnyType>((v, t) => string.Equals("User logged out.", v.ToString())),
+                    It.Is<It.IsAnyType>((v, t) => string.Equals($"User someUserId logged out.", v.ToString())),
                     null,
                     It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
                 Times.Once);
         }
+
 
         /// <summary>
         /// Test if the user is logged in.
