@@ -1,31 +1,26 @@
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
-using Locompro.Repositories;
 using Locompro.Models;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Text.RegularExpressions;
 using Locompro.Data;
+using Locompro.Data.Repositories;
 using Locompro.Repositories.Utilities;
 
 namespace Locompro.Services;
 
-public class SearchService : AbstractService
+public class SearchService : Service
 {
-    private readonly SubmissionRepository _submissionRepository;
+    private readonly ISubmissionRepository _submissionRepository;
     private readonly QueryBuilder _queryBuilder;
 
     /// <summary>
     /// Constructor for the search service
     /// </summary>
-    /// <param name="submissionRepository"> submission repository used for searches</param>
     /// <param name="unitOfWork"> generic unit of work</param>
     /// <param name="loggerFactory"> logger </param>
-    public SearchService(SubmissionRepository submissionRepository, UnitOfWork unitOfWork, ILoggerFactory loggerFactory) :
+    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) :
         base(unitOfWork, loggerFactory)
     {
-        _submissionRepository = submissionRepository;
+        _submissionRepository = UnitOfWork.GetRepository<ISubmissionRepository>();
         _queryBuilder = new QueryBuilder();
     }
 
@@ -42,7 +37,7 @@ public class SearchService : AbstractService
             try
             {
                 this._queryBuilder.AddSearchCriterion(searchCriterion);
-            } catch (System.ArgumentException exception)
+            } catch (ArgumentException exception)
             {
                 // if the search criterion is invalid, report on it but continue execution
                 this.Logger.LogWarning(exception.ToString());
@@ -50,17 +45,17 @@ public class SearchService : AbstractService
         }
 
         // compose the list of search functions
-        SearchQuery searchQuery = this._queryBuilder.GetSearchFunction();
+        SearchQueries searchQueries = this._queryBuilder.GetSearchFunction();
         
         // get the submissions that match the search functions
         IEnumerable<Submission> submissions = 
-            searchQuery.IsEmpty?
+            searchQueries.IsEmpty?
                 Enumerable.Empty<Submission>() :
-                await this._submissionRepository.GetSearchResults(searchQuery);
+                await this._submissionRepository.GetSearchResults(searchQueries);
         
         this._queryBuilder.Reset();
         
-        return this.GetItems(submissions).Result.ToList();
+        return GetItems(submissions).Result.ToList();
     }
     
     /// <summary>
@@ -69,19 +64,19 @@ public class SearchService : AbstractService
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>
-    private async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
+    private static async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
     {
-        List<Item> items = new List<Item>();
+        var items = new List<Item>();
 
         // Group submissions by store
-        IEnumerable<IGrouping<Store, Submission>> submissionsByStore = submissions.GroupBy(s => s.Store);
+        var submissionsByStore = submissions.GroupBy(s => s.Store);
 
-        foreach (IGrouping<Store, Submission> store in submissionsByStore)
+        foreach (var store in submissionsByStore)
         {
-            IEnumerable<IGrouping<Product, Submission>> submissionsByProduct = store.GroupBy(s => s.Product);
-            foreach (IGrouping<Product, Submission> product in submissionsByProduct)
+            var submissionsByProduct = store.GroupBy(s => s.Product);
+            foreach (var product in submissionsByProduct)
             {
-                items.Add(await this.GetItem(product));
+                items.Add(await GetItem(product));
             }
         }
 
@@ -95,13 +90,13 @@ public class SearchService : AbstractService
     /// </summary>
     /// <param name="itemGrouping"></param>
     /// <returns></returns>
-    private async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
+    private static async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
     {
         // Get best submission for its information
-        Submission bestSubmission = this.GetBestSubmission(itemGrouping);
+        var bestSubmission = GetBestSubmission(itemGrouping);
 
-        Item item = new Item(
-            GetFormatedDate(bestSubmission),
+        var item = new Item(
+            GetFormattedDate(bestSubmission),
             bestSubmission.Product.Name,
             bestSubmission.Price,
             bestSubmission.Store.Name,
@@ -125,7 +120,7 @@ public class SearchService : AbstractService
     /// </summary>
     /// <param name="submission"></param>
     /// <returns></returns>
-    string GetFormatedDate(Submission submission)
+    private static string GetFormattedDate(Submission submission)
     {
         Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture),
             @"[0-9]*/[0-9.]*/[0-9]*");
@@ -143,7 +138,7 @@ public class SearchService : AbstractService
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>
-    private Submission GetBestSubmission(IEnumerable<Submission> submissions)
+    private static Submission GetBestSubmission(IEnumerable<Submission> submissions)
     {
         // For the time being, the best submission is the one with the most recent entry time
         return submissions.MaxBy(s => s.EntryTime);

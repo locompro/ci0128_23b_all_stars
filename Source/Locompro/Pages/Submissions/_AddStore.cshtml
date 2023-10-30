@@ -1,7 +1,8 @@
 @using Locompro.Models.ViewModels
 @using Locompro.Services.Domain
 @using Newtonsoft.Json
-@inject CountryService CountryService
+@using Locompro.Models
+@inject INamedEntityDomainService<Country, string> CountryService
 @model StoreViewModel
 
 @{
@@ -27,10 +28,10 @@
             </fieldset>
         </div>
         <div class="mb-2">
-            <label asp-for="Name" class="form-label d-lg-flex justify-content-lg-start"></label>
-            <input asp-for="Name" class="form-control" placeholder="Nombre" id="partialStoreName">
+            <label asp-for="SName" class="form-label d-lg-flex justify-content-lg-start"></label>
+            <input asp-for="SName" class="form-control" placeholder="Nombre" id="partialStoreName">
         </div>
-        <span class="text-danger field-validation-valid pb-2" id="partialStoreNameValid" asp-validation-for="Name"></span>
+        <span class="text-danger field-validation-valid pb-2" id="partialStoreNameValid" asp-validation-for="SName"></span>
         <div class="mb-2">
             <label asp-for="Province" class="form-label d-lg-flex justify-content-lg-start"></label>
             <select asp-for="Province" id="partialStoreProvince"
