@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Locompro.Areas.Identity.ViewModels;
+using Locompro.Data;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
 using Locompro.Services;
@@ -14,6 +15,7 @@ namespace Locompro.Tests.Services
 {
     public class AuthServiceTest
     {
+        private Mock<IUnitOfWork> _unitOfWorkMock;
         private Mock<IUserStore<User>>? _userStoreMock;
         private Mock<IUserEmailStore<User>>? _emailStoreMock;
         private Mock<UserManager<User>>? _userManagerMock;
@@ -24,6 +26,7 @@ namespace Locompro.Tests.Services
         [SetUp]
         public void SetUp()
         {
+            _unitOfWorkMock = new Mock<IUnitOfWork>();
             _userStoreMock = new Mock<IUserStore<User>>();
             _emailStoreMock = new Mock<IUserEmailStore<User>>();
             _userManagerMock =
@@ -58,10 +61,12 @@ namespace Locompro.Tests.Services
             var identity = new ClaimsIdentity(claims, "TestAuthType");
             var claimsPrincipal = new ClaimsPrincipal(identity);
             
+            var loggerFactoryMock = new Mock<ILoggerFactory>();
+            
             contextAccessorMock.Setup(ca => ca.HttpContext).Returns(httpContextMock.Object);
             httpContextMock.Setup(hc => hc.User).Returns(claimsPrincipal);
-            _service = new AuthService(_signInManagerMock.Object, _userManagerMock.Object, _userStoreMock.Object,
-                _loggerMock.Object, _emailStoreMock.Object);
+            _service = new AuthService(_unitOfWorkMock.Object, loggerFactoryMock.Object, _signInManagerMock.Object,
+                _userManagerMock.Object, _userStoreMock.Object, _emailStoreMock.Object);
         }
 
         /// <summary>

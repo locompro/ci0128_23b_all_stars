@@ -14,30 +14,18 @@ namespace Locompro.Pages.Account;
 [Authorize]
 public class ProfileModel : PageModel
 {
-    private readonly UserService _userService;
-    private readonly AuthService _authService;
+    private readonly IDomainService<User, string> _userService;
+    private readonly IAuthService _authService;
     
-    /// <summary>
-    /// Model representing user profile data.
-    /// </summary>
     [BindProperty]
     public ProfileViewModel UserProfile { get; set; }
-
-    /// <summary>
-    /// Model representing data for changing the user's password.
-    /// </summary>
+    
     [BindProperty]
     public PasswordChageViewModel PasswordChange { get; set; }
-
-    /// <summary>
-    /// Gets a value indicating whether there are any errors in the Change Password modal.
-    /// </summary>
+    
     public bool HasErrorsInChangePasswordModal 
         => ModelState.ContainsKey("Modal-1") && ModelState["Modal-1"]?.Errors is { Count: > 0 };
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the password has been successfully changed.
-    /// </summary>
+    
     public bool IsPasswordChanged { get; set; }
     
     /// <summary>
@@ -45,7 +33,7 @@ public class ProfileModel : PageModel
     /// </summary>
     /// <param name="userService">Service for user related operations.</param>
     /// <param name="authService">Service for authentication related operations.</param>
-    public ProfileModel(UserService userService, AuthService authService)
+    public ProfileModel(IDomainService<User, string> userService, IAuthService authService)
     {
         _userService = userService;
         _authService = authService;

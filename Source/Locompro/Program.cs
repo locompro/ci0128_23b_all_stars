@@ -19,6 +19,12 @@ var webApplicationBuilder = WebApplication.CreateBuilder(args);
 // Register repositories and services
 RegisterServices(webApplicationBuilder);
 
+// Configure logging
+webApplicationBuilder.Logging.AddConfiguration(webApplicationBuilder.Configuration.GetSection("Logging"))
+    .AddConsole()
+    .AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning)
+    .AddFilter("Microsoft.EntityFrameworkCore.Infrastructure", LogLevel.Warning);
+
 var app = webApplicationBuilder.Build();
 
 // Configure the HTTP request pipeline.
@@ -101,11 +107,10 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ISubmissionService, SubmissionService>();
     builder.Services.AddScoped<ICantonService, CantonService>();
     builder.Services.AddScoped<ProductService>();
-    builder.Services.AddScoped<UserService>();
 
     // Register application services
     builder.Services.AddScoped<IContributionService, ContributionService>();
-    builder.Services.AddScoped<AuthService>();
+    builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<AdvancedSearchInputService>();
     builder.Services.AddScoped<SearchService>();
 }

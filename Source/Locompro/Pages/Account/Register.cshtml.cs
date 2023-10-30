@@ -14,9 +14,9 @@ namespace Locompro.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly AuthService authService;
+        private readonly IAuthService authService;
 
-        public RegisterModel(AuthService authService)
+        public RegisterModel(IAuthService authService)
         {
             this.authService = authService;
         }
