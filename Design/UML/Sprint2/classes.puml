@@ -1,0 +1,430 @@
+@startuml
+interface IUnitOfWork {
+}
+interface IContributionService {
+}
+interface ICrudRepositoryBase {
+}
+interface "ICrudRepository"<T,I> {
+}
+interface "INamedEntityRepository"<T,I> {
+}
+interface ICantonRepository {
+}
+interface "IDomainService"<T,I> {
+}
+interface "INamedEntityDomainService"<T,I> {
+}
+interface ICantonService {
+}
+interface ISubmissionService {
+}
+class "PaginatedList"<T> {
+    + PageIndex : int <<get>>
+    + TotalPages : int <<get>>
+    + TotalItems : int <<get>>
+    + PaginatedList(items:List<T>, count:int, pageIndex:int, pageSize:int)
+    + HasPreviousPage : bool <<get>>
+    + HasNextPage : bool <<get>>
+    + {static} <<async>> CreateAsync(source:IQueryable<T>, pageIndex:int, pageSize:int) : Task<PaginatedList<T>>
+    + {static} Create(source:List<T>, pageIndex:int, pageSize:int) : PaginatedList<T>
+}
+class "List"<T> {
+}
+"List" "<T>" <|-- "PaginatedList"
+class RequiredIfAttribute {
+    + RequiredIfAttribute(conditionMethodName:string, conditionValue:object, errorMessage:string)
+}
+ValidationAttribute <|-- RequiredIfAttribute
+class LocomproContext {
+    + LocomproContext(options:DbContextOptions<LocomproContext>)
+}
+class "IdentityDbContext"<T> {
+}
+class "DbSet"<T> {
+}
+"IdentityDbContext" "<User>" <|-- LocomproContext
+LocomproContext o-> "DbSet"
+class UnitOfWork {
+    + UnitOfWork(serviceProvider:IServiceProvider, loggerFactory:ILoggerFactory, context:DbContext)
+    + <<async>> BeginTransactionAsync() : Task
+    + <<async>> CommitAsync() : Task
+    + <<async>> RollbackAsync() : Task
+    + <<async>> DisposeAsync() : ValueTask
+    + RegisterRepository(repository:TR) : void
+    + GetRepository() : ICrudRepository<T, I>
+    + GetRepository() : TR
+}
+IUnitOfWork <|-- UnitOfWork
+class Canton {
+    + CountryName : string <<get>> <<set>>
+    + ProvinceName : string <<get>> <<set>>
+    + Name : string <<get>> <<set>>
+}
+Canton --> "Province" Province
+class Category {
+    + Name : string <<get>> <<set>>
+}
+class "ICollection"<T> {
+}
+Category --> "Parent" Category
+Category --> "Children<Category>" "ICollection"
+Category --> "Products<Product>" "ICollection"
+class Country {
+    + Name : string <<get>> <<set>>
+}
+Country --> "Provinces<Province>" "ICollection"
+class Item {
+    + Item(lastSubmissionDate:string, name:string, price:double, store:string, canton:string, province:string, description:string, model:string)
+    + LastSubmissionDate : string <<get>> <<init>>
+    + Name : string <<get>> <<init>>
+    + Price : double <<get>> <<init>>
+    + Store : string <<get>> <<init>>
+    + Canton : string <<get>> <<init>>
+    + Province : string <<get>> <<init>>
+    + Description : string <<get>> <<init>>
+    + Model : string <<get>> <<init>>
+    + Brand : string <<get>> <<set>>
+}
+Item --> "Submissions<Submission>" "List"
+class Product {
+    + Id : int <<get>> <<set>>
+    + Name : string <<get>> <<set>>
+    + Model : string <<get>> <<set>>
+    + Brand : string <<get>> <<set>>
+}
+Product o-> "Status" Status
+Product --> "Categories<Category>" "ICollection"
+Product --> "Submissions<Submission>" "ICollection"
+class Province {
+    + CountryName : string <<get>> <<set>>
+    + Name : string <<get>> <<set>>
+}
+Province --> "Country" Country
+Province --> "Cantons<Canton>" "ICollection"
+enum Status {
+    Active,
+    Inactive,
+    Deleted,
+}
+class Store {
+    + Name : string <<get>> <<set>>
+    + Address : string <<get>> <<set>>
+    + Telephone : string <<get>> <<set>>
+    + Latitude : decimal <<get>> <<set>>
+    + Longitude : decimal <<get>> <<set>>
+}
+Store --> "Canton" Canton
+Store o-> "Status" Status
+class Submission {
+    + UserId : string <<get>> <<set>>
+    + Price : int <<get>> <<set>>
+    + Rating : float <<get>> <<set>>
+    + Description : string <<get>> <<set>>
+    + StoreName : string <<get>> <<set>>
+    + ProductId : int <<get>> <<set>>
+}
+Submission --> "EntryTime" DateTime
+Submission o-> "Status" Status
+Submission --> "User" User
+Submission --> "Store" Store
+Submission --> "Product" Product
+class User {
+    + Name : string <<get>> <<set>>
+    + Address : string <<get>> <<set>>
+    + Rating : float <<get>> <<set>> = 0
+}
+IdentityUser <|-- User
+User o-> "Status" Status
+User --> "Submissions<Submission>" "ICollection"
+class ErrorModel {
+    + RequestId : string? <<get>> <<set>>
+    + ShowRequestId : bool <<get>>
+    + ErrorModel(logger:ILogger<ErrorModel>)
+    + OnGet() : void
+}
+PageModel <|-- ErrorModel
+class IndexModel {
+    + IndexModel(advancedSearchServiceHandler:AdvancedSearchInputService)
+}
+SearchPageModel <|-- IndexModel
+class PrivacyModel {
+    + PrivacyModel(logger:ILogger<PrivacyModel>)
+    + OnGet() : void
+}
+PageModel <|-- PrivacyModel
+class AdvancedSearchInputService {
+    + ProvinceSelected : string <<get>> <<set>>
+    + EmptyValue : string <<get>> <<set>>
+    + AdvancedSearchInputService(countryService:INamedEntityDomainService<Country, string>, categoryService:INamedEntityDomainService<Category, string>)
+    + <<async>> ObtainProvincesAsync() : Task
+    + <<async>> ObtainCantonsAsync(provinceName:string) : Task
+    + <<async>> ObtainCategoriesAsync() : Task
+}
+AdvancedSearchInputService --> "Provinces<Province>" "List"
+AdvancedSearchInputService --> "Cantons<Canton>" "List"
+AdvancedSearchInputService --> "Categories<Category>" "List"
+class AuthService {
+    + AuthService(signInManager:SignInManager<User>, userManager:UserManager<User>, userStore:IUserStore<User>, logger:ILogger<RegisterViewModel>, emailStore:IUserEmailStore<User>)
+    + <<async>> Register(inputData:RegisterViewModel) : Task<IdentityResult>
+    + <<async>> Login(inputData:LoginViewModel) : Task<SignInResult>
+    + <<async>> Logout() : Task
+    + IsLoggedIn() : bool
+}
+class ContributionService {
+    + ContributionService(unitOfWork:IUnitOfWork, loggerFactory:ILoggerFactory, cantonService:ICantonService, storeService:INamedEntityDomainService<Store, string>, productService:INamedEntityDomainService<Product, int>, categoryService:INamedEntityDomainService<Category, string>, submissionService:ISubmissionService)
+    + <<async>> AddSubmission(storeViewModel:StoreViewModel, productViewModel:ProductViewModel, description:string, price:int, userId:string) : Task
+}
+Service <|-- ContributionService
+IContributionService <|-- ContributionService
+class SearchService {
+    + SearchService(unitOfWork:IUnitOfWork, loggerFactory:ILoggerFactory)
+    + <<async>> GetSearchResults(unfilteredSearchCriteria:List<SearchCriterion>) : Task<List<Item>>
+}
+Service <|-- SearchService
+abstract class Service {
+}
+class CantonRepository {
+    + CantonRepository(context:DbContext, loggerFactory:ILoggerFactory)
+    + <<async>> GetByIdAsync(country:string, province:string, canton:string) : Task<Canton>
+}
+"CrudRepository" "<Canton,string>" <|-- CantonRepository
+ICantonRepository <|-- CantonRepository
+class "CrudRepository"<T,I> {
+    + CrudRepository(context:DbContext, loggerFactory:ILoggerFactory)
+    + <<async>> GetByIdAsync(id:I) : Task<T>
+    + <<async>> GetAllAsync() : Task<IEnumerable<T>>
+    + <<async>> AddAsync(entity:T) : Task
+    + <<async>> UpdateAsync(entity:T) : Task
+    + <<async>> DeleteAsync(id:I) : Task
+}
+"ICrudRepository" "<T,I>" <|-- "CrudRepository"
+"ICrudRepository" "<Canton,string>" <|-- ICantonRepository
+ICrudRepositoryBase <|-- "ICrudRepository"
+"ICrudRepository" "<T,I>" <|-- "INamedEntityRepository"
+"ICrudRepository" "<Submission,SubmissionKey>" <|-- ISubmissionRepository
+class "NamedEntityRepository"<T,I> {
+    + NamedEntityRepository(context:DbContext, loggerFactory:ILoggerFactory)
+    + <<async>> GetByPartialNameAsync(partialName:string) : Task<IEnumerable<T>>
+}
+"CrudRepository" "<T,I>" <|-- "NamedEntityRepository"
+"INamedEntityRepository" "<T,I>" <|-- "NamedEntityRepository"
+class ProductRepository {
+    + ProductRepository(dbContext:DbContext, loggerFactory:ILoggerFactory)
+    + <<async>> GetByPartialNameAsync(partialName:string) : Task<IEnumerable<Product>>
+}
+"CrudRepository" "<Product,int>" <|-- ProductRepository
+struct SubmissionKey {
+    + CountryName : string <<get>> <<set>>
+}
+class SubmissionRepository {
+    + SubmissionRepository(context:DbContext, loggerFactory:ILoggerFactory)
+    + <<async>> GetSearchResults(searchQueries:SearchQueries) : Task<IEnumerable<Submission>>
+    + <<virtual>> <<async>> GetByCantonAsync(cantonName:string, provinceName:string) : Task<IEnumerable<Submission>>
+    + <<virtual>> <<async>> GetByProductModelAsync(productModel:string) : Task<IEnumerable<Submission>>
+    + <<virtual>> <<async>> GetByProductNameAsync(productName:string) : Task<IEnumerable<Submission>>
+    + <<virtual>> <<async>> GetByBrandAsync(brandName:string) : Task<IEnumerable<Submission>>
+}
+SubmissionKey --> "EntryTime" DateTime
+"CrudRepository" "<Submission,SubmissionKey>" <|-- SubmissionRepository
+ISubmissionRepository <|-- SubmissionRepository
+class LoginViewModel {
+    + UserName : string <<get>> <<set>>
+    + Password : string <<get>> <<set>>
+    + RememberMe : bool <<get>> <<set>>
+}
+class ProductViewModel {
+    + Id : int <<get>> <<set>>
+    + PName : string <<get>> <<set>>
+    + Model : string <<get>> <<set>>
+    + Brand : string <<get>> <<set>>
+    + Category : string <<get>> <<set>>
+    + IsExistingProduct() : bool
+}
+class RegisterViewModel {
+    + Email : string <<get>> <<set>>
+    + UserName : string <<get>> <<set>>
+    + Password : string <<get>> <<set>>
+    + ConfirmPassword : string <<get>> <<set>>
+}
+class SearchViewModel {
+    + productName : string <<get>> <<set>>
+    + country : string <<get>> <<set>>
+    + province : string <<get>> <<set>>
+    + canton : string <<get>> <<set>>
+    + minValue : int <<get>> <<set>>
+    + maxValue : int <<get>> <<set>>
+    + category : string <<get>> <<set>>
+    + model : string <<get>> <<set>>
+}
+class StoreViewModel {
+    + SName : string <<get>> <<set>>
+    + Address : string <<get>> <<set>>
+    + Telephone : string <<get>> <<set>>
+    + Province : string <<get>> <<set>>
+    + Canton : string <<get>> <<set>>
+    + IsExistingStore() : bool
+}
+class LoginModel {
+    + LoginModel(authService:AuthService)
+    + ReturnUrl : string <<get>> <<set>>
+    + ErrorMessage : string <<get>> <<set>>
+    + <<async>> OnGetAsync(returnUrl:string) : Task
+    + <<async>> OnPostAsync(returnUrl:string) : Task<IActionResult>
+}
+PageModel <|-- LoginModel
+LoginModel --> "Input" LoginViewModel
+class LogoutModel {
+    + LogoutModel(authService:AuthService)
+    + <<async>> OnPost() : Task<IActionResult>
+}
+PageModel <|-- LogoutModel
+class RegisterModel {
+    + RegisterModel(authService:AuthService)
+    + ReturnUrl : string <<get>> <<set>>
+    + OnGetAsync(returnUrl:string) : Task
+    + <<async>> OnPostAsync(returnUrl:string) : Task<IActionResult>
+}
+PageModel <|-- RegisterModel
+RegisterModel --> "Input" RegisterViewModel
+class SearchResultsModel {
+    + ItemsAmount : double <<get>> <<set>>
+    + ProductName : string <<get>> <<set>>
+    + ProvinceSelected : string <<get>> <<set>>
+    + CantonSelected : string <<get>> <<set>>
+    + CategorySelected : string <<get>> <<set>>
+    + MinPrice : long <<get>> <<set>>
+    + MaxPrice : long <<get>> <<set>>
+    + ModelSelected : string <<get>> <<set>>
+    + BrandSelected : string <<get>> <<set>>
+    + CurrentFilter : string <<get>> <<set>>
+    + NameSort : string <<get>> <<set>>
+    + CurrentSort : string <<get>> <<set>>
+    + CantonSort : string <<get>> <<set>>
+    + ProvinceSort : string <<get>> <<set>>
+    + SearchResultsModel(advancedSearchServiceHandler:AdvancedSearchInputService, configuration:IConfiguration, searchService:SearchService)
+    + <<async>> OnGetAsync(pageIndex:int?, sorting:bool?, query:string, province:string, canton:string, minValue:long, maxValue:long, category:string, model:string, brand:string, currentFilter:string, sortOrder:string) : Task
+}
+SearchPageModel <|-- SearchResultsModel
+SearchResultsModel --> "DisplayItems<Item>" "PaginatedList"
+abstract class SearchPageModel {
+    + SearchQuery : string <<get>> <<set>>
+    + <<const>> EmptyValue : string = "Todos"
+    + OnGetAdvancedSearch(searchQuery:string) : IActionResult
+    + <<async>> OnGetUpdateProvince(province:string) : Task<IActionResult>
+}
+PageModel <|-- SearchPageModel
+class CreateModel {
+    + Description : string <<get>> <<set>>
+    + Price : int <<get>> <<set>>
+    + CreateModel(storeService:INamedEntityDomainService<Store, string>, productService:INamedEntityDomainService<Product, int>, contributionService:IContributionService)
+    + <<async>> OnGetFetchStores(partialName:string) : Task<IActionResult>
+    + <<async>> OnGetFetchProducts(partialName:string, store:string) : Task<IActionResult>
+    + <<async>> OnPostAsync() : Task<IActionResult>
+}
+PageModel <|-- CreateModel
+CreateModel --> "StoreVm" StoreViewModel
+CreateModel --> "ProductVm" ProductViewModel
+class QueryBuilder {
+    + QueryBuilder()
+    + AddSearchCriterion(searchCriterion:SearchCriterion) : void
+    + GetSearchFunction() : SearchQueries
+    + Reset() : void
+}
+class SearchCriterion {
+    + SearchValue : string <<get>> <<init>>
+    + SearchCriterion(parameterName:SearchParam.SearchParameterTypes, searchValue:string)
+}
+class SearchMethods {
+    + GetSearchMethodByName(parameterName:SearchParam.SearchParameterTypes) : SearchParam
+}
+SearchMethods --> "GetInstance" SearchMethods
+class SearchParam {
+}
+enum SearchParameterTypes {
+    Default,
+    Name,
+    Province,
+    Canton,
+    Minvalue,
+    Maxvalue,
+    Category,
+    Model,
+    Brand,
+}
+class "Expression"<T> {
+}
+class "Func"<T1,T2> {
+}
+SearchParam --> "SearchQuery<Func<Submission, string, bool>>" "Expression"
+SearchParam --> "ActivationQualifier<string,bool>" "Func"
+SearchParam +-- SearchParameterTypes
+class SearchQueries {
+    + IsEmpty : bool <<get>>
+}
+SearchQueries --> "SearchQueryFunctions<Expression<Func<Submission, bool>>>" "List"
+class CantonService {
+    + CantonService(unitOfWork:IUnitOfWork, loggerFactory:ILoggerFactory)
+    + <<async>> Get(country:string, province:string, canton:string) : Task<Canton>
+}
+"DomainService" "<Canton,string>" <|-- CantonService
+ICantonService <|-- CantonService
+class "DomainService"<T,I> {
+    + DomainService(unitOfWork:IUnitOfWork, loggerFactory:ILoggerFactory)
+    + <<async>> Get(id:I) : Task<T>
+    + <<async>> GetAll() : Task<IEnumerable<T>>
+    + <<async>> Add(entity:T) : Task
+    + <<async>> Update(entity:T) : Task
+    + <<async>> Delete(id:I) : Task
+}
+Service <|-- "DomainService"
+"IDomainService" "<T,I>" <|-- "DomainService"
+"IDomainService" "<T,I>" <|-- "INamedEntityDomainService"
+"IDomainService" "<Submission,SubmissionKey>" <|-- ISubmissionService
+class "NamedEntityDomainService"<T,I> {
+    + NamedEntityDomainService(unitOfWork:IUnitOfWork, loggerFactory:ILoggerFactory)
+    + <<async>> GetByPartialName(partialName:string) : Task<IEnumerable<T>>
+}
+"DomainService" "<T,I>" <|-- "NamedEntityDomainService"
+"INamedEntityDomainService" "<T,I>" <|-- "NamedEntityDomainService"
+class ProductService {
+    + ProductService(unitOfWork:IUnitOfWork, loggerFactory:ILoggerFactory)
+    + <<async>> GetByPartialName(partialName:string) : Task<IEnumerable<Product>>
+}
+"NamedEntityDomainService" "<Product,int>" <|-- ProductService
+"INamedEntityDomainService" "<Product,int>" <|-- ProductService
+class SubmissionService {
+    + SubmissionService(unitOfWork:IUnitOfWork, loggerFactory:ILoggerFactory)
+    + <<async>> GetSearchResults(searchQueries:SearchQueries) : Task<IEnumerable<Submission>>
+    + <<async>> GetByProductName(productName:string) : Task<IEnumerable<Submission>>
+    + <<async>> GetByProductModel(productModel:string) : Task<IEnumerable<Submission>>
+    + <<async>> GetByBrand(brandName:string) : Task<IEnumerable<Submission>>
+    + <<async>> GetByCantonAndProvince(canton:string, province:string) : Task<IEnumerable<Submission>>
+    + <<async>> GetByCanton(canton:string, province:string) : Task<IEnumerable<Submission>>
+}
+"DomainService" "<Submission,SubmissionKey>" <|-- SubmissionService
+ISubmissionService <|-- SubmissionService
+class UserService {
+    + UserService(unitOfWork:IUnitOfWork, loggerFactory:ILoggerFactory)
+}
+"DomainService" "<User,string>" <|-- UserService
+class AdvancedSearchModalModel {
+    + provinceSelected : string <<get>> <<set>>
+    + cantonSelected : string <<get>> <<set>>
+    + EmptyValue : string <<get>> <<set>>
+    + AdvancedSearchModalModel(advancedSearchService:AdvancedSearchInputService)
+    + <<async>> ObtainCantonsAsync(provinceName:string) : Task
+    + <<async>> ObtainProvincesAsync() : Task
+    + <<async>> ObtainCategoriesAsync() : Task
+}
+AdvancedSearchModalModel "provinces<Province>" --> "List"
+AdvancedSearchModalModel "cantons<Canton>" --> "List"
+AdvancedSearchModalModel --> "categories<Category>" "List"
+class AdvancedSearchViewComponent {
+    + AdvancedSearchViewComponent(advancedSearchServiceHandler:AdvancedSearchInputService)
+    + <<async>> InvokeAsync() : Task<IViewComponentResult>
+    + <<async>> OnGetAsync() : Task<AdvancedSearchModalModel>
+}
+ViewComponent <|-- AdvancedSearchViewComponent
+AdvancedSearchViewComponent --> "pageModel" AdvancedSearchModalModel
+@enduml
