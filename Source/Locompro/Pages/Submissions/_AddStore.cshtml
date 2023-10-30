@@ -1,7 +1,8 @@
 @using Locompro.Models.ViewModels
 @using Locompro.Services.Domain
 @using Newtonsoft.Json
-@inject CountryService CountryService
+@using Locompro.Models
+@inject INamedEntityDomainService<Country, string> CountryService
 @model StoreViewModel
 
 @{

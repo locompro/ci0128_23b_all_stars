@@ -15,8 +15,8 @@ namespace Locompro.Tests.Services
     {
         private ILoggerFactory _loggerFactory;
         private LocomproContext _context;
-        private CountryService _countryService;
-        private CategoryService _categoryService;
+        private INamedEntityDomainService<Country, string> _countryService;
+        private INamedEntityDomainService<Category, string> _categoryService;
         private AdvancedSearchInputService _advancedSearchService;
 
         [SetUp]
@@ -63,8 +63,8 @@ namespace Locompro.Tests.Services
             unitOfWork.RegisterRepository(countryRepostory);
             unitOfWork.RegisterRepository(categoryRepository);
 
-            this._categoryService = new CategoryService(unitOfWork, _loggerFactory);
-            this._countryService = new CountryService(unitOfWork, _loggerFactory);
+            this._categoryService = new NamedEntityDomainService<Category, string>(unitOfWork, _loggerFactory);
+            this._countryService = new NamedEntityDomainService<Country, string>(unitOfWork, _loggerFactory);
 
             this._advancedSearchService = new AdvancedSearchInputService(_countryService, _categoryService);
             

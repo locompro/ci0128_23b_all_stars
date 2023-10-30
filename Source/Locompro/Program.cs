@@ -91,21 +91,20 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped(typeof(ICrudRepository<,>), typeof(CrudRepository<,>));
     builder.Services.AddScoped(typeof(INamedEntityRepository<,>), typeof(NamedEntityRepository<,>));
+    builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
     builder.Services.AddScoped<ICantonRepository, CantonRepository>();
     builder.Services.AddScoped<ProductRepository>();
-    builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
 
     // Register domain services
-    builder.Services.AddScoped<StoreService>();
-    builder.Services.AddScoped<CountryService>();
-    builder.Services.AddScoped<CantonService>();
-    builder.Services.AddScoped<CategoryService>();
-    builder.Services.AddScoped<ProductService>();
+    builder.Services.AddScoped(typeof(INamedEntityDomainService<,>), typeof(NamedEntityDomainService<,>));
+    builder.Services.AddScoped(typeof(IDomainService<,>), typeof(DomainService<,>));
     builder.Services.AddScoped<ISubmissionService, SubmissionService>();
+    builder.Services.AddScoped<ICantonService, CantonService>();
+    builder.Services.AddScoped<ProductService>();
     builder.Services.AddScoped<UserService>();
 
     // Register application services
-    builder.Services.AddScoped<ContributionService>();
+    builder.Services.AddScoped<IContributionService, ContributionService>();
     builder.Services.AddScoped<AuthService>();
     builder.Services.AddScoped<AdvancedSearchInputService>();
     builder.Services.AddScoped<SearchService>();
