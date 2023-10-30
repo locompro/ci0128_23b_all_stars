@@ -42,8 +42,7 @@ jobs:
       - name: Install Coverage Tool
         shell: powershell
         run: |
-          dotnet-coverage collect "dotnet test" -f xml -o "coverage.xml"
-
+          dotnet tool install --global dotnet-coverage
       - name: Build, Test and Analyze
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
