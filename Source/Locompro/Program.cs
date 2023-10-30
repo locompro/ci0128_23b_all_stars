@@ -52,11 +52,11 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-app.Use(async (context, next) =>
-{
-    Console.WriteLine($"Incoming request: {context.Request.Path}");
-    await next();
-});
+// app.Use(async (context, next) =>
+// {
+//     Console.WriteLine($"Incoming request: {context.Request.Path}");
+//     await next();
+// });
 
 app.Run();
 return;
