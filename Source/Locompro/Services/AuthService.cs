@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Locompro.Areas.Identity.ViewModels;
+using Locompro.Data;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -12,25 +13,24 @@ using Microsoft.Extensions.Logging;
 
 namespace Locompro.Services
 {
-    public class AuthService
+    public class AuthService : Service, IAuthService
     {
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly IUserStore<User> _userStore;
         private readonly IUserEmailStore<User> _emailStore;
-        private readonly ILogger<RegisterViewModel> _logger;
 
         public AuthService(
+            IUnitOfWork unitOfWork,
+            ILoggerFactory loggerFactory,
             SignInManager<User> signInManager,
             UserManager<User> userManager,
             IUserStore<User> userStore,
-            ILogger<RegisterViewModel> logger,
-            IUserEmailStore<User> emailStore = null)
+            IUserEmailStore<User> emailStore = null) : base(unitOfWork, loggerFactory)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _userStore = userStore;
-            _logger = logger;
             _emailStore = emailStore ?? GetEmailStore();
         }
         /// <summary>
@@ -72,7 +72,7 @@ namespace Locompro.Services
 
             if (result.Succeeded)
             {
-                _logger.LogInformation("User created a new account with password.");
+                Logger.LogInformation("User created a new account with password.");
                 await _signInManager.SignInAsync(user, isPersistent: false);
             }
 
@@ -114,7 +114,7 @@ namespace Locompro.Services
                 inputData.RememberMe, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                _logger.LogInformation("User logged in.");
+                Logger.LogInformation("User logged in.");
             }
 
             return result;
@@ -129,7 +129,7 @@ namespace Locompro.Services
         public async Task Logout()
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation("User {id} logged out.", GetUserId());
+            Logger.LogInformation("User {id} logged out.", GetUserId());
         }
         /// <summary>
         /// Checks if a user is currently logged in.

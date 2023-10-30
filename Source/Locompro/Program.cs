@@ -101,11 +101,10 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ISubmissionService, SubmissionService>();
     builder.Services.AddScoped<ICantonService, CantonService>();
     builder.Services.AddScoped<ProductService>();
-    builder.Services.AddScoped<UserService>();
 
     // Register application services
     builder.Services.AddScoped<IContributionService, ContributionService>();
-    builder.Services.AddScoped<AuthService>();
+    builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<AdvancedSearchInputService>();
     builder.Services.AddScoped<SearchService>();
 }

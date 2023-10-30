@@ -3,7 +3,7 @@
 @using Locompro.Models
 @using Locompro.Services
 
-@inject AuthService AuthService
+@inject IAuthService AuthService
 @{
     var currentPage = Context.Request.Path.Value;
     var isLoggedIn = AuthService.IsLoggedIn();
