@@ -48,7 +48,16 @@ public class SearchMethods
         
         return searchParameter;
     }
-  
+    
+    /// <summary>
+    /// Returns whether the parameter type has been mapped to a search method
+    /// </summary>
+    /// <param name="parameterName"></param>
+    /// <returns> if a search method for the parameter type has been added </returns>
+    public bool Contains(SearchParam.SearchParameterTypes parameterName)
+    {
+        return this._searchParameters.ContainsKey(parameterName);
+    }
     
     /// <summary>
     /// Method where all the search parameters are to be added

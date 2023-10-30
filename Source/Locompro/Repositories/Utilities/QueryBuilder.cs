@@ -36,10 +36,12 @@ public class QueryBuilder
         
         // if invalid parameter type then notify along with exception
         if (searchCriterion.ParameterName == default
-            || !Enum.IsDefined(typeof(SearchParam.SearchParameterTypes), searchCriterion.ParameterName))
+            || !Enum.IsDefined(typeof(SearchParam.SearchParameterTypes), searchCriterion.ParameterName)
+            || !SearchMethods.GetInstance.Contains(searchCriterion.ParameterName))
         {
-            throw new System.ArgumentException("Invalid search criterion addition attempt\n"
-                                               + "Search criterion: " + nameof(searchCriterion.SearchValue));
+            throw new System.ArgumentException("Invalid search criterion addition attempt\n\t"
+                                               + " Search criterion " + nameof(searchCriterion.ParameterName)
+                                               + ": " + Enum.GetName(typeof(SearchParam.SearchParameterTypes), searchCriterion.ParameterName));
         }
         
         // if has no search value then just continue, otherwise add it to the list
