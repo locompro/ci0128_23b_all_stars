@@ -1,4 +1,13 @@
 @startuml
+
+annotation RequiredIfAttribute {
+    - _conditionMethodName : string
+    - _conditionValue : string
+    + RequiredIfAttribute(conditionMethodName:string, conditionValue:object, errorMessage:string)
+    # IsValid(object value, ValidationContext validationContext) : ValidationResult
+}
+ValidationAttribute <|-- RequiredIfAttribute
+
 interface IUnitOfWork {
 }
 
@@ -53,14 +62,6 @@ class "PaginatedList"<T> {
 class "List"<T> {
 }
 "List" <|-- "PaginatedList"
-
-class RequiredIfAttribute {
-    - _conditionMethodName : string
-    - _conditionValue : string
-    + RequiredIfAttribute(conditionMethodName:string, conditionValue:object, errorMessage:string)
-    # IsValid(object value, ValidationContext validationContext) : ValidationResult
-}
-ValidationAttribute <|-- RequiredIfAttribute
 
 class "LocomproContext"<User> {
     + LocomproContext(options:DbContextOptions<LocomproContext>)
