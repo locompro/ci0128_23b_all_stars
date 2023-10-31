@@ -1,18 +1,9 @@
-using System;
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Components.Server;
-using System.Xml;
 using Locompro.Models;
 using Locompro.Services.Domain;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -51,12 +42,6 @@ app.UseHttpLogging();
 app.UseAuthorization();
 
 app.MapRazorPages();
-
-// app.Use(async (context, next) =>
-// {
-//     Console.WriteLine($"Incoming request: {context.Request.Path}");
-//     await next();
-// });
 
 app.Run();
 return;
