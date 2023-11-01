@@ -1,6 +1,6 @@
-using Locompro.Repositories.Utilities.Interfaces;
+using Locompro.Common.Search.Interfaces;
 
-namespace Locompro.Repositories.Utilities;
+namespace Locompro.Common.Search;
 
 /// <summary>
 /// Generic class for condition for search query to be considered in search process

@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Locompro.Models;
 
-namespace Locompro.Repositories.Utilities;
+namespace Locompro.Common.Search;
 
 /// <summary>
 /// Singleton class that is used to store all the search strategies

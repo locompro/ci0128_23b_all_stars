@@ -1,5 +1,5 @@
+using Locompro.Common.Search.Interfaces;
 using Locompro.Models;
-using Locompro.Repositories.Utilities.Interfaces;
 
 namespace Locompro.Services.Domain;
 

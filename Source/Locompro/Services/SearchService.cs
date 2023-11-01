@@ -1,10 +1,10 @@
 using System.Globalization;
 using Locompro.Models;
 using System.Text.RegularExpressions;
+using Locompro.Common.Search;
+using Locompro.Common.Search.Interfaces;
 using Locompro.Data;
 using Locompro.Data.Repositories;
-using Locompro.Repositories.Utilities;
-using Locompro.Repositories.Utilities.Interfaces;
 using Locompro.Services.Domain;
 
 namespace Locompro.Services;

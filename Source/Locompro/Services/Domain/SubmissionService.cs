@@ -1,7 +1,7 @@
+using Locompro.Common.Search;
 using Locompro.Data;
 using Locompro.Models;
 using Locompro.Data.Repositories;
-using Locompro.Repositories.Utilities;
 
 namespace Locompro.Services.Domain;
 

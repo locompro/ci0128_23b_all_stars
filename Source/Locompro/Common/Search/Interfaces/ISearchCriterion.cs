@@ -1,4 +1,4 @@
-namespace Locompro.Repositories.Utilities.Interfaces;
+namespace Locompro.Common.Search.Interfaces;
 
 /// <summary>
 /// Interface for SearchCriterion to implement as generic class 

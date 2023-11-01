@@ -1,6 +1,6 @@
-﻿using Locompro.Repositories.Utilities.Interfaces;
+﻿using Locompro.Common.Search.Interfaces;
 
-namespace Locompro.Repositories.Utilities;
+namespace Locompro.Common.Search;
 
 /// <summary>
 /// A search parameter or way to search for a submission

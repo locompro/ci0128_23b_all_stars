@@ -1,9 +1,9 @@
 using System.Globalization;
+using Locompro.Common.Search;
+using Locompro.Common.Search.Interfaces;
 using Locompro.Data;
 using Locompro.Models;
 using Locompro.Data.Repositories;
-using Locompro.Repositories.Utilities;
-using Locompro.Repositories.Utilities.Interfaces;
 using Locompro.Services;
 using Locompro.Services.Domain;
 using Microsoft.EntityFrameworkCore;

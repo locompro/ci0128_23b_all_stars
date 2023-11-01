@@ -1,4 +1,4 @@
-namespace Locompro.Repositories.Utilities;
+namespace Locompro.Common.Search;
 
 /// <summary>
 /// List of all possible search paramaters

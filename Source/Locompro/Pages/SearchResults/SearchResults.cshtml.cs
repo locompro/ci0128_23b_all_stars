@@ -9,10 +9,10 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading.Tasks;
 using Locompro.Common;
+using Locompro.Common.Search;
+using Locompro.Common.Search.Interfaces;
 using Locompro.Models;
 using Locompro.Pages.Shared;
-using Locompro.Repositories.Utilities;
-using Locompro.Repositories.Utilities.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Locompro.Services.Domain;
 

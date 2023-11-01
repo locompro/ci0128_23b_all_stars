@@ -1,6 +1,6 @@
-using Locompro.Repositories.Utilities.Interfaces;
+using Locompro.Common.Search.Interfaces;
 
-namespace Locompro.Repositories.Utilities;
+namespace Locompro.Common.Search;
 
 /// <summary>
 /// A search criterion is a search parameter and a search value

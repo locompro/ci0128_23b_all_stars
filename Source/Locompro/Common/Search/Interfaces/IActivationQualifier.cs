@@ -1,4 +1,4 @@
-namespace Locompro.Repositories.Utilities.Interfaces;
+namespace Locompro.Common.Search.Interfaces;
 
 /// <summary>
 /// Interface to be implemented by generic class, generic class then decides type when used

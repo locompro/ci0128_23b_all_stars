@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
 using System.Reflection;
+using Locompro.Common.Search;
+using Locompro.Common.Search.Interfaces;
 using Locompro.Models;
-using Locompro.Repositories.Utilities;
-using Locompro.Repositories.Utilities.Interfaces;
 
 namespace Locompro.Tests.Repositories.Utilities;
 

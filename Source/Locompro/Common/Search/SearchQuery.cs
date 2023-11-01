@@ -1,8 +1,8 @@
 using System.Linq.Expressions;
+using Locompro.Common.Search.Interfaces;
 using Locompro.Models;
-using Locompro.Repositories.Utilities.Interfaces;
 
-namespace Locompro.Repositories.Utilities;
+namespace Locompro.Common.Search;
 
 /// <summary>
 /// Generic search query
