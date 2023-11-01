@@ -40,7 +40,7 @@ VALUES ('Laptop', 'Inspiron 15', 'Dell', 0),
        ('Laptop', null, 'Toshiba', 1);
 
 -- Insert data into ProductCategories table
-INSERT INTO ProductCategories (CategoriesName, ProductID)
+INSERT INTO CategoryProduct (CategoriesName, ProductsId)
 VALUES
     -- Electronics
     ('Electrónica', 1), -- Laptop
