@@ -1,14 +1,14 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using Locompro.Models;
-using Locompro.Repositories.Utilities;
+using Locompro.SearchQueryConstruction;
 
 namespace Locompro.Tests.Repositories.Utilities;
 
 [TestFixture]
 public class QueryBuilderTest
 {
-    private QueryBuilder _queryBuilder;
+    private IQueryBuilder _queryBuilder;
     
     public QueryBuilderTest()
     {
@@ -23,7 +23,7 @@ public class QueryBuilderTest
     public void AddInvalidSearchCriterion()
     {
         // Arrange
-        SearchCriterion searchCriterion = new SearchCriterion();
+        ISearchCriterion searchCriterion = new SearchCriterion<string>(default, "");
         
         Assert.Throws<ArgumentException>(() =>
         {
@@ -42,9 +42,9 @@ public class QueryBuilderTest
     public void AddValidSearchCriterion()
     {
         // Arrange
-        SearchCriterion searchCriterion = new SearchCriterion
+         ISearchCriterion searchCriterion = new SearchCriterion<string>
         {
-            ParameterName = SearchParam.SearchParameterTypes.Name,
+            ParameterName = SearchParameterTypes.Name,
             SearchValue = "test"
         };
         
@@ -69,13 +69,13 @@ public class QueryBuilderTest
     public void ResetResetsSuccessfully()
     {
         // Ensure that state is empty for query builder in this test
-        QueryBuilder temp = this._queryBuilder;
+        IQueryBuilder temp = this._queryBuilder;
         this._queryBuilder = new QueryBuilder();
         
         // Arrange
-        SearchCriterion searchCriterion = new SearchCriterion
+        ISearchCriterion searchCriterion = new SearchCriterion<string>
         {
-            ParameterName = SearchParam.SearchParameterTypes.Name,
+            ParameterName = SearchParameterTypes.Name,
             SearchValue = "test"
         };
         
@@ -109,15 +109,15 @@ public class QueryBuilderTest
     public void AddMultipleSearchCriterion()
     {
         // Arrange
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Name, "name"),
-            new(SearchParam.SearchParameterTypes.Province, "province"),
-            new(SearchParam.SearchParameterTypes.Canton, "canton"),
+            new SearchCriterion<string>(SearchParameterTypes.Name, "name"),
+            new SearchCriterion<string>(SearchParameterTypes.Province, "province"),
+            new SearchCriterion<string>(SearchParameterTypes.Canton, "canton"),
         };
         
         // Act
-        foreach (SearchCriterion searchCriterion in searchCriteria)
+        foreach (ISearchCriterion searchCriterion in searchCriteria)
         {
             this._queryBuilder.AddSearchCriterion(searchCriterion);
         }
@@ -142,23 +142,23 @@ public class QueryBuilderTest
     public void AddSearchCriterionReturnsValidOutputs()
     {
         // Arrange
-        SearchCriterion validSearchCriterion = new SearchCriterion
+        ISearchCriterion validSearchCriterion = new SearchCriterion<string>
         {
-            ParameterName = SearchParam.SearchParameterTypes.Name,
+            ParameterName = SearchParameterTypes.Name,
             SearchValue = "test"
         };
 
-        SearchCriterion invalidSearchCriterionNull = null;
+        ISearchCriterion invalidSearchCriterionNull = null;
         
-        SearchCriterion invalidSearchCriterionEmpty = new SearchCriterion();
+        ISearchCriterion invalidSearchCriterionEmpty = new SearchCriterion<string>();
         
-        SearchCriterion invalidSearchCriterionInvalidParameter = new SearchCriterion
+        ISearchCriterion invalidSearchCriterionInvalidParameter = new SearchCriterion<string>
         {
-            ParameterName = (SearchParam.SearchParameterTypes) 100,
+            ParameterName = (SearchParameterTypes) 100,
             SearchValue = "test"
         };
         
-        SearchCriterion invalidSearchCriterionDefault = new SearchCriterion
+        ISearchCriterion invalidSearchCriterionDefault = new SearchCriterion<string>
         {
             ParameterName = default,
             SearchValue = "test"

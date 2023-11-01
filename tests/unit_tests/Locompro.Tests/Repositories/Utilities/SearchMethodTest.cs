@@ -1,4 +1,5 @@
-using Locompro.Repositories.Utilities;
+
+using Locompro.SearchQueryConstruction;
 
 namespace Locompro.Tests.Repositories.Utilities;
 
@@ -15,7 +16,7 @@ public class SearchMethodTest
         SearchMethods searchMethods = SearchMethods.GetInstance;
         
         // Act
-        SearchParam searchParam = searchMethods.GetSearchMethodByName(SearchParam.SearchParameterTypes.Default);
+        SearchParam searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Default);
         
         // Assert
         Assert.IsNull(searchParam);
@@ -33,19 +34,19 @@ public class SearchMethodTest
         
         Assert.Multiple(() =>
         {
-            SearchParam searchParam = searchMethods.GetSearchMethodByName(SearchParam.SearchParameterTypes.Name);
+            SearchParam searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Name);
             Assert.IsNotNull(searchParam);
             
-            searchParam = searchMethods.GetSearchMethodByName(SearchParam.SearchParameterTypes.Province);
+            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Province);
             Assert.IsNotNull(searchParam);
             
-            searchParam = searchMethods.GetSearchMethodByName(SearchParam.SearchParameterTypes.Canton);
+            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Canton);
             Assert.IsNotNull(searchParam);
             
-            searchParam = searchMethods.GetSearchMethodByName(SearchParam.SearchParameterTypes.Model);
+            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Model);
             Assert.IsNotNull(searchParam);
             
-            searchParam = searchMethods.GetSearchMethodByName(SearchParam.SearchParameterTypes.Brand);
+            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Brand);
             Assert.IsNotNull(searchParam);
         });
     }

@@ -12,6 +12,13 @@ public class SearchCriterion<T> : ISearchCriterion
     public T SearchValue { get; init; }
     
     /// <summary>
+    /// Default constructor
+    /// </summary>
+    public SearchCriterion()
+    {
+    }
+    
+    /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="parameterName"></param>
