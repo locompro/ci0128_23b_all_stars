@@ -1,12 +1,16 @@
 ﻿@page
-@model Locompro.Pages.Account.ProfileModel
+@using Locompro.Models
+@using Locompro.Services.Domain
+@using Newtonsoft.Json
+@model ProfileModel
+@inject INamedEntityDomainService<Country, string> CountryService
 @{
     ViewData["Title"] = "Perfil";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
 
 <div class="text-center d-lg-flex justify-content-lg-center">
-    
+
     <div class="container flex-shrink-1 flex-fill justify-content-center align-items-center align-content-center ">
         <div class="row">
             <div class="col d-lg-flex justify-content-lg-center">
@@ -33,7 +37,7 @@
         <div class="row d-xl-flex justify-content-xl-center">
             <div class="col-xl-7">
                 <h4>Dirección</h4>
-                s
+                <p class="d-xl-flex justify-content-xl-center">@Model.UserProfile.Address</p>
             </div>
         </div>
         <div class="row">
@@ -76,19 +80,29 @@
         </div>
         @if (Model.IsPasswordChanged)
         {
-            <div class= "row justify-content-center align-items-center align-content-center" style="margin-top: 20px; margin-bottom: 20px">
+            <div class="row justify-content-center align-items-center align-content-center" style="margin-top: 20px; margin-bottom: 20px">
                 <div id="passwordChangedAlert" class="alert alert-success alert-dismissible fade show" role="alert" style="display: block;">
                     ¡Contraseña cambiada exitosamente!
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             </div>
         }
+        @if (Model.IsUserDataUpdated)
+        {
+            <div class="row justify-content-center align-items-center align-content-center" style="margin-top: 20px; margin-bottom: 20px">
+                <div id="UserDataModified" class="alert alert-success alert-dismissible fade show" role="alert" style="display: block;">
+                    ¡Datos modificados exitosamente!
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            </div>
+        }
+
         <!-- Modals -->
         <div class="modal fade" role="dialog" tabindex="-1" id="modal-1">
             <div class="modal-dialog" role="document">
                 <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
                     <div class="modal-header">
-                        <h4 class="modal-title text-center d-xxl-flex justify-content-xxl-center">Cambia Mi Contraseña</h4><button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal"></button>
+                        <h4 class="modal-title text-center d-xxl-flex justify-content-xxl-center">Cambiar Mi Contraseña</h4><button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <form method="post" asp-page-handler="ChangePassword">
@@ -127,6 +141,19 @@
         </div>
 
 
+        @{
+            var country = await CountryService.Get("Costa Rica");
+            var provinces = country.Provinces;
+
+            var settings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+
+            var provincesJson = JsonConvert.SerializeObject(provinces, settings);
+        }
+
+
         <div class="modal fade" role="dialog" tabindex="-1" id="modal-2">
             <div class="modal-dialog" role="document">
                 <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
@@ -134,28 +161,65 @@
                         <h4 class="modal-title">Modificar Mi Perfil</h4><button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
-                        <form>
+                        <form method="post" asp-page-handler="UpdateUserData">
+                            <div asp-validation-summary="All" class="text-danger"></div>
+
                             <div class="row">
                                 <div class="col">
-                                    <label class="form-label d-xxl-flex justify-content-xxl-start">Correo Electrónico</label><input class="form-control" type="text" inputmode="email">
+                                    <label class="form-label d-xxl-flex justify-content-xxl-start">Correo Electrónico</label>
+                                    <input class="form-control" asp-for="UserDataUpdate.Email">
+                                    <span asp-validation-for="UserDataUpdate.Email" class="text-danger"></span>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <label class="form-label d-xxl-flex justify-content-xxl-start">Provincia</label><input class="form-control" type="text" autocomplete="on"><label class="form-label d-xxl-flex justify-content-xxl-start">Cantón</label><input class="form-control" type="text" autocomplete="on"><label class="form-label d-xxl-flex justify-content-xxl-start">Dirección exacta</label><input class="form-control" type="text">
+                                    <label asp-for="UserDataUpdate.Province" class="form-label d-xxl-flex justify-content-xxl-start"></label>
+                                    <select asp-for="UserDataUpdate.Province" id="UpdateUserProfileProvince"
+                                            class="form-select" style="font-family:Roboto, sans-serif; min-width: 210px;">
+                                        <option value="" disabled selected hidden>Seleccionar</option>
+                                        @foreach (var province in provinces)
+                                        {
+                                            <option value="@province.Name">@province.Name</option>
+                                        }
+                                    </select>
+
+                                    <label asp-for="UserDataUpdate.Canton" class="form-label d-xxl-flex justify-content-xxl-start">Cantón</label>
+                                    <select asp-for="UserDataUpdate.Canton" id="UpdateUserProfileCanton"
+                                            class="form-select" style="font-family:Roboto, sans-serif; min-width: 210px;">
+                                        <option value="" disabled selected hidden>Seleccionar</option>
+                                        <!-- Options will be dynamically populated here -->
+                                    </select>
+
+                                    <label asp-for="UserDataUpdate.ExactAddress" class="form-label d-xxl-flex justify-content-xxl-start">Dirección exacta</label>
+                                    <input class="form-control" asp-for="UserDataUpdate.ExactAddress">
+                                    <span asp-validation-for="UserDataUpdate.ExactAddress" class="text-danger"></span>
                                 </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-light" type="reset" data-bs-dismiss="modal">Cancelar</button>
+                                <button class="btn btn-primary" type="submit">Guardar</button>
                             </div>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn btn-light" type="button" data-bs-dismiss="modal">Cancelar</button><button class="btn btn-primary" type="submit">Guardar</button>
-                    </div>
+
                 </div>
             </div>
         </div>
+
     </div>
 
     @section Scripts {
+        <script src="~/lib/jquery/jquery.min.js"></script>
+        <script src="~/assets/bootstrap/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src=""></script>
+        <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+        <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
         <script>
         $(document).ready(
             function() {
@@ -169,17 +233,35 @@
         function showPasswordChangedAlert() {
             document.getElementById("passwordChangedAlert").style.display = "block";
         }
-
+           $(document).ready(function() {
+                        $('#UpdateUserProfileProvince').change(function() {
+                            let selectedProvince = $(this).val();
+                            $.ajax({
+                                url: '?handler=Cantons',
+                                method: 'GET',
+                                data: {
+                                    provinceName: selectedProvince
+                                },
+                                dataType: 'json',
+                                success: function(data) {
+                                    let cantonDropdown = $('#UpdateUserProfileCanton');
+                                    cantonDropdown.empty();
+                                    cantonDropdown.append($('<option>', {
+                                        value: "",
+                                        text: "Seleccionar"
+                                    }));
+                                    $.each(data, function(index, canton) {
+                                        cantonDropdown.append($('<option>', {
+                                            value: canton.name,
+                                            text: canton.name
+                                        }));
+                                    });
+                                }
+                            });
+                        });
+                    });
     </script>
-        <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-        <script src=""></script>
-        <script src="lib/jquery-validation/dist/jquery.validate.min.js"></script>
-        <script src="lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
-        <script src="lib/jquery/jquery.min.js"></script>
+
     }
 
 </div>
