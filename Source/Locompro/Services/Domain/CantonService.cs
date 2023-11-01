@@ -4,7 +4,7 @@ using Locompro.Data.Repositories;
 
 namespace Locompro.Services.Domain;
 
-public class CantonService : DomainService<Canton, string>
+public class CantonService : DomainService<Canton, string>, ICantonService
 {
     private readonly ICantonRepository _cantonRepository;
 

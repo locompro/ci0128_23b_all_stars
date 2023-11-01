@@ -1,4 +1,4 @@
-namespace Locompro.Models;
+namespace Locompro.Models.ViewModels;
 
 public class SearchViewModel
 {

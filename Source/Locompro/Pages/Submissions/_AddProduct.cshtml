@@ -1,7 +1,8 @@
 @using Locompro.Models.ViewModels
 @using Locompro.Services.Domain
 @using Newtonsoft.Json
-@inject CategoryService CategoryService
+@using Locompro.Models
+@inject INamedEntityDomainService<Category, string> CategoryService
 @model ProductViewModel
 
 @{

@@ -7,7 +7,7 @@ namespace Locompro.Services.Domain
     /// <summary>
     /// Domain service for Product entities.
     /// </summary>
-    public class ProductService : DomainService<Product, int>
+    public class ProductService : NamedEntityDomainService<Product, int>, INamedEntityDomainService<Product, int>
     {
         private readonly INamedEntityRepository<Product, int> _namedEntityRepository;
 

@@ -28,13 +28,14 @@ public class CreateModel : PageModel
     [BindProperty]
     public SubmissionViewModel SubmissionViewModel { get; set; }
     
-    private readonly StoreService _storeService;
+    private readonly INamedEntityDomainService<Store, string> _storeService;
 
-    private readonly ProductService _productService;
+    private readonly INamedEntityDomainService<Product, int> _productService;
     
-    private readonly ContributionService _contributionService;
+    private readonly IContributionService _contributionService;
 
-    public CreateModel(StoreService storeService, ProductService productService, ContributionService contributionService)
+    public CreateModel(INamedEntityDomainService<Store, string> storeService,
+        INamedEntityDomainService<Product, int> productService, IContributionService contributionService)
     {
         _storeService = storeService;
         _productService = productService;
@@ -43,7 +44,7 @@ public class CreateModel : PageModel
 
     public async Task<IActionResult> OnGetFetchStores(string partialName)
     {
-        var stores = await _storeService.GetByPartialId(partialName);
+        var stores = await _storeService.GetByPartialName(partialName);
         
         var result = stores.Select(s => new 
         {

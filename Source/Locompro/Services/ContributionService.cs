@@ -6,23 +6,24 @@ using Locompro.Services.Domain;
 
 namespace Locompro.Services;
 
-public class ContributionService : AbstractService
+public class ContributionService : Service, IContributionService
 {
     private const string OnlyCountry = "Costa Rica";
 
-    private readonly CantonService _cantonService;
+    private readonly ICantonService _cantonService;
 
-    private readonly StoreService _storeService;
+    private readonly INamedEntityDomainService<Store, string> _storeService;
 
-    private readonly ProductService _productService;
+    private readonly INamedEntityDomainService<Product, int> _productService;
 
-    private readonly CategoryService _categoryService;
+    private readonly INamedEntityDomainService<Category, string> _categoryService;
 
     private readonly ISubmissionService _submissionService;
 
-    public ContributionService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, CantonService cantonService,
-        StoreService storeService, ProductService productService, CategoryService categoryService,
-        ISubmissionService submissionService) : base(unitOfWork, loggerFactory)
+    public ContributionService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, ICantonService cantonService,
+        INamedEntityDomainService<Store, string> storeService, INamedEntityDomainService<Product, int> productService,
+        INamedEntityDomainService<Category, string> categoryService, ISubmissionService submissionService)
+        : base(unitOfWork, loggerFactory)
     {
         _cantonService = cantonService;
         _storeService = storeService;

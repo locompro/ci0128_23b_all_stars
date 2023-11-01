@@ -1,9 +1,11 @@
 using System.Globalization;
+using Locompro.Common.Search;
+using Locompro.Common.Search.Interfaces;
 using Locompro.Data;
 using Locompro.Models;
 using Locompro.Data.Repositories;
-using Locompro.Repositories.Utilities;
 using Locompro.Services;
+using Locompro.Services.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -28,7 +30,9 @@ public class SearchServiceTest
         _unitOfWorkMock.Setup(u => u.GetRepository<ISubmissionRepository>())
             .Returns(_submissionRepositoryMock.Object);
         
-        _searchService = new SearchService(_unitOfWorkMock.Object, loggerFactoryMock.Object);
+        ISearchDomainService searchDomainService = new SearchDomainService(_unitOfWorkMock.Object, loggerFactoryMock.Object);
+        
+        _searchService = new SearchService(_unitOfWorkMock.Object, loggerFactoryMock.Object, searchDomainService);
     }
 
     /// <summary>
@@ -43,9 +47,9 @@ public class SearchServiceTest
         
         MockDataSetup();
         
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Name, productSearchName)
+            new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName)
         };
         
         // Act
@@ -57,7 +61,7 @@ public class SearchServiceTest
         productSearchName = "Product2";
         
         searchCriteria.Clear();
-        searchCriteria.Add(new(SearchParam.SearchParameterTypes.Name, productSearchName));
+        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
         
         searchResults = await _searchService.GetSearchResults(searchCriteria);
 
@@ -67,7 +71,7 @@ public class SearchServiceTest
         
         productSearchName = "Product3";
         searchCriteria.Clear();
-        searchCriteria.Add(new(SearchParam.SearchParameterTypes.Name, productSearchName));
+        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
         
         searchResults = await _searchService.GetSearchResults(searchCriteria); 
 
@@ -76,7 +80,7 @@ public class SearchServiceTest
 
         productSearchName = "Product4";
         searchCriteria.Clear();
-        searchCriteria.Add(new(SearchParam.SearchParameterTypes.Name, productSearchName));
+        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
         
         searchResults = await _searchService.GetSearchResults(searchCriteria);
 
@@ -85,7 +89,7 @@ public class SearchServiceTest
 
         productSearchName = "Product5";
         searchCriteria.Clear();
-        searchCriteria.Add(new(SearchParam.SearchParameterTypes.Name, productSearchName));
+        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
         
         searchResults = await _searchService.GetSearchResults(searchCriteria);
 
@@ -94,7 +98,7 @@ public class SearchServiceTest
 
         productSearchName = "Product6";
         searchCriteria.Clear();
-        searchCriteria.Add(new(SearchParam.SearchParameterTypes.Name, productSearchName));
+        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
         
         searchResults = await _searchService.GetSearchResults(searchCriteria);
 
@@ -103,7 +107,7 @@ public class SearchServiceTest
 
         productSearchName = "Product7";
         searchCriteria.Clear();
-        searchCriteria.Add(new(SearchParam.SearchParameterTypes.Name, productSearchName));
+        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
         
         searchResults = await _searchService.GetSearchResults(searchCriteria);
 
@@ -124,9 +128,9 @@ public class SearchServiceTest
         
         MockDataSetup();
         
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Name, productSearchName)
+            new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName)
         };
         
         // Act
@@ -153,9 +157,9 @@ public class SearchServiceTest
         
         MockDataSetup();
         
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Name, productSearchName)
+            new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName)
         };
         
         // Act
@@ -185,9 +189,9 @@ public class SearchServiceTest
         
         MockDataSetup();
         
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Name, productSearchName)
+            new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName)
         };
         
         // Act
@@ -211,9 +215,9 @@ public class SearchServiceTest
         
         MockDataSetup();
         
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Name, productSearchName)
+            new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName)
         };
         
         // Act
@@ -236,9 +240,9 @@ public class SearchServiceTest
         
         MockDataSetup();
         
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Name, productSearchName)
+            new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName)
         };
         
         // Act
@@ -279,9 +283,9 @@ public class SearchServiceTest
         MockDataSetup();
         
         // Act
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Model, modelName),
+            new SearchCriterion<string>(SearchParameterTypes.Model, modelName),
         };
         
         // Act
@@ -307,9 +311,9 @@ public class SearchServiceTest
         MockDataSetup();
         
         // Act
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Model, modelName),
+            new SearchCriterion<string>(SearchParameterTypes.Model, modelName),
         };
         
         // Act
@@ -342,9 +346,9 @@ public class SearchServiceTest
         MockDataSetup();
         
         // Act
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Model, modelName),
+            new SearchCriterion<string>(SearchParameterTypes.Model, modelName),
         };
         
         // Act
@@ -367,9 +371,9 @@ public class SearchServiceTest
         
         MockDataSetup();
         
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Model, modelName),
+            new SearchCriterion<string>(SearchParameterTypes.Model, modelName),
         };
         
         // Act
@@ -393,10 +397,10 @@ public class SearchServiceTest
         
         MockDataSetup();
         
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Province, province),
-            new(SearchParam.SearchParameterTypes.Canton, canton)
+            new SearchCriterion<string>(SearchParameterTypes.Province, province),
+            new SearchCriterion<string>(SearchParameterTypes.Canton, canton)
         };
         
         // Act
@@ -434,10 +438,10 @@ public class SearchServiceTest
         MockDataSetup();
         
         // Act
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new(SearchParam.SearchParameterTypes.Province, province),
-            new(SearchParam.SearchParameterTypes.Canton, canton)
+            new SearchCriterion<string>(SearchParameterTypes.Province, province),
+            new SearchCriterion<string>(SearchParameterTypes.Canton, canton)
         };
         
         // Act
@@ -459,8 +463,8 @@ public class SearchServiceTest
         var brand = "Brand1";
         MockDataSetup();
         
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
-            { new(SearchParam.SearchParameterTypes.Brand, brand)};
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
+            { new SearchCriterion<string>(SearchParameterTypes.Brand, brand)};
         
         // Act
         var results = await _searchService.GetSearchResults(searchCriteria);
@@ -482,8 +486,8 @@ public class SearchServiceTest
         var brand = "Brand1";
         MockDataSetup();
         
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
-            { new(SearchParam.SearchParameterTypes.Brand, brand)};
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
+            { new SearchCriterion<string>(SearchParameterTypes.Brand, brand)};
         
         // Act
         var searchResults = await _searchService.GetSearchResults(searchCriteria);
@@ -523,8 +527,8 @@ public class SearchServiceTest
         string brand = "InvalidBrand";
         MockDataSetup();
         
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
-            { new(SearchParam.SearchParameterTypes.Brand, brand)};
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
+            { new SearchCriterion<string>(SearchParameterTypes.Brand, brand)};
         
         // Act
         var results = await _searchService.GetSearchResults(searchCriteria);
@@ -546,8 +550,8 @@ public class SearchServiceTest
         
         MockDataSetup();
         
-        List<SearchCriterion> searchCriteria = new List<SearchCriterion>()
-            { new(SearchParam.SearchParameterTypes.Brand, brand)};
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
+            { new SearchCriterion<string>(SearchParameterTypes.Brand, brand)};
         
         // Act
         var results = await _searchService.GetSearchResults(searchCriteria);
@@ -562,10 +566,37 @@ public class SearchServiceTest
         Assert.That(results.Count, Is.EqualTo(0));
     }
     
+    /// <summary>
+    /// Checks if all items returned are within the range of price expected
+    /// </summary>
+    [Test]
+    public void GetSubmissionsByPrice_ValidPrice_SubmissionsReturned()
+    {
+        // Arrange
+        long minPrice = 60;
+        long maxPrice = 200;
+        MockDataSetup();
+        
+        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
+        {
+            new SearchCriterion<long>(SearchParameterTypes.Minvalue, minPrice),
+            new SearchCriterion<long>(SearchParameterTypes.Maxvalue, maxPrice)
+        };
+        
+        // Act
+        List<Item> results = _searchService.GetSearchResults(searchCriteria).Result.ToList();
+
+        // Assert
+        Assert.That(results, Is.Not.Null);
+        Assert.That(results.Count, Is.GreaterThan(0));
+        Assert.That(results.TrueForAll(item => item.Price > minPrice && item.Price < maxPrice), Is.True);
+    }
+    
     
     /// <summary>
     /// Sets up the mock for the submission service so that it behaves as expected for the tests
     /// </summary>
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     void MockDataSetup()
     {
         Country country = new Country { Name = "Country" };
