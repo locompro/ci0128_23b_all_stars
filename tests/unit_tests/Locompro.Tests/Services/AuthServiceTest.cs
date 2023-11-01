@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Locompro.Areas.Identity.ViewModels;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
 using Locompro.Services;

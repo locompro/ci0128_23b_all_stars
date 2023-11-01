@@ -65,4 +65,8 @@
 	  <Compile Remove="Repositories\StoreRepository.cs" />
 	  <Compile Remove="Repositories\StringIdRepository.cs" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Repositories\" />
+	</ItemGroup>
 </Project>
