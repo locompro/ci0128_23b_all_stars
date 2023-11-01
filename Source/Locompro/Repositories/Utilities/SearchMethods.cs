@@ -1,9 +1,7 @@
 using System.Linq.Expressions;
 using Locompro.Models;
-using Locompro.SearchQueryConstruction;
-using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 
-namespace Locompro.SearchQueryConstruction;
+namespace Locompro.Repositories.Utilities;
 
 /// <summary>
 /// Singleton class that is used to store all the search strategies

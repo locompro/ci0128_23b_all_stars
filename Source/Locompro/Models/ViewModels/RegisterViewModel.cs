@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Locompro.Areas.Identity.ViewModels
+namespace Locompro.Models.ViewModels
 {
     public class RegisterViewModel
     {

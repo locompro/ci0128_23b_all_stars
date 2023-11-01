@@ -1,9 +1,8 @@
 ﻿using System.Linq.Expressions;
-
-
-using System.Collections.Generic;
 using Locompro.Models;
-namespace Locompro.SearchQueryConstruction;
+using Locompro.Repositories.Utilities.Interfaces;
+
+namespace Locompro.Repositories.Utilities;
 
 /// <summary>
 /// Builder class that constructs a list of search functions that can be used to filter the results of a query

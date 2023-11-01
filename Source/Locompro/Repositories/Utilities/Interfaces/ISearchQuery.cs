@@ -1,6 +1,6 @@
 using System.Linq.Expressions;
 
-namespace Locompro.SearchQueryConstruction;
+namespace Locompro.Repositories.Utilities.Interfaces;
 
 public interface ISearchQuery
 {

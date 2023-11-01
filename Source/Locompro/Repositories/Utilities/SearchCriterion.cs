@@ -1,6 +1,6 @@
-using Locompro.SearchQueryConstruction;
+using Locompro.Repositories.Utilities.Interfaces;
 
-namespace Locompro.SearchQueryConstruction;
+namespace Locompro.Repositories.Utilities;
 
 /// <summary>
 /// A search criterion is a search parameter and a search value
@@ -10,6 +10,13 @@ public class SearchCriterion<T> : ISearchCriterion
 {
     public SearchParameterTypes ParameterName { get; init; }
     public T SearchValue { get; init; }
+    
+    /// <summary>
+    /// Default constructor
+    /// </summary>
+    public SearchCriterion()
+    {
+    }
     
     /// <summary>
     /// Constructor

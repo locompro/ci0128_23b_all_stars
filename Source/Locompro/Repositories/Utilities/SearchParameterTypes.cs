@@ -1,4 +1,4 @@
-namespace Locompro.SearchQueryConstruction;
+namespace Locompro.Repositories.Utilities;
 
 /// <summary>
 /// List of all possible search paramaters

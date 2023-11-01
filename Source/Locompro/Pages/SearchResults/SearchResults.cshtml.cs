@@ -11,8 +11,10 @@ using System.Threading.Tasks;
 using Locompro.Common;
 using Locompro.Models;
 using Locompro.Pages.Shared;
+using Locompro.Repositories.Utilities;
+using Locompro.Repositories.Utilities.Interfaces;
 using Microsoft.Extensions.Configuration;
-using Locompro.SearchQueryConstruction;
+using Locompro.Services.Domain;
 
 namespace Locompro.Pages.SearchResults;
 
@@ -21,7 +23,7 @@ namespace Locompro.Pages.SearchResults;
 /// </summary>
 public class SearchResultsModel : SearchPageModel
 {
-    private readonly SearchService _searchService;
+    private readonly ISearchService _searchService;
 
     /// <summary>
     /// Buffer for page size according to Paginated List and configuration
@@ -72,7 +74,7 @@ public class SearchResultsModel : SearchPageModel
     public SearchResultsModel(
         AdvancedSearchInputService advancedSearchServiceHandler,
         IConfiguration configuration,
-        SearchService searchService) : base(advancedSearchServiceHandler)
+        ISearchService searchService) : base(advancedSearchServiceHandler)
     {
         _searchService = searchService;
         _pageSize = configuration.GetValue("PageSize", 4);

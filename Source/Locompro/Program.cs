@@ -107,5 +107,6 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<IContributionService, ContributionService>();
     builder.Services.AddScoped<AuthService>();
     builder.Services.AddScoped<AdvancedSearchInputService>();
-    builder.Services.AddScoped<SearchService>();
+    builder.Services.AddScoped<ISearchDomainService, SearchDomainService>();
+    builder.Services.AddScoped<ISearchService, SearchService>();
 }

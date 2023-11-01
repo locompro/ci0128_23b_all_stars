@@ -1,4 +1,4 @@
-namespace Locompro.SearchQueryConstruction;
+namespace Locompro.Repositories.Utilities.Interfaces;
 
 public interface IQueryBuilder
 {
