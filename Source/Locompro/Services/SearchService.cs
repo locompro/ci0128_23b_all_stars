@@ -3,14 +3,14 @@ using Locompro.Models;
 using System.Text.RegularExpressions;
 using Locompro.Data;
 using Locompro.Data.Repositories;
-using Locompro.Repositories.Utilities;
+using Locompro.SearchQueryConstruction;
 
 namespace Locompro.Services;
 
 public class SearchService : Service
 {
     private readonly ISubmissionRepository _submissionRepository;
-    private readonly QueryBuilder _queryBuilder;
+    private readonly IQueryBuilder _queryBuilder;
 
     /// <summary>
     /// Constructor for the search service
@@ -29,10 +29,10 @@ public class SearchService : Service
     /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
     /// It then returns a list of items that match all the criteria.
     /// </summary>
-    public async Task<List<Item>> GetSearchResults(List<SearchCriterion> unfilteredSearchCriteria)
+    public async Task<List<Item>> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria)
     {
         // add the list of unfiltered search criteria to the query builder
-        foreach (SearchCriterion searchCriterion in unfilteredSearchCriteria)
+        foreach (ISearchCriterion searchCriterion in unfilteredSearchCriteria)
         {
             try
             {

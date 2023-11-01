@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Locompro.Models;
 
-namespace Locompro.Repositories.Utilities;
+namespace Locompro.SearchQueryConstruction;
 
 /// <summary>
 /// Class for encapsulating all data related to a search criterion

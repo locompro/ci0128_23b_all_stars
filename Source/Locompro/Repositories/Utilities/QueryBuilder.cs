@@ -1,24 +1,25 @@
 ﻿using System.Linq.Expressions;
 
-namespace Locompro.Repositories.Utilities;
+
 using System.Collections.Generic;
 using Locompro.Models;
+namespace Locompro.SearchQueryConstruction;
 
 /// <summary>
 /// Builder class that constructs a list of search functions that can be used to filter the results of a query
 /// </summary>
-public class QueryBuilder
+public class QueryBuilder : IQueryBuilder
 {
     private readonly List<Expression<Func<Submission, bool>>> _searchCriteriaFunctions;
-    private readonly List<SearchCriterion> _searchCriteria;
+    private readonly List<ISearchCriterion> _searchCriteria;
     
     /// <summary>
     /// Constructor
     /// </summary>
     public QueryBuilder()
     {
-        this._searchCriteria = new List<SearchCriterion>();
-        this._searchCriteriaFunctions = new List<Expression<Func<Submission, bool>>>();
+        _searchCriteria = new List<ISearchCriterion>();
+        _searchCriteriaFunctions = new List<Expression<Func<Submission, bool>>>();
     }
 
     /// <summary>
@@ -26,27 +27,23 @@ public class QueryBuilder
     /// A search criterion is a search parameter and a search value
     /// </summary>
     /// <param name="searchCriterion"></param>
-    public void AddSearchCriterion(SearchCriterion searchCriterion)
+    public void AddSearchCriterion(ISearchCriterion searchCriterion)
     {
         if (searchCriterion == null)
         {
-            throw new System.ArgumentException("Invalid search criterion addition attempt\n"
+            throw new ArgumentException("Invalid search criterion addition attempt\n"
                                                + "Null search criterion passed");
         }
         
         // if invalid parameter type then notify along with exception
         if (searchCriterion.ParameterName == default
-            || !Enum.IsDefined(typeof(SearchParam.SearchParameterTypes), searchCriterion.ParameterName))
+            || !Enum.IsDefined(typeof(SearchParameterTypes), searchCriterion.ParameterName))
         {
-            throw new System.ArgumentException("Invalid search criterion addition attempt\n"
-                                               + "Search criterion: " + nameof(searchCriterion.SearchValue));
+            throw new ArgumentException("Invalid search criterion addition attempt\n"
+                                               + "Search criterion: " + nameof(searchCriterion.GetSearchValue));
         }
         
-        // if has no search value then just continue, otherwise add it to the list
-        if (!string.IsNullOrEmpty(searchCriterion.SearchValue))
-        {
-            this._searchCriteria.Add(searchCriterion);
-        }
+        this._searchCriteria.Add(searchCriterion);
     }
     
     /// <summary>
@@ -55,17 +52,25 @@ public class QueryBuilder
     private void Compose()
     {
         // for each of the criterion in the unfiltered list
-        foreach (SearchCriterion searchCriterion in _searchCriteria)
+        foreach (ISearchCriterion searchCriterion in _searchCriteria)
         {
             // get the search parameter that corresponds to the criterion
             SearchParam searchParameter = SearchMethods.GetInstance.GetSearchMethodByName(searchCriterion.ParameterName);
-            
-            // if the search parameter was found and complies with ActivationQualifier
-            if (searchParameter != null && searchParameter.ActivationQualifier(searchCriterion.SearchValue))
+
+            if (searchParameter == null)
             {
-                // add the search function to the list of search functions
-                this._searchCriteriaFunctions.Add(QueryBuilder.GetExpressionToAdd(searchParameter.SearchQuery, searchCriterion.SearchValue));
+                continue;
             }
+
+            IActivationQualifier activationQualifier = searchParameter.GetActivationQualifier();
+            
+            if (!activationQualifier.GetQualifierFunction()(searchCriterion.GetSearchValue())) continue;
+            
+            Expression<Func<Submission, bool>> expressionToAdd = QueryBuilder.GetExpressionToAdd(
+                searchParameter.SearchQuery,
+                searchCriterion);
+                
+            this._searchCriteriaFunctions.Add(expressionToAdd);
         }
     }
 
@@ -76,16 +81,16 @@ public class QueryBuilder
     /// <param name="searchQuery"> the expression or function of how a parameter is to be searched</param>
     /// <param name="searchValue"> the string value to be compared </param>
     /// <returns></returns>
-    private static Expression<Func<Submission, bool>> GetExpressionToAdd(Expression<Func<Submission,string,bool>> searchQuery, string searchValue)
+    private static Expression<Func<Submission, bool>> GetExpressionToAdd(ISearchQuery searchQuery, ISearchCriterion searchValue)
     {
         // Create a parameter for the entity type
         ParameterExpression param = Expression.Parameter(typeof(Submission), "x");
 
         // Get a constant expression for the string of the search value
-        ConstantExpression searchValueExpression = Expression.Constant(searchValue);
+        ConstantExpression searchValueExpression = Expression.Constant(searchValue.GetSearchValue());
         
         return Expression.Lambda<Func<Submission, bool>>(
-            Expression.Invoke(searchQuery, param, searchValueExpression),
+            Expression.Invoke(searchQuery.GetQueryFunction(), param, searchValueExpression),
             param
         );
     }

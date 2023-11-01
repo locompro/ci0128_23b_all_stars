@@ -1,22 +1,29 @@
-namespace Locompro.Repositories.Utilities;
+using Locompro.SearchQueryConstruction;
+
+namespace Locompro.SearchQueryConstruction;
 
 /// <summary>
 /// A search criterion is a search parameter and a search value
 /// Is used on the QueryBuilder class to add a new search parameter to be searched
 /// </summary>
-public class SearchCriterion
+public class SearchCriterion<T> : ISearchCriterion
 {
-    public SearchParam.SearchParameterTypes ParameterName { get; init; }
-    public string SearchValue { get; init; }
+    public SearchParameterTypes ParameterName { get; init; }
+    public T SearchValue { get; init; }
     
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="parameterName"></param>
     /// <param name="searchValue"></param>
-    public SearchCriterion(SearchParam.SearchParameterTypes parameterName = default, string searchValue = "")
+    public SearchCriterion(SearchParameterTypes parameterName, T searchValue)
     {
-        this.ParameterName = parameterName;
-        this.SearchValue = searchValue;
+        ParameterName = parameterName;
+        SearchValue = searchValue;
+    }
+
+    public dynamic GetSearchValue()
+    {
+        return SearchValue;
     }
 }

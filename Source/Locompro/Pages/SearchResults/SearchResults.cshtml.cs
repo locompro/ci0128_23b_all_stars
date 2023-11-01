@@ -12,7 +12,7 @@ using Locompro.Common;
 using Locompro.Models;
 using Locompro.Pages.Shared;
 using Microsoft.Extensions.Configuration;
-using Locompro.Repositories.Utilities;
+using Locompro.SearchQueryConstruction;
 
 namespace Locompro.Pages.SearchResults;
 
@@ -116,16 +116,16 @@ public class SearchResultsModel : SearchPageModel
         SetSortingParameters(sortOrder, (sorting is not null));
         
         // get items from search service
-        List<SearchCriterion> searchParameters = new List<SearchCriterion>()
+        List<ISearchCriterion> searchParameters = new List<ISearchCriterion>()
         {
-            new (SearchParam.SearchParameterTypes.Name, ProductName),
-            new (SearchParam.SearchParameterTypes.Province, ProvinceSelected),
-            new (SearchParam.SearchParameterTypes.Canton, CantonSelected),
-            new (SearchParam.SearchParameterTypes.Minvalue, MinPrice.ToString()),
-            new (SearchParam.SearchParameterTypes.Maxvalue, MaxPrice.ToString()),
-            new (SearchParam.SearchParameterTypes.Category, CategorySelected),
-            new (SearchParam.SearchParameterTypes.Model, ModelSelected),
-            new (SearchParam.SearchParameterTypes.Brand, BrandSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Name, ProductName),
+            new SearchCriterion<string>(SearchParameterTypes.Province, ProvinceSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Canton, CantonSelected),
+            new SearchCriterion<long>(SearchParameterTypes.Minvalue, MinPrice),
+            new SearchCriterion<long>(SearchParameterTypes.Maxvalue, MaxPrice),
+            new SearchCriterion<string>(SearchParameterTypes.Category, CategorySelected),
+            new SearchCriterion<string>(SearchParameterTypes.Model, ModelSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Brand, BrandSelected),
         };
 
         _items = await this._searchService.GetSearchResults(searchParameters);
