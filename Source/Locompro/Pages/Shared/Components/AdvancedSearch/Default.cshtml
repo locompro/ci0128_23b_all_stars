@@ -1,14 +1,15 @@
 ﻿@using Locompro.Pages.Modals.AdvancedSearch;
 @using Locompro.Services;
 @using Locompro.Services.Domain
+@using Newtonsoft.Json
 @using Locompro.Models
 @model AdvancedSearchModalModel;
 
 
-@inject INamedEntityDomainService<Category, string> CategoryDomainServicep
+@inject INamedEntityDomainService<Category, string> CategoryService
 
 @{
-    var categories = CategoryDomainServicep.GetAll().Result.ToList();
+    var categories = (await CategoryService.GetAll()).ToList();
 }
 <div class="container advanced-search-modal-container" id="advancedSearchModal">
     <div class="advanced-search-modal-secondary-container">
@@ -67,10 +68,9 @@
                     <select id="categoryName"
                             class="form-select" style="font-family:Roboto, sans-serif; min-width: 210px;">
                         <option value="" disabled selected hidden>Seleccionar</option>
-                        <!-- Contents loaded here -->
-                        @foreach(var category in categories)
+                        @foreach (var category in categories)
                         {
-                            <option>@category.Name</option>
+                            <option value="@category.Name">@category.Name</option>
                         }
                     </select>
                 </div>
