@@ -25,9 +25,8 @@ async function loadProvinceShared(optionSelected, sourceName) {
         });
 
         if (response.ok) {
-        console.log("ok");
-        // get the cantons that were sent
-        loadCantons(response);
+            // get the cantons that were sent
+            loadCantons(response);
         } else {
             console.log("not ok");
         }

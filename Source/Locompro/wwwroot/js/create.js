@@ -188,3 +188,23 @@ $(document).ready(function () {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('file').addEventListener('change', function () {
+        const fileInput = this;
+        const errorElement = document.getElementById('fileError');
+        const maxSize = 5000000; // 5MB in bytes
+        
+        errorElement.style.display = 'none';
+    
+        for (let i = 0; i < fileInput.files.length; i++) {
+            const file = fileInput.files[i];
+    
+            if (file.size > maxSize) {
+                errorElement.innerHTML = 'Archivo "' + file.name + '" supera el tamaño máximo de 5MB.';
+                errorElement.style.display = 'block';
+                fileInput.value = '';
+            }
+        }
+    });
+});

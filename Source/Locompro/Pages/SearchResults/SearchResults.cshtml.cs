@@ -12,9 +12,13 @@ using Locompro.Common;
 using Locompro.Common.Search;
 using Locompro.Common.Search.Interfaces;
 using Locompro.Models;
+using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
+using Locompro.Pages.Util;
 using Microsoft.Extensions.Configuration;
 using Locompro.Services.Domain;
+using System;
+using System.IO;
 
 namespace Locompro.Pages.SearchResults;
 
@@ -24,6 +28,8 @@ namespace Locompro.Pages.SearchResults;
 public class SearchResultsModel : SearchPageModel
 {
     private readonly ISearchService _searchService;
+
+    private readonly IPicturesService _picturesService;
 
     /// <summary>
     /// Buffer for page size according to Paginated List and configuration
@@ -45,39 +51,32 @@ public class SearchResultsModel : SearchPageModel
     /// </summary>
     public double ItemsAmount { get; set; }
 
-    /// <summary>
-    /// Name of product that was searched
-    /// </summary>
-    public string ProductName { get; set; }
-
-    public string ProvinceSelected { get; set; }
-    public string CantonSelected { get; set; }
-    public string CategorySelected { get; set; }
-    public long MinPrice { get; set; }
-    public long MaxPrice { get; set; }
-    public string ModelSelected { get; set; }
-    public string BrandSelected { get; set; }
+    public SearchViewModel SearchViewModel { get; set; }
+    
     public string CurrentFilter { get; set; }
         
     public string NameSort { get; set; }
-        
     public string CurrentSort { get; set; }
     public string CantonSort { get; set; }
     public string ProvinceSort { get; set; }
-    
+
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="searchService"></param>
     /// <param name="advancedSearchServiceHandler"></param>
+    /// <param name="picturesService"></param>
     /// <param name="configuration"></param>
     public SearchResultsModel(
         AdvancedSearchInputService advancedSearchServiceHandler,
+        IPicturesService picturesService,
         IConfiguration configuration,
         ISearchService searchService) : base(advancedSearchServiceHandler)
     {
         _searchService = searchService;
+        _picturesService = picturesService;
         _pageSize = configuration.GetValue("PageSize", 4);
+        SearchViewModel = new SearchViewModel();
     }
 
     /// <summary>
@@ -112,7 +111,7 @@ public class SearchResultsModel : SearchPageModel
         // validate input
         ValidateInput(province, canton, minValue, maxValue, category, model, brand);
         
-        ProductName = query;
+        SearchViewModel.ProductName = query;
         
         // set up sorting parameters
         SetSortingParameters(sortOrder, (sorting is not null));
@@ -120,14 +119,14 @@ public class SearchResultsModel : SearchPageModel
         // get items from search service
         List<ISearchCriterion> searchParameters = new List<ISearchCriterion>()
         {
-            new SearchCriterion<string>(SearchParameterTypes.Name, ProductName),
-            new SearchCriterion<string>(SearchParameterTypes.Province, ProvinceSelected),
-            new SearchCriterion<string>(SearchParameterTypes.Canton, CantonSelected),
-            new SearchCriterion<long>(SearchParameterTypes.Minvalue, MinPrice),
-            new SearchCriterion<long>(SearchParameterTypes.Maxvalue, MaxPrice),
-            new SearchCriterion<string>(SearchParameterTypes.Category, CategorySelected),
-            new SearchCriterion<string>(SearchParameterTypes.Model, ModelSelected),
-            new SearchCriterion<string>(SearchParameterTypes.Brand, BrandSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Name, SearchViewModel.ProductName),
+            new SearchCriterion<string>(SearchParameterTypes.Province, SearchViewModel.ProvinceSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Canton, SearchViewModel.CantonSelected),
+            new SearchCriterion<long>(SearchParameterTypes.Minvalue, SearchViewModel.MinPrice),
+            new SearchCriterion<long>(SearchParameterTypes.Maxvalue, SearchViewModel.MaxPrice),
+            new SearchCriterion<string>(SearchParameterTypes.Category, SearchViewModel.CategorySelected),
+            new SearchCriterion<string>(SearchParameterTypes.Model, SearchViewModel.ModelSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Brand, SearchViewModel.BrandSelected),
         };
 
         _items = await this._searchService.GetSearchResults(searchParameters);
@@ -176,13 +175,13 @@ public class SearchResultsModel : SearchPageModel
             category = null;
         } 
         
-        ProvinceSelected = province;
-        CantonSelected = canton;
-        MinPrice = minValue;
-        MaxPrice = maxValue;
-        CategorySelected = category;
-        ModelSelected = model;
-        BrandSelected = brand;
+        SearchViewModel.ProvinceSelected = province;
+        SearchViewModel.CantonSelected = canton;
+        SearchViewModel.MinPrice = minValue;
+        SearchViewModel.MaxPrice = maxValue;
+        SearchViewModel.CategorySelected = category;
+        SearchViewModel.ModelSelected = model;
+        SearchViewModel.BrandSelected = brand;
     }
 
     /// <summary>
@@ -276,5 +275,24 @@ public class SearchResultsModel : SearchPageModel
                     break;
             }
         }
+    }
+    
+    public async Task<ContentResult> OnGetGetPicturesAsync(string productName, string storeName)
+    {
+        List<Picture> itemPictures = await _picturesService.GetPicturesForItem(5, productName, storeName);
+
+        List<string> formattedPictures = PictureParser.Serialize(itemPictures);
+        
+        if (itemPictures.IsNullOrEmpty())
+        {
+            string defaultPictureFilePath = "wwwroot/Pictures/No_Image_Picture.png";
+            
+            byte[] defaultPicture = await System.IO.File.ReadAllBytesAsync(defaultPictureFilePath);
+            
+            formattedPictures.Add(PictureParser.SerializeData(defaultPicture));
+        }
+       
+        // return list of pictures serialized as json
+        return Content(JsonConvert.SerializeObject(formattedPictures));
     }
 }

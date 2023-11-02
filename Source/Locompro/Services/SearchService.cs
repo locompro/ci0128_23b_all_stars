@@ -6,13 +6,17 @@ using Locompro.Common.Search.Interfaces;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Services.Domain;
+using Locompro.Services.Domain;
 
 namespace Locompro.Services;
 
 public class SearchService : Service, ISearchService
 {
     private readonly ISearchDomainService _searchDomainService;
+
     private readonly IQueryBuilder _queryBuilder;
+
+    public const int ImageAmountPerItem = 5;
 
     /// <summary>
     /// Constructor for the search service
@@ -20,7 +24,7 @@ public class SearchService : Service, ISearchService
     /// <param name="unitOfWork"> generic unit of work</param>
     /// <param name="loggerFactory"> logger </param>
     /// <param name="searchDomainService"></param>
-    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, ISearchDomainService searchDomainService) :
+    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, ISearchDomainService searchDomainService, IPicturesService picturesService) :
         base(unitOfWork, loggerFactory)
     {
         _searchDomainService = searchDomainService;
@@ -40,7 +44,8 @@ public class SearchService : Service, ISearchService
             try
             {
                 this._queryBuilder.AddSearchCriterion(searchCriterion);
-            } catch (ArgumentException exception)
+            }
+            catch (ArgumentException exception)
             {
                 // if the search criterion is invalid, report on it but continue execution
                 this.Logger.LogWarning(exception.ToString());
@@ -49,25 +54,27 @@ public class SearchService : Service, ISearchService
 
         // compose the list of search functions
         SearchQueries searchQueries = this._queryBuilder.GetSearchFunction();
-        
+
+        if (searchQueries.IsEmpty)
+        {
+            return new List<Item>();
+        }
+
         // get the submissions that match the search functions
-        IEnumerable<Submission> submissions = 
-            searchQueries.IsEmpty?
-                Enumerable.Empty<Submission>() :
-                await this._searchDomainService.GetSearchResults(searchQueries);
-        
+        IEnumerable<Submission> submissions = await this._searchDomainService.GetSearchResults(searchQueries);
+
         this._queryBuilder.Reset();
-        
+
         return GetItems(submissions).Result.ToList();
     }
-    
+
     /// <summary>
     /// Gets all the items to be displayed in the search results
     /// from a list of submissions
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>
-    private static async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
+    private async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
     {
         var items = new List<Item>();
 
@@ -93,7 +100,7 @@ public class SearchService : Service, ISearchService
     /// </summary>
     /// <param name="itemGrouping"></param>
     /// <returns></returns>
-    private static async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
+    private async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
     {
         // Get best submission for its information
         var bestSubmission = GetBestSubmission(itemGrouping);
@@ -111,7 +118,7 @@ public class SearchService : Service, ISearchService
         {
             Submissions = itemGrouping.ToList(),
             Model = bestSubmission.Product.Model,
-            Brand = bestSubmission.Product.Brand
+            Brand = bestSubmission.Product.Brand,
         };
 
         return await Task.FromResult(item);
