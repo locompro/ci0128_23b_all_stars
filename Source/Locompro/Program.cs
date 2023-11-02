@@ -1,3 +1,4 @@
+using Locompro.Common;
 using Microsoft.EntityFrameworkCore;
 using Locompro.Data;
 using Locompro.Data.Repositories;
@@ -96,6 +97,7 @@ void RegisterServices(WebApplicationBuilder builder)
     // Register application services
     builder.Services.AddScoped<IContributionService, ContributionService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<IErrorStore, ErrorStore>();
     builder.Services.AddScoped<AdvancedSearchInputService>();
     builder.Services.AddScoped<SearchService>();
 }

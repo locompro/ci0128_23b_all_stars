@@ -1,5 +1,5 @@
-﻿using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using Castle.Core.Internal;
+using Locompro.Common;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
 using Locompro.Services;
@@ -19,19 +19,20 @@ public class ProfileModel : PageModel
     private readonly IDomainService<User, string> _userService;
     private readonly IAuthService _authService;
     private readonly IDomainService<Canton, string> _cantonService;
-    
+
     [BindProperty] public ProfileViewModel UserProfile { get; set; }
 
-    [BindProperty] public PasswordChangeViewModel PasswordChange{ get; set; }
+    [BindProperty] public PasswordChangeViewModel PasswordChange { get; set; }
 
     [BindProperty] public UserDataUpdateViewModel UserDataUpdate { get; set; }
-    
-    public bool HasErrorsInChangePasswordModal
-        => ModelState.ContainsKey("Modal-1") && ModelState["Modal-1"]?.Errors is { Count: > 0 };
 
-    public bool IsPasswordChanged { get; set; } = false;
-    
-    public bool IsUserDataUpdated { get; set; } = false;
+    public IErrorStore ChangePasswordModalErrors { get; set; }
+
+    public IErrorStore UpdateUserDataModalErrors { get; set; }
+
+    public bool IsPasswordChanged { get; set; }
+
+    public bool IsUserDataUpdated { get; set; }
 
 
     /// <summary>
@@ -39,29 +40,20 @@ public class ProfileModel : PageModel
     /// </summary>
     /// <param name="userService">Service for user related operations.</param>
     /// <param name="authService">Service for authentication related operations.</param>
-    /// <param name="cantonService"></param>
-    public ProfileModel(IDomainService<User, string> userService, IAuthService authService, IDomainService<Canton, string> cantonService)
+    /// <param name="cantonService">To get canton related information </param>
+    /// <param name="passwordModalStore"></param>
+    /// <param name="userDataModalStore"></param>
+    public ProfileModel(IDomainService<User, string> userService, IAuthService authService,
+        IDomainService<Canton, string> cantonService, IErrorStore passwordModalStore, IErrorStore userDataModalStore)
     {
         _userService = userService;
         _authService = authService;
         _cantonService = cantonService;
+        ChangePasswordModalErrors = passwordModalStore;
+        UpdateUserDataModalErrors = userDataModalStore;
     }
-    public async Task<JsonResult> OnGetCantons(string provinceName)
-    {
-        var cantons = await _cantonService.GetAll();
-        if (cantons == null || string.IsNullOrWhiteSpace(provinceName))
-        {
-            return new JsonResult(new List<CantonDto>());
-        }
 
-        var cantonNames = cantons
-            .Where(c => c.ProvinceName == provinceName)
-            .Select(c => new CantonDto { Name = c.Name })
-            .ToList();
 
-        return new JsonResult(cantonNames);
-    }
-    
     /// <summary>
     ///     Handler for the GET request to load the user's profile page.
     /// </summary>
@@ -69,16 +61,21 @@ public class ProfileModel : PageModel
     public async Task<IActionResult> OnGetAsync()
     {
         var user = await _userService.Get(_authService.GetUserId());
-        if (user == null) return NotFound("Unable to load user.");
+        if (user == null) return RedirectToRoute("Account/Login");
         SetProfileViewModel(user);
         RecoverTemporaryFlags();
+        ClearStoredErrors();
         return Page();
     }
 
     /// <summary>
-    ///     Handler for the POST request to change the user's password.
+    /// Handles a POST request to change the user's password.
     /// </summary>
-    /// <returns>Redirects to the user profile page.</returns>
+    /// <returns>
+    /// If the user is not found, redirects to the Login page.
+    /// If the current password is incorrect, re-renders the page with error messages
+    /// On success, changes the password, refreshes the user login, and redirects to the profile page.
+    /// </returns>
     public async Task<IActionResult> OnPostChangePasswordAsync()
     {
         var user = await _userService.Get(_authService.GetUserId());
@@ -86,7 +83,7 @@ public class ProfileModel : PageModel
 
         if (!await _authService.IsCurrentPasswordCorrect(PasswordChange.CurrentPassword))
         {
-            AppendErrorToChangePasswordModal("La contraseña actual no es correcta.");
+            ChangePasswordModalErrors.StoreError("La contraseña actual no es correcta.");
             SetProfileViewModel(user);
             return Page();
         }
@@ -98,25 +95,61 @@ public class ProfileModel : PageModel
         StoreTemporaryFlag("IsPasswordChanged", true);
         return RedirectToPage();
     }
+
     /// <summary>
-    ///     Handler for the POST request to modify the user's data.
+    /// Handles a POST request to update the user's data.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>
+    /// If the user is not found, redirects to the Login page.
+    /// If the update data is invalid, re-renders the page with an error message.
+    /// On success, updates the user data and redirects to the profile page.
+    /// </returns>
     public async Task<IActionResult> OnPostUpdateUserDataAsync()
     {
         var user = await _userService.Get(_authService.GetUserId());
 
         if (user == null) return RedirectToRoute("Account/Login");
 
-        if (UserDataUpdate.IsEmpty()) return RedirectToPage();
+        if (!UserDataUpdate.IsUpdateValid())
+        {
+            UpdateUserDataModalErrors.StoreError("No se han ingresado datos validos para actualizar.");
+            UpdateUserDataModalErrors.StoreError(
+                "Se debe ingresar al menos un email o una dirección completa (Provincia, Cantón y Dirección Exacta).");
+            SetProfileViewModel(user);
+            return Page();
+        }
 
-        user.Email = UserDataUpdate.IsEmailEmpty() ? user.Email : UserDataUpdate.Email;
-        user.NormalizedEmail = UserDataUpdate.IsEmailEmpty() ? user.NormalizedEmail : UserDataUpdate.Email.ToUpper();
-        user.Address = UserDataUpdate.IsAddressEmpty() ? user.Address : UserDataUpdate.GetAddress();
-
+        PrepareUserDataUpdate(user);
         await _userService.Update(user);
+
         StoreTemporaryFlag("IsUserDataUpdated", true);
         return RedirectToPage();
+    }
+    /// <summary>
+    /// Handles ajax GET request to retrieve canton names based on the specified province.
+    /// </summary>
+    /// <param name="province">The name of the province.</param>
+    /// <returns>
+    /// A JSON result containing a list of <see cref="CantonDto"/> objects representing the cantons in the specified province.
+    /// If the province parameter is null or empty, returns an empty list.
+    /// </returns>
+    public async Task<JsonResult> OnGetCantonsAsync(string province)
+    {
+        if (province.IsNullOrEmpty()) return new JsonResult(new List<CantonDto>());
+
+        var cantonNames = await GetCantonsOnProvince(province);
+        return new JsonResult(cantonNames);
+    }
+
+    /// <summary>
+    ///     Prepares the user data to be updated.
+    /// </summary>
+    /// <param name="user"> the user to update </param>
+    private void PrepareUserDataUpdate(User user)
+    {
+        user.Email = UserDataUpdate.IsEmailEmpty() ? user.Email : UserDataUpdate.Email;
+        user.NormalizedEmail = user.Email.ToUpper();
+        user.Address = UserDataUpdate.IsAddressEmpty() ? user.Address : UserDataUpdate.GetAddress();
     }
 
     /// <summary>
@@ -125,19 +158,11 @@ public class ProfileModel : PageModel
     /// <param name="user">The user whose information will be displayed.</param>
     private void SetProfileViewModel(User user)
     {
-        UserProfile = new ProfileViewModel
-        {
-            Username = user.UserName,
-            Name = user.Name,
-            Address = user.Address,
-            Rating = user.Rating,
-            Contributions = user.Submissions.Count,
-            Email = user.Email
-        };
+        UserProfile = new ProfileViewModel(user);
     }
-    
+
     /// <summary>
-    ///   Stores the status of the user data modification operation in TempData so it can be recovered after a redirect.
+    ///     Stores the status of the user data modification operation in TempData so it can be recovered after a redirect.
     /// </summary>
     /// <param name="key"> the temporary data name</param>
     /// <param name="value"> the value of the boolean flag </param>
@@ -145,17 +170,19 @@ public class ProfileModel : PageModel
     {
         TempData[key] = value;
     }
-    
+
     /// <summary>
-    ///   Recovers the status of the user data modification operation from TempData.
+    ///     Recovers the status of the user data modification operation from TempData.
     /// </summary>
-    /// <param name="key"></param>
+    /// <param name="key"> the name of the temporary boolean flag</param>
     /// <returns></returns>
     private bool RecoverTemporaryFlag(string key)
     {
         var value = TempData[key] as bool?;
+        TempData.Remove(key);
         return value ?? false;
     }
+
     /// <summary>
     ///     Recovers all the status flags of the user data modification operation from TempData.
     /// </summary>
@@ -164,13 +191,26 @@ public class ProfileModel : PageModel
         IsPasswordChanged = RecoverTemporaryFlag("IsPasswordChanged");
         IsUserDataUpdated = RecoverTemporaryFlag("IsUserDataUpdated");
     }
-   
+
     /// <summary>
-    ///     Appends an error to the Change Password modal.
+    ///     Retrieves all the cantons names for a given province.
     /// </summary>
-    /// <param name="error"> a error message to append </param>
-    private void AppendErrorToChangePasswordModal(string error)
+    /// <param name="province"> the name of the province get the cantons from </param>
+    /// <returns>a list of Canton Names in that province </returns>
+    private async Task<List<CantonDto>> GetCantonsOnProvince(string province)
     {
-        ModelState.AddModelError("Modal-1", error);
+        var cantons = await _cantonService.GetAll();
+        return cantons?
+            .Where(c => c.Province.Name == province)
+            .Select(c => new CantonDto(c))
+            .ToList() ?? new List<CantonDto>();
+    }
+    /// <summary>
+    ///   Clears all the stored error messages.
+    /// </summary>
+    private void ClearStoredErrors()
+    {
+        ChangePasswordModalErrors.ClearStore();
+        UpdateUserDataModalErrors.ClearStore();
     }
 }

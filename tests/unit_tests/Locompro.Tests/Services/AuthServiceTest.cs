@@ -15,13 +15,14 @@ namespace Locompro.Tests.Services
 {
     public class AuthServiceTest
     {
-        private Mock<IUnitOfWork> _unitOfWorkMock;
+        private Mock<IUnitOfWork>? _unitOfWorkMock;
         private Mock<IUserStore<User>>? _userStoreMock;
         private Mock<IUserEmailStore<User>>? _emailStoreMock;
         private Mock<UserManager<User>>? _userManagerMock;
-        private Mock<ILogger<RegisterViewModel>>? _loggerMock;
+        private Mock<ILogger<AuthService>>? _loggerMock;
         private Mock<SignInManager<User>>? _signInManagerMock;
         private AuthService? _service;
+
 
         [SetUp]
         public void SetUp()
@@ -29,13 +30,23 @@ namespace Locompro.Tests.Services
             _unitOfWorkMock = new Mock<IUnitOfWork>();
             _userStoreMock = new Mock<IUserStore<User>>();
             _emailStoreMock = new Mock<IUserEmailStore<User>>();
-            _userManagerMock =
-                new Mock<UserManager<User>>(_userStoreMock.Object, null!, null!, null!, null!, null!, null!, null!,
-                    null!);
-            _loggerMock = new Mock<ILogger<RegisterViewModel>>();
+            _userManagerMock = new Mock<UserManager<User>>(
+                _userStoreMock.Object, null, null, null, null, null, null, null, null
+            );
+            _loggerMock = new Mock<ILogger<AuthService>>();
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, "someUserId"),
+                // Add other claims as needed
+            };
+            var identity = new ClaimsIdentity(claims, "TestAuthType");
+            var claimsPrincipal = new ClaimsPrincipal(identity);
+
+            var httpContextMock = new Mock<HttpContext>();
+            httpContextMock.Setup(hc => hc.User).Returns(claimsPrincipal);
 
             var contextAccessorMock = new Mock<IHttpContextAccessor>();
-            var httpContextMock = new Mock<HttpContext>();
             contextAccessorMock.Setup(ca => ca.HttpContext).Returns(httpContextMock.Object);
 
             var userClaimsPrincipalFactoryMock = new Mock<IUserClaimsPrincipalFactory<User>>();
@@ -53,21 +64,23 @@ namespace Locompro.Tests.Services
                 schemesMock.Object,
                 confirmationMock.Object
             );
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, "someUserId"),
-                // Add other claims as needed
-            };
-            var identity = new ClaimsIdentity(claims, "TestAuthType");
-            var claimsPrincipal = new ClaimsPrincipal(identity);
-            
+
             var loggerFactoryMock = new Mock<ILoggerFactory>();
-            
-            contextAccessorMock.Setup(ca => ca.HttpContext).Returns(httpContextMock.Object);
-            httpContextMock.Setup(hc => hc.User).Returns(claimsPrincipal);
-            _service = new AuthService(_unitOfWorkMock.Object, loggerFactoryMock.Object, _signInManagerMock.Object,
-                _userManagerMock.Object, _userStoreMock.Object, _emailStoreMock.Object);
+            loggerFactoryMock.Setup(lf => lf.CreateLogger(It.IsAny<string>())).Returns(_loggerMock.Object);
+
+            _service = new AuthService(
+                _unitOfWorkMock.Object,
+                loggerFactoryMock.Object,
+                _signInManagerMock.Object,
+                _userManagerMock.Object,
+                _userStoreMock.Object,
+                _emailStoreMock.Object
+            );
         }
+
+        public Mock<SignInManager<User>> SignInManagerMock => _signInManagerMock;
+        public Mock<UserManager<User>> UserManagerMock => _userManagerMock;
+
 
         /// <summary>
         /// Test if the user registration succeeds.
@@ -210,7 +223,7 @@ namespace Locompro.Tests.Services
                     LogLevel.Information,
                     It.IsAny<EventId>(),
                     It.Is<It.IsAnyType>((v, t) => string.Equals("User logged in.", v.ToString())),
-                    It.IsAny<Exception>(),
+                    null,
                     It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
                 Times.Once);
         }
@@ -243,5 +256,58 @@ namespace Locompro.Tests.Services
                     It.IsAny<Func<It.IsAnyType, Exception, string>>()!),
                 Times.Never);
         }
+        [Test]
+    public void GetUserId_ReturnsUserId()
+    {
+        var userId = "someUserId";
+        var claimsPrincipal = new ClaimsPrincipal(new ClaimsIdentity(new Claim[] { new Claim(ClaimTypes.NameIdentifier, userId) }));
+        _signInManagerMock.Setup(sm => sm.Context.User).Returns(claimsPrincipal);
+
+        var result = _service.GetUserId();
+
+        Assert.AreEqual(userId, result);
+    }
+
+    [Test]
+    public async Task IsCurrentPasswordCorrect_ReturnsTrue_WhenPasswordIsCorrect()
+    {
+        var password = "correctPassword";
+        var user = new User();
+        _signInManagerMock.Setup(sm => sm.Context.User).Returns(new ClaimsPrincipal());
+        _userManagerMock.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+        _userManagerMock.Setup(um => um.CheckPasswordAsync(user, password)).ReturnsAsync(true);
+
+        var result = await _service.IsCurrentPasswordCorrect(password);
+
+        Assert.IsTrue(result);
+    }
+
+    [Test]
+    public async Task ChangePassword_ReturnsIdentityResult()
+    {
+        var currentPassword = "currentPassword";
+        var newPassword = "newPassword";
+        var user = new User();
+        var identityResult = IdentityResult.Success;
+        _signInManagerMock.Setup(sm => sm.Context.User).Returns(new ClaimsPrincipal());
+        _userManagerMock.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+        _userManagerMock.Setup(um => um.ChangePasswordAsync(user, currentPassword, newPassword)).ReturnsAsync(identityResult);
+
+        var result = await _service.ChangePassword(currentPassword, newPassword);
+
+        Assert.AreEqual(identityResult, result);
+    }
+
+    [Test]
+    public async Task RefreshUserLogin_RefreshesLogin()
+    {
+        var user = new User();
+        _signInManagerMock.Setup(sm => sm.Context.User).Returns(new ClaimsPrincipal());
+        _userManagerMock.Setup(um => um.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
+
+        await _service.RefreshUserLogin();
+
+        _signInManagerMock.Verify(sm => sm.RefreshSignInAsync(user), Times.Once);
+    }
     }
 }

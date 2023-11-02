@@ -1,14 +1,12 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Castle.Core.Internal;
-using Locompro.Models.ViewModels.Validation;
 
 namespace Locompro.Models.ViewModels;
 
 /// <summary>
 ///     Data needed to modify the user's data.
 /// </summary>
-[AddressValidation]
 public class UserDataUpdateViewModel
 {
     /// <summary>
@@ -37,13 +35,15 @@ public class UserDataUpdateViewModel
     public string ExactAddress { get; set; } = "";
 
     /// <summary>
-    ///     Determines whether all the properties in the view model are empty.
+    ///     Determines whether the view model holds a valid update for the user's data.
     /// </summary>
-    /// <returns>True if all properties are empty, false otherwise.</returns>
-    public bool IsEmpty()
+    /// <remarks>
+    ///    A valid update is one where the user's email or address (formed by Province, Canton, and ExactAddress) is not empty.
+    /// </remarks>
+    /// <returns>True if is a valid update, false otherwise.</returns>
+    public bool IsUpdateValid()
     {
-        return Email.IsNullOrEmpty() && Province.IsNullOrEmpty() && Canton.IsNullOrEmpty() &&
-               ExactAddress.IsNullOrEmpty();
+        return !IsEmailEmpty() || !IsAddressEmpty();
     }
 
     /// <summary>
@@ -59,10 +59,10 @@ public class UserDataUpdateViewModel
     /// <summary>
     ///     Determines whether the address-related properties in the view model are empty.
     /// </summary>
-    /// <returns>True if the address-related properties are empty, false otherwise.</returns>
+    /// <returns>True if at least one of the address-related properties are empty, false otherwise.</returns>
     public bool IsAddressEmpty()
     {
-        return Province.IsNullOrEmpty() && Canton.IsNullOrEmpty() && ExactAddress.IsNullOrEmpty();
+        return Province.IsNullOrEmpty() || Canton.IsNullOrEmpty() || ExactAddress.IsNullOrEmpty();
     }
 
     /// <summary>

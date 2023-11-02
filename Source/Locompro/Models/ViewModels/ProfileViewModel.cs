@@ -16,4 +16,18 @@ public class ProfileViewModel
     public int Contributions { get; set; }
     
     public string Email { get; set; }
+    
+    /// <summary>
+    ///     Constructor of ProfileViewModel based on a User object.
+    /// </summary>
+    /// <param name="user">The user whose information will be displayed.</param>
+    public ProfileViewModel(User user)
+    {
+        Username = user.UserName;
+        Name = user.Name;
+        Address = user.Address;
+        Rating = user.Rating;
+        Contributions = user.Submissions.Count;
+        Email = user.Email;
+    }
 }

@@ -117,9 +117,9 @@ namespace Locompro.Tests.Repositories
             // Act
             await _userRepository.DeleteAsync(id);
             var result = await _userRepository.GetByIdAsync(id);
-
             // Assert
             Assert.That(result, Is.Null);
         }
+
     }
 }
