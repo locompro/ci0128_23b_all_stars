@@ -106,22 +106,33 @@ public class SearchService : Service, ISearchService
         var bestSubmission = GetBestSubmission(itemGrouping);
 
         var item = new Item(
-            GetFormattedDate(bestSubmission),
-            bestSubmission.Product.Name,
-            bestSubmission.Price,
-            bestSubmission.Store.Name,
-            bestSubmission.Store.Canton.Name,
-            bestSubmission.Store.Canton.Province.Name,
-            bestSubmission.Description,
-            bestSubmission.Product.Model
+            bestSubmission,
+            GetFormattedDate
         )
         {
-            Submissions = itemGrouping.ToList(),
+            Submissions = GetDisplaySubmissions(itemGrouping.ToList()),
             Model = bestSubmission.Product.Model,
             Brand = bestSubmission.Product.Brand,
         };
 
         return await Task.FromResult(item);
+    }
+    
+    /// <summary>
+    /// Constructs a list of display submissions from a list of submissions
+    /// Reduces the amount of memory necesary to display submissions
+    /// </summary>
+    /// <param name="submissions"> submissions to be turned into display submissions</param>
+    /// <returns></returns>
+    List<DisplaySubmission> GetDisplaySubmissions(List<Submission> submissions)
+    {
+        var displaySubmissions = new List<DisplaySubmission>();
+        foreach (var submission in submissions)
+        {
+            displaySubmissions.Add(new DisplaySubmission(submission, GetFormattedDate));
+        }
+
+        return displaySubmissions;
     }
 
     /// <summary>

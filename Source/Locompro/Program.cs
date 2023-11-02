@@ -52,6 +52,8 @@ app.Use(async (context, next) =>
     await next();
 });
 
+app.UseSession();
+
 app.Run();
 return;
 
@@ -112,4 +114,10 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ISearchDomainService, SearchDomainService>();
     builder.Services.AddScoped<ISearchService, SearchService>();
     builder.Services.AddScoped<IPicturesService, PicturesService>();
+    
+    // Add session support
+    builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(2);
+    });
 }

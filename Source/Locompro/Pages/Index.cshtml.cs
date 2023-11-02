@@ -16,7 +16,9 @@ namespace Locompro.Pages
     /// </summary>
     public class IndexModel : SearchPageModel
     {
-        public IndexModel(AdvancedSearchInputService advancedSearchServiceHandler) : base(advancedSearchServiceHandler)
+        public IndexModel(AdvancedSearchInputService advancedSearchServiceHandler,
+            IHttpContextAccessor httpContextAccessor)
+            : base(advancedSearchServiceHandler, httpContextAccessor)
         {
         }
     }

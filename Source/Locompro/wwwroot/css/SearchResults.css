@@ -173,3 +173,14 @@
     display: block;
     margin: 0 auto;
 }
+
+.prices-cell {
+    text-align: right;
+    padding-left: 0px;'
+    !important;
+}
+
+.store-cell {
+    padding-left: 30px
+    !important;
+}

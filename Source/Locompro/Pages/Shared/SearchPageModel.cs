@@ -19,12 +19,16 @@ public abstract class SearchPageModel : PageModel
     /// </summary>
     private readonly AdvancedSearchInputService _advancedSearchServiceHandler;
 
+    private IHttpContextAccessor _httpContextAccessor;
+
     public const string EmptyValue = "Todos";
 
-    protected SearchPageModel(AdvancedSearchInputService advancedSearchServiceHandler)
+    protected SearchPageModel(AdvancedSearchInputService advancedSearchServiceHandler,
+        IHttpContextAccessor httpContextAccessor)
     {
-        this._advancedSearchServiceHandler = advancedSearchServiceHandler;
-        this._advancedSearchServiceHandler.EmptyValue = EmptyValue;
+        _advancedSearchServiceHandler = advancedSearchServiceHandler;
+        _advancedSearchServiceHandler.EmptyValue = EmptyValue;
+        _httpContextAccessor = httpContextAccessor;
     }
     
     /// <summary>
@@ -82,7 +86,7 @@ public abstract class SearchPageModel : PageModel
     
     /// <summary>
     /// Updates internal list of cantons to have a empty canton value according to constant EmptyValue
-    /// </summary>
+    /// </summary> </div>
     private void UpdateCantonsOnNoProvince()
     {
         List<Canton> emptyCantonList = new List<Canton>
@@ -101,8 +105,11 @@ public abstract class SearchPageModel : PageModel
     /// <returns> the serialized Json </returns>
     private string GetCantonsJson()
     {
-        string cantonsJson = "";
-        
+        return GetJsonFrom(_advancedSearchServiceHandler.Cantons);
+    }
+
+    protected string GetJsonFrom<T>(T objectToSerialize)
+    {
         // prevent the json serializer from looping infinitely
         var settings = new JsonSerializerSettings
         {
@@ -110,10 +117,35 @@ public abstract class SearchPageModel : PageModel
         };
 
         // generate the json file with the cantons
-        cantonsJson = JsonConvert.SerializeObject(_advancedSearchServiceHandler.Cantons, settings);
+        string json = JsonConvert.SerializeObject(objectToSerialize, settings);
         
         Response.ContentType = "application/json";
 
-        return cantonsJson;
+        return json;
     }
+
+    protected void CacheDataInSession<T>(T objectToCache, string key)
+    {
+        HttpContext.Session.SetString(key, JsonConvert.SerializeObject(objectToCache));
+    }
+    
+    protected T GetCachedDataFromSession<T>(string key, bool deletesData = true)
+    {
+        if (key == null || HttpContext.Session.GetString(key) == null) return default;
+        
+        string cachedObjectJson = HttpContext.Session.GetString(key);
+
+        if (cachedObjectJson == null) return default;
+        
+        T cachedObject = JsonConvert.DeserializeObject<T>(cachedObjectJson);
+        
+        if (deletesData)
+        {
+            HttpContext.Session.Remove(key);
+            if (_httpContextAccessor.HttpContext != null) _httpContextAccessor.HttpContext.Session.Clear();
+        }
+        
+        return cachedObject;
+    }
+   
 }
