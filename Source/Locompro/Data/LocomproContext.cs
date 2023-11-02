@@ -1,5 +1,7 @@
-﻿using Locompro.Models;
+﻿using Castle.Core.Internal;
+using Locompro.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Data;
@@ -30,7 +32,7 @@ public class LocomproContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        
+
         builder.Entity<Province>()
             .HasKey(p => new { p.CountryName, p.Name });
 
@@ -39,7 +41,7 @@ public class LocomproContext : IdentityDbContext<User>
             .WithMany(c => c.Provinces)
             .HasForeignKey(p => p.CountryName)
             .IsRequired();
-        
+
         builder.Entity<Canton>()
             .HasKey(c => new { c.CountryName, c.ProvinceName, c.Name });
 
@@ -51,7 +53,7 @@ public class LocomproContext : IdentityDbContext<User>
 
         builder.Entity<Category>()
             .HasKey(c => new { c.Name });
-        
+
         builder.Entity<Category>()
             .HasOne(c => c.Parent)
             .WithMany(c => c.Children);
@@ -59,7 +61,7 @@ public class LocomproContext : IdentityDbContext<User>
         builder.Entity<Product>()
             .HasMany(p => p.Categories)
             .WithMany(c => c.Products);
-        
+
         builder.Entity<Submission>()
             .HasKey(s => new { Username = s.UserId, s.EntryTime });
 
@@ -68,13 +70,13 @@ public class LocomproContext : IdentityDbContext<User>
             .WithMany()
             .HasForeignKey(s => s.StoreName)
             .IsRequired();
-        
+
         builder.Entity<Submission>()
             .HasOne(s => s.Product)
             .WithMany(p => p.Submissions)
             .HasForeignKey(s => s.ProductId)
             .IsRequired();
-        
+
         builder.Entity<Submission>()
             .HasOne(s => s.User)
             .WithMany()
@@ -84,5 +86,49 @@ public class LocomproContext : IdentityDbContext<User>
         builder.Entity<User>()
             .HasMany(u => u.Submissions)
             .WithOne(s => s.User);
+    }
+
+    [DbFunction("GetPictures", "dbo")]
+    public static List<GetPicturesResult> GetPictures(string storeName, string productName)
+    {
+        throw new NotSupportedException();
+    }
+
+    [DbFunction("CountRatedSubmissions", "dbo")]
+    public static int CountRatedSubmissions(string storeName, string productName)
+    {
+        throw new NotSupportedException();
+    }
+
+    [DbFunction("GetQualifiedUserIDs", "dbo")]
+    public static List<GetQualifiedUserIDsResult> GetQualifiedUserIDs(string storeName, string productName)
+    {
+        throw new NotSupportedException();
+    }
+
+    /// <summary>
+    /// Assigns each parent category of a product to the product.
+    /// </summary>
+    /// <param name="categoryName"></param>
+    /// <param name="productID"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public virtual async Task AddParents(string categoryName, int productID)
+    {
+        if (categoryName.IsNullOrEmpty())
+            throw new ArgumentNullException(nameof(categoryName));
+
+        var categoryNameParameter = new SqlParameter("@category", categoryName);
+        var productIdParameter = new SqlParameter("@productId", productID);
+
+        await Database.ExecuteSqlRawAsync("EXECUTE dbo.AddParents @category, @productId", categoryNameParameter,
+            productIdParameter);
+    }
+
+    /// <summary>
+    /// Deletes every submission that has been deemed inappropriate by a moderator.
+    /// </summary>
+    public virtual async Task DeleteModeratedSubmissions()
+    {
+        await Database.ExecuteSqlRawAsync("EXECUTE dbo.DeleteModeratedSubmissions");
     }
 }
