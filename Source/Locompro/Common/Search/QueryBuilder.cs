@@ -42,6 +42,17 @@ public class QueryBuilder : IQueryBuilder
                                                + "Search criterion: " + nameof(searchCriterion.GetSearchValue));
         }
         
+        // the type provided should be consistent with the types that the search methods can handle
+        if (searchCriterion.GetSearchValue() != null)
+        {
+            bool isTypeConsistentWithMappedFunctions = IsTypeConsistentWithMappedFunctions(searchCriterion, out string searchValueType, out string searchQueryType);
+            if (!isTypeConsistentWithMappedFunctions)
+            {
+                throw new ArgumentException("Incompatible values used. SearchCriterion Type value: " + searchValueType
+                    + "\nSearchQueryType value: " + searchQueryType);
+            } 
+        }
+        
         this._searchCriteria.Add(searchCriterion);
     }
     
@@ -71,6 +82,35 @@ public class QueryBuilder : IQueryBuilder
                 
             this._searchCriteriaFunctions.Add(expressionToAdd);
         }
+    }
+    
+    /// <summary>
+    /// Checks if the type provided in runtime coincide with the types that
+    /// the statically declared search methods can handle
+    /// The errors are however not runtime, these were errors that were not caught in compile-time
+    /// </summary>
+    /// <param name="searchCriterion"></param>
+    /// <param name="searchValueType"> returns the type of the value given. Purely for error handling </param>
+    /// <param name="searchQueryType"> returns the type of the searchquery. Purely for error handling</param>
+    /// <returns> if consistent or not</returns>
+    /// <exception cref="ArgumentException"></exception>
+    private static bool IsTypeConsistentWithMappedFunctions(
+        ISearchCriterion searchCriterion,
+        out string searchValueType,
+        out string searchQueryType)
+    {
+        if (!SearchMethods.GetInstance.Contains(searchCriterion.ParameterName))
+        {
+            throw new ArgumentException("Invalid search criterion addition attempt\n"
+                                        + "Search criterion: " + nameof(searchCriterion.GetSearchValue));
+        }
+        
+        SearchParam searchMethod = SearchMethods.GetInstance.GetSearchMethodByName(searchCriterion.ParameterName);
+        
+        searchValueType = searchCriterion.GetSearchValue().GetType().Name;
+        searchQueryType = searchMethod.SearchQuery.GetQueryFunction().Type.ToString();
+        
+        return searchQueryType.Contains(searchValueType);
     }
 
     /// <summary>
