@@ -1,4 +1,5 @@
 var modalShown = false;
+
 async function advancedSearchButtonPressed() {
     const button = document.getElementById("advancedSearchButton");
     const modalContainer = document.getElementById("modalContainer");
@@ -57,12 +58,18 @@ function performSearchButton() {
 }
 
 async function loadProvince(optionSelected){
-    loadProvinceShared(optionSelected, "SearchResults");
+    await loadProvinceShared(optionSelected, "SearchResults");
 }
 
 function itemSelected(index) {
-    var modalId = "#modal" + index;
+    const modalId = "#modal" + index;
     $(modalId).modal('show');
+    
+    const pictureContainerId = "pictureContainer" + index;
+    
+    const pictureContainer = document.getElementById(pictureContainerId);
+
+    loadPictures(pictureContainer);
 }
 
 function closeModal() {
@@ -85,4 +92,76 @@ function closeModal() {
     closeModalButton.classList.remove("close-modal-button-shown");
     
     modalShown = false;
+}
+
+async function loadPictures(pictureContainer) {
+    let pictureContainerName = pictureContainer.getAttribute("name");
+    
+    const productName = pictureContainerName.split('-')[0];
+    const storeName = pictureContainerName.split('-')[1];
+
+    let pictureDataRequest = `SearchResults?handler=GetPictures&productName=${productName}&storeName=${storeName}`;
+
+    $.ajax({
+        url: pictureDataRequest,
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            // Process and display the data
+            if (data.length > 0) {
+                data.forEach(function (picture) {
+                    var slideDiv = document.createElement('div');
+                    slideDiv.className = 'col';
+                    slideDiv.style = 'width: 100%;';
+
+                    var slideContent = document.createElement('div');
+                    slideContent.className = 'mySlides';
+                    slideContent.style = 'background-color: darkgray; border: 151px solid #e4e4e4';
+
+                    var img = document.createElement('img');
+                    img.src = picture;
+                    img.style = 'max-height: 300px; max-width: 94%; width: auto; height: auto; transform: translate(-50%, -50%); position: absolute; top: 50%; left: 50%;';
+                    img.alt = 'image';
+
+                    slideContent.appendChild(img);
+                    slideDiv.appendChild(slideContent);
+                    pictureContainer.appendChild(slideDiv);
+                });
+            } else {
+                // Handle no pictures case
+                var placeholder = document.createElement('img');
+                placeholder.src = 'https://via.placeholder.com/400';
+                placeholder.alt = 'Placeholder';
+                pictureContainer.appendChild(placeholder);
+            }
+
+            showSlides(curretSlideIndex);
+        },
+        error: function () {
+            console.error('Error loading pictures');
+        }
+    });
+    
+    // removes loaded pictures when the modal is closed
+    function onModalClose(modalId) {
+        const modalIndex = modalId.split('modal')[1];
+        const pictureContainerId = "pictureContainer" + modalIndex;
+        const pictureContainer = document.getElementById(pictureContainerId);
+        pictureContainer.innerHTML = "";
+    }
+    
+    // Observer for changes in style attribute of the modal
+    var observer = new MutationObserver(function(mutationsList) {
+        mutationsList.forEach(function(mutation) {
+            if (mutation.type === "attributes" && mutation.attributeName === "style" && mutation.target.style.display === "none") {
+                onModalClose(mutation.target.id);
+            }
+        });
+    });
+
+    // Observe changes in all elements with IDs containing "modal"
+    var modalElements = document.querySelectorAll('[id*="modal"]');
+    modalElements.forEach(function(modal) {
+        observer.observe(modal, { attributes: true });
+    });
 }

@@ -32,7 +32,7 @@ public class SearchServiceTest
         
         ISearchDomainService searchDomainService = new SearchDomainService(_unitOfWorkMock.Object, loggerFactoryMock.Object);
         
-        _searchService = new SearchService(_unitOfWorkMock.Object, loggerFactoryMock.Object, searchDomainService);
+        _searchService = new SearchService(_unitOfWorkMock.Object, loggerFactoryMock.Object, searchDomainService, null);
     }
 
     /// <summary>
@@ -555,11 +555,6 @@ public class SearchServiceTest
         
         // Act
         var results = await _searchService.GetSearchResults(searchCriteria);
-
-        foreach (var item in results)
-        {
-            Console.WriteLine(item.Name + " : " + item.Brand);
-        }
 
         // Assert
         Assert.That(results, Is.Not.Null);

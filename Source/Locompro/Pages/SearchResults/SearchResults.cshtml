@@ -1,11 +1,11 @@
 ﻿@page
 @using Locompro.Models
-@using Locompro.Services
 @using Locompro.Common
 @model Locompro.Pages.SearchResults.SearchResultsModel
 
 <link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
 <link rel="stylesheet" href="~/css/ImageDisplay.css" asp-append-version="true"/>
+
 
 <div class="container  pt-5 search-results-page-container">
 <div class="container">
@@ -14,7 +14,7 @@
         <div class=" search-box form-control pe-4 rounded-pill input-group">
             <div class="search-bar-encapsulate">
                 <input type="text"
-                       value="@Model.ProductName"
+                       value="@Model.SearchViewModel.ProductName"
                        class="form-control rounded-pill search-bar"
                        name="query"
                        placeholder="Ingresar nombre de producto"
@@ -59,14 +59,14 @@
                    asp-route-sortOrder="@Model.NameSort"
                    asp-route-sorting=true
                    asp-route-currentFilter="@Model.CurrentFilter"
-                   asp-route-query=@Model.ProductName
-                   asp-route-province=@Model.ProvinceSelected
-                   asp-route-canton=@Model.CantonSelected
-                   asp-route-minValue=@Model.MinPrice
-                   asp-route-maxValue=@Model.MaxPrice
-                   asp-route-category=@Model.CategorySelected
-                   asp-route-model=@Model.ModelSelected
-                   asp-route-brand="@Model.BrandSelected"
+                   asp-route-query=@Model.SearchViewModel.ProductName
+                   asp-route-province=@Model.SearchViewModel.ProvinceSelected
+                   asp-route-canton=@Model.SearchViewModel.CantonSelected
+                   asp-route-minValue=@Model.SearchViewModel.MinPrice
+                   asp-route-maxValue=@Model.SearchViewModel.MaxPrice
+                   asp-route-category=@Model.SearchViewModel.CategorySelected
+                   asp-route-model=@Model.SearchViewModel.ModelSelected
+                   asp-route-brand="@Model.SearchViewModel.BrandSelected"
                    class="no-underline-link @(Model.CurrentSort == "name_desc" ? "sort-desc" : (Model.CurrentSort == "name_asc" ? "sort-asc" : "sort-none"))">
                     Producto
                 </a>
@@ -79,14 +79,14 @@
                    asp-route-sortOrder="@Model.ProvinceSort"
                    asp-route-sorting=true
                    asp-route-currentFilter="@Model.CurrentFilter"
-                   asp-route-query=@Model.ProductName
-                   asp-route-province=@Model.ProvinceSelected
-                   asp-route-canton=@Model.CantonSelected
-                   asp-route-minValue=@Model.MinPrice
-                   asp-route-maxValue=@Model.MaxPrice
-                   asp-route-category=@Model.CategorySelected
-                   asp-route-model=@Model.ModelSelected
-                   asp-route-brand="@Model.BrandSelected"
+                   asp-route-query=@Model.SearchViewModel.ProductName
+                   asp-route-province=@Model.SearchViewModel.ProvinceSelected
+                   asp-route-canton=@Model.SearchViewModel.CantonSelected
+                   asp-route-minValue=@Model.SearchViewModel.MinPrice
+                   asp-route-maxValue=@Model.SearchViewModel.MaxPrice
+                   asp-route-category=@Model.SearchViewModel.CategorySelected
+                   asp-route-model=@Model.SearchViewModel.ModelSelected
+                   asp-route-brand="@Model.SearchViewModel.BrandSelected"
                    class="no-underline-link @(Model.CurrentSort == "province_desc" ? "sort-desc" : (Model.CurrentSort == "province_asc" ? "sort-asc" : "sort-none"))">
                     Provincia
                 </a>
@@ -96,14 +96,14 @@
                    asp-route-sortOrder="@Model.CantonSort"
                    asp-route-sorting=true
                    asp-route-currentFilter="@Model.CurrentFilter"
-                   asp-route-query=@Model.ProductName
-                   asp-route-province=@Model.ProvinceSelected
-                   asp-route-canton=@Model.CantonSelected
-                   asp-route-minValue=@Model.MinPrice
-                   asp-route-maxValue=@Model.MaxPrice
-                   asp-route-category=@Model.CategorySelected
-                   asp-route-model=@Model.ModelSelected
-                   asp-route-brand="@Model.BrandSelected"
+                   asp-route-query=@Model.SearchViewModel.ProductName
+                   asp-route-province=@Model.SearchViewModel.ProvinceSelected
+                   asp-route-canton=@Model.SearchViewModel.CantonSelected
+                   asp-route-minValue=@Model.SearchViewModel.MinPrice
+                   asp-route-maxValue=@Model.SearchViewModel.MaxPrice
+                   asp-route-category=@Model.SearchViewModel.CategorySelected
+                   asp-route-model=@Model.SearchViewModel.ModelSelected
+                   asp-route-brand="@Model.SearchViewModel.BrandSelected"
                    class="no-underline-link @(Model.CurrentSort == "canton_desc" ? "sort-desc" : (Model.CurrentSort == "canton_asc" ? "sort-asc" : "sort-none"))">
                     Cantón
                 </a>
@@ -154,12 +154,12 @@
         foreach (Item item in Model.DisplayItems)
         {
             string modalName = "modal" + @index;
-            <div class="modal fade" id="@modalName" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+            <div class="modal " id="@modalName" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
                         <div class="modal-body">
                             <div class="row">
-                                <div class = "col-4">
+                                <div class="col-4">
                                     <h4 class="d-xxl-flex align-items-xxl-center card-title">
                                         <i class="fa fa-envelope" style="margin-right: 12px"></i>
                                         @item.Name
@@ -170,23 +170,17 @@
                                     </h4>
                                     <h6> Modelo: @item.Model </h6>
                                     <h6> Marca: @item.Brand </h6>
-                                </div>    
+                                </div>
                                 <div class="slideshow-container col-6" style="width: 416px; height: 300px; text-align: center;">
                                     <a class="prev col"
                                        style=""
                                        onclick="plusSlides(-1)">
                                         &#10094;
                                     </a>
-                                    @foreach (Picture image in Model.DisplayItems[index].Pictures)
-                                    {
-                                        <div class="col" style="width: 100%; ">
-                                            <div class="mySlides"
-                                                 style="background-color: darkgray; border: 151px solid lightgray">
-                                                <img src="@PicturesService.GetImageUrl(image)"
-                                                     style="max-height:300px; max-width:95%; width:auto; height:auto; transform: translate(-50%, -50%); position: absolute; top: 50%; left: 50%;"
-                                                     alt="image">
-                                            </div>
-                                        </div>
+                                    @{
+                                        string pictureContainerName = @item.Name + "-" + @item.Store;
+                                        string pictureContainerId = "pictureContainer" + index;
+                                        <div id="@pictureContainerId" name = "@pictureContainerName" ></div>
                                     }
                                     <a class="next col" onclick="plusSlides(1)">&#10095;</a>
                                 </div>
@@ -236,14 +230,14 @@
 
 <div class="previous-next-button-area">
     <a asp-page=""
-       asp-route-query=@Model.ProductName
-       asp-route-province=@Model.ProvinceSelected
-       asp-route-canton=@Model.CantonSelected
-       asp-route-minValue=@Model.MinPrice
-       asp-route-maxValue=@Model.MaxPrice
-       asp-route-category=@Model.CategorySelected
-       asp-route-model=@Model.ModelSelected
-       asp-route-brand="@Model.BrandSelected"
+       asp-route-query=@Model.SearchViewModel.ProductName
+       asp-route-province=@Model.SearchViewModel.ProvinceSelected
+       asp-route-canton=@Model.SearchViewModel.CantonSelected
+       asp-route-minValue=@Model.SearchViewModel.MinPrice
+       asp-route-maxValue=@Model.SearchViewModel.MaxPrice
+       asp-route-category=@Model.SearchViewModel.CategorySelected
+       asp-route-model=@Model.SearchViewModel.ModelSelected
+       asp-route-brand="@Model.SearchViewModel.BrandSelected"
        asp-route-pageIndex="@(Model.DisplayItems.PageIndex - 1)"
        asp-route-sortOrder="@Model.CurrentSort"
        asp-route-currentFilter="@Model.CurrentFilter"
@@ -259,14 +253,14 @@
            onchange="changeIndexPage(this)">
 
     <a asp-page=""
-       asp-route-query=@Model.ProductName
-       asp-route-province=@Model.ProvinceSelected
-       asp-route-canton=@Model.CantonSelected
-       asp-route-minValue=@Model.MinPrice
-       asp-route-maxValue=@Model.MaxPrice
-       asp-route-category=@Model.CategorySelected
-       asp-route-model=@Model.ModelSelected
-       asp-route-brand="@Model.BrandSelected"
+       asp-route-query=@Model.SearchViewModel.ProductName
+       asp-route-province=@Model.SearchViewModel.ProvinceSelected
+       asp-route-canton=@Model.SearchViewModel.CantonSelected
+       asp-route-minValue=@Model.SearchViewModel.MinPrice
+       asp-route-maxValue=@Model.SearchViewModel.MaxPrice
+       asp-route-category=@Model.SearchViewModel.CategorySelected
+       asp-route-model=@Model.SearchViewModel.ModelSelected
+       asp-route-brand="@Model.SearchViewModel.BrandSelected"
        asp-route-pageIndex="@(Model.DisplayItems.PageIndex + 1)"
        asp-route-sortOrder="@Model.CurrentSort"
        asp-route-currentFilter="@Model.CurrentFilter"
@@ -297,25 +291,25 @@
         }
         
         // if no province is selected, then it is a simple search
-        const provinceForEmptyCheck = "@Model.ProvinceSelected";
+        const provinceForEmptyCheck = "@Model.SearchViewModel.ProvinceSelected";
 
         if (provinceForEmptyCheck.length === 0) {
             // redirect to search results page
-            window.location.href = "/SearchResults/SearchResults?query=" + "@Model.ProductName" +
+            window.location.href = "/SearchResults/SearchResults?query=" + "@Model.SearchViewModel.ProductName" +
                 "&pageIndex=" + field.value +
                 "&sortOrder=" + "@Model.CurrentSort" +
                 "&currentFilter=" + "@Model.CurrentFilter";
         } else {
             // redirect to search results page
             window.location.href =
-                "/SearchResults/SearchResults?query=" + "@Model.ProductName" +
-                "&province=" + "@Model.ProvinceSelected" +
-                "&canton=" + "@Model.CantonSelected" +
-                "&minValue=" + @Model.MinPrice +
-                "&maxValue=" + @Model.MaxPrice +
-                "&category=" + "@Model.CategorySelected" +
-                "&model=" + "@Model.ModelSelected" +
-                "&brand=" + "@Model.BrandSelected" +
+                "/SearchResults/SearchResults?query=" + "@Model.SearchViewModel.ProductName" +
+                "&province=" + "@Model.SearchViewModel.ProvinceSelected" +
+                "&canton=" + "@Model.SearchViewModel.CantonSelected" +
+                "&minValue=" + @Model.SearchViewModel.MinPrice +
+                "&maxValue=" + @Model.SearchViewModel.MaxPrice +
+                "&category=" + "@Model.SearchViewModel.CategorySelected" +
+                "&model=" + "@Model.SearchViewModel.ModelSelected" +
+                "&brand=" + "@Model.SearchViewModel.BrandSelected" +
                 "&sortOrder=" + "@Model.CurrentSort" +
                 "&currentFilter=" + "@Model.CurrentFilter" +
                 "&pageIndex=" + field.value;                      
@@ -324,7 +318,6 @@
     </script>
     <script>
         function showPicture() {
-            console.log("showPicture");
             var modalId = "#imageModel";
             $(modalId).modal('show');
         }
