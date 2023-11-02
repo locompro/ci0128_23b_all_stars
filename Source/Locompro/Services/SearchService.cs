@@ -14,8 +14,6 @@ public class SearchService : Service, ISearchService
 {
     private readonly ISearchDomainService _searchDomainService;
 
-    private readonly IPicturesService _picturesService;
-    
     private readonly IQueryBuilder _queryBuilder;
 
     public const int ImageAmountPerItem = 5;
@@ -30,7 +28,6 @@ public class SearchService : Service, ISearchService
         base(unitOfWork, loggerFactory)
     {
         _searchDomainService = searchDomainService;
-        _picturesService = picturesService;
         _queryBuilder = new QueryBuilder();
     }
 
@@ -47,7 +44,8 @@ public class SearchService : Service, ISearchService
             try
             {
                 this._queryBuilder.AddSearchCriterion(searchCriterion);
-            } catch (ArgumentException exception)
+            }
+            catch (ArgumentException exception)
             {
                 // if the search criterion is invalid, report on it but continue execution
                 this.Logger.LogWarning(exception.ToString());
@@ -56,18 +54,20 @@ public class SearchService : Service, ISearchService
 
         // compose the list of search functions
         SearchQueries searchQueries = this._queryBuilder.GetSearchFunction();
-        
+
+        if (searchQueries.IsEmpty)
+        {
+            return new List<Item>();
+        }
+
         // get the submissions that match the search functions
-        IEnumerable<Submission> submissions = 
-            searchQueries.IsEmpty?
-                Enumerable.Empty<Submission>() :
-                await this._searchDomainService.GetSearchResults(searchQueries);
-        
+        IEnumerable<Submission> submissions = await this._searchDomainService.GetSearchResults(searchQueries);
+
         this._queryBuilder.Reset();
-        
+
         return GetItems(submissions).Result.ToList();
     }
-    
+
     /// <summary>
     /// Gets all the items to be displayed in the search results
     /// from a list of submissions
@@ -105,13 +105,6 @@ public class SearchService : Service, ISearchService
         // Get best submission for its information
         var bestSubmission = GetBestSubmission(itemGrouping);
 
-        List<Picture> picturesToBeDisplayed = bestSubmission.Pictures.ToList();
-            /*
-            _picturesService.GetItemPictures(
-                SearchService.ImageAmountPerItem,
-                bestSubmission.UserId,
-                bestSubmission.EntryTime); */
-
         var item = new Item(
             GetFormattedDate(bestSubmission),
             bestSubmission.Product.Name,
@@ -126,7 +119,6 @@ public class SearchService : Service, ISearchService
             Submissions = itemGrouping.ToList(),
             Model = bestSubmission.Product.Model,
             Brand = bestSubmission.Product.Brand,
-            Pictures = picturesToBeDisplayed
         };
 
         return await Task.FromResult(item);

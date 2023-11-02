@@ -1,7 +1,10 @@
+using System.Linq.Expressions;
+using Locompro.Common.Search;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models;
 using Locompro.Services.Domain;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -39,8 +42,18 @@ public class SubmissionServiceTest
         string canton = "Canton1";
         string province = "Province1";
         MockDataSetup();
+
+        SearchQueries searchQueries = new SearchQueries()
+        {
+            SearchQueryFunctions = new List<Expression<Func<Submission, bool>>>()
+            {
+                submission => submission.Store.Canton.Name == canton,
+                submission => submission.Store.Canton.ProvinceName == province
+            }
+        };
+        
         // Act
-        var results = await _submissionService.GetByCantonAndProvince(canton, province);
+        var results = await _submissionService.GetSearchResults(searchQueries);
 
         // Assert
         var submissions = results as Submission[] ?? results.ToArray();
@@ -70,8 +83,18 @@ public class SubmissionServiceTest
         string canton = "InvalidCanton";
         string province = "InvalidProvince";
         MockDataSetup();
+        
         // Act
-        var results = await _submissionService.GetByCantonAndProvince(canton, province);
+        SearchQueries searchQueries = new SearchQueries()
+        {
+            SearchQueryFunctions = new List<Expression<Func<Submission, bool>>>()
+            {
+                submission => submission.Store.Canton.Name == canton,
+                submission => submission.Store.Canton.ProvinceName == province
+            }
+        };
+
+        var results = await _submissionService.GetSearchResults(searchQueries);
 
         // Assert
         var submissions = results as Submission[] ?? results.ToArray();
@@ -461,23 +484,21 @@ public class SubmissionServiceTest
             }
         };
         
-        _submissionCrudRepositoryMock
-            .Setup(repo => repo.GetByCantonAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync((string canton, string province) =>
+       _submissionCrudRepositoryMock
+            .Setup(repository => repository.GetSearchResults(It.IsAny<SearchQueries>()))
+            .ReturnsAsync((SearchQueries searchQueries) =>
             {
-                return submissions
-                    .Where(s => s.Store.Canton.Name == canton && s.Store.Canton.ProvinceName == province).ToList();
-            });
 
-        _submissionCrudRepositoryMock.Setup(repo => repo.GetByProductModelAsync(It.IsAny<string>()))
-            .ReturnsAsync((string model) => { return submissions.Where(s => s.Product.Model == model).ToList(); });
+                // initiate the query
+                IQueryable<Submission> submissionsResults = submissions.AsQueryable()
+                    .Include(submission => submission.Product);
 
-        _submissionCrudRepositoryMock.Setup(repo => repo.GetByProductNameAsync(It.IsAny<string>()))
-            .ReturnsAsync((string productName) =>
-            {
-                return submissions.Where(s => s.Product.Name == productName).ToList();
+                // append the search queries to the query
+                submissionsResults =
+                    searchQueries.SearchQueryFunctions.Aggregate(submissionsResults, (current, query) => current.Where(query));
+
+                // get and return the results
+                return submissionsResults;
             });
-        _submissionCrudRepositoryMock.Setup(repo => repo.GetByBrandAsync(It.IsAny<string>()))
-            .ReturnsAsync((string brand) => { return submissions.Where(s => s.Product.Brand == brand).ToList(); });
     }
 }

@@ -3,8 +3,16 @@ using Locompro.Models.ViewModels;
 
 namespace Locompro.Pages.Util;
 
+/// <summary>
+/// Handles the parsing and serialization of pictures
+/// </summary>
 public static class PictureParser
 {
+    /// <summary>
+    /// Parses a list of files in form format to a list of pictures
+    /// </summary>
+    /// <param name="uploadedFiles"></param>
+    /// <returns></returns>
     public static List<PictureViewModel> Parse(IFormFileCollection uploadedFiles)
     {
         List<PictureViewModel> pictures = new List<PictureViewModel>();
@@ -13,7 +21,7 @@ public static class PictureParser
         {
             if (IsValidImage(file))
             {
-                PictureViewModel picture = GetPictureFromFile(file);
+                PictureViewModel picture = ParseSinglePicture(file);
             
                 pictures.Add(picture);
             }
@@ -22,6 +30,11 @@ public static class PictureParser
         return pictures;
     }
     
+    /// <summary>
+    /// Checks if the file has a valid extension
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
     private static bool IsValidImage(IFormFile file)
     {
         string fileName = file.FileName;
@@ -30,8 +43,13 @@ public static class PictureParser
         
         return extension is ".jpg" or ".jpeg" or ".png";
     }
-
-    private static PictureViewModel GetPictureFromFile(IFormFile file)
+    
+    /// <summary>
+    /// Parses a single file in form format to a picture
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    public static PictureViewModel ParseSinglePicture(IFormFile file)
     {
         MemoryStream ms = new MemoryStream();
             
@@ -47,4 +65,37 @@ public static class PictureParser
 
         return picture;
     }
+
+    /// <summary>
+    /// Serializes a list of pictures to a list of strings
+    /// </summary>
+    /// <param name="pictures"></param>
+    /// <returns></returns>
+    public static List<string> Serialize(List<Picture> pictures)
+    {
+        return pictures.Select(SerializeSinglePicture).ToList();
+    }
+    
+    /// <summary>
+    /// Serializes a single picture to a string
+    /// </summary>
+    /// <param name="picture"></param>
+    /// <returns></returns>
+    private static string SerializeSinglePicture(Picture picture)
+    {
+        byte[] unserializedData = picture.PictureData;
+
+        return SerializeData(unserializedData);
+    }
+    
+    /// <summary>
+    /// Converts a byte array to a string that can be displayed by browsers
+    /// </summary>
+    /// <param name="unserializedData"></param>
+    /// <returns></returns>
+    public static string SerializeData(byte[] unserializedData)
+    {
+        return $"data:image/png;base64,{Convert.ToBase64String(unserializedData)}";
+    } 
+    
 }

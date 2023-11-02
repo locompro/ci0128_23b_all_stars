@@ -51,6 +51,4 @@ public class Item
 
     public string Brand { get; set; }
     public List<Submission> Submissions { get; set; }
-    
-    public List<Picture> Pictures { get; set; }
 };
