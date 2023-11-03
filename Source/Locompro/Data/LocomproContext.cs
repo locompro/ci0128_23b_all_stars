@@ -89,19 +89,19 @@ public class LocomproContext : IdentityDbContext<User>
     }
 
     [DbFunction("GetPictures", "dbo")]
-    public static List<GetPicturesResult> GetPictures(string storeName, string productName)
+    public static IEnumerable<GetPicturesResult> GetPictures(string storeName, int productId, int maxPictures)
     {
         throw new NotSupportedException();
     }
 
     [DbFunction("CountRatedSubmissions", "dbo")]
-    public static int CountRatedSubmissions(string storeName, string productName)
+    public static int CountRatedSubmissions(string userId)
     {
         throw new NotSupportedException();
     }
 
     [DbFunction("GetQualifiedUserIDs", "dbo")]
-    public static List<GetQualifiedUserIDsResult> GetQualifiedUserIDs(string storeName, string productName)
+    public static IEnumerable<GetQualifiedUserIDsResult> GetQualifiedUserIDs(string targetUsername)
     {
         throw new NotSupportedException();
     }
@@ -110,15 +110,15 @@ public class LocomproContext : IdentityDbContext<User>
     /// Assigns each parent category of a product to the product.
     /// </summary>
     /// <param name="categoryName"></param>
-    /// <param name="productID"></param>
+    /// <param name="productId"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public virtual async Task AddParents(string categoryName, int productID)
+    public virtual async Task AddParents(string categoryName, int productId)
     {
         if (categoryName.IsNullOrEmpty())
             throw new ArgumentNullException(nameof(categoryName));
 
         var categoryNameParameter = new SqlParameter("@category", categoryName);
-        var productIdParameter = new SqlParameter("@productId", productID);
+        var productIdParameter = new SqlParameter("@productId", productId);
 
         await Database.ExecuteSqlRawAsync("EXECUTE dbo.AddParents @category, @productId", categoryNameParameter,
             productIdParameter);
