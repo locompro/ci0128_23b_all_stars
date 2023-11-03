@@ -30,4 +30,7 @@ public class ProfileViewModel
         Contributions = user.Submissions.Count;
         Email = user.Email;
     }
+    public ProfileViewModel()
+    {
+    }
 }

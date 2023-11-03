@@ -1,5 +1,4 @@
-﻿using Castle.Core.Internal;
-using Locompro.Common;
+﻿using Locompro.Common;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
 using Locompro.Services;
@@ -41,16 +40,15 @@ public class ProfileModel : PageModel
     /// <param name="userService">Service for user related operations.</param>
     /// <param name="authService">Service for authentication related operations.</param>
     /// <param name="cantonService">To get canton related information </param>
-    /// <param name="passwordModalStore"></param>
-    /// <param name="userDataModalStore"></param>
+    /// <param name="errorStoreFactory"></param>
     public ProfileModel(IDomainService<User, string> userService, IAuthService authService,
-        IDomainService<Canton, string> cantonService, IErrorStore passwordModalStore, IErrorStore userDataModalStore)
+        IDomainService<Canton, string> cantonService, IErrorStoreFactory errorStoreFactory)
     {
         _userService = userService;
         _authService = authService;
         _cantonService = cantonService;
-        ChangePasswordModalErrors = passwordModalStore;
-        UpdateUserDataModalErrors = userDataModalStore;
+        ChangePasswordModalErrors = errorStoreFactory.Create();
+        UpdateUserDataModalErrors = errorStoreFactory.Create();
     }
 
 
@@ -135,7 +133,7 @@ public class ProfileModel : PageModel
     /// </returns>
     public async Task<JsonResult> OnGetCantonsAsync(string province)
     {
-        if (province.IsNullOrEmpty()) return new JsonResult(new List<CantonDto>());
+        if (string.IsNullOrEmpty(province)) return new JsonResult(new List<CantonDto>());
 
         var cantonNames = await GetCantonsOnProvince(province);
         return new JsonResult(cantonNames);

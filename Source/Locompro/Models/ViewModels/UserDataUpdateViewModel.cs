@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Castle.Core.Internal;
 
 namespace Locompro.Models.ViewModels;
 
@@ -62,7 +61,7 @@ public class UserDataUpdateViewModel
     /// <returns>True if at least one of the address-related properties are empty, false otherwise.</returns>
     public bool IsAddressEmpty()
     {
-        return Province.IsNullOrEmpty() || Canton.IsNullOrEmpty() || ExactAddress.IsNullOrEmpty();
+        return string.IsNullOrEmpty(Province) || string.IsNullOrEmpty(Canton) || string.IsNullOrEmpty(ExactAddress);
     }
 
     /// <summary>
@@ -71,6 +70,6 @@ public class UserDataUpdateViewModel
     /// <returns>True if the Email property is empty, false otherwise.</returns>
     public bool IsEmailEmpty()
     {
-        return Email.IsNullOrEmpty();
+        return string.IsNullOrEmpty(Email);
     }
 }

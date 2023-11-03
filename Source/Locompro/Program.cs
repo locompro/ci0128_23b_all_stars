@@ -4,6 +4,7 @@ using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Services;
 using Locompro.Models;
+using Locompro.Services.AuthInterfaces;
 using Locompro.Services.Domain;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
@@ -93,6 +94,8 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ISubmissionService, SubmissionService>();
     builder.Services.AddScoped<ICantonService, CantonService>();
     builder.Services.AddScoped<ProductService>();
+    builder.Services.AddScoped<ISignInManagerService, SignInManagerService>();
+    builder.Services.AddScoped<IUserManagerService, UserManagerService>();
 
     // Register application services
     builder.Services.AddScoped<IContributionService, ContributionService>();
@@ -100,4 +103,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<IErrorStore, ErrorStore>();
     builder.Services.AddScoped<AdvancedSearchInputService>();
     builder.Services.AddScoped<SearchService>();
+    
+    builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
+
 }

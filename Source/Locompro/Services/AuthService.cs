@@ -3,22 +3,23 @@ using Locompro.Areas.Identity.ViewModels;
 using Locompro.Data;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
+using Locompro.Services.AuthInterfaces;
 using Microsoft.AspNetCore.Identity;
 
 namespace Locompro.Services;
 
 public class AuthService : Service, IAuthService
 {
-    private readonly SignInManager<User> _signInManager;
-    private readonly UserManager<User> _userManager;
+    private readonly ISignInManagerService _signInManager;
+    private readonly IUserManagerService _userManager;
     private readonly IUserStore<User> _userStore;
     private readonly IUserEmailStore<User> _emailStore;
 
     public AuthService(
         IUnitOfWork unitOfWork,
         ILoggerFactory loggerFactory,
-        SignInManager<User> signInManager,
-        UserManager<User> userManager,
+        ISignInManagerService signInManager,
+        IUserManagerService userManager,
         IUserStore<User> userStore,
         IUserEmailStore<User> emailStore = null) : base(unitOfWork, loggerFactory)
     {
