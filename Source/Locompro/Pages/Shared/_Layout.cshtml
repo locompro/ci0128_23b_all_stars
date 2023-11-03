@@ -1,7 +1,4 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using Locompro.Data
-@using Locompro.Models
-@using Locompro.Services
+﻿@using Locompro.Services
 
 @inject IAuthService AuthService
 @{
@@ -19,7 +16,6 @@
     <title>LoCoMPro</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/Locompro.styles.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <link rel="stylesheet" href="~/assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="~/assets/fonts/material-icons.min.css">
@@ -54,7 +50,10 @@
             @if (!currentPage!.EndsWith("/"))
             {
                 // show the title
-                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-page="/Index">LoCoMPro</a>
+                <div class="flex-grow-1 text-center">
+                    <a class="navbar-brand" asp-area="" asp-page="/Index">LoCoMPro</a>
+                </div>
+
             }
 
             <!-- if logged in  -->
@@ -80,7 +79,7 @@
                 </div>
                 <div class="d-none d-md-block">
                     <form asp-page="/Account/Logout" method="post" class="d-inline-block">
-                        <button type="submit" class="btn btn-primary">Cerrar sesión</button>
+                        <button type="submit" class="btn btn-primary ps-4 pe-4 rounded-pill">Cerrar sesión</button>
                     </form>
                 </div>
             }
@@ -106,8 +105,8 @@
         </div>
     </nav>
 </header>
-<div class="container" style="margin-bottom: 200px;padding-right:0px; padding-left:0px">
-    <main role="main" class="pb-3" style="min-height: calc(100vh-100px)">
+<div class="container" style="margin-bottom: 200px;padding-right:0; padding-left:0">
+    <main>
         @RenderBody()
     </main>
 </div>
@@ -120,7 +119,7 @@
     <div class="container">
         <ul class="list-inline my-2">
             <li class="list-inline-item">
-                <a class="link-secondary" href="/Privacy">Política de privacidad</a>
+                <a class="link-secondary" asp-page="Privacy" >Política de privacidad</a>
             </li>
             <li class="list-inline-item">
                 <a class="link-secondary" href="#">Terminos y condiciones</a>
