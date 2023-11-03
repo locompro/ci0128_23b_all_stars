@@ -31,6 +31,7 @@ public class UserDataUpdateViewModel
     ///     The description of the new address.
     /// </summary>
     [DisplayName("Dirección Exacta")]
+    [StringLength(60, ErrorMessage = "La {0} debe poseer entre {2} y {1} caracteres.", MinimumLength = 1)]
     public string ExactAddress { get; set; } = "";
 
     /// <summary>

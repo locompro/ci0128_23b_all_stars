@@ -1,4 +1,3 @@
-using Locompro.Areas.Identity.ViewModels;
 using Locompro.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 

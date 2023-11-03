@@ -1,5 +1,6 @@
 using System;
 using System.Text.Json.Serialization;
+using Locompro.Common;
 using Microsoft.EntityFrameworkCore;
 using Locompro.Data;
 using Locompro.Data.Repositories;
