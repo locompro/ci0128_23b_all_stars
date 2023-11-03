@@ -111,8 +111,7 @@ public class SearchService : Service, ISearchService
         )
         {
             Submissions = GetDisplaySubmissions(itemGrouping.ToList()),
-            Model = bestSubmission.Product.Model,
-            Brand = bestSubmission.Product.Brand,
+            Categories = itemGrouping.Key.Categories.Select(c => c.Name).ToList()
         };
 
         return await Task.FromResult(item);

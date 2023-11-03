@@ -14,6 +14,7 @@ public class Item
     public string Store { get; init; }
     public string Canton { get; init; }
     public string Province { get; init; }
+    public List<string> Categories { get; init; }
     public string Description { get; init; }
 
     [DisplayFormat(NullDisplayText = "N/A")]
@@ -39,5 +40,6 @@ public class Item
         this.Province = bestSubmission.Store.Canton.Province.Name;
         this.Description = bestSubmission.Description;
         this.Model = bestSubmission.Product.Model;
+        this.Brand = bestSubmission.Product.Brand;
     }
 };

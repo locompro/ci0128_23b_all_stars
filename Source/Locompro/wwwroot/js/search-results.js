@@ -3,143 +3,51 @@ var searchResultsPage;
 document.addEventListener("DOMContentLoaded", function() {
     let url = `SearchResults?handler=GetSearchResults`;
 
-    $.ajax({
-        url: url,
-        type: 'GET',
-        dataType: 'json',
-        success: function (searchResultsData) {
-            searchResultsPage =
-                new SearchResultsPage(searchResultsData.searchResults, searchResultsData.data);
-            searchResultsPage.populateTableWithResults()
-        },
-        error: function () {
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(searchResultsData => {
+            searchResultsPage = new SearchResultsPage(searchResultsData.SearchResults, searchResultsData.Data);
+            searchResultsPage.populateTableWithResults();
+        })
+        .catch(() => {
             console.error('Error loading pictures');
-        }
-    });
+        });
 });
-
 
 class SearchResultsPage {
     constructor(searchResults, pageData) {
         this.resultsPerPage = pageData.ResultsPerPage;
-        this.currentPage = 0;
-        this.totalResults = searchResults.length;
-        this.totalPages = Math.floor(this.totalResults / this.resultsPerPage);
+        this.pageNumberComplex = new SearchResultsPageIndexComplex();
         this.searchResults = searchResults;
+        this.rawSearchResults = searchResults;
         this.itemSelected = 0;
+        this.filters = new SearchResultsFilterMenu();
         this.currentOrder = {
             attribute: '',
             isDescending: false
         };
-        
-        let pageAmountDisplay = document.getElementById("pageAmountDisplay");
-        pageAmountDisplay.innerHTML = this.totalPages + " paginas de resultados";
-        
-        let resultsAmountDisplay = document.getElementById("resultsAmountDisplay");
-        resultsAmountDisplay.innerHTML = this.totalResults + " resultados encontrados";
     }
 
     populateTableWithResults() {
-        this.updatePageIndexComplex();
+        this.pageNumberComplex.updatePageIndexComplex();
         
-        var tableBody = document.getElementById("resultsTableBody");
+        this.searchResults = this.filters.applyFilters(this.rawSearchResults);
         
-        tableBody.innerHTML = "";
+        this.totalResults = this.searchResults.length;
+        this.pageNumberComplex.totalPages = Math.floor(this.totalResults / this.resultsPerPage);
 
-        for (let resultIndex = this.currentPage * this.resultsPerPage;
-             resultIndex < this.searchResults.length && resultIndex < (this.currentPage + 1) * this.resultsPerPage;
-             resultIndex++) {
-            var item = this.searchResults[resultIndex];
-            var row = tableBody.insertRow();
-            row.setAttribute("data-bs-toggle", "modal");
-            row.setAttribute("data-bs-target", "#ItemModal");
-            
-            row.addEventListener("click", function() {
-                selectItem(resultIndex);
-            });
-            
-            this.populateRow(item, row);
-        }
-    }
-    
-    populateRow(item, row) {
-        var productNameCell = row.insertCell(0);
-        productNameCell.innerHTML = item.Name;
+        let pageAmountDisplay = document.getElementById("pageAmountDisplay");
+        pageAmountDisplay.innerHTML = this.pageNumberComplex.totalPages + " paginas de resultados";
 
-        var priceCell = row.insertCell(1);
-        priceCell.innerHTML = item.Price;
-        priceCell.classList.add("prices-cell");
-
-        var storeNameCell = row.insertCell(2);
-        storeNameCell.innerHTML = item.Store;
-        storeNameCell.classList.add("store-cell");
-
-        var modelCell = row.insertCell(3);
-        modelCell.innerHTML = item.Model;
-
-        var provinceCell = row.insertCell(4);
-        provinceCell.innerHTML = item.Province;
-
-        var cantonCell = row.insertCell(5);
-        cantonCell.innerHTML = item.Canton;
-
-        var descriptionCell = row.insertCell(6);
-        descriptionCell.innerHTML = item.Description;
-
-        var submissionTimeCell = row.insertCell(7);
-        submissionTimeCell.innerHTML = item.LastSubmissionDate;
-    }
-
-    changeIndexPage(field) {
-        let value = field.value;
+        let resultsAmountDisplay = document.getElementById("resultsAmountDisplay");
+        resultsAmountDisplay.innerHTML = this.totalResults + " resultados encontrados";
         
-        value = value - 1;
-        
-        this.currentPage = this.validateIndexValue(value);
-
-        this.populateTableWithResults();
-    }
-    
-    changeIndexButtonPressed(change) {
-        let value = this.currentPage + change;
-        
-        value = this.validateIndexValue(value);
-        
-        this.currentPage = value;
-        
-        this.populateTableWithResults();
-    }
-    
-    updatePageIndexComplex() {
-        let indexField = document.getElementById("indexPageInput");
-        indexField.value = this.currentPage + 1;
-        
-        let previousButton = document.getElementById("previousIndexButton");
-        let nextButton = document.getElementById("nextIndexButton");
-        
-        if (this.currentPage === 0) {
-            previousButton.classList.add("disabled");
-        } else {
-            previousButton.classList.remove("disabled");
-        }
-        
-        if (this.currentPage === this.totalPages - 1) {
-            nextButton.classList.add("disabled");
-        } else {
-            nextButton.classList.remove("disabled");
-        }
-    }
-    
-    validateIndexValue(value) {
-        if (value > this.totalPages) {
-            return this.totalPages;
-        }
-
-        if (value < 0) {
-            return 0;
-        }
-
-        return value;
+        new SearchResultsTableBody(this.searchResults, this.resultsPerPage, this.pageNumberComplex.currentPage);
     }
     
     setOrder(order) {
@@ -151,13 +59,13 @@ class SearchResultsPage {
         
         this.orderList();
         
-        this.currentPage = 0;
+        this.pageNumberComplex.currentPage = 0;
         
-        this.updatePageIndexComplex();
+        this.pageNumberComplex.updatePageIndexComplex();
         
         this.updateTableHeaders();
-        
-        this.populateTableWithResults();
+
+        new SearchResultsTableBody(this.searchResults, this.resultsPerPage, this.pageNumberComplex.currentPage);
     }
     
     orderList() {
@@ -201,38 +109,23 @@ class SearchResultsPage {
         this.itemSelected = index;
     }
     
-    populateModal() {
-        const modalProductName = document.getElementById("modalProductName");
-        const modalStoreName = document.getElementById("modalStoreName");
-        
-        modalProductName.innerHTML = this.searchResults[this.itemSelected].Name;
-        modalStoreName.innerHTML = this.searchResults[this.itemSelected].Store;
-        
-        const modalModel = document.getElementById("modalModel");
-        const modalBrand = document.getElementById("modalBrand");
-        
-        modalModel.innerHTML = "Modelo: " + this.searchResults[this.itemSelected].Model;
-        modalBrand.innerHTML = "Marca: " + this.searchResults[this.itemSelected].Brand;
-        
-        const pictureContainer = document.getElementById("picturesContainer");
+    setFilter(filterType, filterValue) {
+        this.filters.setFilter(filterType, filterValue);
+        this.populateTableWithResults();
+    }
 
-        loadPictures(pictureContainer, this.searchResults[this.itemSelected].Name, this.searchResults[this.itemSelected].Store);
-        
-        const submissionTable = document.getElementById("ItemModalSubmissionsTable");
-        
-        for(const submission of this.searchResults[this.itemSelected].Submissions) {
-            const row = submissionTable.insertRow();
-            
-            const dateCell = row.insertCell(0);
-            dateCell.innerHTML = submission.DateTime;
-            dateCell.classList.add("text-center");
-            
-            const priceCell = row.insertCell(1);
-            priceCell.innerHTML = submission.Price;
-            
-            const descriptionCell = row.insertCell(2);
-            descriptionCell.innerHTML = submission.Description;
-        }
+    changeIndexButtonPressed(change) {
+        this.pageNumberComplex.changeIndexButtonPressed(change);
+        new SearchResultsTableBody(this.searchResults, this.resultsPerPage, this.pageNumberComplex.currentPage);
+    }
+
+    changeIndexPage() {
+        this.pageNumberComplex.changeIndexPage();
+        new SearchResultsTableBody(this.searchResults, this.resultsPerPage, this.pageNumberComplex.currentPage);
+    }
+    
+    populateModal() {
+        new SearchResultsModal(this.searchResults, this.itemSelected);
     }
 }
 
@@ -251,7 +144,6 @@ function setOrder(order) {
 
 function selectItem(index) {
     searchResultsPage.selectItem(index);
-
 }
 
 function emptyClassList(element) {
@@ -267,3 +159,17 @@ modal.addEventListener('shown.bs.modal', function () {
     searchResultsPage.populateModal();
 });
 
+function applyFilter(filterField) {
+    const filterFieldId = filterField.id;
+    let filterType = filterFieldId.replace(/Filter$/, '');
+    const filterValue = filterField.value === "todos" ? null : filterField.value;
+    
+    if (filterType === "productName") {
+        filterType = "Name";
+    } else {
+        filterType = filterType.charAt(0).toUpperCase() + filterType.slice(1);
+    }
+    
+    searchResultsPage.setFilter(filterType, filterValue);
+    filterField.value = filterValue ? filterValue: "todos";
+}

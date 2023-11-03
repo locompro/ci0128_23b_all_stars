@@ -15,23 +15,13 @@ public class PicturesServiceTest
     
     // Mocks for your dependencies
     private Mock<IUnitOfWork> _unitOfWork;
-    private Mock<ICantonService> _cantonService;
-    private Mock<INamedEntityDomainService<Store, string>> _storeService;
-    private Mock<INamedEntityDomainService<Product, int>> _productService;
-    private Mock<INamedEntityDomainService<Category, string>> _categoryService;
     private Mock<IPicturesRepository> _picturesRepository;
-    private Mock<ISubmissionService> _submissionService;
     
     [SetUp]
     public void Setup()
     {
         // Initialize your mocks here
         _unitOfWork = new Mock<IUnitOfWork>();
-        _cantonService = new Mock<ICantonService>();
-        _storeService = new Mock<INamedEntityDomainService<Store, string>>();
-        _productService = new Mock<INamedEntityDomainService<Product, int>>();
-        _categoryService = new Mock<INamedEntityDomainService<Category, string>>();
-        _submissionService = new Mock<ISubmissionService>();
         _picturesRepository = new Mock<IPicturesRepository>();
         
         _unitOfWork.Setup(u => u.GetRepository<IPicturesRepository>()).Returns(_picturesRepository.Object);
@@ -93,9 +83,9 @@ public class PicturesServiceTest
             Submission = submission
         };
         
-        var pictureAmount = 1;
-        var productName = "Test Product";
-        var storeName = "Test Store";
+        var testPictureAmount = 1;
+        var testProductName = "Test Product";
+        var testStoreName = "Test Store";
         
         List<Submission> submissions = new List<Submission>()
         {
@@ -118,17 +108,17 @@ public class PicturesServiceTest
         );
         
         // Act
-        var result = await _picturesService.GetPicturesForItem(pictureAmount, productName, storeName);
+        var result = await _picturesService.GetPicturesForItem(testPictureAmount, testProductName, testStoreName);
         
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.AreEqual(pictures.Count, result.Count);
-            Assert.AreEqual(pictures[0].SubmissionUserId, result[0].SubmissionUserId);
-            Assert.AreEqual(pictures[0].SubmissionEntryTime, result[0].SubmissionEntryTime);
-            Assert.AreEqual(pictures[0].Index, result[0].Index);
-            Assert.AreEqual(pictures[0].PictureTitle, result[0].PictureTitle);
-            Assert.AreEqual(pictures[0].Submission, result[0].Submission);
+            Assert.That(result.Count, Is.EqualTo(pictures.Count));
+            Assert.That(result[0].SubmissionUserId, Is.EqualTo(pictures[0].SubmissionUserId));
+            Assert.That(result[0].SubmissionEntryTime, Is.EqualTo(pictures[0].SubmissionEntryTime));
+            Assert.That(result[0].Index, Is.EqualTo(pictures[0].Index));
+            Assert.That(result[0].PictureTitle, Is.EqualTo(pictures[0].PictureTitle));
+            Assert.That(result[0].Submission, Is.EqualTo(pictures[0].Submission));
         });
     }
 }

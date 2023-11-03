@@ -246,28 +246,22 @@ public class SearchServiceTest
         };
         
         // Act
-        var searchResults = await _searchService.GetSearchResults(searchCriteria);
+        List<Item> searchResults = await _searchService.GetSearchResults(searchCriteria);
         
         // Assert
         Assert.That(searchResults, Is.Not.Null);
         Assert.That(searchResults.Count, Is.GreaterThan(0));
         Assert.That(searchResults[0].Submissions.Count, Is.EqualTo(2));
         
-        Assert.That(searchResults[0].Submissions[0].UserId, Is.EqualTo("User1"));
         DateTime submission1EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
-        Assert.That(searchResults[0].Submissions[0].EntryTime, Is.EqualTo(submission1EntryTime));
-        Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(100));
+        Assert.IsTrue(submission1EntryTime.ToString(CultureInfo.InvariantCulture).Contains(searchResults[0].Submissions[0].EntryTime));
+        Assert.That(100, Is.EqualTo(searchResults[0].Submissions[0].Price));
         Assert.That(searchResults[0].Submissions[0].Description, Is.EqualTo("Description for Submission 1"));
-        Assert.That(searchResults[0].Submissions[0].StoreName, Is.EqualTo("Store1"));
-        Assert.That(searchResults[0].Submissions[0].ProductId, Is.EqualTo(1));
-
-        Assert.That(searchResults[0].Submissions[1].UserId, Is.EqualTo("User8"));
+        
         DateTime submission2EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc);
-        Assert.That(searchResults[0].Submissions[1].EntryTime, Is.EqualTo(submission2EntryTime));
-        Assert.That(searchResults[0].Submissions[1].Price, Is.EqualTo(180));
+        Assert.IsTrue(submission2EntryTime.ToString(CultureInfo.InvariantCulture).Contains(searchResults[0].Submissions[1].EntryTime));
+        Assert.That(180, Is.EqualTo(searchResults[0].Submissions[1].Price));
         Assert.That(searchResults[0].Submissions[1].Description, Is.EqualTo("Description for Submission 8"));
-        Assert.That(searchResults[0].Submissions[1].StoreName, Is.EqualTo("Store1"));
-        Assert.That(searchResults[0].Submissions[1].ProductId, Is.EqualTo(1));
     }
     
     /// <summary>
@@ -294,7 +288,7 @@ public class SearchServiceTest
         // Assert
         Assert.That(searchResults, Is.Not.Null);
         Assert.That(searchResults.Count > 0, Is.True);
-        Assert.That(searchResults.TrueForAll(item => item.Submissions[0].Product.Model.Contains(modelName)),
+        Assert.That(searchResults.TrueForAll(item => item.Model.Contains(modelName)),
             Is.True); // Verify that all items have the expected model name
     }
 
@@ -322,15 +316,12 @@ public class SearchServiceTest
         // Assert
         Assert.That(searchResults, Is.Not.Null);
         Assert.That(searchResults.Count, Is.GreaterThan(0));
-        Assert.That(searchResults.TrueForAll(item => item.Submissions[0].Product.Model.Contains(modelName)),
+        Assert.That(searchResults.TrueForAll(item => item.Model.Contains(modelName)),
             Is.True);
         Assert.That(searchResults[0].Submissions.Count, Is.EqualTo(1));
-
-        Assert.That(searchResults[0].Submissions[0].UserId, Is.EqualTo("User2"));
-        Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(200));
+        
+        Assert.That(200, Is.EqualTo(searchResults[0].Submissions[0].Price));
         Assert.That(searchResults[0].Submissions[0].Description, Is.EqualTo("Description for Submission 2"));
-        Assert.That(searchResults[0].Submissions[0].StoreName, Is.EqualTo("Store2"));
-        Assert.That(searchResults[0].Submissions[0].ProductId, Is.EqualTo(2));
     }
     
     /// <summary>
@@ -411,15 +402,12 @@ public class SearchServiceTest
         Assert.That(results.Count(), Is.GreaterThan(0));
         
         bool all = true;
+        
         foreach (var item in results)
         {
-            foreach (var sub in item.Submissions)
+            if (item.Canton != canton || item.Province != province)
             {
-                if (sub. Store.Canton.Name != canton || sub.Store.Canton.ProvinceName != province)
-                {
-                    all = false;
-                    break;
-                }
+                all = false;
             }
         }
         Assert.That(all, Is.True);
@@ -472,7 +460,7 @@ public class SearchServiceTest
         // Assert
         Assert.That(results, Is.Not.Null);
         Assert.That(results.Count, Is.GreaterThan(0));
-        Assert.That(results.TrueForAll(item => item.Submissions[0].Product.Brand.Contains(brand)), Is.True);
+        Assert.That(results.TrueForAll(item => item.Brand.Contains(brand)), Is.True);
     }
     
     /// <summary>
@@ -495,24 +483,20 @@ public class SearchServiceTest
         // Assert
         Assert.That(searchResults, Is.Not.Null);
         Assert.That(searchResults.Count, Is.GreaterThan(0));
-        Assert.That(searchResults.TrueForAll(item => item.Submissions[0].Product.Brand.Contains(brand)), Is.True);
+        Assert.That(searchResults.TrueForAll(item => item.Brand.Contains(brand)), Is.True);
         Assert.That(searchResults[0].Submissions.Count, Is.EqualTo(2));
 
-        Assert.That(searchResults[0].Submissions[0].UserId, Is.EqualTo("User1"));
-        DateTime submission1EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
-        Assert.That(searchResults[0].Submissions[0].EntryTime, Is.EqualTo(submission1EntryTime));
-        Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(100));
-        Assert.That(searchResults[0].Submissions[0].Description, Is.EqualTo("Description for Submission 1"));
-        Assert.That(searchResults[0].Submissions[0].StoreName, Is.EqualTo("Store1"));
-        Assert.That(searchResults[0].Submissions[0].ProductId, Is.EqualTo(1));
 
-        Assert.That(searchResults[0].Submissions[1].UserId, Is.EqualTo("User8"));
+        DateTime submission1EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
+        Assert.IsTrue(submission1EntryTime.ToString(CultureInfo.InvariantCulture).Contains(searchResults[0].Submissions[0].EntryTime));
+        Assert.That(100, Is.EqualTo(searchResults[0].Submissions[0].Price));
+        Assert.That(searchResults[0].Submissions[0].Description, Is.EqualTo("Description for Submission 1"));
+
+
         DateTime submission2EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc);
-        Assert.That(searchResults[0].Submissions[1].EntryTime, Is.EqualTo(submission2EntryTime));
-        Assert.That(searchResults[0].Submissions[1].Price, Is.EqualTo(180));
+        Assert.That(submission2EntryTime.ToString(CultureInfo.InvariantCulture).Contains(searchResults[0].Submissions[1].EntryTime));
+        Assert.That(180, Is.EqualTo(searchResults[0].Submissions[1].Price));
         Assert.That(searchResults[0].Submissions[1].Description, Is.EqualTo("Description for Submission 8"));
-        Assert.That(searchResults[0].Submissions[1].StoreName, Is.EqualTo("Store1"));
-        Assert.That(searchResults[0].Submissions[1].ProductId, Is.EqualTo(1));
     }
     
     

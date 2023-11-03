@@ -57,16 +57,11 @@ async function loadCantons(response) {
 }
 
 function performSearchButtonShared(modalShownParam) {
-    // if advanced search is not open it is normal search
     var redirect = "/SearchResults/SearchResults?query=";
-
-    var searchValue = document.getElementById("searchBox").value.valueOf() ;
-
+    var searchValue = document.getElementById("searchBox").value.valueOf();
+    
     if (!modalShownParam) {
-        // get value
-        redirect += searchValue;
-
-        if (redirect.localeCompare(invalidSimpleSearch) === 0) {
+        if (searchValue.localeCompare("") === 0) {
             return;
         }
     } else {
@@ -83,52 +78,55 @@ function performSearchButtonShared(modalShownParam) {
         }
 
         redirect += searchValue
-        + "&province=" + provinceValue
-        + "&canton=" + cantonValue
-        + "&minValue=" + minValue
-        + "&maxValue=" + maxValue
-        + "&category=" + categoryValue
-        + "&model=" + modelValue
-        + "&brand=" + brandValue;
-    
+            + "&province=" + provinceValue
+            + "&canton=" + cantonValue
+            + "&minValue=" + minValue
+            + "&maxValue=" + maxValue
+            + "&category=" + categoryValue
+            + "&model=" + modelValue
+            + "&brand=" + brandValue;
+
         if (redirect.localeCompare(invalidAdvancedSearch) === 0) {
+            console.log("invalid search");
             return;
         }
     }
 
-    window.location.href = redirect;
-
-    /*
     const dataToSend = {
-        query: searchValue,
-        province: provinceValue,
-        canton: cantonValue,
-        minValue: minValue,
-        maxValue: maxValue,
-        category: categoryValue,
-        model: modelValue
+        ProductName: searchValue,
+        ProvinceSelected: provinceValue,
+        CantonSelected: cantonValue,
+        MinPrice: minValue,
+        MaxPrice: maxValue,
+        ModelSelected: modelValue,
+        BrandSelected: brandValue,
+        CategorySelected: categoryValue
     };
 
     var url = window.location.pathname;
-    var handler = "?handler=SendSearchParameters";
+    var handler = "?handler=ReturnResults";
     var location = url + handler;
 
-    $.ajax({
-        contentType: 'application/json',
-        type: 'POST',
-        url: location,
-        data: JSON.stringify(dataToSend),
+    fetch(location, {
+        method: 'POST', // POST method
         headers: {
-            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+            'Content-Type': 'application/json', // Indicate JSON content
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value // CSRF token
         },
-        success: function () {
-            window.location.href = "/SearchResults/SearchResults";
-        },
-        error: function () {
-            alert("AJAX Request Failed, another failure...");
+        body: JSON.stringify(dataToSend) // Data to be sent in JSON format
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok.');
         }
+        // Redirect if the response is successful
+        window.location.href = "/SearchResults/SearchResults";
+    })
+    .catch(error => {
+        // Handle errors
+        console.error('Fetch error:', error);
+        alert("Request Failed, another failure...");
     });
-    */
 }
 
 

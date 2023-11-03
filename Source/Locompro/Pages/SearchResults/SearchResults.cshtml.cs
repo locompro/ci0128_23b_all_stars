@@ -32,17 +32,9 @@ public class SearchResultsModel : SearchPageModel
 
     private readonly IPicturesService _picturesService;
 
-    /// <summary>
-    /// Buffer for page size according to Paginated List and configuration
-    /// </summary>
-    private readonly int _pageSize;
-
-    /// <summary>
-    /// List of all items found
-    /// </summary>
-    private List<Item> _items;
-
     public SearchViewModel SearchViewModel { get; set; }
+    
+    private IConfiguration _configuration { get; set; }
 
     /// <summary>
     /// Constructor
@@ -62,38 +54,22 @@ public class SearchResultsModel : SearchPageModel
     {
         _searchService = searchService;
         _picturesService = picturesService;
-        _pageSize = configuration.GetValue("PageSize", 4);
+        _configuration = configuration;
         SearchViewModel = new SearchViewModel
         {
-            ResultsPerPage = _pageSize
+            ResultsPerPage = _configuration.GetValue("PageSize", 4)
         };
     }
 
     /// <summary>
-    /// Gets the items to be displayed in the search results
+    /// 
     /// </summary>
-    /// <param name="query"></param>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
-    /// <param name="brand"></param>
-    public void OnGetAsync(
-        string query,
-        string province,
-        string canton,
-        long minValue,
-        long maxValue,
-        string category,
-        string model,
-        string brand)
+    public void OnGetAsync()
     {
-        // validate input
-        ValidateInput(province, canton, minValue, maxValue, category, model, brand);
-        
-        SearchViewModel.ProductName = query;
+        // prevents system from crashing, but in essence, leads to a re-request where data is no longer null
+        SearchViewModel = GetCachedDataFromSession<SearchViewModel>("SearchQueryViewModel", false) ?? new SearchViewModel();
+
+        ValidateInput();
         
         CacheDataInSession(SearchViewModel, "SearchData");
     }
@@ -114,61 +90,44 @@ public class SearchResultsModel : SearchPageModel
             new SearchCriterion<string>(SearchParameterTypes.Model, SearchViewModel.ModelSelected),
             new SearchCriterion<string>(SearchParameterTypes.Brand, SearchViewModel.BrandSelected),
         };
+        
+        SearchViewModel.ResultsPerPage = _configuration.GetValue("PageSize", 4);
 
-        _items = await this._searchService.GetSearchResults(searchParameters);
+        List<Item> searchResults = await _searchService.GetSearchResults(searchParameters);
         
         string searchResultsJson = GetJsonFrom(
             new{
-                searchResults = _items,
-                data = SearchViewModel}
+                SearchResults = searchResults,
+                Data = SearchViewModel }
             );
 
         return Content(searchResultsJson);
     }
-
-    /// <summary>
-    /// Changes input from front end into values usable for search engine
-    /// </summary>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
-    /// <param name="brand"></param>
-    private void ValidateInput(
-        string province,
-        string canton,
-        long minValue,
-        long maxValue,
-        string category,
-        string model,
-        string brand)
+    
+    private void ValidateInput()
     {
-        if (!string.IsNullOrEmpty(province) && province.Equals(SearchPageModel.EmptyValue))
+        if (!string.IsNullOrEmpty(SearchViewModel.ProvinceSelected) && SearchViewModel.ProvinceSelected.Equals(SearchPageModel.EmptyValue))
         {
-            province = null;
+            SearchViewModel.ProvinceSelected = null;
         }
         
-        if (!string.IsNullOrEmpty(canton) && canton.Equals(SearchPageModel.EmptyValue))
+        if (!string.IsNullOrEmpty(SearchViewModel.CantonSelected) && SearchViewModel.CantonSelected.Equals(SearchPageModel.EmptyValue))
         {
-            canton = null;
+            SearchViewModel.CantonSelected = null;
         }
 
-        if (!string.IsNullOrEmpty(category) && category.Equals(SearchPageModel.EmptyValue))
+        if (!string.IsNullOrEmpty(SearchViewModel.CategorySelected) && SearchViewModel.CategorySelected.Equals(SearchPageModel.EmptyValue))
         {
-            category = null;
+            SearchViewModel.CategorySelected = null;
         } 
-        
-        SearchViewModel.ProvinceSelected = province;
-        SearchViewModel.CantonSelected = canton;
-        SearchViewModel.MinPrice = minValue;
-        SearchViewModel.MaxPrice = maxValue;
-        SearchViewModel.CategorySelected = category;
-        SearchViewModel.ModelSelected = model;
-        SearchViewModel.BrandSelected = brand;
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="productName"></param>
+    /// <param name="storeName"></param>
+    /// <returns></returns>
     public async Task<ContentResult> OnGetGetPicturesAsync(string productName, string storeName)
     {
         List<Picture> itemPictures = await _picturesService.GetPicturesForItem(5, productName, storeName);
