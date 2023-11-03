@@ -1,26 +1,33 @@
 using System.Globalization;
 using Locompro.Models;
 using System.Text.RegularExpressions;
+using Locompro.Common.Search;
+using Locompro.Common.Search.Interfaces;
 using Locompro.Data;
 using Locompro.Data.Repositories;
-using Locompro.Repositories.Utilities;
+using Locompro.Services.Domain;
+using Locompro.Services.Domain;
 
 namespace Locompro.Services;
 
-public class SearchService : Service
+public class SearchService : Service, ISearchService
 {
-    private readonly ISubmissionRepository _submissionRepository;
-    private readonly QueryBuilder _queryBuilder;
+    private readonly ISearchDomainService _searchDomainService;
+
+    private readonly IQueryBuilder _queryBuilder;
+
+    public const int ImageAmountPerItem = 5;
 
     /// <summary>
     /// Constructor for the search service
     /// </summary>
     /// <param name="unitOfWork"> generic unit of work</param>
     /// <param name="loggerFactory"> logger </param>
-    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) :
+    /// <param name="searchDomainService"></param>
+    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, ISearchDomainService searchDomainService, IPicturesService picturesService) :
         base(unitOfWork, loggerFactory)
     {
-        _submissionRepository = UnitOfWork.GetRepository<ISubmissionRepository>();
+        _searchDomainService = searchDomainService;
         _queryBuilder = new QueryBuilder();
     }
 
@@ -29,15 +36,16 @@ public class SearchService : Service
     /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
     /// It then returns a list of items that match all the criteria.
     /// </summary>
-    public async Task<List<Item>> GetSearchResults(List<SearchCriterion> unfilteredSearchCriteria)
+    public async Task<List<Item>> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria)
     {
         // add the list of unfiltered search criteria to the query builder
-        foreach (SearchCriterion searchCriterion in unfilteredSearchCriteria)
+        foreach (ISearchCriterion searchCriterion in unfilteredSearchCriteria)
         {
             try
             {
                 this._queryBuilder.AddSearchCriterion(searchCriterion);
-            } catch (ArgumentException exception)
+            }
+            catch (ArgumentException exception)
             {
                 // if the search criterion is invalid, report on it but continue execution
                 this.Logger.LogWarning(exception.ToString());
@@ -46,25 +54,27 @@ public class SearchService : Service
 
         // compose the list of search functions
         SearchQueries searchQueries = this._queryBuilder.GetSearchFunction();
-        
+
+        if (searchQueries.IsEmpty)
+        {
+            return new List<Item>();
+        }
+
         // get the submissions that match the search functions
-        IEnumerable<Submission> submissions = 
-            searchQueries.IsEmpty?
-                Enumerable.Empty<Submission>() :
-                await this._submissionRepository.GetSearchResults(searchQueries);
-        
+        IEnumerable<Submission> submissions = await this._searchDomainService.GetSearchResults(searchQueries);
+
         this._queryBuilder.Reset();
-        
+
         return GetItems(submissions).Result.ToList();
     }
-    
+
     /// <summary>
     /// Gets all the items to be displayed in the search results
     /// from a list of submissions
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>
-    private static async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
+    private async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
     {
         var items = new List<Item>();
 
@@ -90,7 +100,7 @@ public class SearchService : Service
     /// </summary>
     /// <param name="itemGrouping"></param>
     /// <returns></returns>
-    private static async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
+    private async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
     {
         // Get best submission for its information
         var bestSubmission = GetBestSubmission(itemGrouping);
@@ -108,7 +118,7 @@ public class SearchService : Service
         {
             Submissions = itemGrouping.ToList(),
             Model = bestSubmission.Product.Model,
-            Brand = bestSubmission.Product.Brand
+            Brand = bestSubmission.Product.Brand,
         };
 
         return await Task.FromResult(item);

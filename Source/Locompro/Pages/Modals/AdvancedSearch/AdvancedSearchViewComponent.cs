@@ -1,9 +1,7 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Locompro.Services;
-using Locompro.Pages.Modals.AdvancedSearch;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Locompro.Pages.Modals.AdvancedSearchViewComponent
+namespace Locompro.Pages.Modals.AdvancedSearch
 {
     /// <summary>
     /// View component for the advanced search modal

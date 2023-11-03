@@ -1,4 +1,13 @@
 @startuml
+
+annotation RequiredIfAttribute {
+    - _conditionMethodName : string
+    - _conditionValue : string
+    + RequiredIfAttribute(conditionMethodName:string, conditionValue:object, errorMessage:string)
+    # IsValid(object value, ValidationContext validationContext) : ValidationResult
+}
+ValidationAttribute <|-- RequiredIfAttribute
+
 interface IUnitOfWork {
 }
 
@@ -53,14 +62,6 @@ class "PaginatedList"<T> {
 class "List"<T> {
 }
 "List" <|-- "PaginatedList"
-
-class RequiredIfAttribute {
-    - _conditionMethodName : string
-    - _conditionValue : string
-    + RequiredIfAttribute(conditionMethodName:string, conditionValue:object, errorMessage:string)
-    # IsValid(object value, ValidationContext validationContext) : ValidationResult
-}
-ValidationAttribute <|-- RequiredIfAttribute
 
 class "LocomproContext"<User> {
     + LocomproContext(options:DbContextOptions<LocomproContext>)
@@ -370,8 +371,6 @@ class LoginModel {
     + ErrorMessage : string <<get>> <<set>>
     - <<readonly>> authService : AuthService
     + LoginModel(authService:AuthService)
-    + ReturnUrl : string <<get>> <<set>>
-    + ErrorMessage : string <<get>> <<set>>
     + <<async>> OnGetAsync(returnUrl:string) : Task
     + <<async>> OnPostAsync(returnUrl:string) : Task<IActionResult>
 }
@@ -392,7 +391,6 @@ class RegisterModel {
     + ReturnUrl : string <<get>> <<set>>
     - <<readonly>> _authService : AuthService
     + RegisterModel(authService:AuthService)
-    + ReturnUrl : string <<get>> <<set>>
     + OnGetAsync(returnUrl:string) : Task
     + <<async>> OnPostAsync(returnUrl:string) : Task<IActionResult>
 }

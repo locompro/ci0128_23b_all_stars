@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
+using Locompro.Pages.Util;
 using Locompro.Services;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -25,15 +26,8 @@ public class CreateModel : PageModel
     public ProductViewModel ProductVm { get; set; }
     
     [BindProperty]
-    [StringLength(120)]
-    public string Description { get; set; }
+    public SubmissionViewModel SubmissionViewModel { get; set; }
     
-    [BindProperty]
-    [Required(ErrorMessage = "Ingresar el precio del producto.")]
-    [Range(100, 10000000, ErrorMessage = "El precio debe estar entre ₡100 y ₡10.000.000.")]
-    [RegularExpression(@"^\d+$", ErrorMessage = "El precio debe contener solamente números enteros.")]
-    public int Price { get; set; }
-
     private readonly INamedEntityDomainService<Store, string> _storeService;
 
     private readonly INamedEntityDomainService<Product, int> _productService;
@@ -94,9 +88,13 @@ public class CreateModel : PageModel
             return Page();
         }
 
-        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        SubmissionViewModel.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        
+        IFormFileCollection formFiles = Request.Form.Files;
 
-        await _contributionService.AddSubmission(StoreVm, ProductVm, Description, Price, userId);
+        List<PictureViewModel> picturesVMs = PictureParser.Parse(formFiles);
+
+        await _contributionService.AddSubmission(StoreVm, ProductVm, SubmissionViewModel, picturesVMs);
 
         return RedirectToPage("/Index");
     }

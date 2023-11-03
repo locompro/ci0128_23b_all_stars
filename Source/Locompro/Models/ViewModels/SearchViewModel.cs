@@ -1,13 +1,13 @@
-namespace Locompro.Models;
+namespace Locompro.Models.ViewModels;
 
 public class SearchViewModel
 {
-    public string productName { get; set; }
-    public string country { get; set; }
-    public string province { get; set; }
-    public string canton { get; set; }
-    public int minValue { get; set; }
-    public int maxValue { get; set; }
-    public string category { get; set; }
-    public string model { get; set; }
+    public string ProductName { get; set; }
+    public string ProvinceSelected { get; set; }
+    public string CantonSelected { get; set; }
+    public long MinPrice { get; set; }
+    public long MaxPrice { get; set; }
+    public string ModelSelected { get; set; }
+    public string BrandSelected { get; set; }
+    public string CategorySelected { get; set; }
 }
