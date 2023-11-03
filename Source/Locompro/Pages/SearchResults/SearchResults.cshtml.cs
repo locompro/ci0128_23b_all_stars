@@ -34,7 +34,7 @@ public class SearchResultsModel : SearchPageModel
 
     public SearchViewModel SearchViewModel { get; set; }
     
-    private IConfiguration _configuration { get; set; }
+    private IConfiguration Configuration { get; set; }
 
     /// <summary>
     /// Constructor
@@ -54,15 +54,18 @@ public class SearchResultsModel : SearchPageModel
     {
         _searchService = searchService;
         _picturesService = picturesService;
-        _configuration = configuration;
+        Configuration = configuration;
         SearchViewModel = new SearchViewModel
         {
-            ResultsPerPage = _configuration.GetValue("PageSize", 4)
+            ResultsPerPage = Configuration.GetValue("PageSize", 4)
         };
     }
 
     /// <summary>
-    /// 
+    /// When page is first called, gets search query data from session
+    /// sent by either another search or search from another source
+    /// Since html is returned, it is not possible to send a model
+    /// so instead it stores the search data and waits for page to request it after building html 
     /// </summary>
     public void OnGetAsync()
     {
@@ -73,10 +76,14 @@ public class SearchResultsModel : SearchPageModel
         
         CacheDataInSession(SearchViewModel, "SearchData");
     }
-
+    
+    /// <summary>
+    /// When requesting search results, fetches search query data and returns search results
+    /// </summary>
+    /// <returns> json file with search results and search info data</returns>
     public async Task<IActionResult> OnGetGetSearchResultsAsync()
     {
-        SearchViewModel = GetCachedDataFromSession<SearchViewModel>("SearchData");
+        SearchViewModel = GetCachedDataFromSession<SearchViewModel>("SearchData", false);
         
         // get items from search service
         List<ISearchCriterion> searchParameters = new List<ISearchCriterion>()
@@ -91,42 +98,24 @@ public class SearchResultsModel : SearchPageModel
             new SearchCriterion<string>(SearchParameterTypes.Brand, SearchViewModel.BrandSelected),
         };
         
-        SearchViewModel.ResultsPerPage = _configuration.GetValue("PageSize", 4);
+        SearchViewModel.ResultsPerPage = Configuration.GetValue("PageSize", 4);
 
         List<Item> searchResults = await _searchService.GetSearchResults(searchParameters);
         
         string searchResultsJson = GetJsonFrom(
             new{
                 SearchResults = searchResults,
-                Data = SearchViewModel }
-            );
+                Data = SearchViewModel
+            });
 
         return Content(searchResultsJson);
     }
     
-    private void ValidateInput()
-    {
-        if (!string.IsNullOrEmpty(SearchViewModel.ProvinceSelected) && SearchViewModel.ProvinceSelected.Equals(SearchPageModel.EmptyValue))
-        {
-            SearchViewModel.ProvinceSelected = null;
-        }
-        
-        if (!string.IsNullOrEmpty(SearchViewModel.CantonSelected) && SearchViewModel.CantonSelected.Equals(SearchPageModel.EmptyValue))
-        {
-            SearchViewModel.CantonSelected = null;
-        }
-
-        if (!string.IsNullOrEmpty(SearchViewModel.CategorySelected) && SearchViewModel.CategorySelected.Equals(SearchPageModel.EmptyValue))
-        {
-            SearchViewModel.CategorySelected = null;
-        } 
-    }
-    
     /// <summary>
-    /// 
+    /// Returns a list of pictures for a given item
     /// </summary>
-    /// <param name="productName"></param>
-    /// <param name="storeName"></param>
+    /// <param name="productName"> product name of an item </param>
+    /// <param name="storeName"> store name of an item</param>
     /// <returns></returns>
     public async Task<ContentResult> OnGetGetPicturesAsync(string productName, string storeName)
     {
@@ -145,5 +134,26 @@ public class SearchResultsModel : SearchPageModel
        
         // return list of pictures serialized as json
         return Content(JsonConvert.SerializeObject(formattedPictures));
+    }
+    
+    /// <summary>
+    /// Validates if the input provided by the user is valid
+    /// </summary>
+    private void ValidateInput()
+    {
+        if (!string.IsNullOrEmpty(SearchViewModel.ProvinceSelected) && SearchViewModel.ProvinceSelected.Equals(SearchPageModel.EmptyValue))
+        {
+            SearchViewModel.ProvinceSelected = null;
+        }
+        
+        if (!string.IsNullOrEmpty(SearchViewModel.CantonSelected) && SearchViewModel.CantonSelected.Equals(SearchPageModel.EmptyValue))
+        {
+            SearchViewModel.CantonSelected = null;
+        }
+
+        if (!string.IsNullOrEmpty(SearchViewModel.CategorySelected) && SearchViewModel.CategorySelected.Equals(SearchPageModel.EmptyValue))
+        {
+            SearchViewModel.CategorySelected = null;
+        } 
     }
 }

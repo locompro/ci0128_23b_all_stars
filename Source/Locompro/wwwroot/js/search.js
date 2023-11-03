@@ -13,7 +13,7 @@ const invalidAdvancedSearch =
 
 // activated when province is changed in the dropdown menu
 async function loadProvinceShared(optionSelected, sourceName) {
-    var content = optionSelected.value;
+    let content = optionSelected.value;
 
     try {
         // send server side the province selected by client and wait for response
@@ -57,25 +57,37 @@ async function loadCantons(response) {
 }
 
 function performSearchButtonShared(modalShownParam) {
-    var redirect = "/SearchResults/SearchResults?query=";
-    var searchValue = document.getElementById("searchBox").value.valueOf();
+    try {
+        searchResultsPage.requestSent = true;
+    } catch (error) {}
     
+    const dataToSend = getDataToSend(modalShownParam);
+    
+    if (dataToSend === null) {
+        return
+    }
+
+    sendSearchRequest(dataToSend);
+}
+
+function getDataToSend(modalShownParam) {
+    let redirect = "/SearchResults/SearchResults?query=";
+    let searchValue = document.getElementById("searchBox").value.valueOf();
+
+    let provinceValue, cantonValue, minValue, maxValue, categoryValue, modelValue, brandValue = "";
+
     if (!modalShownParam) {
         if (searchValue.localeCompare("") === 0) {
-            return;
+            return null;
         }
     } else {
-        var provinceValue = document.getElementById("provinceDropdown").value;
-        var cantonValue = document.getElementById("cantonDropdown").value;
-        var minValue = document.getElementById("minValue").value;
-        var maxValue = document.getElementById("maxValue").value;
-        var categoryValue = document.getElementById("categoryDropdown").value;
-
-        try {
-            var modelValue = document.getElementById("modelInput").value;
-            var brandValue = document.getElementById("brandInput").value;
-        } catch (error) {
-        }
+        provinceValue = document.getElementById("provinceDropdown").value;
+        cantonValue = document.getElementById("cantonDropdown").value;
+        minValue = document.getElementById("minValue").value;
+        maxValue = document.getElementById("maxValue").value;
+        categoryValue = document.getElementById("categoryDropdown").value;
+        modelValue = document.getElementById("modelInput").value;
+        brandValue = document.getElementById("brandInput").value;
 
         redirect += searchValue
             + "&province=" + provinceValue
@@ -87,12 +99,11 @@ function performSearchButtonShared(modalShownParam) {
             + "&brand=" + brandValue;
 
         if (redirect.localeCompare(invalidAdvancedSearch) === 0) {
-            console.log("invalid search");
-            return;
+            return null;
         }
     }
 
-    const dataToSend = {
+    return {
         ProductName: searchValue,
         ProvinceSelected: provinceValue,
         CantonSelected: cantonValue,
@@ -102,39 +113,41 @@ function performSearchButtonShared(modalShownParam) {
         BrandSelected: brandValue,
         CategorySelected: categoryValue
     };
+}
 
-    var url = window.location.pathname;
-    var handler = "?handler=ReturnResults";
-    var location = url + handler;
+function sendSearchRequest(dataToSend) {
+    let url = window.location.pathname;
+    let handler = '?handler=ReturnResults';
+    let location = url + handler;
 
     fetch(location, {
-        method: 'POST', // POST method
+        method: 'POST',
         headers: {
-            'Content-Type': 'application/json', // Indicate JSON content
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value // CSRF token
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
         },
         body: JSON.stringify(dataToSend) // Data to be sent in JSON format
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok.');
-        }
-        // Redirect if the response is successful
-        window.location.href = "/SearchResults/SearchResults";
-    })
-    .catch(error => {
-        // Handle errors
-        console.error('Fetch error:', error);
-        alert("Request Failed, another failure...");
-    });
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            // Redirect if the response is successful
+            window.location.href = "/SearchResults/SearchResults";
+        })
+        .catch(error => {
+            // Handle errors
+            console.error('Fetch error:', error);
+            alert("Request Failed, another failure...");
+        });
 }
 
 
 // makes sure the min field is less than the max field
 function validatePriceInput(button) {
     // get the fields
-    var minButton = document.getElementById("minValue");
-    var maxButton = document.getElementById("maxValue");
+    let minButton = document.getElementById("minValue");
+    let maxButton = document.getElementById("maxValue");
 
     // if the field is the min field
     if (button === minButton) {

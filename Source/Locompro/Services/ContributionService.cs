@@ -102,7 +102,7 @@ public class ContributionService : Service, IContributionService
         return product;
     }
 
-    private List<Picture> BuildPictures(List<PictureViewModel> pictureVms, DateTime entryTime, string userId)
+    private static List<Picture> BuildPictures(List<PictureViewModel> pictureVms, DateTime entryTime, string userId)
     {
         List<Picture> pictures = new List<Picture>();
         int pictureIndex = 0;

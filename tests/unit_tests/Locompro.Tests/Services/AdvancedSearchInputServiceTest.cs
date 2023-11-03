@@ -54,8 +54,6 @@ namespace Locompro.Tests.Services
             _context.Set<Canton>().Add(desamparadosCanton);
             _context.Set<Canton>().Add(alajuelaCanton);
             _context.Set<Canton>().Add(sanRamonCanton);
-
-            new CrudRepository<User, string>(_context, _loggerFactory);
             
             IUnitOfWork unitOfWork = new UnitOfWork(null, _loggerFactory, _context);
             
@@ -98,8 +96,8 @@ namespace Locompro.Tests.Services
 
             Assert.Multiple(()=>
             {
-                Assert.IsTrue(this._advancedSearchService.Provinces.Any(province=>province.Name == "San José"));
-                Assert.IsTrue(this._advancedSearchService.Provinces.Any(province => province.Name == "Alajuela"));
+                Assert.That(this._advancedSearchService.Provinces.Any(province=>province.Name == "San José"), Is.True);
+                Assert.That(this._advancedSearchService.Provinces.Any(province => province.Name == "Alajuela"), Is.True);
             });
         }
 
@@ -116,9 +114,9 @@ namespace Locompro.Tests.Services
 
             Assert.Multiple(() =>
             {
-                Assert.IsTrue(this._advancedSearchService.Cantons.Any(canton => canton.Name == "San José"));
-                Assert.IsTrue(this._advancedSearchService.Cantons.Any(canton => canton.Name == "Tibás"));
-                Assert.IsTrue(this._advancedSearchService.Cantons.Any(canton => canton.Name == "Desamparados"));
+                Assert.That(this._advancedSearchService.Cantons.Any(canton => canton.Name == "San José"), Is.True);
+                Assert.That(this._advancedSearchService.Cantons.Any(canton => canton.Name == "Tibás"), Is.True);
+                Assert.That(this._advancedSearchService.Cantons.Any(canton => canton.Name == "Desamparados"), Is.True);
             });
         }
         
@@ -131,19 +129,15 @@ namespace Locompro.Tests.Services
         {
             await this._advancedSearchService.ObtainCategoriesAsync();
             
-            Assert.Greater(this._advancedSearchService.Categories.Count, 0);
+            Assert.That(this._advancedSearchService.Categories.Count, Is.GreaterThan(0));
             
             Assert.Multiple(() =>
             {
-                Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Sombreros"));
-                Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Zapatos"));
-                Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Ropa"));
-                Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Accesorios"));
+                Assert.That(this._advancedSearchService.Categories.Any(category => category.Name == "Sombreros"), Is.True);
+                Assert.That(this._advancedSearchService.Categories.Any(category => category.Name == "Zapatos"), Is.True);
+                Assert.That(this._advancedSearchService.Categories.Any(category => category.Name == "Ropa"), Is.True);
+                Assert.That(this._advancedSearchService.Categories.Any(category => category.Name == "Accesorios"), Is.True);
             });
         }
-    }
-
-    public interface ISearchServiceProvider
-    {
     }
 }

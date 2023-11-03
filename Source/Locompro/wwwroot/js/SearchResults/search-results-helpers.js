@@ -98,7 +98,7 @@ function onModalClose(modalId) {
 }
 
 // Observer for changes in style attribute of the modal
-var observer = new MutationObserver(function(mutationsList) {
+const observer = new MutationObserver(function(mutationsList) {
     mutationsList.forEach(function(mutation) {
         if (mutation.type === "attributes" && mutation.attributeName === "style" && mutation.target.style.display === "none") {
             onModalClose(mutation.target.id);
@@ -107,7 +107,7 @@ var observer = new MutationObserver(function(mutationsList) {
 });
 
 // Observe changes in all elements with IDs containing "modal"
-var modalElements = document.querySelectorAll('[id*="ItemModal"]');
+const modalElements = document.querySelectorAll('[id*="ItemModal"]');
 modalElements.forEach(function(modal) {
     observer.observe(modal, { attributes: true });
 });

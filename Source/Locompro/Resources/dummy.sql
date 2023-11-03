@@ -60,7 +60,7 @@ BEGIN
         DECLARE @totalTimeOffset int = @userTimeOffset + @productTimeOffset;
 
         -- Inserting submissions for each user and product
-INSERT INTO dbo.Submissions (Username, EntryTime, Status, Price, Rating, Description, StoreName, ProductId)
+INSERT INTO dbo.Submissions (UserId, EntryTime, Status, Price, Rating, Description, StoreName, ProductId)
 VALUES
     (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -@totalTimeOffset, GETDATE()), 0, 300000, 4.5, 'Excelente producto', 'Super San José', @productId),
     (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 100), GETDATE()), 0, 310000, 4.7, 'Muy buena calidad', 'Tienda Escazú', @productId),

@@ -11,8 +11,8 @@ namespace Locompro.Pages.Account;
 
 public class LogoutModel : PageModel
 {
-    private readonly AuthService _authService;
-    public LogoutModel(AuthService authService)
+    private readonly IAuthService _authService;
+    public LogoutModel(IAuthService authService)
     {
         _authService = authService;
     }
