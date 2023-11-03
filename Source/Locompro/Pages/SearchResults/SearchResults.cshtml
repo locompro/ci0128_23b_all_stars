@@ -2,6 +2,10 @@
 @using Locompro.Models
 @using Locompro.Common
 @model Locompro.Pages.SearchResults.SearchResultsModel
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+}
 
 <link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
 <link rel="stylesheet" href="~/css/ImageDisplay.css" asp-append-version="true"/>
@@ -194,20 +198,12 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/search-results.js"></script>
+    <script src="~/js/SearchResults/search-results.js"></script>
     <script src="~/js/search.js"></script>
-    <script src="~/js/image-display.js"></script>
-    <script src="~/js/search-results-helpers.js"></script>
-    <script src="~/js/search-results-filter-menu.js"></script>
-    <script src="~/js/search-results-table.js"></script>
-    <script src="~/js/search-results-page-index-complex.js"></script>
-    <script src="~/js/search-results-modal.js"></script>
-    <script src="~/js/search-results-picture-container.js"></script>
-
-    <script>
-        function showPicture() {
-            var modalId = "#imageModel";
-            $(modalId).modal('show');
-        }
-    </script>
+    <script src="~/js/SearchResults/search-results-helpers.js"></script>
+    <script src="~/js/SearchResults/search-results-filter-menu.js"></script>
+    <script src="~/js/SearchResults/search-results-table.js"></script>
+    <script src="~/js/SearchResults/search-results-page-index-complex.js"></script>
+    <script src="~/js/SearchResults/search-results-modal.js"></script>
+    <script src="~/js/SearchResults/search-results-picture-container.js"></script>
 }

@@ -1,5 +1,7 @@
-﻿using Locompro.Models;
+﻿using Castle.Core.Internal;
+using Locompro.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Data;
@@ -94,5 +96,31 @@ public class LocomproContext : IdentityDbContext<User>
             .WithMany(s => s.Pictures)
             .HasForeignKey(p => new {p.SubmissionUserId, p.SubmissionEntryTime})
             .IsRequired();
+    }
+
+    /// <summary>
+    /// Assigns each parent category of a product to the product.
+    /// </summary>
+    /// <param name="categoryName"></param>
+    /// <param name="productID"></param>
+    /// <exception cref="ArgumentNullException"></exception>
+    public virtual async Task AddParents(string categoryName, int productID)
+    {
+        if (categoryName.IsNullOrEmpty())
+            throw new ArgumentNullException(nameof(categoryName));
+
+        var categoryNameParameter = new SqlParameter("@category", categoryName);
+        var productIdParameter = new SqlParameter("@productId", productID);
+
+        await Database.ExecuteSqlRawAsync("EXECUTE dbo.AddParents @category, @productId", categoryNameParameter,
+            productIdParameter);
+    }
+
+    /// <summary>
+    /// Deletes every submission that has been deemed inappropriate by a moderator.
+    /// </summary>
+    public virtual async Task DeleteModeratedSubmissions()
+    {
+        await Database.ExecuteSqlRawAsync("EXECUTE dbo.DeleteModeratedSubmissions");
     }
 }

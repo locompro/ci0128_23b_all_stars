@@ -2,29 +2,35 @@
     <div class="col-4">
         <div class="row card-title" >
             <h4 class = "col-2">
-                <i class="fa fa-envelope" style="margin-right: 12px">
+                <i class="fa fa-envelope" style="margin-right: 12px; color: #0a53be">
                 </i>
             </h4>
             <h6 id="modalProductName" class = "col-10" style="margin-top: 6px"></h6>
         </div>
         <div class="row card-title" style="margin-bottom: 20px">
             <h4 class = "col-2">
-                <i class="fa fa-home" style="margin-right: 14px"></i>
+                <i class="fa fa-home" style="margin-right: 14px; color: #0a53be"></i>
             </h4>
             <h6 id="modalStoreName" class = "col-10" style="margin-top: 6px"></h6>
         </div>
         <h6 id="modalModel"> </h6>
         <h6 id="modalBrand" style="margin-bottom: 20px"> </h6>
     </div>
-    <div class="slideshow-container col-6" style="width: 416px; height: 300px; text-align: center;">
+    <div class="slideshow-container col-6" style="width: 380px; height: 220px; text-align: center;">
         <a class="prev col"
            style=""
+           id ="prevButton"
            onclick="plusSlides(-1)">
             &#10094;
         </a>
         <div id="picturesContainer">
         </div>
-        <a class="next col" onclick="plusSlides(1)">&#10095;</a>
+        <a  class="next col"
+            onclick="plusSlides(1)"
+            id ="nextButton">
+            &#10095;
+        </a>
+        
     </div>
 </div>
 <div>

@@ -1,5 +1,9 @@
 ﻿@page
 @model IndexModel
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+}
 
 <!-- get the css file with main menu formats -->
 <link rel="stylesheet" href="~/css/MainMenu.css" asp-append-version="true"/>

@@ -25,6 +25,11 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.jQuery.Unobtrusive.Validation" Version="3.2.11" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
+		<PackageReference Include="NetBike.XmlUnit.NUnitAdapter3" Version="0.3.0" />
+		<PackageReference Include="NUnit" Version="3.13.3" />
+
+		<PackageReference Include="NetBike.XmlUnit.NUnitAdapter3" Version="0.3.0" />
+
 		<PackageReference Include="NUnit" Version="3.13.3" />
 		<PackageReference Include="NUnit.Analyzers" Version="3.6.1">
 		  <PrivateAssets>all</PrivateAssets>
@@ -34,6 +39,9 @@
 		<PackageReference Include="NUnit.Engine" Version="3.16.3" />
 		<PackageReference Include="NUnit.Extension.NUnitProjectLoader" Version="3.7.1" />
 		<PackageReference Include="NUnit3TestAdapter" Version="4.2.0" />
+
+		<PackageReference Include="NUnitTDNet" Version="3.4.1" />
+
 		<PackageReference Include="System.Device.Location.Portable" Version="1.0.0" />
 		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.5" />
 	</ItemGroup>
@@ -56,6 +64,31 @@
 	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.ttf" />
 	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.woff" />
 	  <_ContentIncludedByDefault Remove="wwwroot\fonts\MaterialIcons-Regular.woff2" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\AccessDenied.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\ConfirmEmail.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\ConfirmEmailChange.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\ForgotPassword.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\ForgotPasswordConfirmation.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\ChangePassword.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\DeletePersonalData.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\DownloadPersonalData.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\Email.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\Index.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\PersonalData.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\ResetAuthenticator.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\SetPassword.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\_Layout.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\_ManageNav.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\_StatusMessage.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\Manage\_ViewImports.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\ResendEmailConfirmation.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\ResetPassword.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\ResetPasswordConfirmation.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\_StatusMessage.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\Account\_ViewImports.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ValidationScriptsPartial.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewImports.cshtml" />
+	  <_ContentIncludedByDefault Remove="Areas\Identity\Pages\_ViewStart.cshtml" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -67,6 +100,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Folder Include="Migrations\" />
 	  <Folder Include="Repositories\" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.2.0" />
+		<PackageReference Include="NUnitTDNet" Version="3.4.1" />
 	</ItemGroup>
 </Project>

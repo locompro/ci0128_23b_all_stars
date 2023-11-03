@@ -34,6 +34,8 @@ public abstract class SearchPageModel : PageModel
     
     public async Task<IActionResult> OnPostReturnResultsAsync()
     {
+        Console.WriteLine("OnPostReturnResultsAsync");
+        
         var json = await new StreamReader(Request.Body).ReadToEndAsync();
             
         SearchViewModel searchViewModel = JsonConvert.DeserializeObject<SearchViewModel>(json);
