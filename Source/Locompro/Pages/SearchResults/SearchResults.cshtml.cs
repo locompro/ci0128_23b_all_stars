@@ -12,9 +12,14 @@ using Locompro.Common;
 using Locompro.Common.Search;
 using Locompro.Common.Search.Interfaces;
 using Locompro.Models;
+using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
+using Locompro.Pages.Util;
 using Microsoft.Extensions.Configuration;
 using Locompro.Services.Domain;
+using System;
+using System.IO;
+using System.Text;
 
 namespace Locompro.Pages.SearchResults;
 
@@ -25,256 +30,130 @@ public class SearchResultsModel : SearchPageModel
 {
     private readonly ISearchService _searchService;
 
-    /// <summary>
-    /// Buffer for page size according to Paginated List and configuration
-    /// </summary>
-    private readonly int _pageSize;
+    private readonly IPicturesService _picturesService;
 
-    /// <summary>
-    /// Paginated list of products found
-    /// </summary>
-    public PaginatedList<Item> DisplayItems { get; set; }
-
-    /// <summary>
-    /// List of all items found
-    /// </summary>
-    private List<Item> _items;
-
-    /// <summary>
-    /// Amount of items found
-    /// </summary>
-    public double ItemsAmount { get; set; }
-
-    /// <summary>
-    /// Name of product that was searched
-    /// </summary>
-    public string ProductName { get; set; }
-
-    public string ProvinceSelected { get; set; }
-    public string CantonSelected { get; set; }
-    public string CategorySelected { get; set; }
-    public long MinPrice { get; set; }
-    public long MaxPrice { get; set; }
-    public string ModelSelected { get; set; }
-    public string BrandSelected { get; set; }
-    public string CurrentFilter { get; set; }
-        
-    public string NameSort { get; set; }
-        
-    public string CurrentSort { get; set; }
-    public string CantonSort { get; set; }
-    public string ProvinceSort { get; set; }
+    public SearchViewModel SearchViewModel { get; set; }
     
+    private IConfiguration Configuration { get; set; }
+
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="searchService"></param>
     /// <param name="advancedSearchServiceHandler"></param>
+    /// <param name="picturesService"></param>
     /// <param name="configuration"></param>
+    /// <param name="httpContextAccessor"></param>
     public SearchResultsModel(
         AdvancedSearchInputService advancedSearchServiceHandler,
+        IPicturesService picturesService,
         IConfiguration configuration,
-        ISearchService searchService) : base(advancedSearchServiceHandler)
+        ISearchService searchService,
+        IHttpContextAccessor httpContextAccessor)
+        : base(advancedSearchServiceHandler, httpContextAccessor)
     {
         _searchService = searchService;
-        _pageSize = configuration.GetValue("PageSize", 4);
+        _picturesService = picturesService;
+        Configuration = configuration;
+        SearchViewModel = new SearchViewModel
+        {
+            ResultsPerPage = Configuration.GetValue("PageSize", 4)
+        };
     }
 
     /// <summary>
-    /// Gets the items to be displayed in the search results
+    /// When page is first called, gets search query data from session
+    /// sent by either another search or search from another source
+    /// Since html is returned, it is not possible to send a model
+    /// so instead it stores the search data and waits for page to request it after building html 
     /// </summary>
-    /// <param name="pageIndex"></param>
-    /// <param name="sorting"></param>
-    /// <param name="query"></param>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
-    /// <param name="brand"></param>
-    /// <param name="currentFilter"></param>
-    /// <param name="sortOrder"></param>
-    public async Task OnGetAsync(int? pageIndex,
-        bool? sorting,
-        string query,
-        string province,
-        string canton,
-        long minValue,
-        long maxValue,
-        string category,
-        string model,
-        string brand,
-        string currentFilter,
-        string sortOrder)
+    public void OnGetAsync()
     {
-       
-        // validate input
-        ValidateInput(province, canton, minValue, maxValue, category, model, brand);
+        // prevents system from crashing, but in essence, leads to a re-request where data is no longer null
+        SearchViewModel = GetCachedDataFromSession<SearchViewModel>("SearchQueryViewModel", false) ?? new SearchViewModel();
+
+        ValidateInput();
         
-        ProductName = query;
-        
-        // set up sorting parameters
-        SetSortingParameters(sortOrder, (sorting is not null));
+        CacheDataInSession(SearchViewModel, "SearchData");
+    }
+    
+    /// <summary>
+    /// When requesting search results, fetches search query data and returns search results
+    /// </summary>
+    /// <returns> json file with search results and search info data</returns>
+    public async Task<IActionResult> OnGetGetSearchResultsAsync()
+    {
+        SearchViewModel = GetCachedDataFromSession<SearchViewModel>("SearchData", false);
         
         // get items from search service
         List<ISearchCriterion> searchParameters = new List<ISearchCriterion>()
         {
-            new SearchCriterion<string>(SearchParameterTypes.Name, ProductName),
-            new SearchCriterion<string>(SearchParameterTypes.Province, ProvinceSelected),
-            new SearchCriterion<string>(SearchParameterTypes.Canton, CantonSelected),
-            new SearchCriterion<long>(SearchParameterTypes.Minvalue, MinPrice),
-            new SearchCriterion<long>(SearchParameterTypes.Maxvalue, MaxPrice),
-            new SearchCriterion<string>(SearchParameterTypes.Category, CategorySelected),
-            new SearchCriterion<string>(SearchParameterTypes.Model, ModelSelected),
-            new SearchCriterion<string>(SearchParameterTypes.Brand, BrandSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Name, SearchViewModel.ProductName),
+            new SearchCriterion<string>(SearchParameterTypes.Province, SearchViewModel.ProvinceSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Canton, SearchViewModel.CantonSelected),
+            new SearchCriterion<long>(SearchParameterTypes.Minvalue, SearchViewModel.MinPrice),
+            new SearchCriterion<long>(SearchParameterTypes.Maxvalue, SearchViewModel.MaxPrice),
+            new SearchCriterion<string>(SearchParameterTypes.Category, SearchViewModel.CategorySelected),
+            new SearchCriterion<string>(SearchParameterTypes.Model, SearchViewModel.ModelSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Brand, SearchViewModel.BrandSelected),
         };
+        
+        SearchViewModel.ResultsPerPage = Configuration.GetValue("PageSize", 4);
 
-        _items = await this._searchService.GetSearchResults(searchParameters);
+        List<Item> searchResults = await _searchService.GetSearchResults(searchParameters);
         
-        // get amount of items found    
-        ItemsAmount = _items.Count;
-        
-        // order items by sort order
-        OrderItems();
-        
-        // create paginated list and set it to be displayed
-        this.DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
+        string searchResultsJson = GetJsonFrom(
+            new{
+                SearchResults = searchResults,
+                Data = SearchViewModel
+            });
+
+        return Content(searchResultsJson);
     }
-
+    
     /// <summary>
-    /// Changes input from front end into values usable for search engine
+    /// Returns a list of pictures for a given item
     /// </summary>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
-    /// <param name="brand"></param>
-    private void ValidateInput(
-        string province,
-        string canton,
-        long minValue,
-        long maxValue,
-        string category,
-        string model,
-        string brand)
+    /// <param name="productName"> product name of an item </param>
+    /// <param name="storeName"> store name of an item</param>
+    /// <returns></returns>
+    public async Task<ContentResult> OnGetGetPicturesAsync(string productName, string storeName)
     {
-        if (!string.IsNullOrEmpty(province) && province.Equals(SearchPageModel.EmptyValue))
+        List<Picture> itemPictures = await _picturesService.GetPicturesForItem(5, productName, storeName);
+
+        List<string> formattedPictures = PictureParser.Serialize(itemPictures);
+        
+        if (itemPictures.IsNullOrEmpty())
         {
-            province = null;
+            const string defaultPictureFilePath = "wwwroot/Pictures/No_Image_Picture.png";
+            
+            byte[] defaultPicture = await System.IO.File.ReadAllBytesAsync(defaultPictureFilePath);
+            
+            formattedPictures.Add(PictureParser.SerializeData(defaultPicture));
+        }
+       
+        // return list of pictures serialized as json
+        return Content(JsonConvert.SerializeObject(formattedPictures));
+    }
+    
+    /// <summary>
+    /// Validates if the input provided by the user is valid
+    /// </summary>
+    private void ValidateInput()
+    {
+        if (!string.IsNullOrEmpty(SearchViewModel.ProvinceSelected) && SearchViewModel.ProvinceSelected.Equals(SearchPageModel.EmptyValue))
+        {
+            SearchViewModel.ProvinceSelected = null;
         }
         
-        if (!string.IsNullOrEmpty(canton) && canton.Equals(SearchPageModel.EmptyValue))
+        if (!string.IsNullOrEmpty(SearchViewModel.CantonSelected) && SearchViewModel.CantonSelected.Equals(SearchPageModel.EmptyValue))
         {
-            canton = null;
+            SearchViewModel.CantonSelected = null;
         }
 
-        if (!string.IsNullOrEmpty(category) && category.Equals(SearchPageModel.EmptyValue))
+        if (!string.IsNullOrEmpty(SearchViewModel.CategorySelected) && SearchViewModel.CategorySelected.Equals(SearchPageModel.EmptyValue))
         {
-            category = null;
+            SearchViewModel.CategorySelected = null;
         } 
-        
-        ProvinceSelected = province;
-        CantonSelected = canton;
-        MinPrice = minValue;
-        MaxPrice = maxValue;
-        CategorySelected = category;
-        ModelSelected = model;
-        BrandSelected = brand;
-    }
-
-    /// <summary>
-    /// Manages all sorting done to items in list
-    /// </summary>
-    /// <param name="sortOrder"></param>
-    /// <param name="sorting"></param>
-    private void SetSortingParameters(string sortOrder, bool sorting)
-    {
-        if (!sorting && !string.IsNullOrEmpty(sortOrder))
-        {
-            CurrentSort = NameSort = sortOrder;
-            return;
-        }
-
-        // Define a dictionary to hold the reverse sortOrder mappings
-        Dictionary<string, string> sortMappings = new Dictionary<string, string>
-        {
-            { "name_asc", "name_desc" },
-            { "name_desc", "name_asc" },
-            { "province_asc", "province_desc" },
-            { "province_desc", "province_asc" },
-            { "canton_asc", "canton_desc" },
-            { "canton_desc", "canton_asc" },
-        };
-
-        // If sortOrder is null or not in the dictionary, set default values
-        if (string.IsNullOrEmpty(sortOrder) || !sortMappings.ContainsKey(sortOrder))
-        {
-            CurrentSort = NameSort = "name_desc";
-            ProvinceSort = "province_asc";
-            CantonSort = "canton_asc";
-            return;
-        }
-
-        // Update sorting based on the mapping and set CurrentSort
-        switch (sortOrder)
-        {
-            case "name_asc":
-            case "name_desc":
-                CurrentSort = NameSort = sortMappings[sortOrder];
-                break;
-            case "province_asc":
-            case "province_desc":
-                CurrentSort = ProvinceSort = sortMappings[sortOrder];
-                break;
-            case "canton_asc":
-            case "canton_desc":
-                CurrentSort = CantonSort = sortMappings[sortOrder];
-                break;
-        }
-    }
-
-    /// <summary>
-    /// Orders items
-    /// </summary>
-    void OrderItems()
-    {
-        switch (NameSort)
-        {
-            case "name_desc":
-                _items = _items.OrderByDescending(item => item.Name).ToList();
-                break;
-            case "name_asc":
-                _items = _items.OrderBy(item => item.Name).ToList();
-                break;
-        }
-
-        if(!string.IsNullOrEmpty(ProvinceSort))
-        {
-            switch (ProvinceSort)
-            {
-                case "province_desc":
-                    _items = _items.OrderByDescending(item => item.Province).ToList();
-                    break;
-                case "province_asc":
-                    _items = _items.OrderBy(item => item.Province).ToList();
-                    break;
-            }
-        }
-
-        if(!string.IsNullOrEmpty(CantonSort))
-        {
-            switch (CantonSort)
-            {
-                case "canton_desc":
-                    _items = _items.OrderByDescending(item => item.Canton).ToList();
-                    break;
-                case "canton_asc":
-                    _items = _items.OrderBy(item => item.Canton).ToList();
-                    break;
-            }
-        }
     }
 }

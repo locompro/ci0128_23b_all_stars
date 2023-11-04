@@ -1,6 +1,7 @@
 using Locompro.Data;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
+using Locompro.Pages.Util;
 using Locompro.Services.Domain;
 
 namespace Locompro.Services;
@@ -32,20 +33,25 @@ public class ContributionService : Service, IContributionService
     }
 
     public async Task AddSubmission(StoreViewModel storeViewModel, ProductViewModel productViewModel,
-        string description, int price, string userId)
+        SubmissionViewModel submissionViewModel, List<PictureViewModel> picturesVMs)
     {
         Store store = await BuildStore(storeViewModel);
 
         Product product = await BuildProduct(productViewModel);
 
+        DateTime entryTime = DateTime.Now;
+
+        List<Picture> pictures = BuildPictures(picturesVMs, entryTime, submissionViewModel.UserId);
+        
         Submission submission = new Submission()
         {
-            UserId = userId,
-            EntryTime = DateTime.Now,
-            Price = price,
-            Description = description,
+            UserId = submissionViewModel.UserId,
+            EntryTime = entryTime,
+            Price = submissionViewModel.Price,
+            Description = submissionViewModel.Description,
             Store = store,
-            Product = product
+            Product = product,
+            Pictures = pictures
         };
 
         await _submissionService.Add(submission);
@@ -94,5 +100,28 @@ public class ContributionService : Service, IContributionService
         }
 
         return product;
+    }
+
+    private static List<Picture> BuildPictures(List<PictureViewModel> pictureVms, DateTime entryTime, string userId)
+    {
+        List<Picture> pictures = new List<Picture>();
+        int pictureIndex = 0;
+        
+        foreach (PictureViewModel pictureVm in pictureVms) 
+        {
+            pictures.Add(
+                new Picture
+                {
+                    Index = pictureIndex,
+                    SubmissionUserId = userId,
+                    SubmissionEntryTime = entryTime,
+                    PictureTitle = pictureVm.Name,
+                    PictureData = pictureVm.PictureData
+                });
+
+            pictureIndex++;
+        }
+
+        return pictures;
     }
 }

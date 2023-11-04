@@ -1,18 +1,13 @@
 using System;
 using System.Text.Json.Serialization;
+using Locompro.Common;
 using Microsoft.EntityFrameworkCore;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Components.Server;
-using System.Xml;
 using Locompro.Models;
+using Locompro.Services.AuthInterfaces;
 using Locompro.Services.Domain;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +47,8 @@ app.Use(async (context, next) =>
     await next();
 });
 
+app.UseSession();
+
 app.Run();
 return;
 
@@ -87,7 +84,6 @@ void RegisterServices(WebApplicationBuilder builder)
         config.LoginPath = "/Account/Login";
     });
 
-
     // Register repositories
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped(typeof(ICrudRepository<,>), typeof(CrudRepository<,>));
@@ -95,6 +91,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
     builder.Services.AddScoped<ICantonRepository, CantonRepository>();
     builder.Services.AddScoped<ProductRepository>();
+    builder.Services.AddScoped<IPicturesRepository, PicturesRepository>();
 
     // Register domain services
     builder.Services.AddScoped(typeof(INamedEntityDomainService<,>), typeof(NamedEntityDomainService<,>));
@@ -102,12 +99,25 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ISubmissionService, SubmissionService>();
     builder.Services.AddScoped<ICantonService, CantonService>();
     builder.Services.AddScoped<ProductService>();
-    builder.Services.AddScoped<UserService>();
+    builder.Services.AddScoped<ISignInManagerService, SignInManagerService>();
+    builder.Services.AddScoped<IUserManagerService, UserManagerService>();
 
     // Register application services
     builder.Services.AddScoped<IContributionService, ContributionService>();
-    builder.Services.AddScoped<AuthService>();
+    builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<IErrorStore, ErrorStore>();
     builder.Services.AddScoped<AdvancedSearchInputService>();
     builder.Services.AddScoped<ISearchDomainService, SearchDomainService>();
     builder.Services.AddScoped<ISearchService, SearchService>();
+    builder.Services.AddScoped<IPicturesService, PicturesService>();
+    builder.Services.AddScoped<SearchService>();
+    
+    builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
+
+    
+    // Add session support
+    builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(2);
+    });
 }

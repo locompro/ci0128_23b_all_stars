@@ -1,3 +1,4 @@
+using System.Linq.Dynamic.Core;
 using Locompro.Common.Search;
 using Locompro.Models;
 using Microsoft.EntityFrameworkCore;
@@ -42,59 +43,12 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<Submission>> GetByCantonAsync(string cantonName,
-        string provinceName)
+    public async Task<IEnumerable<Submission>> GetItemSubmissions(string storeName, string productName)
     {
-        List<Submission> submissions;
-
-        if (String.IsNullOrEmpty(cantonName))
-        {
-            submissions = await Set
-                .Include(s => s.Store)
-                .ThenInclude(st => st.Canton)
-                .Where(s => s.Store.Canton.Province.Name == provinceName)
-                .ToListAsync();
-        }
-        else
-        {
-            submissions = await Set
-                .Include(s => s.Store)
-                .ThenInclude(st => st.Canton)
-                .Where(s => s.Store.Canton.Name == cantonName && s.Store.Canton.Province.Name == provinceName)
-                .ToListAsync();
-        }
-
-        return submissions;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<Submission>> GetByProductModelAsync(string productModel)
-    {
-        var submissions = await Set
-            .Include(s => s.Product)
-            .Where(s => s.Product.Model.Contains(productModel))
-            .ToListAsync();
-
-        return submissions;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<Submission>> GetByProductNameAsync(string productName)
-    {
-        IQueryable<Submission> submissionsQuery = Set
-            .Include(s => s.Product)
-            .Where(s => s.Product.Name.Contains(productName));
-
-        return await submissionsQuery.ToListAsync();
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<Submission>> GetByBrandAsync(string brandName)
-    {
-        IQueryable<Submission> submissionsQuery = Set
-            .Include(s => s.Product)
-            .Where(s => s.Product.Brand.Contains(brandName));
-
-        return await submissionsQuery.ToListAsync();
+        IQueryable<Submission> submissionsResults = Set
+            .Include(submission => submission.Product)
+            .Where(submission => submission.Product.Name == productName && submission.Store.Name == storeName);
+        
+        return await submissionsResults.ToListAsync();
     }
 }

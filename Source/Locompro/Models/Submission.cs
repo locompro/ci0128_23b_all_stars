@@ -1,4 +1,5 @@
 using System;
+using Locompro.Common;
 using Microsoft.Build.Framework;
 
 namespace Locompro.Models;
@@ -36,5 +37,5 @@ public class Submission
     
     public virtual Product Product { get; set; }
     
-    // TODO: Add pictures to submission
+    public virtual ICollection<Picture> Pictures { get; set; }
 }

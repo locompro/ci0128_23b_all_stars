@@ -63,8 +63,9 @@ namespace Locompro.Tests.Repositories
             // Assert
             Assert.Multiple(() =>
             {
-                Assert.That(result, Is.Not.Null);
-                Assert.That(result.Count(), Is.EqualTo(2));
+                User[] enumerable = result as User[] ?? result.ToArray();
+                Assert.That(enumerable, Is.Not.Null);
+                Assert.That(enumerable.Length, Is.EqualTo(2));
             });
         }
 
@@ -113,13 +114,12 @@ namespace Locompro.Tests.Repositories
         {
             // Arrange
             string id = "2";
-
             // Act
             await _userRepository.DeleteAsync(id);
             var result = await _userRepository.GetByIdAsync(id);
-
             // Assert
             Assert.That(result, Is.Null);
         }
+
     }
 }
