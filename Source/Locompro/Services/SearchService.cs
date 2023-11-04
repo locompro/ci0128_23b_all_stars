@@ -5,6 +5,7 @@ using Locompro.Common.Search;
 using Locompro.Common.Search.Interfaces;
 using Locompro.Data;
 using Locompro.Data.Repositories;
+using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
 
 namespace Locompro.Services;
@@ -140,13 +141,13 @@ public class SearchService : Service, ISearchService
     /// </summary>
     /// <param name="submissions"> submissions to be turned into display submissions</param>
     /// <returns></returns>
-    private static List<DisplaySubmission> GetDisplaySubmissions(List<Submission> submissions)
+    private static List<SubmissionViewModel> GetDisplaySubmissions(List<Submission> submissions)
     {
-        List<DisplaySubmission> displaySubmissions = new List<DisplaySubmission>();
+        List<SubmissionViewModel> displaySubmissions = new List<SubmissionViewModel>();
         
         foreach (var submission in submissions)
         {
-            displaySubmissions.Add(new DisplaySubmission(submission, GetFormattedDate));
+            displaySubmissions.Add(new SubmissionViewModel(submission, GetFormattedDate));
         }
 
         return displaySubmissions;
