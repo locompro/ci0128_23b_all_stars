@@ -160,8 +160,14 @@ public class SearchService : Service, ISearchService
     /// <returns></returns>
     private static string GetFormattedDate(Submission submission)
     {
-        Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture),
-            @"[0-9]*/[0-9.]*/[0-9]*");
+        // Define a timeout duration for the regex operation
+        TimeSpan matchTimeout = TimeSpan.FromSeconds(2); // 1 second timeout
+
+        // Use the Regex constructor that allows a timeout
+        Regex regex = new Regex(@"[0-9]*/[0-9.]*/[0-9]*", RegexOptions.None, matchTimeout);
+
+        // Perform the match with the timeout
+        Match regexMatch = regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture));
 
         string date = regexMatch.Success
             ? regexMatch.Groups[0].Value
