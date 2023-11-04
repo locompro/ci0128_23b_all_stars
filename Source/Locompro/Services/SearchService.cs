@@ -1,26 +1,29 @@
 using System.Globalization;
 using Locompro.Models;
 using System.Text.RegularExpressions;
+using Locompro.Common.Search;
+using Locompro.Common.Search.Interfaces;
 using Locompro.Data;
 using Locompro.Data.Repositories;
-using Locompro.Repositories.Utilities;
+using Locompro.Services.Domain;
 
 namespace Locompro.Services;
 
-public class SearchService : Service
+public class SearchService : Service, ISearchService
 {
-    private readonly ISubmissionRepository _submissionRepository;
-    private readonly QueryBuilder _queryBuilder;
+    private readonly ISearchDomainService _searchDomainService;
+    private readonly IQueryBuilder _queryBuilder;
 
     /// <summary>
     /// Constructor for the search service
     /// </summary>
     /// <param name="unitOfWork"> generic unit of work</param>
     /// <param name="loggerFactory"> logger </param>
-    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) :
+    /// <param name="searchDomainService"></param>
+    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, ISearchDomainService searchDomainService) :
         base(unitOfWork, loggerFactory)
     {
-        _submissionRepository = UnitOfWork.GetRepository<ISubmissionRepository>();
+        _searchDomainService = searchDomainService;
         _queryBuilder = new QueryBuilder();
     }
 
@@ -29,10 +32,10 @@ public class SearchService : Service
     /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
     /// It then returns a list of items that match all the criteria.
     /// </summary>
-    public async Task<List<Item>> GetSearchResults(List<SearchCriterion> unfilteredSearchCriteria)
+    public async Task<List<Item>> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria)
     {
         // add the list of unfiltered search criteria to the query builder
-        foreach (SearchCriterion searchCriterion in unfilteredSearchCriteria)
+        foreach (ISearchCriterion searchCriterion in unfilteredSearchCriteria)
         {
             try
             {
@@ -51,7 +54,7 @@ public class SearchService : Service
         IEnumerable<Submission> submissions = 
             searchQueries.IsEmpty?
                 Enumerable.Empty<Submission>() :
-                await this._submissionRepository.GetSearchResults(searchQueries);
+                await this._searchDomainService.GetSearchResults(searchQueries);
         
         this._queryBuilder.Reset();
         

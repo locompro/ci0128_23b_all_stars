@@ -73,8 +73,8 @@ function performSearchButtonShared(modalShownParam) {
     } else {
         var provinceValue = document.getElementById("provinceDropdown").value;
         var cantonValue = document.getElementById("cantonDropdown").value;
-        var minValue = /*document.getElementById("minValue").value*/ 0;
-        var maxValue = /*document.getElementById("maxValue").value*/ 0;
+        var minValue = document.getElementById("minValue").value;
+        var maxValue = document.getElementById("maxValue").value;
         var categoryValue = document.getElementById("categoryDropdown").value;
 
         try {

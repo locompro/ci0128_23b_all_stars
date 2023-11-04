@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Locompro.Services;
-using Locompro.Areas.Identity.ViewModels;
 using Locompro.Models.ViewModels;
 
 namespace Locompro.Pages.Account

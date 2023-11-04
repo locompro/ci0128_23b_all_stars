@@ -7,11 +7,12 @@ using NUnit.Framework;
 using Locompro.Services;
 using Locompro.Services.Domain;
 using Microsoft.Extensions.DependencyInjection;
+using Moq;
 
 namespace Locompro.Tests.Services
 {
     [TestFixture]
-    public class AdvancedSearchTest
+    public class AdvancedSearchInputServiceTest
     {
         private ILoggerFactory _loggerFactory;
         private LocomproContext _context;
@@ -55,13 +56,18 @@ namespace Locompro.Tests.Services
             _context.Set<Canton>().Add(sanRamonCanton);
 
             new CrudRepository<User, string>(_context, _loggerFactory);
-
+            
+            IUnitOfWork unitOfWork = new UnitOfWork(null, _loggerFactory, _context);
+            
             ICrudRepository<Country, string> countryRepostory = new CrudRepository<Country, string>(_context, _loggerFactory);
             ICrudRepository<Category, string> categoryRepository = new CrudRepository<Category, string>(_context, _loggerFactory);
+            INamedEntityRepository<Country, string> countryRepostoryER = new NamedEntityRepository<Country, string>(_context, _loggerFactory);
+            INamedEntityRepository<Category, string> categoryRepositoryER = new NamedEntityRepository<Category, string>(_context, _loggerFactory);
             
-            UnitOfWork unitOfWork = new UnitOfWork(null, _loggerFactory, _context);
             unitOfWork.RegisterRepository(countryRepostory);
             unitOfWork.RegisterRepository(categoryRepository);
+            unitOfWork.RegisterRepository(countryRepostoryER);
+            unitOfWork.RegisterRepository(categoryRepositoryER);
 
             this._categoryService = new NamedEntityDomainService<Category, string>(unitOfWork, _loggerFactory);
             this._countryService = new NamedEntityDomainService<Country, string>(unitOfWork, _loggerFactory);
@@ -135,5 +141,9 @@ namespace Locompro.Tests.Services
                 Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Accesorios"));
             });
         }
+    }
+
+    public interface ISearchServiceProvider
+    {
     }
 }
