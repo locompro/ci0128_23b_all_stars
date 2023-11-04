@@ -22,7 +22,7 @@ public class SubmissionServiceTest
         _submissionCrudRepositoryMock = new Mock<ISubmissionRepository>();
         
         _unitOfWorkMock
-            .Setup(unit => unit.GetRepository<ISubmissionRepository>())
+            .Setup(unit => unit.GetSpecialRepository<ISubmissionRepository>())
             .Returns(_submissionCrudRepositoryMock.Object);
         
         _submissionService = new SubmissionService(_unitOfWorkMock.Object, loggerFactoryMock.Object);

@@ -59,7 +59,7 @@ namespace Locompro.Tests.Services
             ICrudRepository<Country, string> countryRepostory = new CrudRepository<Country, string>(_context, _loggerFactory);
             ICrudRepository<Category, string> categoryRepository = new CrudRepository<Category, string>(_context, _loggerFactory);
             
-            UnitOfWork unitOfWork = new UnitOfWork(null, _loggerFactory, _context);
+            UnitOfWork unitOfWork = new UnitOfWork(_loggerFactory, _context);
             unitOfWork.RegisterRepository(countryRepostory);
             unitOfWork.RegisterRepository(categoryRepository);
 

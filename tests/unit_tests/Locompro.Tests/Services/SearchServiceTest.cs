@@ -25,7 +25,7 @@ public class SearchServiceTest
         _submissionRepositoryMock = new Mock<ISubmissionRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
 
-        _unitOfWorkMock.Setup(u => u.GetRepository<ISubmissionRepository>())
+        _unitOfWorkMock.Setup(u => u.GetSpecialRepository<ISubmissionRepository>())
             .Returns(_submissionRepositoryMock.Object);
 
         _searchService = new SearchService(_unitOfWorkMock.Object, loggerFactoryMock.Object);

@@ -20,7 +20,7 @@ public class SearchService : Service
     public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) :
         base(unitOfWork, loggerFactory)
     {
-        _submissionRepository = UnitOfWork.GetRepository<ISubmissionRepository>();
+        _submissionRepository = UnitOfWork.GetSpecialRepository<ISubmissionRepository>();
         _queryBuilder = new QueryBuilder();
     }
 
