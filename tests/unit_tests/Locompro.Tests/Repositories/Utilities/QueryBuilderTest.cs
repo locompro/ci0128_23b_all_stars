@@ -55,7 +55,7 @@ public class QueryBuilderTest
         SearchQueries builtQueries = this._queryBuilder.GetSearchFunction();
         
         // Assert
-        Assert.AreEqual(1, builtQueries.SearchQueryFunctions.Count);
+        Assert.That(builtQueries.SearchQueryFunctions.Count, Is.EqualTo(1));
         
         // restore query builder state
         this._queryBuilder.Reset();
@@ -94,8 +94,8 @@ public class QueryBuilderTest
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.AreEqual(1, previousSize);
-            Assert.AreEqual(0, builtQueries.SearchQueryFunctions.Count);
+            Assert.That(previousSize, Is.EqualTo(1));
+            Assert.That(builtQueries.SearchQueryFunctions.Count, Is.EqualTo(0));
         });
         
         // restore state of query builder
@@ -126,7 +126,7 @@ public class QueryBuilderTest
         SearchQueries builtQueries = this._queryBuilder.GetSearchFunction();
         
         // Assert
-        Assert.AreEqual(3, builtQueries.SearchQueryFunctions.Count);
+        Assert.That(builtQueries.SearchQueryFunctions.Count, Is.EqualTo(3));
         
         this._queryBuilder.Reset();
     }
@@ -149,7 +149,7 @@ public class QueryBuilderTest
             SearchValue = "test"
         };
 
-        ISearchCriterion invalidSearchCriterionNull = null;
+        ISearchCriterion? invalidSearchCriterionNull = null;
         
         ISearchCriterion invalidSearchCriterionEmpty = new SearchCriterion<string>();
         

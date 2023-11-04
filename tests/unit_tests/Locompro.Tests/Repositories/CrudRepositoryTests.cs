@@ -65,7 +65,7 @@ namespace Locompro.Tests.Repositories
             {
                 User[] enumerable = result as User[] ?? result.ToArray();
                 Assert.That(enumerable, Is.Not.Null);
-                Assert.That(enumerable.Count(), Is.EqualTo(2));
+                Assert.That(enumerable.Length, Is.EqualTo(2));
             });
         }
 

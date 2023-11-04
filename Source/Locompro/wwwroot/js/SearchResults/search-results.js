@@ -253,6 +253,14 @@ function plusSlides(slideIndex) {
     searchResultsPage.plusSlides(slideIndex);
 }
 
+/*
+ * Clears all filters from the filter menu.
+ */
+function clearFilters() {
+    searchResultsPage.filters.clearFilters();
+    searchResultsPage.populateTableWithResults();
+}
+
 const modal = document.getElementById('ItemModal');
 
 /**

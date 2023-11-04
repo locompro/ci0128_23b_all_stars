@@ -5,6 +5,7 @@ using Locompro.Common.Search;
 using Locompro.Common.Search.Interfaces;
 using Locompro.Data;
 using Locompro.Data.Repositories;
+using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
 
 namespace Locompro.Services;
@@ -106,12 +107,12 @@ public class SearchService : Service, ISearchService
     /// </summary>
     /// <param name="itemGrouping"></param>
     /// <returns></returns>
-    private async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
+    private static async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
     {
         // Get best submission for its information
         var bestSubmission = GetBestSubmission(itemGrouping);
         
-        List<String> categories = new List<string>();
+        List<string> categories = new List<string>();
 
         foreach (Submission submission in itemGrouping)
         {
@@ -140,12 +141,13 @@ public class SearchService : Service, ISearchService
     /// </summary>
     /// <param name="submissions"> submissions to be turned into display submissions</param>
     /// <returns></returns>
-    private static List<DisplaySubmission> GetDisplaySubmissions(List<Submission> submissions)
+    private static List<SubmissionViewModel> GetDisplaySubmissions(List<Submission> submissions)
     {
-        var displaySubmissions = new List<DisplaySubmission>();
+        List<SubmissionViewModel> displaySubmissions = new List<SubmissionViewModel>();
+        
         foreach (var submission in submissions)
         {
-            displaySubmissions.Add(new DisplaySubmission(submission, GetFormattedDate));
+            displaySubmissions.Add(new SubmissionViewModel(submission, GetFormattedDate));
         }
 
         return displaySubmissions;
@@ -159,8 +161,14 @@ public class SearchService : Service, ISearchService
     /// <returns></returns>
     private static string GetFormattedDate(Submission submission)
     {
-        Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture),
-            @"[0-9]*/[0-9.]*/[0-9]*");
+        // Define a timeout duration for the regex operation
+        TimeSpan matchTimeout = TimeSpan.FromSeconds(2); // 1 second timeout
+
+        // Use the Regex constructor that allows a timeout
+        Regex regex = new Regex(@"[0-9]*/[0-9.]*/[0-9]*", RegexOptions.None, matchTimeout);
+
+        // Perform the match with the timeout
+        Match regexMatch = regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture));
 
         string date = regexMatch.Success
             ? regexMatch.Groups[0].Value

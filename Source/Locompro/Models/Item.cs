@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Locompro.Models.ViewModels;
 
 namespace Locompro.Models;
 
@@ -21,7 +22,7 @@ public class Item
     public string Model { get; init; }
 
     public string Brand { get; set; }
-    public List<DisplaySubmission> Submissions { get; set; }
+    public List<SubmissionViewModel> Submissions { get; set; }
 
     /// <summary>
     /// Constructor for an item.

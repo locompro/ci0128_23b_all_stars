@@ -11,11 +11,11 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class PicturesServiceTest
 {
-    private PicturesService _picturesService;
+    private PicturesService? _picturesService;
     
     // Mocks for your dependencies
-    private Mock<IUnitOfWork> _unitOfWork;
-    private Mock<IPicturesRepository> _picturesRepository;
+    private Mock<IUnitOfWork>? _unitOfWork;
+    private Mock<IPicturesRepository>? _picturesRepository;
     
     [SetUp]
     public void Setup()
@@ -98,7 +98,7 @@ public class PicturesServiceTest
         };
         
         // Setup mock behavior
-        _picturesRepository.Setup(p => p.GetPicturesByItem(It.IsAny<int>() ,It.IsAny<string>(), It.IsAny<string>()))
+        _picturesRepository!.Setup(p => p.GetPicturesByItem(It.IsAny<int>() ,It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync((int pictureAmount, string productName, string storeName) =>
             {
                 return pictures.Where(p => p.Submission.Product.Name == productName)
@@ -108,12 +108,12 @@ public class PicturesServiceTest
         );
         
         // Act
-        var result = await _picturesService.GetPicturesForItem(testPictureAmount, testProductName, testStoreName);
+        var result = await _picturesService!.GetPicturesForItem(testPictureAmount, testProductName, testStoreName);
         
         // Assert
         Assert.Multiple(() =>
         {
-            Assert.That(result.Count, Is.EqualTo(pictures.Count));
+            Assert.That(result, Has.Count.EqualTo(pictures.Count));
             Assert.That(result[0].SubmissionUserId, Is.EqualTo(pictures[0].SubmissionUserId));
             Assert.That(result[0].SubmissionEntryTime, Is.EqualTo(pictures[0].SubmissionEntryTime));
             Assert.That(result[0].Index, Is.EqualTo(pictures[0].Index));

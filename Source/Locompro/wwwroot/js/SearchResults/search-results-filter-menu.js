@@ -128,9 +128,6 @@ class SearchResultsFilterMenu {
         this.filters.set("Brands", []);
         this.filters.set("Models", []);
         this.filters.set("Categories", []);
-        
-        // this.filters.set("MinPrice", searchResults[0].Price);
-        // this.filters.set("MaxPrice", searchResults[0].Price);
 
         for (let itemIndex = 0; itemIndex < searchResults.length; itemIndex++) {
             let item = searchResults[itemIndex];
@@ -161,6 +158,13 @@ class SearchResultsFilterMenu {
                 }
             }
         }
+    }
+
+    /*
+     * Clears all filters from the filter menu.
+     */
+    clearFilters() {
+        this.currentFilters = new Map();
     }
 }
 
