@@ -78,7 +78,7 @@ class SearchResultsPictureContainer {
 
             let slideContent = document.createElement('div');
             slideContent.className = 'mySlides';
-            slideContent.style = 'background-color: darkgray; border: 1px solid #e4e4e4';
+            slideContent.style = 'background-color: darkgray; border: 111px solid #e4e4e4';
 
             let img = document.createElement('img');
             img.src = picture;
