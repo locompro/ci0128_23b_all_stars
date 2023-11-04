@@ -47,6 +47,8 @@ app.Use(async (context, next) =>
     await next();
 });
 
+app.UseSession();
+
 app.Run();
 return;
 
@@ -112,4 +114,10 @@ void RegisterServices(WebApplicationBuilder builder)
     
     builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
 
+    
+    // Add session support
+    builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(2);
+    });
 }

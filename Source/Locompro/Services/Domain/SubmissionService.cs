@@ -19,4 +19,10 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
     {
         return await _submissionRepository.GetSearchResults(searchQueries);
     }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<Submission>> GetItemSubmissions(string storeName, string productName)
+    {
+        return await _submissionRepository.GetItemSubmissions(storeName, productName);
+    }
 }

@@ -1,3 +1,4 @@
+using System.Linq.Dynamic.Core;
 using Locompro.Common.Search;
 using Locompro.Models;
 using Microsoft.EntityFrameworkCore;
@@ -38,6 +39,16 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
             searchQueries.SearchQueryFunctions.Aggregate(submissionsResults, (current, query) => current.Where(query));
 
         // get and return the results
+        return await submissionsResults.ToListAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<Submission>> GetItemSubmissions(string storeName, string productName)
+    {
+        IQueryable<Submission> submissionsResults = Set
+            .Include(submission => submission.Product)
+            .Where(submission => submission.Product.Name == productName && submission.Store.Name == storeName);
+        
         return await submissionsResults.ToListAsync();
     }
 }

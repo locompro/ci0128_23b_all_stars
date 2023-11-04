@@ -6,7 +6,6 @@ using Locompro.Common.Search.Interfaces;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Services.Domain;
-using Locompro.Services.Domain;
 
 namespace Locompro.Services;
 
@@ -63,9 +62,16 @@ public class SearchService : Service, ISearchService
         // get the submissions that match the search functions
         IEnumerable<Submission> submissions = await this._searchDomainService.GetSearchResults(searchQueries);
 
-        this._queryBuilder.Reset();
+        _queryBuilder.Reset();
 
-        return GetItems(submissions).Result.ToList();
+        if (!submissions.Any())
+        {
+            return new List<Item>();
+        }
+
+        IEnumerable<Item> items = await GetItems(submissions);
+
+        return items.ToList();
     }
 
     /// <summary>
@@ -104,24 +110,45 @@ public class SearchService : Service, ISearchService
     {
         // Get best submission for its information
         var bestSubmission = GetBestSubmission(itemGrouping);
+        
+        List<String> categories = new List<string>();
 
+        foreach (Submission submission in itemGrouping)
+        {
+            if (submission.Product.Categories == null)
+            {
+                continue;
+            }
+            categories.AddRange(submission.Product.Categories.Select(c => c.Name).ToList());
+        }
+        
         var item = new Item(
-            GetFormattedDate(bestSubmission),
-            bestSubmission.Product.Name,
-            bestSubmission.Price,
-            bestSubmission.Store.Name,
-            bestSubmission.Store.Canton.Name,
-            bestSubmission.Store.Canton.Province.Name,
-            bestSubmission.Description,
-            bestSubmission.Product.Model
+            bestSubmission,
+            GetFormattedDate
         )
         {
-            Submissions = itemGrouping.ToList(),
-            Model = bestSubmission.Product.Model,
-            Brand = bestSubmission.Product.Brand,
+            Submissions = GetDisplaySubmissions(itemGrouping.ToList()),
+            Categories = categories
         };
 
         return await Task.FromResult(item);
+    }
+    
+    /// <summary>
+    /// Constructs a list of display submissions from a list of submissions
+    /// Reduces the amount of memory necesary to display submissions
+    /// </summary>
+    /// <param name="submissions"> submissions to be turned into display submissions</param>
+    /// <returns></returns>
+    private static List<DisplaySubmission> GetDisplaySubmissions(List<Submission> submissions)
+    {
+        var displaySubmissions = new List<DisplaySubmission>();
+        foreach (var submission in submissions)
+        {
+            displaySubmissions.Add(new DisplaySubmission(submission, GetFormattedDate));
+        }
+
+        return displaySubmissions;
     }
 
     /// <summary>

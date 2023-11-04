@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // if the modal is currently been shown, close it
         if (modalShown === true) {
             // get the modal
-            var modal = document.getElementById("modalContainer");
+            let modal = document.getElementById("modalContainer");
             // erase the contents
             modal.innerHTML = "";
 
