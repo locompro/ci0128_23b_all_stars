@@ -34,7 +34,7 @@
                         </button>
                     </div>
                 </div>
-                <button class=" advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
+                <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
                         id="advancedSearchButton"
                         style="margin-left: 15px;"
                         onclick="advancedSearchButtonPressed()"
@@ -50,28 +50,37 @@
         </div>
         <div class="container search-input-group-on-advanced-search row"
              style="margin-top: 10px; margin-left: 0px">
-            <h5 class="col-1" style="padding-top: 22px;  padding-right: 0px">filtros</h5>
-            <div class = "col">
+            <div class="col" >
+                <h5 style="padding-top: 5px;  padding-right: 0px">filtros</h5>
+                <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
+                        id="clearFiltersButton"
+                        style="margin-left: 0px;"
+                        onclick="clearFilters()"
+                        type="button">
+                    Limpiar filtros
+                </button>
+            </div>
+            <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Nombre</label>
-                <select class = "form-select"
+                <select class="form-select"
                         type="submit"
                         onChange="applyFilter(this)"
                         style="font-family: Roboto, sans-serif;"
                         id="productNameFilter">
                 </select>
             </div>
-            <div class = "col">
+            <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Provincia</label>
-                <select class = "form-select"
+                <select class="form-select"
                         type="submit"
                         onChange="applyFilter(this)"
                         style="font-family: Roboto, sans-serif;"
                         id="provinceFilter">
                 </select>
             </div>
-            <div class = "col">
+            <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Cantón</label>
-                <select class = "form-select"
+                <select class="form-select"
                         type="submit"
                         onChange="applyFilter(this)"
                         style="font-family: Roboto, sans-serif;"
@@ -81,9 +90,9 @@
             <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Precio mínimo</label>
                 <input type="number"
-                   class="form-control"
-                   id="minPriceFilter"
-                   onChange="applyFilter(this)">
+                       class="form-control"
+                       id="minPriceFilter"
+                       onChange="applyFilter(this)">
             </div>
             <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Precio máximo</label>
@@ -94,7 +103,7 @@
             </div>
             <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Marca</label>
-                <select class = "form-select"
+                <select class="form-select"
                         type="submit"
                         onChange="applyFilter(this)"
                         style="font-family: Roboto, sans-serif;"
@@ -103,7 +112,7 @@
             </div>
             <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Modelo</label>
-                <select class = "form-select"
+                <select class="form-select"
                         type="submit"
                         onChange="applyFilter(this)"
                         style="font-family: Roboto, sans-serif;"
@@ -112,14 +121,14 @@
             </div>
             <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Categoria</label>
-                <select class = "form-select"
+                <select class="form-select"
                         type="submit"
                         onChange="applyFilter(this)"
                         style="font-family: Roboto, sans-serif;"
                         id="categoryFilter">
                 </select>
             </div>
-         </div>
+        </div>
         <div class="modal" id="ItemModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">

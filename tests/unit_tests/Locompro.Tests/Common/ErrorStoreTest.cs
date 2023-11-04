@@ -37,7 +37,7 @@ public class ErrorStoreTest
 
         // Assert
         Assert.That(_errorStore.Count, Is.EqualTo(1));
-        Assert.IsTrue(_errorStore.HasErrors);
+        Assert.That(_errorStore.HasErrors, Is.True);
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public class ErrorStoreTest
 
         // Assert
         Assert.That(_errorStore.Count, Is.EqualTo(errorMessages.Count));
-        Assert.IsTrue(_errorStore.HasErrors);
+        Assert.That(_errorStore.HasErrors, Is.True);
     }
 
     /// <summary>
@@ -73,7 +73,7 @@ public class ErrorStoreTest
 
         // Assert
         Assert.That(_errorStore.Count, Is.EqualTo(0));
-        Assert.IsFalse(_errorStore.HasErrors);
+        Assert.That(_errorStore.HasErrors, Is.False);
     }
 
     /// <summary>

@@ -48,7 +48,7 @@ public class PictureParserTest
         
         List<PictureViewModel> pictures = PictureParser.Parse(new FormFileCollection() { file, file2, file3 });
         
-        Assert.That(pictures.Count, Is.EqualTo(3));
+        Assert.That(pictures, Has.Count.EqualTo(3));
     }
 
     [Test]
@@ -58,7 +58,7 @@ public class PictureParserTest
         
         List<PictureViewModel> pictures = PictureParser.Parse(new FormFileCollection() { file });
         
-        Assert.That(pictures.Count, Is.EqualTo(0));
+        Assert.That(pictures, Is.Empty);
     }
 
     [Test]
@@ -85,7 +85,7 @@ public class PictureParserTest
         
         Assert.Multiple(() =>
         {
-            Assert.That(serializedPictures.Count, Is.EqualTo(2));
+            Assert.That(serializedPictures, Has.Count.EqualTo(2));
             Assert.That(serializedPictures[0], Is.EqualTo($"data:image/png;base64,{Convert.ToBase64String(data)}"));
             Assert.That(serializedPictures[1], Is.EqualTo($"data:image/png;base64,{Convert.ToBase64String(data2)}"));
         });
