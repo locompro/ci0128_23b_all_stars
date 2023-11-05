@@ -103,7 +103,9 @@ public class SubmissionServiceTest
     }
     
     /// <summary>
-    /// 
+    /// Tests that the search by store name returns the expected results when
+    /// the store name is mentioned in the submissions
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public async Task AddingFirstRatingToSubmissionResultsInNewSubmissionRatingBeingSame()
@@ -127,6 +129,10 @@ public class SubmissionServiceTest
         Assert.That(changedSubmission.Rating, Is.EqualTo(5));
     }
     
+    /// <summary>
+    /// Tests that the average of the ratings is calculated correctly
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
     [Test]
     public async Task AddingSecondRatingToSubmissionResultsInNewSubmissionRatingBeingAverage()
     {
@@ -152,6 +158,10 @@ public class SubmissionServiceTest
         Assert.That(changedSubmission.Rating, Is.EqualTo(4));
     }
     
+    /// <summary>
+    /// Tests that an exception is thrown when the rating view model is null or
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
     [Test]
     public async Task AddingRatingOnNonExistentSubmissionThrowsException()
     {
@@ -169,6 +179,10 @@ public class SubmissionServiceTest
         Assert.ThrowsAsync<InvalidOperationException>(async () => await _submissionService.UpdateSubmissionRating(newRating));
     }
 
+    /// <summary>
+    /// Tests that an exception is thrown when the rating view model is null or
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
     [Test]
     public async Task AddingNullRatingComponentThrowsException()
     {
@@ -186,6 +200,11 @@ public class SubmissionServiceTest
         Assert.ThrowsAsync<ArgumentException>(async () => await _submissionService.UpdateSubmissionRating(newRating));
     }
     
+    /// <summary>
+    /// Tests that an exception is thrown when the rating view model is null or
+    /// the rating string is not a number between 1 and 5
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
     [Test]
     public async Task AddingRatingComponentWithInvalidRatingThrowsException()
     {
@@ -210,6 +229,10 @@ public class SubmissionServiceTest
         
     }
 
+    /// <summary>
+    /// Tests that an exception is thrown when the rating view model is null or the rating string
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
     [Test]
     public void AddingRatingWithInvalidParametersThrowsException()
     {
@@ -236,6 +259,11 @@ public class SubmissionServiceTest
 
     }
 
+    /// <summary>
+    /// For a corner case where there is a rating and somehow the amount of ratings is 0
+    /// Would usually happen only for seeded data
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
     [Test]
     public async Task AddRatingOnSubmissionWithRatingButZeroRatingsAmountResultsInValidAverage()
     {
