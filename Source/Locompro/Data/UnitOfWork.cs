@@ -32,7 +32,8 @@ public class UnitOfWork : IUnitOfWork
         {
             { typeof(ICantonRepository), () => new CantonRepository(_context, _loggerFactory) },
             { typeof(ISubmissionRepository), () => new SubmissionRepository(_context, _loggerFactory) },
-            { typeof(IPictureRepository), () => new PictureRepository(_context, _loggerFactory) }
+            { typeof(IPictureRepository), () => new PictureRepository(_context, _loggerFactory) },
+            { typeof(IUserRepository), () => new UserRepository(_context, _loggerFactory) }
         };
     }
 

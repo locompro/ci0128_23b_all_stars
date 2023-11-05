@@ -7,18 +7,19 @@ GO
 GO
 CREATE OR ALTER PROCEDURE AddParents @category NVARCHAR(60), @productId int
 AS
-WITH ascendants AS (
-    SELECT c.Name, c.ParentName
-    FROM Categories c
-    WHERE @category = c.Name
-    UNION ALL
+WITH ascendants AS (SELECT c.Name, c.ParentName
+                    FROM Categories c
+                    WHERE @category = c.Name
+                    UNION ALL
 
-    SELECT Categories.Name, Categories.ParentName
-    FROM Categories INNER JOIN ascendants ON Categories.Name = ascendants.ParentName
-)
+                    SELECT Categories.Name, Categories.ParentName
+                    FROM Categories
+                             INNER JOIN ascendants ON Categories.Name = ascendants.ParentName)
 
-INSERT INTO CategoryProduct
-SELECT c.Name, @productId FROM Categories c
+INSERT
+INTO CategoryProduct
+SELECT c.Name, @productId
+FROM Categories c
 GO
 
 -- AS-76
@@ -26,29 +27,19 @@ GO
 -- para asumir el rol de moderador.
 -- Autor: Gabriel Molina Bulgarelli C14826
 GO
-CREATE OR ALTER FUNCTION GetQualifiedUserIDs
-(
-    @TargetUsername NVARCHAR(255)
+CREATE OR ALTER FUNCTION GetQualifiedUserIDs(
 )
     RETURNS TABLE
         AS
         RETURN
             (
                 SELECT au.Id
-                FROM AspNetUsers au
-                WHERE au.Username = @TargetUsername
-                  AND
-                        (
-                            SELECT COUNT(*)
-                            FROM Submissions s
-                            WHERE s.UserId = @TargetUsername
-                        ) > 10
-                  AND
-                        (
-                            SELECT AVG(s.Rating)
-                            FROM Submissions s
-                            WHERE s.UserId = @TargetUsername
-                        ) >= 4.9
+                FROM AspNetUsers au Left Join AspNetUserClaims ac on au.Id = ac.UserId
+                WHERE (SELECT COUNT(*)
+                       FROM Submissions s
+                       WHERE s.UserId = au.Id)
+                    > 10
+                  AND au.Rating >= 4.9
             );
 GO
 
@@ -59,7 +50,8 @@ GO
 CREATE OR ALTER PROCEDURE DeleteModeratedSubmissions
 AS
 BEGIN
-    DELETE FROM Submissions
+    DELETE
+    FROM Submissions
     WHERE Status = 4;
 END;
 
@@ -76,7 +68,8 @@ BEGIN
     DECLARE @Count INT;
     SELECT @Count = COUNT(*)
     FROM Submissions
-    WHERE UserID = @UserID AND Rating > 0;
+    WHERE UserID = @UserID
+      AND Rating > 0;
     RETURN @Count;
 END;
 GO
@@ -121,19 +114,17 @@ CREATE OR ALTER FUNCTION GetPictures(
         RETURN
             (
                 WITH ItemPictures AS
-                         (
-                             SELECT
-                                 S.UserId AS SubmissionUserId,
-                                 S.EntryTime AS SubmissionEntryTime,
+                         (SELECT S.UserId                                      AS SubmissionUserId,
+                                 S.EntryTime                                   AS SubmissionEntryTime,
                                  P.PictureTitle,
                                  P.PictureData,
                                  ROW_NUMBER() OVER (ORDER BY S.EntryTime DESC) AS RowNum
-                             FROM Submissions AS S JOIN Pictures AS P ON
-                                         S.UserId = P.SubmissionUserId
-                                     AND S.EntryTime = P.SubmissionEntryTime
-                             WHERE S.StoreName = @StoreName
-                               AND S.ProductId = @ProductId
-                         )
+                          FROM Submissions AS S
+                                   JOIN Pictures AS P ON
+                                      S.UserId = P.SubmissionUserId
+                                  AND S.EntryTime = P.SubmissionEntryTime
+                          WHERE S.StoreName = @StoreName
+                            AND S.ProductId = @ProductId)
                 SELECT PictureTitle, PictureData
                 FROM ItemPictures
                 WHERE RowNum <= @MaxPictures

@@ -26,8 +26,10 @@ namespace Locompro.Tests.Repositories
             _context.Database.EnsureCreated();
 
             // Add known entities
-            _context.Set<User>().Add(new User { Id = "1", Name = "UserA", Address = "AddressA", Rating = 5.0f, Status = Status.Active });
-            _context.Set<User>().Add(new User { Id = "2", Name = "UserB", Address = "AddressB", Rating = 3.0f, Status = Status.Active });
+            _context.Set<User>().Add(new User
+                { Id = "1", Name = "UserA", Address = "AddressA", Rating = 5.0f, Status = Status.Active });
+            _context.Set<User>().Add(new User
+                { Id = "2", Name = "UserB", Address = "AddressB", Rating = 3.0f, Status = Status.Active });
             _context.SaveChanges();
 
             _userRepository = new CrudRepository<User, string>(_context, _loggerFactory);
@@ -73,7 +75,8 @@ namespace Locompro.Tests.Repositories
         public async Task AddAsync_ShouldAddEntity()
         {
             // Arrange
-            var newUser = new User { Id = "3", Name = "UserC", Address = "AddressC", Rating = 4.0f, Status = Status.Active };
+            var newUser = new User
+                { Id = "3", Name = "UserC", Address = "AddressC", Rating = 4.0f, Status = Status.Active };
 
             // Act
             await _userRepository.AddAsync(newUser);
@@ -109,7 +112,6 @@ namespace Locompro.Tests.Repositories
             });
         }
 
-        [Test]
         public async Task DeleteAsync_ShouldDeleteEntity()
         {
             // Arrange
@@ -120,6 +122,5 @@ namespace Locompro.Tests.Repositories
             // Assert
             Assert.That(result, Is.Null);
         }
-
     }
 }

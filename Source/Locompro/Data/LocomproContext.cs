@@ -1,4 +1,5 @@
-﻿using Castle.Core.Internal;
+﻿using System.Reflection;
+using Castle.Core.Internal;
 using Locompro.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
@@ -89,34 +90,37 @@ public class LocomproContext : IdentityDbContext<User>
             .WithOne(s => s.User);
 
         builder.Entity<Picture>()
-            .HasKey(p => new { p.SubmissionUserId, p.SubmissionEntryTime, p.Index});
+            .HasKey(p => new { p.SubmissionUserId, p.SubmissionEntryTime, p.Index });
 
         builder.Entity<Picture>()
             .HasOne<Submission>(p => p.Submission)
             .WithMany(s => s.Pictures)
-            .HasForeignKey(p => new {p.SubmissionUserId, p.SubmissionEntryTime})
+            .HasForeignKey(p => new { p.SubmissionUserId, p.SubmissionEntryTime })
             .IsRequired();
+        builder.Entity<GetPicturesResult>().HasNoKey();
+
+        builder.HasDbFunction(
+            typeof(LocomproContext).GetMethod(nameof(GetQualifiedUserIDs)) ??
+            throw new InvalidOperationException($"Method {nameof(GetQualifiedUserIDs)} not found."));
+        builder.HasDbFunction(
+            typeof(LocomproContext).GetMethod(nameof(CountRatedSubmissions), new[] { typeof(string) }) ??
+            throw new InvalidOperationException($"Method {nameof(CountRatedSubmissions)} not found."));
+        builder.HasDbFunction(
+            typeof(LocomproContext).GetMethod(nameof(GetPictures),
+                new[] { typeof(string), typeof(int), typeof(int) }) ??
+            throw new InvalidOperationException($"Method {nameof(GetPictures)} not found."));
     }
 
-    /*
     [DbFunction("GetPictures", "dbo")]
-    public static IEnumerable<GetPicturesResult> GetPictures(string storeName, int productId, int maxPictures)
-    {
-        throw new NotSupportedException();
-    } 
+    public IQueryable<GetPicturesResult> GetPictures(string storeName, int productId, int maxPictures) =>
+        FromExpression(() => GetPictures(storeName, productId, maxPictures));
 
     [DbFunction("CountRatedSubmissions", "dbo")]
-    public static int CountRatedSubmissions(string userId)
-    {
-        throw new NotSupportedException();
-    }
+    public int CountRatedSubmissions(string userId) => throw new NotSupportedException();
 
     [DbFunction("GetQualifiedUserIDs", "dbo")]
-    public static IEnumerable<GetQualifiedUserIDsResult> GetQualifiedUserIDs(string targetUsername)
-    {
-        throw new NotSupportedException();
-    }*/
-    
+    public IQueryable<GetQualifiedUserIDsResult> GetQualifiedUserIDs() => FromExpression((() => GetQualifiedUserIDs()));
+
     /// <summary>
     /// Assigns each parent category of a product to the product.
     /// </summary>

@@ -6,10 +6,7 @@ using Locompro.Services;
 using Locompro.Models;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Locompro.Services.Tasks;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -65,10 +62,11 @@ void RegisterServices(WebApplicationBuilder builder)
 
     string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
                              throw new InvalidOperationException("Env environment variable not found.");
-    
-    var connectionString = builder.Configuration.GetValue<string>($"{environmentName}_ConnectionString__LocomproContext") ??
-                           throw new InvalidOperationException("Secret connection string not found.");
-    
+
+    var connectionString =
+        builder.Configuration.GetValue<string>($"{environmentName}_ConnectionString__LocomproContext") ??
+        throw new InvalidOperationException("Secret connection string not found.");
+
     // Add DbContext using SQL Server
     builder.Services.AddDbContext<LocomproContext>(options => options.UseLazyLoadingProxies()
         .UseSqlServer(connectionString));
@@ -93,6 +91,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
     builder.Services.AddScoped<ICantonRepository, CantonRepository>();
     builder.Services.AddScoped<IPictureRepository, PictureRepository>();
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
 
     // Register domain services
     builder.Services.AddScoped(typeof(INamedEntityDomainService<,>), typeof(NamedEntityDomainService<,>));
@@ -101,6 +100,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ICantonService, CantonService>();
     builder.Services.AddScoped<ISignInManagerService, SignInManagerService>();
     builder.Services.AddScoped<IUserManagerService, UserManagerService>();
+    builder.Services.AddScoped<IUserService, Locompro.Services.Domain.UserService>();
 
     // Register application services
     builder.Services.AddScoped<IContributionService, ContributionService>();
@@ -111,13 +111,26 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ISearchService, SearchService>();
     builder.Services.AddScoped<IPictureService, PictureService>();
     builder.Services.AddScoped<SearchService>();
-    
-    builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
+    builder.Services.AddScoped<IModerationService, ModerationService>();
 
+
+    builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
     
     // Add session support
     builder.Services.AddSession(options =>
     {
         options.IdleTimeout = TimeSpan.FromMinutes(5);
     });
+    
+    RegisterHostedServices(builder);
+}
+
+// Register each related task next to each other. At the end of the related tasks, register the hosted service.
+// The Hosted Service will run all the tasks in the order they were registered.
+void RegisterHostedServices(WebApplicationBuilder builder)
+{
+    // Moderation tasks
+    builder.Services.AddSingleton<IScheduledTask, AddPossibleModeratorsTask>();
+    builder.Services.AddHostedService<TaskSchedulerService>();
+    
 }
