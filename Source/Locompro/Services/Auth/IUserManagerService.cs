@@ -63,7 +63,7 @@ public interface IUserManagerService
     /// <param name="role">The role to check for.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation with a result of <see cref="bool"/> indicating whether the user is in the specified role.</returns>
     Task<bool> IsInRoleAsync(User user, string role);
-    
+
     /// <summary>
     /// Asynchronously adds a claim to a user.
     /// </summary>
@@ -75,4 +75,15 @@ public interface IUserManagerService
     /// or failure of the operation.
     /// </returns>
     public Task<IdentityResult> AddClaimAsync(User user, Claim claim);
+
+    /// <summary>
+    /// Asynchronously deletes a claim from a user.
+    /// </summary>
+    /// <param name="user">The user from whom the claim is to be deleted.</param>
+    /// <param name="claim">The claim to be deleted from the user.</param>
+    /// <returns>
+    /// A task that represents the asynchronous delete operation. The task result contains
+    /// the <see cref="IdentityResult"/> of the delete operation.
+    /// </returns>
+    public Task<IdentityResult> DeleteClaimAsync(User user, Claim claim);
 }

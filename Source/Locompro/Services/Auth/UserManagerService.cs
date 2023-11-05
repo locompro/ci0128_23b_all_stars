@@ -68,7 +68,7 @@ public class UserManagerService : IUserManagerService
     {
         return _userManager.CheckPasswordAsync(user, password);
     }
-    
+
     /// <summary>
     /// Checks if a user is in a given role
     /// </summary>
@@ -83,7 +83,7 @@ public class UserManagerService : IUserManagerService
             return claims.Any(c => c.Type == ClaimTypes.Role && c.Value == role);
         });
     }
-    
+
     /// <summary>
     /// Asynchronously finds a user based on the user ID.
     /// </summary>
@@ -96,7 +96,7 @@ public class UserManagerService : IUserManagerService
     {
         return _userManager.FindByIdAsync(userId);
     }
-    
+
     /// <summary>
     /// Asynchronously adds a claim to a user.
     /// </summary>
@@ -110,5 +110,19 @@ public class UserManagerService : IUserManagerService
     public Task<IdentityResult> AddClaimAsync(User user, Claim claim)
     {
         return _userManager.AddClaimAsync(user, claim);
+    }
+
+    /// <summary>
+    /// Asynchronously deletes a claim from a user.
+    /// </summary>
+    /// <param name="user">The user from whom the claim is to be deleted.</param>
+    /// <param name="claim">The claim to be deleted from the user.</param>
+    /// <returns>
+    /// A task that represents the asynchronous delete operation. The task result contains
+    /// the <see cref="IdentityResult"/> of the delete operation.
+    /// </returns>
+    public Task<IdentityResult> DeleteClaimAsync(User user, Claim claim)
+    {
+        return _userManager.RemoveClaimAsync(user, claim);
     }
 }
