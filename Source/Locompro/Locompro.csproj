@@ -97,7 +97,6 @@
 
 	<ItemGroup>
 	  <Folder Include="Repositories\" />
-	  <Folder Include="Migrations\" />
 		<PackageReference Include="NUnit3TestAdapter" Version="4.2.0" />
 		<PackageReference Include="NUnitTDNet" Version="3.4.1" />
 

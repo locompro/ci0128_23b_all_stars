@@ -193,29 +193,3 @@ $(document).ready(function () {
     $("#mainForm").validate();
 });
 
-$(document).ready(function() {
-    $('#file').on('change', function() {
-        const fileInput = this;
-        const errorElement = $('#fileError');
-        const maxSize = 5000000; // 5MB in bytes
-
-        errorElement.css('display', 'none');
-
-        for (const element of fileInput.files) {
-            const file = element;
-
-            if (file.size > maxSize) {
-                errorElement.html('Archivo "' + file.name + '" supera el tamaño máximo de 5MB.');
-                errorElement.css('display', 'block');
-                fileInput.value = '';
-            }
-        }
-        
-        console.log(fileInput.files.length);
-    });
-    
-    document.getElementById('addSubmissionBtn').addEventListener('click', function () {
-        console.log('clicked');
-    });
-});
-
