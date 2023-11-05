@@ -1,5 +1,6 @@
 using System.Globalization;
 using Locompro.Common.Search;
+using Locompro.Common.Search.SearchMethodRegistration;
 using Locompro.Data;
 using Locompro.Models;
 using Locompro.Data.Repositories;
@@ -53,7 +54,7 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService.GetSearchResults(searchCriteria);
+        var searchResults = await _searchService!.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.That(searchResults.Exists(i => i.Name == productSearchName), Is.True);

@@ -1,4 +1,4 @@
-namespace Locompro.Common.Search;
+namespace Locompro.Common.Search.SearchMethodRegistration;
 
 public interface ISearchParam
 {
@@ -11,6 +11,10 @@ public interface ISearchParam
     /// Function or expression of whether to perform the search or not
     /// </summary>
     public IActivationQualifier ActivationQualifier { get; set; }
-
+    
+    /// <summary>
+    /// Returns internal activation qualifier depending on the type of the generic implementation
+    /// </summary>
+    /// <returns></returns>
     IActivationQualifier GetActivationQualifier();
 }
