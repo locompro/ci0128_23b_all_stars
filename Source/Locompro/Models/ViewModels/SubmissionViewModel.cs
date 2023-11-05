@@ -19,14 +19,21 @@ public class SubmissionViewModel
     
     public string EntryTime { get;}
     
+    public DateTime NonFormatedEntryTime { get; set; }
+    
+    public float Rating { get; set; }
+    
     public SubmissionViewModel()
     {
     }
     
     public SubmissionViewModel(Submission submission, Func<Submission, string> getFormattedDate)
     {
-        EntryTime = getFormattedDate(submission);
+        EntryTime = getFormattedDate(submission) ?? "";
         Price = submission.Price;
-        Description = submission.Description;
+        Description = submission.Description ?? "";
+        UserId = submission.UserId ?? "";
+        Rating = submission.Rating;
+        NonFormatedEntryTime = submission.EntryTime;
     }
 }

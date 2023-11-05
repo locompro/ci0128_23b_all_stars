@@ -1,4 +1,4 @@
-namespace Locompro.Common.Search;
+namespace Locompro.Common.Search.SearchMethodRegistration;
 
 /// <summary>
 /// Interface to be implemented by generic class, generic class then decides type when used

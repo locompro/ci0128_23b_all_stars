@@ -1,4 +1,4 @@
-﻿namespace Locompro.Common.Search;
+﻿namespace Locompro.Common.Search.SearchMethodRegistration;
 
 /// <summary>
 /// A search parameter or way to search for a submission

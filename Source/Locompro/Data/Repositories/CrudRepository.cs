@@ -26,7 +26,7 @@ namespace Locompro.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<T> GetByIdAsync(TK id) => await Set.FindAsync(id);
+        public virtual async Task<T> GetByIdAsync(TK id) => await Set.FindAsync(id);
 
         /// <inheritdoc />
         public async Task<IEnumerable<T>> GetAllAsync() => await Set.ToListAsync();
@@ -52,7 +52,7 @@ namespace Locompro.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task DeleteAsync(TK id)
+        public virtual async Task DeleteAsync(TK id)
         {
             var entity = await GetByIdAsync(id);
             if (entity != null)

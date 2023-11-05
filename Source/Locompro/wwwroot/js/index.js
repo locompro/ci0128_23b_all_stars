@@ -1,4 +1,4 @@
-import {initSelect2} from "./autocomplete.js"
+
 
 var modalShown = false;
 
@@ -77,10 +77,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-function performSearchButton() {
+function performIndexSearchButton() {
     performSearchButtonShared(modalShown);
 }
 
 async function loadProvince(optionSelected) {
-    loadProvinceShared(optionSelected, "Index");
+    await loadProvinceShared(optionSelected, "Index");
 }

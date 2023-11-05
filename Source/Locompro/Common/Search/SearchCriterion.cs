@@ -1,3 +1,5 @@
+using Locompro.Common.Search.SearchMethodRegistration;
+
 namespace Locompro.Common.Search;
 
 /// <summary>
@@ -26,7 +28,8 @@ public class SearchCriterion<T> : ISearchCriterion
         ParameterName = parameterName;
         SearchValue = searchValue;
     }
-
+    
+    /// inheritedDoc
     public dynamic GetSearchValue()
     {
         return SearchValue;

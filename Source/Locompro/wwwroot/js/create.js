@@ -210,5 +210,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 fileInput.value = '';
             }
         }
+        
+        console.log(fileInput.files.length);
+    });
+    
+    document.getElementById('addSubmissionBtn').addEventListener('click', function () {
+        console.log('clicked');
     });
 });

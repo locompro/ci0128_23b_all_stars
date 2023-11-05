@@ -119,7 +119,7 @@ void RegisterServices(WebApplicationBuilder builder)
     // Add session support
     builder.Services.AddSession(options =>
     {
-        options.IdleTimeout = TimeSpan.FromMinutes(2);
+        options.IdleTimeout = TimeSpan.FromMinutes(5);
     });
     
     RegisterHostedServices(builder);

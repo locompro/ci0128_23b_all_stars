@@ -1,4 +1,4 @@
-namespace Locompro.Common.Search;
+namespace Locompro.Common.Search.QueryBuilder;
 
 public interface IQueryBuilder
 {

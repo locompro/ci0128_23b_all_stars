@@ -1,4 +1,4 @@
-namespace Locompro.Common.Search;
+namespace Locompro.Common.Search.SearchMethodRegistration;
 
 /// <summary>
 /// Generic class for condition for search query to be considered in search process

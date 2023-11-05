@@ -129,8 +129,8 @@
                 </select>
             </div>
         </div>
-        <div class="modal" id="ItemModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
+        <div class="modal search-results-modal" id="ItemModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
                 <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
                     <div class="modal-body">
                         @Html.Partial("_ItemDisplay", Model.SearchViewModel)
@@ -213,6 +213,7 @@
     <script src="~/js/SearchResults/search-results-filter-menu.js"></script>
     <script src="~/js/SearchResults/search-results-table.js"></script>
     <script src="~/js/SearchResults/search-results-page-index-complex.js"></script>
-    <script src="~/js/SearchResults/search-results-modal.js"></script>
-    <script src="~/js/SearchResults/search-results-picture-container.js"></script>
+    <script src="~/js/SearchResults/ItemDetailsModal/search-results-modal.js"></script>
+    <script src="~/js/SearchResults/ItemDetailsModal/search-results-picture-container.js"></script>
+    <script src="~/js/SearchResults/ItemDetailsModal/search-results-submission-rating.js"></script>
 }

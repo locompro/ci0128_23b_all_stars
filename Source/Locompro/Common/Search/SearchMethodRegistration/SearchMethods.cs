@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Locompro.Models;
 
-namespace Locompro.Common.Search;
+namespace Locompro.Common.Search.SearchMethodRegistration;
 
 /// <summary>
 /// Singleton class that is used to store all the search strategies
@@ -23,7 +23,7 @@ public class SearchMethods
     /// <summary>
     /// returns instance of the singleton class
     /// </summary>
-    public static SearchMethods GetInstance => SearchMethods._instance ??= new SearchMethods();
+    public static SearchMethods GetInstance => _instance ??= new SearchMethods();
 
     /// <summary>
     /// Adds a new search parameter, strategy or way to search for a submission
@@ -31,13 +31,16 @@ public class SearchMethods
     /// <param name="parameterName"> the name to find which strategy to use </param>
     /// <param name="searchQuery"> the strategy of how to find a submission </param>
     /// <param name="activationQualifier"> a function used to determine whether the search is to be performed or not. e.g. if string is not null then search </param>
-    private void AddSearchParameter<Type>(SearchParameterTypes parameterName, Expression<Func<Submission, Type, bool>> searchQuery, Func<Type, bool> activationQualifier)
+    private void AddSearchParameter<T>(SearchParameterTypes parameterName, Expression<Func<Submission, T, bool>> searchQuery, Func<T, bool> activationQualifier)
     {
-        _searchParameters.Add(parameterName, new SearchParam
-        {
-            SearchQuery = new SearchQuery<Type>() { QueryFunction = searchQuery},
-            ActivationQualifier = new ActivationQualifier<Type>() { QualifierFunction = activationQualifier} 
-        });
+        _searchParameters.Add(
+            parameterName,
+            new SearchParam
+                {
+                    SearchQuery = new SearchQuery<T>() { QueryFunction = searchQuery},
+                    ActivationQualifier = new ActivationQualifier<T>() { QualifierFunction = activationQualifier}
+                }
+        );
     }
 
     /// <summary>
@@ -60,7 +63,7 @@ public class SearchMethods
     /// <returns> if a search method for the parameter type has been added </returns>
     public bool Contains(SearchParameterTypes parameterName)
     {
-        return this._searchParameters.ContainsKey(parameterName);
+        return _searchParameters.ContainsKey(parameterName);
     }
 
     /// <summary>
