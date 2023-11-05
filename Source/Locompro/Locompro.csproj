@@ -94,7 +94,6 @@
 	<ItemGroup>
 	  <Compile Remove="Repositories\CategoryRepository.cs" />
 	  <Compile Remove="Repositories\CountryRepository.cs" />
-	  <Compile Remove="Repositories\ProductRepository.cs" />
 	  <Compile Remove="Repositories\StoreRepository.cs" />
 	  <Compile Remove="Repositories\StringIdRepository.cs" />
 	</ItemGroup>

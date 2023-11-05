@@ -8,6 +8,10 @@ using Locompro.Services;
 using Locompro.Models;
 using Locompro.Services.AuthInterfaces;
 using Locompro.Services.Domain;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -98,7 +102,6 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped(typeof(IDomainService<,>), typeof(DomainService<,>));
     builder.Services.AddScoped<ISubmissionService, SubmissionService>();
     builder.Services.AddScoped<ICantonService, CantonService>();
-    builder.Services.AddScoped<ProductService>();
     builder.Services.AddScoped<ISignInManagerService, SignInManagerService>();
     builder.Services.AddScoped<IUserManagerService, UserManagerService>();
 

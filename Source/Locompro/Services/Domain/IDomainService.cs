@@ -4,15 +4,15 @@
     /// An application domain service.
     /// </summary>
     /// <typeparam name="T">Type of entity handled by service.</typeparam>
-    /// <typeparam name="I">Type of key used by entity.</typeparam>
-    public interface IDomainService<T, I> where T : class 
+    /// <typeparam name="TK">Type of key used by entity.</typeparam>
+    public interface IDomainService<T, TK> where T : class 
     {
         /// <summary>
         /// Gets an entity through this service based on its ID.
         /// </summary>
         /// <param name="id">ID for the entity to return.</param>
         /// <returns>Entity for the passed ID.</returns>
-        Task<T> Get(I id);
+        Task<T> Get(TK id);
 
         /// <summary>
         /// Gets all entities through this service.
@@ -36,6 +36,6 @@
         /// Deletes an entity through this service based on its ID.
         /// </summary>
         /// <param name="id">ID for entity to delete.</param>
-        Task Delete(I id);
+        Task Delete(TK id);
     }
 }
