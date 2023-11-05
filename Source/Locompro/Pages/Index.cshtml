@@ -3,6 +3,10 @@
 @using Locompro.Models
 @model IndexModel
 @inject INamedEntityDomainService<Category, string> CategoryDomainServicep
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+}
 
 
 @{

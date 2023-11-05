@@ -5,7 +5,7 @@
 
 using System;
 using System.Threading.Tasks;
-using Locompro.Areas.Identity.ViewModels;
+using Locompro.Models.ViewModels;
 using Locompro.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -14,9 +14,9 @@ namespace Locompro.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly AuthService authService;
+        private readonly IAuthService authService;
 
-        public RegisterModel(AuthService authService)
+        public RegisterModel(IAuthService authService)
         {
             this.authService = authService;
         }

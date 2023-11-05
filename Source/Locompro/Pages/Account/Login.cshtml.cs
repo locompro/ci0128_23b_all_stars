@@ -10,16 +10,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Locompro.Services;
-using Locompro.Areas.Identity.ViewModels;
 using Locompro.Models.ViewModels;
 
 namespace Locompro.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        private readonly AuthService authService;
+        private readonly IAuthService authService;
 
-        public LoginModel(AuthService authService)
+        public LoginModel(IAuthService authService)
         {
             this.authService = authService;
         }
