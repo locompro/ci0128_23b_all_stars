@@ -13,9 +13,9 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class SubmissionServiceTest
 {
-    private Mock<IUnitOfWork> _unitOfWorkMock;
-    private Mock<ISubmissionRepository> _submissionCrudRepositoryMock;
-    private SubmissionService _submissionService;
+    private Mock<IUnitOfWork> _unitOfWorkMock = null!;
+    private Mock<ISubmissionRepository> _submissionCrudRepositoryMock = null!;
+    private SubmissionService _submissionService = null!;
     
     [SetUp]
     public void Setup()
@@ -25,7 +25,7 @@ public class SubmissionServiceTest
         _submissionCrudRepositoryMock = new Mock<ISubmissionRepository>();
         
         _unitOfWorkMock
-            .Setup(unit => unit.GetRepository<ISubmissionRepository>())
+            .Setup(unit => unit.GetSpecialRepository<ISubmissionRepository>())
             .Returns(_submissionCrudRepositoryMock.Object);
         
         _submissionService = new SubmissionService(_unitOfWorkMock.Object, loggerFactoryMock.Object);
@@ -101,7 +101,164 @@ public class SubmissionServiceTest
         Assert.That(submissions, Is.Not.Null);
         Assert.That(submissions.Count(), Is.EqualTo(0));
     }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    [Test]
+    public async Task AddingFirstRatingToSubmissionResultsInNewSubmissionRatingBeingSame()
+    {
+        MockDataSetup();
+        RatingViewModel newRating = new RatingViewModel()
+        {
+            SubmissionUserId = "User1",
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "5"
+        };
 
+        await _submissionService.UpdateSubmissionRating(newRating);
+        
+        Submission changedSubmission = await _submissionCrudRepositoryMock.Object.GetByIdAsync(new SubmissionKey()
+        {
+            UserId = "User1",
+            EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
+        });
+        
+        Assert.That(changedSubmission.Rating, Is.EqualTo(5));
+    }
+    
+    [Test]
+    public async Task AddingSecondRatingToSubmissionResultsInNewSubmissionRatingBeingAverage()
+    {
+        MockDataSetup();
+        RatingViewModel newRating = new RatingViewModel()
+        {
+            SubmissionUserId = "User1",
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "5"
+        };
+
+        await _submissionService.UpdateSubmissionRating(newRating);
+        
+        newRating.Rating = "3";
+        await _submissionService.UpdateSubmissionRating(newRating);
+        
+        Submission changedSubmission = await _submissionCrudRepositoryMock.Object.GetByIdAsync(new SubmissionKey()
+        {
+            UserId = "User1",
+            EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
+        });
+        
+        Assert.That(changedSubmission.Rating, Is.EqualTo(4));
+    }
+    
+    [Test]
+    public async Task AddingRatingOnNonExistentSubmissionThrowsException()
+    {
+        MockDataSetup();
+        RatingViewModel newRating = new RatingViewModel()
+        {
+            SubmissionUserId = "User1",
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "5"
+        };
+
+        await _submissionService.UpdateSubmissionRating(newRating);
+        
+        newRating.SubmissionUserId = "User2";
+        Assert.ThrowsAsync<InvalidOperationException>(async () => await _submissionService.UpdateSubmissionRating(newRating));
+    }
+
+    [Test]
+    public async Task AddingNullRatingComponentThrowsException()
+    {
+        MockDataSetup();
+        RatingViewModel newRating = new RatingViewModel()
+        {
+            SubmissionUserId = "User1",
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "5"
+        };
+
+        await _submissionService.UpdateSubmissionRating(newRating);
+        
+        newRating.Rating = null;
+        Assert.ThrowsAsync<ArgumentException>(async () => await _submissionService.UpdateSubmissionRating(newRating));
+    }
+    
+    [Test]
+    public async Task AddingRatingComponentWithInvalidRatingThrowsException()
+    {
+        MockDataSetup();
+        RatingViewModel newRating = new RatingViewModel()
+        {
+            SubmissionUserId = "User1",
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "5"
+        };
+
+        await _submissionService.UpdateSubmissionRating(newRating);
+        
+        
+        Assert.Multiple(() =>
+        {
+            newRating.Rating = "6";
+            Assert.ThrowsAsync<ArgumentException>(async () => await _submissionService.UpdateSubmissionRating(newRating));
+            newRating.Rating = "0";
+            Assert.ThrowsAsync<ArgumentException>(async () => await _submissionService.UpdateSubmissionRating(newRating));
+        });
+        
+    }
+
+    [Test]
+    public void AddingRatingWithInvalidParametersThrowsException()
+    {
+        MockDataSetup();
+        RatingViewModel newRating = new RatingViewModel()
+        {
+            SubmissionUserId = null,
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "5"
+        };
+
+        RatingViewModel newRating1 = new RatingViewModel()
+        {
+            SubmissionUserId = "User1",
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = null
+        };
+        
+        Assert.Multiple(() =>
+        {
+            Assert.ThrowsAsync<ArgumentException>(async () => await _submissionService.UpdateSubmissionRating(newRating));
+            Assert.ThrowsAsync<ArgumentException>(async () => await _submissionService.UpdateSubmissionRating(newRating1));
+        });
+
+    }
+
+    [Test]
+    public async Task AddRatingOnSubmissionWithRatingButZeroRatingsAmountResultsInValidAverage()
+    {
+        MockDataSetup();
+
+        RatingViewModel newRating = new RatingViewModel()
+        {
+            SubmissionUserId = "User8",
+            SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "3"
+        };
+        
+        await _submissionService.UpdateSubmissionRating(newRating);
+        
+        Submission changedSubmission = await _submissionCrudRepositoryMock.Object.GetByIdAsync(new SubmissionKey()
+        {
+            UserId = "User8",
+            EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc)
+        });
+        
+        Assert.That(changedSubmission.Rating, Is.EqualTo(3.6500001f));
+    }
+    
     /// <summary>
     /// Sets up the mock for the submission repository so that it behaves as expected for the tests
     /// </summary>
@@ -227,7 +384,7 @@ public class SubmissionServiceTest
                 UserId = "User1",
                 EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
                 Price = 100,
-                Rating = 4.5f,
+                Rating = 0f,
                 Description = "Description for Submission 1",
                 StoreName = "Store1",
                 ProductId = 1,
@@ -500,5 +657,13 @@ public class SubmissionServiceTest
                 // get and return the results
                 return submissionsResults;
             });
+
+       _submissionCrudRepositoryMock
+           .Setup(repository => repository.GetByIdAsync(It.IsAny<SubmissionKey>()))
+           .ReturnsAsync((SubmissionKey submissionKey) =>
+           {
+               return submissions.SingleOrDefault(submission => submission.UserId == submissionKey.UserId &&
+                                                                 submission.EntryTime == submissionKey.EntryTime);
+           });
     }
 }

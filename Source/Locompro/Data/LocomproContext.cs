@@ -1,4 +1,5 @@
-﻿using Castle.Core.Internal;
+﻿using System.Reflection;
+using Castle.Core.Internal;
 using Locompro.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
@@ -89,28 +90,50 @@ public class LocomproContext : IdentityDbContext<User>
             .WithOne(s => s.User);
 
         builder.Entity<Picture>()
-            .HasKey(p => new { p.SubmissionUserId, p.SubmissionEntryTime, p.Index});
+            .HasKey(p => new { p.SubmissionUserId, p.SubmissionEntryTime, p.Index });
 
         builder.Entity<Picture>()
             .HasOne<Submission>(p => p.Submission)
             .WithMany(s => s.Pictures)
-            .HasForeignKey(p => new {p.SubmissionUserId, p.SubmissionEntryTime})
+            .HasForeignKey(p => new { p.SubmissionUserId, p.SubmissionEntryTime })
             .IsRequired();
+        builder.Entity<GetPicturesResult>().HasNoKey();
+
+        builder.HasDbFunction(
+            typeof(LocomproContext).GetMethod(nameof(GetQualifiedUserIDs)) ??
+            throw new InvalidOperationException($"Method {nameof(GetQualifiedUserIDs)} not found."));
+        builder.HasDbFunction(
+            typeof(LocomproContext).GetMethod(nameof(CountRatedSubmissions), new[] { typeof(string) }) ??
+            throw new InvalidOperationException($"Method {nameof(CountRatedSubmissions)} not found."));
+        builder.HasDbFunction(
+            typeof(LocomproContext).GetMethod(nameof(GetPictures),
+                new[] { typeof(string), typeof(int), typeof(int) }) ??
+            throw new InvalidOperationException($"Method {nameof(GetPictures)} not found."));
     }
+
+    [DbFunction("GetPictures", "dbo")]
+    public IQueryable<GetPicturesResult> GetPictures(string storeName, int productId, int maxPictures) =>
+        FromExpression(() => GetPictures(storeName, productId, maxPictures));
+
+    [DbFunction("CountRatedSubmissions", "dbo")]
+    public int CountRatedSubmissions(string userId) => throw new NotSupportedException();
+
+    [DbFunction("GetQualifiedUserIDs", "dbo")]
+    public IQueryable<GetQualifiedUserIDsResult> GetQualifiedUserIDs() => FromExpression((() => GetQualifiedUserIDs()));
 
     /// <summary>
     /// Assigns each parent category of a product to the product.
     /// </summary>
     /// <param name="categoryName"></param>
-    /// <param name="productID"></param>
+    /// <param name="productId"></param>
     /// <exception cref="ArgumentNullException"></exception>
-    public virtual async Task AddParents(string categoryName, int productID)
+    public virtual async Task AddParents(string categoryName, int productId)
     {
         if (categoryName.IsNullOrEmpty())
             throw new ArgumentNullException(nameof(categoryName));
 
         var categoryNameParameter = new SqlParameter("@category", categoryName);
-        var productIdParameter = new SqlParameter("@productId", productID);
+        var productIdParameter = new SqlParameter("@productId", productId);
 
         await Database.ExecuteSqlRawAsync("EXECUTE dbo.AddParents @category, @productId", categoryNameParameter,
             productIdParameter);

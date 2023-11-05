@@ -113,3 +113,43 @@
     /*margin: 0 auto; */
 }
 
+.star {
+    position: relative;
+    display: inline-block;
+    font-size: 24px; /* Adjust the size as needed */
+}
+
+.fa-star {
+    -webkit-background-clip: text;
+    color: transparent;
+}
+
+.rating {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%; /* Adjust the percentage to control the filled area */
+    overflow: hidden;
+}
+
+/* Adjust the background color to the color you want for the filled area */
+.rating::before {
+    content: "\2605"; /* Unicode star character */
+    color: gold; /* Filled color */
+}
+
+.star-container {
+    display: inline-block;
+    font-size: 24px;
+    background: linear-gradient(90deg, gold 50%, grey 50%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.search-results-modal {
+    margin-left: 180px;
+    margin-right: 180px;
+    margin-top: 30px;
+    margin-bottom: 200px;
+}

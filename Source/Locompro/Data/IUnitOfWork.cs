@@ -6,30 +6,17 @@ namespace Locompro.Data;
 public interface IUnitOfWork
 {
     /// <summary>
-    /// Opens a DB transaction.
-    /// </summary>
-    Task BeginTransactionAsync();
-
-    /// <summary>
     /// Commits a DB transaction.
     ///
     /// Rolls back transaction in the event of an exception.
     /// </summary>
-    Task CommitAsync();
+    Task SaveChangesAsync();
 
-    /// <summary>
-    /// Rolls back a DB transaction.
-    /// </summary>
-    Task RollbackAsync();
-
-    /// <summary>
-    /// Disposes of a DB transaction.
-    /// </summary>
-    ValueTask DisposeAsync();
-
-    void RegisterRepository<TR>(TR repository) where TR : ICrudRepositoryBase;
+    void RegisterRepository<TR>(TR repository) where TR : class, IRepository;
     
-    ICrudRepository<T, I> GetRepository<T, I>() where T : class;
+    ICrudRepository<T, TK> GetCrudRepository<T, TK>() where T : class;
+
+    INamedEntityRepository<T, TK> GetNamedEntityRepository<T, TK>() where T : class;
     
-    TR GetRepository<TR>()  where TR : ICrudRepositoryBase;
+    TR GetSpecialRepository<TR>()  where TR : class, IRepository;
 }

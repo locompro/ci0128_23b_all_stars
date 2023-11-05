@@ -26,7 +26,7 @@ async function loadProvinceShared(optionSelected, sourceName) {
 
         if (response.ok) {
             // get the cantons that were sent
-            loadCantons(response);
+            await loadCantons(response);
         } else {
             console.log("not ok");
         }
@@ -173,10 +173,9 @@ function validatePriceInput(button) {
 }
 
 // script to search on enter press
-document.getElementById("searchBox")
-    .addEventListener("keyup", function (event) {
-    event.preventDefault();
-    if (event.keyCode === 13) {
-        document.getElementById("searchButton").click();
-    }
-});
+document.addEventListener("keyup", function (event) {
+        event.preventDefault();
+        if (event.key === "Enter") { // Use event.key instead of event.keyCode
+            document.getElementById("searchButton").click();
+        }
+    });

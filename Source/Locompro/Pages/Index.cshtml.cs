@@ -18,9 +18,10 @@ namespace Locompro.Pages
     /// </summary>
     public class IndexModel : SearchPageModel
     {
-        public IndexModel(AdvancedSearchInputService advancedSearchServiceHandler,
-            IHttpContextAccessor httpContextAccessor)
-            : base(advancedSearchServiceHandler, httpContextAccessor)
+        public IndexModel(ILoggerFactory loggerFactory,
+            IHttpContextAccessor httpContextAccessor,
+            AdvancedSearchInputService advancedSearchServiceHandler)
+            : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler)
         {
         }
     }

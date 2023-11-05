@@ -91,12 +91,15 @@
 	<ItemGroup>
 	  <Compile Remove="Repositories\CategoryRepository.cs" />
 	  <Compile Remove="Repositories\CountryRepository.cs" />
-	  <Compile Remove="Repositories\ProductRepository.cs" />
 	  <Compile Remove="Repositories\StoreRepository.cs" />
 	  <Compile Remove="Repositories\StringIdRepository.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Folder Include="Repositories\" />
+	  <Folder Include="Migrations\" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.2.0" />
+		<PackageReference Include="NUnitTDNet" Version="3.4.1" />
+
 	</ItemGroup>
 </Project>

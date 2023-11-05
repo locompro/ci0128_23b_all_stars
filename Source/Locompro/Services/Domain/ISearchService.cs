@@ -1,4 +1,4 @@
-using Locompro.Common.Search.Interfaces;
+using Locompro.Common.Search;
 using Locompro.Models;
 
 namespace Locompro.Services.Domain;

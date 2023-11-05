@@ -1,3 +1,5 @@
+
+
 var modalShown = false;
 
 // event listener for the advanced search button
@@ -46,6 +48,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 // Append the modal content to the modal container
 
                 modalContainer.innerHTML = modalContent;
+
+                initSelect2();
             } else {
                 console.error('Failed to load modal content.');
             }
@@ -73,10 +77,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
-function performSearchButton() {
+function performIndexSearchButton() {
     performSearchButtonShared(modalShown);
 }
 
 async function loadProvince(optionSelected) {
-    loadProvinceShared(optionSelected, "Index");
+    await loadProvinceShared(optionSelected, "Index");
 }

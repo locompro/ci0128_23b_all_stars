@@ -39,5 +39,5 @@ public class Submission
     
     public virtual ICollection<Picture> Pictures { get; set; }
     
-    public long NumberOfRatings { get; set; } 
+    public long NumberOfRatings { get; set; }
 }
