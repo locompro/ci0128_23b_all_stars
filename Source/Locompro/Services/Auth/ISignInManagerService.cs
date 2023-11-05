@@ -2,7 +2,7 @@
 using Locompro.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace Locompro.Services.AuthInterfaces;
+namespace Locompro.Services.Auth;
 
 /// <summary>
 ///     Provides an interface for user sign-in operations within the application.

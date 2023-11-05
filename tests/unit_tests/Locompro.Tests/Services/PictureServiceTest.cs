@@ -9,26 +9,26 @@ using Moq;
 namespace Locompro.Tests.Services;
 
 [TestFixture]
-public class PicturesServiceTest
+public class PictureServiceTest
 {
-    private PicturesService? _picturesService;
+    private PictureService? _pictureService;
     
     // Mocks for your dependencies
     private Mock<IUnitOfWork>? _unitOfWork;
-    private Mock<IPicturesRepository>? _picturesRepository;
+    private Mock<IPictureRepository>? _picturesRepository;
     
     [SetUp]
     public void Setup()
     {
         // Initialize your mocks here
         _unitOfWork = new Mock<IUnitOfWork>();
-        _picturesRepository = new Mock<IPicturesRepository>();
+        _picturesRepository = new Mock<IPictureRepository>();
         
-        _unitOfWork.Setup(u => u.GetRepository<IPicturesRepository>()).Returns(_picturesRepository.Object);
+        _unitOfWork.Setup(u => u.GetSpecialRepository<IPictureRepository>()).Returns(_picturesRepository.Object);
 
         Mock<ILoggerFactory> loggerFactory = new Mock<ILoggerFactory>();
 
-        _picturesService = new PicturesService(_unitOfWork.Object, loggerFactory.Object);
+        _pictureService = new PictureService(_unitOfWork.Object, loggerFactory.Object);
     }
     
     [Test]
@@ -108,7 +108,7 @@ public class PicturesServiceTest
         );
         
         // Act
-        var result = await _picturesService!.GetPicturesForItem(testPictureAmount, testProductName, testStoreName);
+        var result = await _pictureService!.GetPicturesForItem(testPictureAmount, testProductName, testStoreName);
         
         // Assert
         Assert.Multiple(() =>

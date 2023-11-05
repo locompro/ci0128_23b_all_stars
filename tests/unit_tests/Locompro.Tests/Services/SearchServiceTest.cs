@@ -1,6 +1,5 @@
 using System.Globalization;
 using Locompro.Common.Search;
-using Locompro.Common.Search.Interfaces;
 using Locompro.Data;
 using Locompro.Models;
 using Locompro.Data.Repositories;

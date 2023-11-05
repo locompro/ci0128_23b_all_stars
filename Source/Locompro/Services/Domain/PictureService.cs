@@ -17,19 +17,19 @@ public class PictureKey
 /// <summary>
 /// Service for handling the access of pictures
 /// </summary>
-public class PicturesService : DomainService<Picture, PictureKey>, IPicturesService
+public class PictureService : DomainService<Picture, PictureKey>, IPictureService
 {
-    private readonly IPicturesRepository _picturesRepository;
+    private readonly IPictureRepository _pictureRepository;
     
     /// <summary>
     /// Constructor
     /// </summary>
     /// <param name="unitOfWork"></param>
     /// <param name="loggerFactory"></param>
-    public PicturesService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory)
+    public PictureService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory)
         : base(unitOfWork, loggerFactory)
     {
-        _picturesRepository = unitOfWork.GetRepository<IPicturesRepository>();
+        _pictureRepository = unitOfWork.GetSpecialRepository<IPictureRepository>();
     }
 
     /// <summary>
@@ -41,6 +41,6 @@ public class PicturesService : DomainService<Picture, PictureKey>, IPicturesServ
     /// <returns> A list of pictures </returns>
     public async Task<List<Picture>> GetPicturesForItem(int pictureAmount, string productName, string storeName)
     {
-        return await _picturesRepository.GetPicturesByItem(pictureAmount, productName, storeName);
+        return await _pictureRepository.GetPicturesByItem(pictureAmount, productName, storeName);
     }
 }

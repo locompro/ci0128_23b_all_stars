@@ -4,7 +4,7 @@ using Locompro.Services.Domain;
 
 namespace Locompro.Data.Repositories;
 
-public interface IPicturesRepository : ICrudRepository<Picture, PictureKey>
+public interface IPictureRepository : ICrudRepository<Picture, PictureKey>
 {
     Task<List<Picture>> GetPicturesByItem(int pictureAmount, string productName, string storeName);
 }

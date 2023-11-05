@@ -7,7 +7,7 @@ using Locompro.Models;
 /// <summary>
 /// Iterface for services for handling the access of pictures
 /// </summary>
-public interface IPicturesService : IDomainService<Picture, PictureKey>
+public interface IPictureService : IDomainService<Picture, PictureKey>
 {
     /// <summary>
     /// Returns the given pictures for an item described by the product name and the store name

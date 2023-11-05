@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using Locompro.Common.Search.Interfaces;
 using Locompro.Models;
 
 namespace Locompro.Common.Search;
