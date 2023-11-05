@@ -3,11 +3,8 @@ using Locompro.Models;
 using Locompro.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using NUnit.Framework;
 using Locompro.Services;
 using Locompro.Services.Domain;
-using Microsoft.Extensions.DependencyInjection;
-using Moq;
 
 namespace Locompro.Tests.Services
 {
