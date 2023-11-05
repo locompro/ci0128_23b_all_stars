@@ -53,6 +53,7 @@ class SearchResultsFilterMenu {
 
             categoryFilter.appendChild(todosOption);
             for (const category of this.filters.get("Categories")) {
+                console.log("category: " + category);
                 const option = document.createElement("option");
                 option.value = category;
                 option.innerHTML = category;
@@ -151,10 +152,12 @@ class SearchResultsFilterMenu {
             if (!this.filters.get("Models").includes(item.Model)) {
                 this.filters.get("Models").push(item.Model);
             }
-
-            for (let category in item.Categories) {
-                if (!this.filters.get("Categories").includes(category)) {
-                    this.filters.get("Categories").push(category);
+            
+            for (let categoryIndex = 0;
+                 categoryIndex < item.Categories.length;
+                 categoryIndex++) {
+                if (!this.filters.get("Categories").includes(item.Categories[categoryIndex])) {
+                    this.filters.get("Categories").push(item.Categories[categoryIndex]);
                 }
             }
         }

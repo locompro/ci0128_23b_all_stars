@@ -101,8 +101,6 @@ class RatingStar {
         let url = window.location.pathname;
         url += "?handler=UpdateSubmissionRating";
         
-        console.log(this.submission.Rating);
-        
         this.submission.Rating = this.starIndex + 1;
         
         let dataToSend = {
@@ -110,8 +108,6 @@ class RatingStar {
             submissionEntryTime: this.submission.NonFormatedEntryTime,
             Rating: "" + this.submission.Rating
         };
-
-         console.log(this.submission.Rating);
         
         fetch(url, {
             method: 'POST',
