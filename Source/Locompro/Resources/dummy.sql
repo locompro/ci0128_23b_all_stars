@@ -37,7 +37,7 @@ VALUES ('Laptop', 'Inspiron 15', 'Dell', 0),
        ('Afeitadora', 'Series 9', 'Braun', 0),
        ('Lavadora', 'TurboDrum', 'LG', 0),
        ('Cámara', 'EOS 2000D', 'Canon', 0),
-       ('Laptop', null, 'Toshiba', 1);
+       ('Laptop', '2ad', 'Toshiba', 1);
 
 
 DECLARE @userId int = 1;
