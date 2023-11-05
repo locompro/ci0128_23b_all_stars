@@ -1,6 +1,4 @@
-﻿Use Locompro
-GO
-
+﻿
 -- AS-14
 -- Procedimiento para agregar toda la jerarqu�a de padres para la categor�a que trae un Product al ser insertado.
 -- Autor: Brandon Alonso Mora Umaña	C15179

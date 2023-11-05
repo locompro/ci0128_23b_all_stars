@@ -197,8 +197,8 @@ $(document).ready(function() {
 
         errorElement.css('display', 'none');
 
-        for (let i = 0; i < fileInput.files.length; i++) {
-            const file = fileInput.files[i];
+        for (const element of fileInput.files) {
+            const file = element;
 
             if (file.size > maxSize) {
                 errorElement.html('Archivo "' + file.name + '" supera el tamaño máximo de 5MB.');
