@@ -94,7 +94,6 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped(typeof(INamedEntityRepository<,>), typeof(NamedEntityRepository<,>));
     builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
     builder.Services.AddScoped<ICantonRepository, CantonRepository>();
-    builder.Services.AddScoped<ProductRepository>();
     builder.Services.AddScoped<IPicturesRepository, PicturesRepository>();
 
     // Register domain services
