@@ -69,4 +69,47 @@ public class UserManagerService : IUserManagerService
     {
         return _userManager.CheckPasswordAsync(user, password);
     }
+    
+    /// <summary>
+    /// Checks if a user is in a given role
+    /// </summary>
+    /// <param name="user"> The user</param>
+    /// <param name="role"> The name of the role to check</param>
+    /// <returns>A task representing the role search</returns>
+    public Task<bool> IsInRoleAsync(User user, string role)
+    {
+        return _userManager.GetClaimsAsync(user).ContinueWith(task =>
+        {
+            var claims = task.Result;
+            return claims.Any(c => c.Type == ClaimTypes.Role && c.Value == role);
+        });
+    }
+    
+    /// <summary>
+    /// Asynchronously finds a user based on the user ID.
+    /// </summary>
+    /// <param name="userId">The user's ID to search for.</param>
+    /// <returns>
+    /// The task result contains
+    /// the user corresponding to the specified ID if found; otherwise, null.
+    /// </returns>
+    public Task<User> FindByIdAsync(string userId)
+    {
+        return _userManager.FindByIdAsync(userId);
+    }
+    
+    /// <summary>
+    /// Asynchronously adds a claim to a user.
+    /// </summary>
+    /// <param name="user">The user to add the claim to.</param>
+    /// <param name="claim">The claim to add.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation of adding a claim to the user.
+    /// The task result contains an <see cref="IdentityResult"/> indicating the success
+    /// or failure of the operation.
+    /// </returns>
+    public Task<IdentityResult> AddClaimAsync(User user, Claim claim)
+    {
+        return _userManager.AddClaimAsync(user, claim);
+    }
 }

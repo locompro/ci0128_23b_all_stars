@@ -8,6 +8,8 @@ using Locompro.Services;
 using Locompro.Models;
 using Locompro.Services.AuthInterfaces;
 using Locompro.Services.Domain;
+using Locompro.Services.Tasks;
+using UserService = Locompro.Data.Repositories;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -61,10 +63,11 @@ void RegisterServices(WebApplicationBuilder builder)
 
     string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
                              throw new InvalidOperationException("Env environment variable not found.");
-    
-    var connectionString = builder.Configuration.GetValue<string>($"{environmentName}_ConnectionString__LocomproContext") ??
-                           throw new InvalidOperationException("Secret connection string not found.");
-    
+
+    var connectionString =
+        builder.Configuration.GetValue<string>($"{environmentName}_ConnectionString__LocomproContext") ??
+        throw new InvalidOperationException("Secret connection string not found.");
+
     // Add DbContext using SQL Server
     builder.Services.AddDbContext<LocomproContext>(options => options.UseLazyLoadingProxies()
         .UseSqlServer(connectionString));
@@ -90,6 +93,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ICantonRepository, CantonRepository>();
     builder.Services.AddScoped<ProductRepository>();
     builder.Services.AddScoped<IPicturesRepository, PicturesRepository>();
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
 
     // Register domain services
     builder.Services.AddScoped(typeof(INamedEntityDomainService<,>), typeof(NamedEntityDomainService<,>));
@@ -99,6 +103,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ProductService>();
     builder.Services.AddScoped<ISignInManagerService, SignInManagerService>();
     builder.Services.AddScoped<IUserManagerService, UserManagerService>();
+    builder.Services.AddScoped<IUserService, Locompro.Services.Domain.UserService>();
 
     // Register application services
     builder.Services.AddScoped<IContributionService, ContributionService>();
@@ -109,7 +114,12 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ISearchService, SearchService>();
     builder.Services.AddScoped<IPicturesService, PicturesService>();
     builder.Services.AddScoped<SearchService>();
-    
-    builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
 
+    //Register Hosted Services
+    builder.Services.AddScoped<IModerationService, ModerationService>();
+    builder.Services.AddSingleton<IScheduledTask, AddPossibleModeratorsTask>();
+    builder.Services.AddHostedService<TaskSchedulerService>();
+
+
+    builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
 }

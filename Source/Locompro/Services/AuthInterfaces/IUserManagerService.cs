@@ -48,4 +48,31 @@ public interface IUserManagerService
     ///     whether the password is correct.
     /// </returns>
     Task<bool> CheckPasswordAsync(User user, string password);
+
+    /// <summary>
+    /// Asynchronously finds a user based on their unique identifier.
+    /// </summary>
+    /// <param name="userId">The unique identifier for the user.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation with a result of <see cref="User"/>.</returns>
+    Task<User> FindByIdAsync(string userId);
+
+    /// <summary>
+    /// Asynchronously determines whether the specified user is in the given role.
+    /// </summary>
+    /// <param name="user">The user to check.</param>
+    /// <param name="role">The role to check for.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation with a result of <see cref="bool"/> indicating whether the user is in the specified role.</returns>
+    Task<bool> IsInRoleAsync(User user, string role);
+    
+    /// <summary>
+    /// Asynchronously adds a claim to a user.
+    /// </summary>
+    /// <param name="user">The user to add the claim to.</param>
+    /// <param name="claim">The claim to add.</param>
+    /// <returns>
+    /// A task that represents the asynchronous operation of adding a claim to the user.
+    /// The task result contains an <see cref="IdentityResult"/> indicating the success
+    /// or failure of the operation.
+    /// </returns>
+    public Task<IdentityResult> AddClaimAsync(User user, Claim claim);
 }
