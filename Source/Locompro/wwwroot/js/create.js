@@ -47,6 +47,7 @@ class StoreModalManager extends ModalManager {
         });
 
         $("#partialStoreName").rules("add", {
+            required: true,
             messages: {
                 required: "Ingresar el nombre de la tienda."
             }
@@ -88,6 +89,7 @@ class ProductModalManager extends ModalManager {
         });
         
         $("#partialProductName").rules("add", {
+            required: true,
             messages: {
                 required: "Ingresar el nombre del producto."
             }
@@ -187,6 +189,8 @@ $(document).ready(function () {
             }
         });
     });
+
+    $("#mainForm").validate();
 });
 
 document.addEventListener('DOMContentLoaded', function () {

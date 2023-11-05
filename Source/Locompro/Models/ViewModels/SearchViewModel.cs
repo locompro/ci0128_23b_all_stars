@@ -10,4 +10,5 @@ public class SearchViewModel
     public string ModelSelected { get; set; }
     public string BrandSelected { get; set; }
     public string CategorySelected { get; set; }
+    public int ResultsPerPage { get; set; }
 }

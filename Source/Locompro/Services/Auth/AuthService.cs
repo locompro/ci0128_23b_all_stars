@@ -2,10 +2,9 @@ using System.Security.Claims;
 using Locompro.Data;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
-using Locompro.Services.Auth;
 using Microsoft.AspNetCore.Identity;
 
-namespace Locompro.Services;
+namespace Locompro.Services.Auth;
 
 public class AuthService : Service, IAuthService
 {

@@ -6,14 +6,19 @@
 @model ProductViewModel
 
 @{
-    var categories = await CategoryService.GetAll();
+    var categories = (await CategoryService.GetAll()).ToList();
+
+    var projectedCategories = categories.Select(c => new 
+    {
+        c.Name
+    }).ToList();
 
     var settings = new JsonSerializerSettings
     {
         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
     };
 
-    var categoriesJson = JsonConvert.SerializeObject(categories, settings);
+    var categoriesJson = JsonConvert.SerializeObject(projectedCategories, settings);
 }
 
 <div class="row d-flex justify-content-center modal-select2">

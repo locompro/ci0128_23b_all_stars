@@ -1,11 +1,8 @@
 ﻿using System.Security.Claims;
-using System.Threading.Tasks;
 using Locompro.Models;
-using Locompro.Services.Auth;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
-namespace Locompro.Services.Domain;
+namespace Locompro.Services.Auth;
 
 public class SignInManagerService : ISignInManagerService
 {

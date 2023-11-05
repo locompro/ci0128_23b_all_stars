@@ -344,7 +344,7 @@ public class AuthServiceTest
     /// </summary>
     /// <param name="userId">The user ID to be embedded as a claim. Defaults to "someUserId" if not provided.</param>
     /// <returns>A <see cref="ClaimsPrincipal" /> object containing a single claim with the specified user ID.</returns>
-    private ClaimsPrincipal CreateClaimsPrincipal(string userId = "someUserId")
+    private static ClaimsPrincipal CreateClaimsPrincipal(string userId = "someUserId")
     {
         return new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, userId) }));
     }
@@ -361,7 +361,7 @@ public class AuthServiceTest
     ///     A mock <see cref="HttpContext" /> object with the specified <see cref="ClaimsPrincipal" /> set as the User
     ///     property.
     /// </returns>
-    private HttpContext CreateMockHttpContext(ClaimsPrincipal claimsPrincipal)
+    private static HttpContext CreateMockHttpContext(ClaimsPrincipal claimsPrincipal)
     {
         var httpContextMock = new Mock<HttpContext>();
         httpContextMock.Setup(h => h.User).Returns(claimsPrincipal);

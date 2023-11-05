@@ -1,4 +1,5 @@
 using Locompro.Models;
+using Locompro.Models.ViewModels;
 using Locompro.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -15,16 +16,33 @@ public abstract class SearchPageModel : PageModel
     
     /// <summary>
     /// Service that handles the advanced search modal
-    /// Helps to keep page and modal information syncronized
+    /// Helps to keep page and modal information synchronized
     /// </summary>
     private readonly AdvancedSearchInputService _advancedSearchServiceHandler;
 
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
     public const string EmptyValue = "Todos";
 
-    protected SearchPageModel(AdvancedSearchInputService advancedSearchServiceHandler)
+    protected SearchPageModel(AdvancedSearchInputService advancedSearchServiceHandler,
+        IHttpContextAccessor httpContextAccessor)
     {
-        this._advancedSearchServiceHandler = advancedSearchServiceHandler;
-        this._advancedSearchServiceHandler.EmptyValue = EmptyValue;
+        _advancedSearchServiceHandler = advancedSearchServiceHandler;
+        _advancedSearchServiceHandler.EmptyValue = EmptyValue;
+        _httpContextAccessor = httpContextAccessor;
+    }
+    
+    public async Task<IActionResult> OnPostReturnResultsAsync()
+    {
+        Console.WriteLine("OnPostReturnResultsAsync");
+        
+        var json = await new StreamReader(Request.Body).ReadToEndAsync();
+            
+        SearchViewModel searchViewModel = JsonConvert.DeserializeObject<SearchViewModel>(json);
+        
+        CacheDataInSession(searchViewModel, "SearchQueryViewModel");
+        
+        return RedirectToPage("/SearchResults/SearchResults");
     }
     
     /// <summary>
@@ -101,19 +119,66 @@ public abstract class SearchPageModel : PageModel
     /// <returns> the serialized Json </returns>
     private string GetCantonsJson()
     {
-        string cantonsJson = "";
-        
+        return GetJsonFrom(_advancedSearchServiceHandler.Cantons);
+    }
+
+    protected string GetJsonFrom<T>(T objectToSerialize)
+    {
         // prevent the json serializer from looping infinitely
         var settings = new JsonSerializerSettings
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
-
-        // generate the json file with the cantons
-        cantonsJson = JsonConvert.SerializeObject(_advancedSearchServiceHandler.Cantons, settings);
+        
+        string json = JsonConvert.SerializeObject(objectToSerialize, settings);
         
         Response.ContentType = "application/json";
 
-        return cantonsJson;
+        return json;
     }
+    
+    /// <summary>
+    /// Stores the given data in a local user session specific instance
+    /// </summary>
+    /// <param name="objectToCache"> what is to be stored </param>
+    /// <param name="key"> identifier to retrieve cached data </param>
+    /// <remarks> if for some reason there is no session, one will be instantiated</remarks>
+    protected void CacheDataInSession<T>(T objectToCache, string key)
+    {
+        if (_httpContextAccessor.HttpContext?.Session == null)
+        {
+            _httpContextAccessor.HttpContext?.RequestServices.GetService(typeof(ISession));
+        }
+        
+        HttpContext.Session.SetString(key, JsonConvert.SerializeObject(objectToCache));
+    }
+    
+    /// <summary>
+    /// Retrieves the cached data from the local user session specific instance
+    /// </summary>
+    /// <param name="key"> identifier to retrieve cached data </param>
+    /// <param name="deletesData"> if the data and session are to be deleted </param>
+    /// <typeparam name="T"> the type of the data to be retrieved</typeparam>
+    /// <remarks> if deletesData is true, the session is removed, but one is produced
+    /// by framework, or on a caching action if not automatic </remarks>
+    /// <returns> cached data according to key</returns>
+    protected T GetCachedDataFromSession<T>(string key, bool deletesData = true)
+    {
+        if (key == null || HttpContext.Session.GetString(key) == null) return default;
+        
+        string cachedObjectJson = HttpContext.Session.GetString(key);
+
+        if (cachedObjectJson == null) return default;
+        
+        T cachedObject = JsonConvert.DeserializeObject<T>(cachedObjectJson);
+        
+        if (deletesData)
+        {
+            HttpContext.Session.Remove(key);
+            _httpContextAccessor.HttpContext?.Session.Clear();
+        }
+        
+        return cachedObject;
+    }
+   
 }

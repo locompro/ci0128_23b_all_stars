@@ -7,7 +7,6 @@ using Locompro.Models;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Locompro.Services.Tasks;
-using UserService = Locompro.Data.Repositories;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +45,8 @@ app.Use(async (context, next) =>
     Console.WriteLine($"Incoming request: {context.Request.Path}");
     await next();
 });
+
+app.UseSession();
 
 app.Run();
 return;
@@ -116,6 +117,12 @@ void RegisterServices(WebApplicationBuilder builder)
 
     builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
     
+    // Add session support
+    builder.Services.AddSession(options =>
+    {
+        options.IdleTimeout = TimeSpan.FromMinutes(2);
+    });
+    
     RegisterHostedServices(builder);
 }
 
@@ -126,4 +133,5 @@ void RegisterHostedServices(WebApplicationBuilder builder)
     // Moderation tasks
     builder.Services.AddSingleton<IScheduledTask, AddPossibleModeratorsTask>();
     builder.Services.AddHostedService<TaskSchedulerService>();
+    
 }
