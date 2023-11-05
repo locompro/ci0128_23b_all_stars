@@ -16,8 +16,17 @@ public interface ISubmissionService : IDomainService<Submission, SubmissionKey>
     /// <summary>
     /// Gets the submissions for a given Item 
     /// </summary>
-    /// <param name="StoreName"></param>
-    /// <param name="ProductName"></param>
+    /// <param name="storeName"></param>
+    /// <param name="productName"></param>
     /// <returns></returns>
     Task<IEnumerable<Submission>> GetItemSubmissions(string storeName, string productName);
+    
+    /// <summary>
+    /// Updates the rating of a submission
+    /// </summary>
+    /// <param name="userId"> user id part of the key of a submission entity</param>
+    /// <param name="entryTime"> entry time part of the key of a submission entity</param>
+    /// <param name="newRating"> new rating to be placed on the submission </param>
+    /// <returns></returns>
+    Task UpdateSubmissionRating(string userId, DateTime entryTime, int newRating);
 }

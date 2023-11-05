@@ -25,4 +25,30 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
     {
         return await _submissionRepository.GetItemSubmissions(storeName, productName);
     }
+
+    /// <inheritdoc />
+    public async Task UpdateSubmissionRating(string userId, DateTime entryTime, int newRating)
+    {
+        Submission submissionToUpdate = await _submissionRepository.GetByIdAsync(new SubmissionKey() { UserId = userId, EntryTime = entryTime });
+        
+        long submissionRatingsAmount = submissionToUpdate.NumberOfRatings;
+        
+        if (submissionRatingsAmount == 0)
+        {
+            submissionRatingsAmount++;
+        }
+        
+        submissionRatingsAmount++;
+        
+        float newCalculatedRating = submissionRatingsAmount * submissionToUpdate.Rating;
+        newCalculatedRating += newRating;
+        newCalculatedRating /= submissionRatingsAmount;
+        
+        submissionToUpdate.Rating = newCalculatedRating;
+        submissionToUpdate.NumberOfRatings = submissionRatingsAmount;
+        
+        _submissionRepository.UpdateAsync(submissionToUpdate);
+        
+        await UnitOfWork.SaveChangesAsync();
+    }
 }

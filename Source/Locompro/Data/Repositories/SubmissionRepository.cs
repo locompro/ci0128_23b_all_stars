@@ -1,4 +1,5 @@
 using System.Linq.Dynamic.Core;
+using Locompro.Common;
 using Locompro.Common.Search;
 using Locompro.Models;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ namespace Locompro.Data.Repositories;
 
 public struct SubmissionKey
 {
-    public string CountryName { get; set; }
+    public string UserId { get; set; }
     public DateTime EntryTime { get; set; }
 }
 
@@ -25,6 +26,22 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     public SubmissionRepository(DbContext context, ILoggerFactory loggerFactory) :
         base(context, loggerFactory)
     {
+    }
+    
+    /// <inheritdoc />
+    public override async Task<Submission> GetByIdAsync(SubmissionKey id)
+    {
+        return await Set.FindAsync(id.UserId, id.EntryTime);    
+    }
+    
+    /// <inheritdoc />
+    public override async Task DeleteAsync(SubmissionKey id)
+    {
+        var entity = await GetByIdAsync(id);
+        if (entity != null)
+        {
+            Set.Remove(entity);
+        }
     }
 
     /// <inheritdoc />
@@ -51,4 +68,19 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
         
         return await submissionsResults.ToListAsync();
     }
+
+    /// <inheritdoc />
+    public async Task UpdateSubmissionRating(string userId, DateTime entryTime, int newRating)
+    {
+        Submission submissionToUpdate = await Set.SingleOrDefaultAsync(
+            submission => submission.UserId== userId &&
+                          submission.EntryTime == entryTime);
+        
+        submissionToUpdate.Rating = newRating;
+        
+        Context.Update(submissionToUpdate);
+    }
+
+    
+    
 }

@@ -98,11 +98,12 @@ public class LocomproContext : IdentityDbContext<User>
             .IsRequired();
     }
 
+    /*
     [DbFunction("GetPictures", "dbo")]
     public static IEnumerable<GetPicturesResult> GetPictures(string storeName, int productId, int maxPictures)
     {
         throw new NotSupportedException();
-    }
+    } 
 
     [DbFunction("CountRatedSubmissions", "dbo")]
     public static int CountRatedSubmissions(string userId)
@@ -114,7 +115,7 @@ public class LocomproContext : IdentityDbContext<User>
     public static IEnumerable<GetQualifiedUserIDsResult> GetQualifiedUserIDs(string targetUsername)
     {
         throw new NotSupportedException();
-    }
+    }*/
     
     /// <summary>
     /// Assigns each parent category of a product to the product.

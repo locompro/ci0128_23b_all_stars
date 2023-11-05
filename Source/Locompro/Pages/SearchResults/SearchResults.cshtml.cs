@@ -27,13 +27,14 @@ namespace Locompro.Pages.SearchResults;
 /// </summary>
 public class SearchResultsModel : SearchPageModel
 {
+    private IConfiguration Configuration { get; set; }
+    public SearchViewModel SearchViewModel { get; set; }
+    
     private readonly ISearchService _searchService;
 
     private readonly IPictureService _pictureService;
-
-    public SearchViewModel SearchViewModel { get; set; }
     
-    private IConfiguration Configuration { get; set; }
+    private readonly ISubmissionService _submissionService;
 
     /// <summary>
     /// Constructor
@@ -42,14 +43,18 @@ public class SearchResultsModel : SearchPageModel
     /// <param name="advancedSearchServiceHandler"></param>
     /// <param name="pictureService"></param>
     /// <param name="configuration"></param>
+    /// <param name="submissionService"></param>
+    /// <param name="loggerFactory"></param>
     /// <param name="httpContextAccessor"></param>
     public SearchResultsModel(
+        ILoggerFactory loggerFactory,
+        IHttpContextAccessor httpContextAccessor,
         AdvancedSearchInputService advancedSearchServiceHandler,
         IPictureService pictureService,
         IConfiguration configuration,
         ISearchService searchService,
-        IHttpContextAccessor httpContextAccessor)
-        : base(advancedSearchServiceHandler, httpContextAccessor)
+        ISubmissionService submissionService)
+        : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler)
     {
         _searchService = searchService;
         _pictureService = pictureService;
@@ -58,6 +63,10 @@ public class SearchResultsModel : SearchPageModel
         {
             ResultsPerPage = Configuration.GetValue("PageSize", 4)
         };
+        
+        _searchService = searchService;
+        _pictureService = pictureService;
+        _submissionService = submissionService;
     }
 
     /// <summary>
@@ -132,7 +141,7 @@ public class SearchResultsModel : SearchPageModel
         }
        
         // return list of pictures serialized as json
-        return Content(JsonConvert.SerializeObject(formattedPictures));
+        return Content(GetJsonFrom(formattedPictures));
     }
     
     /// <summary>
@@ -154,5 +163,21 @@ public class SearchResultsModel : SearchPageModel
         {
             SearchViewModel.CategorySelected = null;
         } 
+    }
+
+    /// <summary>
+    /// Updates the rating of a given submission
+    /// </summary>
+    public async Task OnPostUpdateSubmissionRatingAsync()
+    {
+        RatingViewModel clientRatingChange = await GetDataSentByClient<RatingViewModel>();
+        
+        if (clientRatingChange != null)
+        {
+            await _submissionService.UpdateSubmissionRating(
+                clientRatingChange.SubmissionUserId,
+                clientRatingChange.SubmissionEntryTime,
+                int.Parse(clientRatingChange.Rating));
+        }
     }
 }

@@ -53,7 +53,7 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService.GetSearchResults(searchCriteria);
+        var searchResults = await _searchService!.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.That(searchResults.Exists(i => i.Name == productSearchName), Is.True);

@@ -28,6 +28,8 @@ class SearchResultsModal {
                 this.searchResults[this.itemSelected].Store,
                 "SearchResults");
 
+        this.submissionsRatings = [];
+
         // Populate the modal with the selected item's details
         this.populateModal();
     }
@@ -62,6 +64,11 @@ class SearchResultsModal {
             // Inserting the description cell
             const descriptionCell = row.insertCell(2);
             descriptionCell.innerHTML = submission.Description;
+            
+            // Inserting the rating cell
+            const ratingCell = row.insertCell(3);
+            this.submissionsRatings.push(new SearchResultsSubmissionRating(submission, ratingCell));
+            this.submissionsRatings[this.submissionsRatings.length - 1].buildRating();
         }
     }
 
