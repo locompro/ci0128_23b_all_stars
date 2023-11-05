@@ -19,7 +19,7 @@ public class SearchMethods
         _searchParameters = new Dictionary<SearchParameterTypes, SearchParam>();
         AddAllSearchParameters();
     }
-    
+
     /// <summary>
     /// returns instance of the singleton class
     /// </summary>
@@ -52,7 +52,7 @@ public class SearchMethods
         
         return searchParameter;
     }
-    
+
     /// <summary>
     /// Returns whether the parameter type has been mapped to a search method
     /// </summary>
@@ -62,7 +62,7 @@ public class SearchMethods
     {
         return this._searchParameters.ContainsKey(parameterName);
     }
-    
+
     /// <summary>
     /// Method where all the search parameters are to be added
     /// </summary>
@@ -72,26 +72,32 @@ public class SearchMethods
         AddSearchParameter<string>(SearchParameterTypes.Name
             , (submission, productName) => submission.Product.Name.Contains(productName)
             , productName => !string.IsNullOrEmpty(productName));
-        
+
         // find by model
         AddSearchParameter<string>(SearchParameterTypes.Model
             , (submission, model) => submission.Product.Model.Contains(model)
             , model => !string.IsNullOrEmpty(model));
-        
+
         // find by province
         AddSearchParameter<string>(SearchParameterTypes.Province
             , (submission, province) => submission.Store.Canton.Province.Name.Contains(province)
             , province => !string.IsNullOrEmpty(province));
-        
+
         // find by canton
         AddSearchParameter<string>(SearchParameterTypes.Canton
             , (submission, canton) => submission.Store.Canton.Name.Contains(canton)
             , canton => !string.IsNullOrEmpty(canton));
-        
+
         // find by brand
         AddSearchParameter<string>(SearchParameterTypes.Brand
             , (submission, brand) => submission.Product.Brand.ToLower().Contains(brand.ToLower())
             , brand => !string.IsNullOrEmpty(brand));
+
+        // find by category
+        AddSearchParameter<string>(SearchParameterTypes.Category,
+            ((submission, category) =>
+                submission.Product.Categories.Any(existingCategory => existingCategory.Name.Equals(category))),
+            category => !string.IsNullOrEmpty(category));
         
         // find if price is more than min price
         AddSearchParameter<long>(SearchParameterTypes.Minvalue

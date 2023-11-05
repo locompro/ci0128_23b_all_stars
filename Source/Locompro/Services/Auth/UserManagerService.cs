@@ -1,9 +1,8 @@
 ﻿using System.Security.Claims;
 using Locompro.Models;
-using Locompro.Services.AuthInterfaces;
 using Microsoft.AspNetCore.Identity;
 
-namespace Locompro.Services;
+namespace Locompro.Services.Auth;
 
 /// <summary>
 ///     Provides methods to manage users in the application.

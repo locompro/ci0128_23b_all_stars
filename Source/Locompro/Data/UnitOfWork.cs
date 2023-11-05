@@ -1,131 +1,90 @@
 ﻿using System.Collections.Concurrent;
 using Locompro.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Locompro.Data
+namespace Locompro.Data;
+
+/// <summary>
+/// DB transaction handler.
+/// </summary>
+public class UnitOfWork : IUnitOfWork
 {
+    private readonly ILogger _logger;
+    private readonly DbContext _context;
+
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly ConcurrentDictionary<Type, IRepository> _repositories;
+    private readonly Dictionary<Type, Func<IRepository>> _specialRepositoryFactories;
+
     /// <summary>
-    /// DB transaction handler.
+    /// Constructs a unit of work for a given context.
     /// </summary>
-    public class UnitOfWork : IUnitOfWork
+    /// <param name="loggerFactory">Logger for unit of work.</param>
+    /// <param name="context"></param>
+    public UnitOfWork(ILoggerFactory loggerFactory, DbContext context)
     {
-        private readonly bool _isTesting; // TODO: Move this func to testing impl
-        private readonly ILogger _logger;
-        private readonly IServiceProvider _serviceProvider;
-        private readonly ConcurrentDictionary<Type, object> _repositories;
+        _logger = loggerFactory.CreateLogger(GetType());
+        _context = context;
 
-        private IDbContextTransaction _transaction;
-        private readonly DbContext _context;
-
-        /// <summary>
-        /// Constructs a unit of work for a given context.
-        /// </summary>
-        /// <param name="loggerFactory">Logger for unit of work.</param>
-        /// <param name="dataAccess">Context to base unit of work on.</param>
-        public UnitOfWork(IServiceProvider serviceProvider, ILoggerFactory loggerFactory, DbContext context)
+        _loggerFactory = loggerFactory;
+        _repositories = new ConcurrentDictionary<Type, IRepository>();
+        _specialRepositoryFactories = new Dictionary<Type, Func<IRepository>>
         {
-            _logger = loggerFactory.CreateLogger(GetType());
-            _repositories = new ConcurrentDictionary<Type, object>();
+            { typeof(ICantonRepository), () => new CantonRepository(_context, _loggerFactory) },
+            { typeof(ISubmissionRepository), () => new SubmissionRepository(_context, _loggerFactory) },
+            { typeof(IPictureRepository), () => new PictureRepository(_context, _loggerFactory) }
+        };
+    }
 
-            _serviceProvider = serviceProvider;
-            _context = context;
-            _isTesting = _context.Database.ProviderName.EndsWith("InMemory") ||
-                         _context.Database.ProviderName.EndsWith("InMemoryDatabaseProvider");
+    public async Task SaveChangesAsync()
+    {
+        try
+        {
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Changes saved successfully");
         }
-
-        /// <summary>
-        /// Opens a DB transaction.
-        /// </summary>
-        public async Task BeginTransactionAsync()
+        catch (Exception e)
         {
-            if (_isTesting) return;
-
-            _transaction = await _context.Database.BeginTransactionAsync();
-            _logger.LogInformation("Beginning transaction {}", _transaction.TransactionId);
+            _logger.LogError(e, "Failed to save changes");
+            throw;
         }
+    }
 
-        /// <summary>
-        /// Commits a DB transaction.
-        ///
-        /// Rolls back transaction in the event of an exception.
-        /// </summary>
-        public async Task CommitAsync()
-        {
-            if (_isTesting) return;
-            
-            try
-            {
-                await _context.SaveChangesAsync();
-                await _transaction.CommitAsync();
-                _logger.LogInformation("Committed transaction {}", _transaction.TransactionId);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "Commit failed for transaction {}", _transaction.TransactionId);
-                await RollbackAsync();
-                throw;
-            }
-            finally
-            {
-                await DisposeAsync();
-            }
-        }
+    public void RegisterRepository<TR>(TR repository) where TR : class, IRepository
+    {
+        var type = typeof(TR);
+        _repositories[type] = repository;
+    }
 
-        /// <summary>
-        /// Rolls back a DB transaction.
-        /// </summary>
-        public async Task RollbackAsync()
-        {
-            if (_isTesting) return;
-            
-            try
-            {
-                await _transaction.RollbackAsync();
-            }
-            finally
-            {
-                await DisposeAsync();
-            }
-        }
+    public ICrudRepository<T, TK> GetCrudRepository<T, TK>() where T : class
+    {
+        var type = typeof(ICrudRepository<T, TK>);
+        if (_repositories.TryGetValue(type, out var repository)) return (ICrudRepository<T, TK>)repository;
+        repository = new CrudRepository<T, TK>(_context, _loggerFactory);
+        _repositories[type] = repository;
+        return (ICrudRepository<T, TK>)repository;
+    }
 
-        public async ValueTask DisposeAsync()
-        {
-            if (_transaction != null)
-            {
-                await _transaction.DisposeAsync();
-                _transaction = null;
-            }
-        }
+    public INamedEntityRepository<T, TK> GetNamedEntityRepository<T, TK>() where T : class
+    {
+        var type = typeof(INamedEntityRepository<T, TK>);
+        if (_repositories.TryGetValue(type, out var repository)) return (INamedEntityRepository<T, TK>)repository;
+        repository = new NamedEntityRepository<T, TK>(_context, _loggerFactory);
+        _repositories[type] = repository;
+        return (INamedEntityRepository<T, TK>)repository;
+    }
 
-        public void RegisterRepository<TR>(TR repository) where TR : ICrudRepositoryBase
+    public TR GetSpecialRepository<TR>() where TR : class, IRepository
+    {
+        var type = typeof(TR);
+        if (_repositories.TryGetValue(type, out var repository)) return (TR)repository;
+        if (_specialRepositoryFactories.TryGetValue(typeof(TR), out var factory))
         {
-            var type = typeof(TR);
+            repository = factory();
             _repositories[type] = repository;
-        }
-        
-        public ICrudRepository<T, I> GetRepository<T, I>() where T : class
-        {
-            return GetRepository<ICrudRepository<T, I>>();
+            return (TR)repository;
         }
 
-        public TR GetRepository<TR>() where TR : ICrudRepositoryBase
-        {
-            var type = typeof(TR);
-            if (_repositories.TryGetValue(type, out var repository))
-            {
-                return (TR)repository;
-            }
-
-            // Use the service provider to resolve the repository.
-            var newRepository = _serviceProvider.GetService<TR>();
-            if (newRepository == null)
-            {
-                throw new InvalidOperationException($"Repository of type {type.FullName} is not registered.");
-            }
-
-            _repositories[type] = newRepository;
-            return newRepository;
-        }
+        throw new ArgumentException($"{type} is not a valid repository type.");
     }
 }

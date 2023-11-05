@@ -1,5 +1,3 @@
-using Locompro.Common.Search.Interfaces;
-
 namespace Locompro.Common.Search;
 
 /// <summary>

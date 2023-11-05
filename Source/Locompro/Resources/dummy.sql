@@ -39,6 +39,35 @@ VALUES ('Laptop', 'Inspiron 15', 'Dell', 0),
        ('Cámara', 'EOS 2000D', 'Canon', 0),
        ('Laptop', null, 'Toshiba', 1);
 
+-- Insert data into ProductCategories table
+INSERT INTO CategoryProduct (CategoriesName, ProductsId)
+VALUES
+    -- Electronics
+    ('Electrónica', 1), -- Laptop
+    ('Electrónica', 2), -- Celular
+    ('Electrónica', 4), -- Cafetera
+    ('Electrónica', 5), -- Televisor
+    ('Electrónica', 6), -- Microondas
+    ('Electrónica', 8), -- Consola
+    ('Electrónica', 9), -- Tablet
+    ('Electrónica', 12), -- Laptop (Toshiba)
+
+    -- Ropa
+    ('Ropa', 10), -- Afeitadora
+
+    -- Hogar y Jardín
+    ('Hogar y Jardín', 3), -- Refrigeradora
+
+    -- Deportes y Aire Libre
+    ('Deportes y Aire Libre', 7), -- Bicicleta
+
+    -- Libros
+    ('Libros', 11), -- Lavadora
+
+    -- Cámaras y Fotografía
+    ('Cámaras y Fotografía', 13); -- Cámara
+
+
 
 DECLARE @userId int = 1;
 DECLARE @productId int = 1;

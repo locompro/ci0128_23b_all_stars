@@ -10,7 +10,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Locompro.Common;
 using Locompro.Common.Search;
-using Locompro.Common.Search.Interfaces;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
@@ -30,7 +29,7 @@ public class SearchResultsModel : SearchPageModel
 {
     private readonly ISearchService _searchService;
 
-    private readonly IPicturesService _picturesService;
+    private readonly IPictureService _pictureService;
 
     public SearchViewModel SearchViewModel { get; set; }
     
@@ -41,19 +40,19 @@ public class SearchResultsModel : SearchPageModel
     /// </summary>
     /// <param name="searchService"></param>
     /// <param name="advancedSearchServiceHandler"></param>
-    /// <param name="picturesService"></param>
+    /// <param name="pictureService"></param>
     /// <param name="configuration"></param>
     /// <param name="httpContextAccessor"></param>
     public SearchResultsModel(
         AdvancedSearchInputService advancedSearchServiceHandler,
-        IPicturesService picturesService,
+        IPictureService pictureService,
         IConfiguration configuration,
         ISearchService searchService,
         IHttpContextAccessor httpContextAccessor)
         : base(advancedSearchServiceHandler, httpContextAccessor)
     {
         _searchService = searchService;
-        _picturesService = picturesService;
+        _pictureService = pictureService;
         Configuration = configuration;
         SearchViewModel = new SearchViewModel
         {
@@ -119,7 +118,7 @@ public class SearchResultsModel : SearchPageModel
     /// <returns></returns>
     public async Task<ContentResult> OnGetGetPicturesAsync(string productName, string storeName)
     {
-        List<Picture> itemPictures = await _picturesService.GetPicturesForItem(5, productName, storeName);
+        List<Picture> itemPictures = await _pictureService.GetPicturesForItem(5, productName, storeName);
 
         List<string> formattedPictures = PictureParser.Serialize(itemPictures);
         

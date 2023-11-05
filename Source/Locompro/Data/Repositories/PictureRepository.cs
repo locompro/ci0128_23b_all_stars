@@ -8,9 +8,9 @@ namespace Locompro.Data.Repositories;
 /// <summary>
 /// Repository for access to Pictures in the database.
 /// </summary>
-public class PicturesRepository : CrudRepository<Picture, PictureKey>, IPicturesRepository
+public class PictureRepository : CrudRepository<Picture, PictureKey>, IPictureRepository
 {
-    public PicturesRepository(DbContext context, ILoggerFactory loggerFactory) : base(context, loggerFactory)
+    public PictureRepository(DbContext context, ILoggerFactory loggerFactory) : base(context, loggerFactory)
     {
     }
     
