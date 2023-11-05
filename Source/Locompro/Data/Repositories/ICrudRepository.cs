@@ -38,7 +38,7 @@ public interface ICrudRepository<T, I> : ICrudRepositoryBase
     /// Updates an entity for this repository asynchronously.
     /// </summary>
     /// <param name="entity">Entity to update.</param>
-    Task UpdateAsync(T entity);
+    void UpdateAsync(T entity);
 
     /// <summary>
     /// Deletes an entity for this repository asynchronously.

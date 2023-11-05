@@ -21,7 +21,7 @@ namespace Locompro.Services.Domain
             _namedEntityRepository = UnitOfWork.GetRepository<INamedEntityRepository<Product, int>>();
         }
 
-        public async Task<IEnumerable<Product>> GetByPartialName(string partialName)
+        public new async Task<IEnumerable<Product>> GetByPartialName(string partialName)
         {
             return await _namedEntityRepository.GetByPartialNameAsync(partialName);
         }

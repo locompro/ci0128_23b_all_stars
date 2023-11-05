@@ -42,7 +42,7 @@ namespace Locompro.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task UpdateAsync(T entity) {
+        public void UpdateAsync(T entity) {
             if (entity == null)
             {
                 throw new ArgumentNullException(nameof(entity));

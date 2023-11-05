@@ -97,7 +97,7 @@ public class CrudRepositoryTests
         userToUpdate.Address = "NewAddressA";
 
         // Act
-        await _userRepository.UpdateAsync(userToUpdate);
+        _userRepository.UpdateAsync(userToUpdate);
         var updatedUser = await _userRepository.GetByIdAsync("1");
 
         // Assert
@@ -110,7 +110,7 @@ public class CrudRepositoryTests
     }
 
     [Test]
-    public async Task DeleteAsync_ShouldDeleteEntity()
+    public Task DeleteAsync_ShouldDeleteEntity()
     {
         // 
         // // Arrange
@@ -120,6 +120,7 @@ public class CrudRepositoryTests
         // var result = await _userRepository.GetByIdAsync(id);
         // Assert
         Assert.That(true);
+        return Task.CompletedTask;
     }
 
 }

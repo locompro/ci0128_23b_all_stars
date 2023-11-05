@@ -5,6 +5,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<OutputType>Exe</OutputType>
+		<SonarQubeTestProject>false</SonarQubeTestProject>
 		<UserSecretsId>c5d7776e-4963-4f3c-99d7-2bd630f5176a</UserSecretsId>
 	</PropertyGroup>
 
@@ -26,10 +27,6 @@
 		<PackageReference Include="Microsoft.jQuery.Unobtrusive.Validation" Version="3.2.11" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
 		<PackageReference Include="NetBike.XmlUnit.NUnitAdapter3" Version="0.3.0" />
-		<PackageReference Include="NUnit" Version="3.13.3" />
-
-		<PackageReference Include="NetBike.XmlUnit.NUnitAdapter3" Version="0.3.0" />
-
 		<PackageReference Include="NUnit" Version="3.13.3" />
 		<PackageReference Include="NUnit.Analyzers" Version="3.6.1">
 		  <PrivateAssets>all</PrivateAssets>
@@ -102,7 +99,5 @@
 	<ItemGroup>
 	  <Folder Include="Migrations\" />
 	  <Folder Include="Repositories\" />
-		<PackageReference Include="NUnit3TestAdapter" Version="4.2.0" />
-		<PackageReference Include="NUnitTDNet" Version="3.4.1" />
 	</ItemGroup>
 </Project>

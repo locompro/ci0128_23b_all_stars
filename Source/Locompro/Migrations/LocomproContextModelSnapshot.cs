@@ -80,6 +80,28 @@ namespace Locompro.Migrations
                     b.ToTable("Countries");
                 });
 
+            modelBuilder.Entity("Locompro.Models.Picture", b =>
+                {
+                    b.Property<string>("SubmissionUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("SubmissionEntryTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Index")
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("PictureData")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("PictureTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SubmissionUserId", "SubmissionEntryTime", "Index");
+
+                    b.ToTable("Pictures");
+                });
+
             modelBuilder.Entity("Locompro.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -214,8 +236,8 @@ namespace Locompro.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Address")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -456,6 +478,17 @@ namespace Locompro.Migrations
                     b.Navigation("Parent");
                 });
 
+            modelBuilder.Entity("Locompro.Models.Picture", b =>
+                {
+                    b.HasOne("Locompro.Models.Submission", "Submission")
+                        .WithMany("Pictures")
+                        .HasForeignKey("SubmissionUserId", "SubmissionEntryTime")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Submission");
+                });
+
             modelBuilder.Entity("Locompro.Models.Province", b =>
                 {
                     b.HasOne("Locompro.Models.Country", "Country")
@@ -574,6 +607,11 @@ namespace Locompro.Migrations
             modelBuilder.Entity("Locompro.Models.Province", b =>
                 {
                     b.Navigation("Cantons");
+                });
+
+            modelBuilder.Entity("Locompro.Models.Submission", b =>
+                {
+                    b.Navigation("Pictures");
                 });
 
             modelBuilder.Entity("Locompro.Models.User", b =>

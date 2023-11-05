@@ -61,7 +61,7 @@ namespace Locompro.Services.Domain
 
             try
             {
-                await CrudRepository.UpdateAsync(entity);
+                CrudRepository.UpdateAsync(entity);
                 await UnitOfWork.CommitAsync();
             }
             catch (Exception e)

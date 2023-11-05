@@ -171,7 +171,7 @@ public class QueryBuilderTest
             // Check that adding a valid search criterion returns true
             this._queryBuilder.AddSearchCriterion(validSearchCriterion);
             SearchQueries builtQueries = this._queryBuilder.GetSearchFunction();
-            Assert.AreEqual(1, builtQueries.SearchQueryFunctions.Count);
+            Assert.That(builtQueries.SearchQueryFunctions.Count, Is.EqualTo(1));
             _queryBuilder.Reset();
             
             // Check that invalid null search criterion fails
@@ -180,7 +180,7 @@ public class QueryBuilderTest
                 this._queryBuilder.AddSearchCriterion(invalidSearchCriterionNull);
                 builtQueries = this._queryBuilder.GetSearchFunction();
             });
-            Assert.AreEqual(0, builtQueries.SearchQueryFunctions.Count);
+            Assert.That(builtQueries.SearchQueryFunctions.Count, Is.EqualTo(0));
             _queryBuilder.Reset();
             
             // Check that invalid empty search criterion fails
@@ -189,7 +189,7 @@ public class QueryBuilderTest
                 this._queryBuilder.AddSearchCriterion(invalidSearchCriterionEmpty);
                 builtQueries = this._queryBuilder.GetSearchFunction();
             });
-            Assert.AreEqual(0, builtQueries.SearchQueryFunctions.Count);
+            Assert.That(builtQueries.SearchQueryFunctions.Count, Is.EqualTo(0));
             _queryBuilder.Reset();
             
             // Check that invalid search criterion with invalid parameter fails
@@ -198,7 +198,7 @@ public class QueryBuilderTest
                 this._queryBuilder.AddSearchCriterion(invalidSearchCriterionInvalidParameter);
                 builtQueries = this._queryBuilder.GetSearchFunction();
             });
-            Assert.AreEqual(0, builtQueries.SearchQueryFunctions.Count);
+            Assert.That(builtQueries.SearchQueryFunctions.Count, Is.EqualTo(0));
             _queryBuilder.Reset();
             
             // Check that invalid search criterion with default parameter fails
@@ -207,7 +207,7 @@ public class QueryBuilderTest
                 this._queryBuilder.AddSearchCriterion(invalidSearchCriterionDefault);
                 builtQueries = this._queryBuilder.GetSearchFunction();
             });
-            Assert.AreEqual(0, builtQueries.SearchQueryFunctions.Count);
+            Assert.That(builtQueries.SearchQueryFunctions.Count, Is.EqualTo(0));
             _queryBuilder.Reset();
         });
     }

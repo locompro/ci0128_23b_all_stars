@@ -133,7 +133,7 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
                     <div class="modal-body">
-                        @Html.Partial("_ItemDisplay", Model.SearchViewModel)
+                        @await Html.PartialAsync("_ItemDisplay", Model.SearchViewModel)
                     </div>
                 </div>
             </div>
