@@ -13,7 +13,7 @@ const invalidAdvancedSearch =
 
 // activated when province is changed in the dropdown menu
 async function loadProvinceShared(optionSelected, sourceName) {
-    var content = optionSelected.value;
+    let content = optionSelected.value;
 
     try {
         // send server side the province selected by client and wait for response
@@ -25,9 +25,8 @@ async function loadProvinceShared(optionSelected, sourceName) {
         });
 
         if (response.ok) {
-        console.log("ok");
-        // get the cantons that were sent
-        loadCantons(response);
+            // get the cantons that were sent
+            loadCantons(response);
         } else {
             console.log("not ok");
         }
@@ -58,86 +57,97 @@ async function loadCantons(response) {
 }
 
 function performSearchButtonShared(modalShownParam) {
-    // if advanced search is not open it is normal search
-    var redirect = "/SearchResults/SearchResults?query=";
+    try {
+        searchResultsPage.requestSent = true;
+    } catch (error) {}
+    
+    const dataToSend = getDataToSend(modalShownParam);
+    
+    if (dataToSend === null) {
+        return
+    }
 
-    var searchValue = document.getElementById("searchBox").value.valueOf() ;
+    sendSearchRequest(dataToSend);
+}
+
+function getDataToSend(modalShownParam) {
+    let redirect = "/SearchResults/SearchResults?query=";
+    let searchValue = document.getElementById("searchBox").value.valueOf();
+
+    let provinceValue, cantonValue, minValue, maxValue, categoryValue, modelValue, brandValue = "";
 
     if (!modalShownParam) {
-        // get value
-        redirect += searchValue;
-
-        if (redirect.localeCompare(invalidSimpleSearch) === 0) {
-            return;
+        if (searchValue.localeCompare("") === 0) {
+            return null;
         }
     } else {
-        var provinceValue = document.getElementById("provinceDropdown").value;
-        var cantonValue = document.getElementById("cantonDropdown").value;
-        var minValue = /*document.getElementById("minValue").value*/ 0;
-        var maxValue = /*document.getElementById("maxValue").value*/ 0;
-        var categoryValue = document.getElementById("categoryDropdown").value;
-
-        try {
-            var modelValue = document.getElementById("modelInput").value;
-            var brandValue = document.getElementById("brandInput").value;
-        } catch (error) {
-        }
+        provinceValue = document.getElementById("provinceDropdown").value;
+        cantonValue = document.getElementById("cantonDropdown").value;
+        minValue = document.getElementById("minValue").value;
+        maxValue = document.getElementById("maxValue").value;
+        categoryValue = document.getElementById("categoryDropdown").value;
+        modelValue = document.getElementById("modelInput").value;
+        brandValue = document.getElementById("brandInput").value;
 
         redirect += searchValue
-        + "&province=" + provinceValue
-        + "&canton=" + cantonValue
-        + "&minValue=" + minValue
-        + "&maxValue=" + maxValue
-        + "&category=" + categoryValue
-        + "&model=" + modelValue
-        + "&brand=" + brandValue;
-    
+            + "&province=" + provinceValue
+            + "&canton=" + cantonValue
+            + "&minValue=" + minValue
+            + "&maxValue=" + maxValue
+            + "&category=" + categoryValue
+            + "&model=" + modelValue
+            + "&brand=" + brandValue;
+
         if (redirect.localeCompare(invalidAdvancedSearch) === 0) {
-            return;
+            return null;
         }
     }
 
-    window.location.href = redirect;
-
-    /*
-    const dataToSend = {
-        query: searchValue,
-        province: provinceValue,
-        canton: cantonValue,
-        minValue: minValue,
-        maxValue: maxValue,
-        category: categoryValue,
-        model: modelValue
+    return {
+        ProductName: searchValue,
+        ProvinceSelected: provinceValue,
+        CantonSelected: cantonValue,
+        MinPrice: minValue,
+        MaxPrice: maxValue,
+        ModelSelected: modelValue,
+        BrandSelected: brandValue,
+        CategorySelected: categoryValue
     };
+}
 
-    var url = window.location.pathname;
-    var handler = "?handler=SendSearchParameters";
-    var location = url + handler;
+function sendSearchRequest(dataToSend) {
+    let url = window.location.pathname;
+    let handler = '?handler=ReturnResults';
+    let location = url + handler;
 
-    $.ajax({
-        contentType: 'application/json',
-        type: 'POST',
-        url: location,
-        data: JSON.stringify(dataToSend),
+    fetch(location, {
+        method: 'POST',
         headers: {
-            "RequestVerificationToken": $('input[name="__RequestVerificationToken"]').val()
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
         },
-        success: function () {
+        body: JSON.stringify(dataToSend) // Data to be sent in JSON format
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+            // Redirect if the response is successful
             window.location.href = "/SearchResults/SearchResults";
-        },
-        error: function () {
-            alert("AJAX Request Failed, another failure...");
-        }
-    });
-    */
+        })
+        .catch(error => {
+            // Handle errors
+            console.error('Fetch error:', error);
+            alert("Request Failed, another failure...");
+        });
 }
 
 
 // makes sure the min field is less than the max field
 function validatePriceInput(button) {
     // get the fields
-    var minButton = document.getElementById("minValue");
-    var maxButton = document.getElementById("maxValue");
+    let minButton = document.getElementById("minValue");
+    let maxButton = document.getElementById("maxValue");
 
     // if the field is the min field
     if (button === minButton) {

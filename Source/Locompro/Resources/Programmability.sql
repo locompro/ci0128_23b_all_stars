@@ -26,7 +26,7 @@ GO
 -- para asumir el rol de moderador.
 -- Autor: Gabriel Molina Bulgarelli C14826
 GO
-CREATE FUNCTION GetQualifiedUserIDs
+CREATE OR ALTER FUNCTION GetQualifiedUserIDs
 (
     @TargetUsername NVARCHAR(255)
 )
@@ -41,13 +41,13 @@ CREATE FUNCTION GetQualifiedUserIDs
                         (
                             SELECT COUNT(*)
                             FROM Submissions s
-                            WHERE s.Username = @TargetUsername
+                            WHERE s.UserId = @TargetUsername
                         ) > 10
                   AND
                         (
                             SELECT AVG(s.Rating)
                             FROM Submissions s
-                            WHERE s.Username = @TargetUsername
+                            WHERE s.UserId = @TargetUsername
                         ) >= 4.9
             );
 GO
@@ -56,7 +56,7 @@ GO
 -- Procedimiento que elimina todos los registros con el status de ser eliminados
 -- luego de ser aprobados por un moderador
 -- Autor: Ariel Antonio Arévalo Alvarado	B50562
-CREATE PROCEDURE DeleteModeratedSubmissions
+CREATE OR ALTER PROCEDURE DeleteModeratedSubmissions
 AS
 BEGIN
     DELETE FROM Submissions
@@ -76,7 +76,7 @@ BEGIN
     DECLARE @Count INT;
     SELECT @Count = COUNT(*)
     FROM Submissions
-    WHERE UserID = @UserID AND Rating IS NOT NULL;
+    WHERE UserID = @UserID AND Rating > 0;
     RETURN @Count;
 END;
 GO
@@ -96,12 +96,12 @@ BEGIN
 
     IF UPDATE(Rating)
         BEGIN
-            SELECT @UpdatedUsername = i.Username
+            SELECT @UpdatedUsername = i.UserId
             FROM inserted i;
 
             SELECT @NewRating = AVG(s.Rating)
             FROM Submissions s
-            WHERE s.Username = @UpdatedUsername;
+            WHERE s.UserId = @UpdatedUsername;
 
             UPDATE AspNetUsers
             SET Rating = @NewRating

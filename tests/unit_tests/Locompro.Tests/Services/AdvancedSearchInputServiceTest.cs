@@ -3,13 +3,16 @@ using Locompro.Models;
 using Locompro.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NUnit.Framework;
 using Locompro.Services;
 using Locompro.Services.Domain;
+using Microsoft.Extensions.DependencyInjection;
+using Moq;
 
 namespace Locompro.Tests.Services
 {
     [TestFixture]
-    public class AdvancedSearchTest
+    public class AdvancedSearchInputServiceTest
     {
         private ILoggerFactory _loggerFactory;
         private LocomproContext _context;
@@ -51,15 +54,18 @@ namespace Locompro.Tests.Services
             _context.Set<Canton>().Add(desamparadosCanton);
             _context.Set<Canton>().Add(alajuelaCanton);
             _context.Set<Canton>().Add(sanRamonCanton);
-
-            new CrudRepository<User, string>(_context, _loggerFactory);
-
+            
+            IUnitOfWork unitOfWork = new UnitOfWork(null, _loggerFactory, _context);
+            
             ICrudRepository<Country, string> countryRepostory = new CrudRepository<Country, string>(_context, _loggerFactory);
             ICrudRepository<Category, string> categoryRepository = new CrudRepository<Category, string>(_context, _loggerFactory);
+            INamedEntityRepository<Country, string> countryRepostoryER = new NamedEntityRepository<Country, string>(_context, _loggerFactory);
+            INamedEntityRepository<Category, string> categoryRepositoryER = new NamedEntityRepository<Category, string>(_context, _loggerFactory);
             
-            UnitOfWork unitOfWork = new UnitOfWork(null, _loggerFactory, _context);
             unitOfWork.RegisterRepository(countryRepostory);
             unitOfWork.RegisterRepository(categoryRepository);
+            unitOfWork.RegisterRepository(countryRepostoryER);
+            unitOfWork.RegisterRepository(categoryRepositoryER);
 
             this._categoryService = new NamedEntityDomainService<Category, string>(unitOfWork, _loggerFactory);
             this._countryService = new NamedEntityDomainService<Country, string>(unitOfWork, _loggerFactory);
@@ -90,8 +96,8 @@ namespace Locompro.Tests.Services
 
             Assert.Multiple(()=>
             {
-                Assert.IsTrue(this._advancedSearchService.Provinces.Any(province=>province.Name == "San José"));
-                Assert.IsTrue(this._advancedSearchService.Provinces.Any(province => province.Name == "Alajuela"));
+                Assert.That(this._advancedSearchService.Provinces.Any(province=>province.Name == "San José"), Is.True);
+                Assert.That(this._advancedSearchService.Provinces.Any(province => province.Name == "Alajuela"), Is.True);
             });
         }
 
@@ -108,9 +114,9 @@ namespace Locompro.Tests.Services
 
             Assert.Multiple(() =>
             {
-                Assert.IsTrue(this._advancedSearchService.Cantons.Any(canton => canton.Name == "San José"));
-                Assert.IsTrue(this._advancedSearchService.Cantons.Any(canton => canton.Name == "Tibás"));
-                Assert.IsTrue(this._advancedSearchService.Cantons.Any(canton => canton.Name == "Desamparados"));
+                Assert.That(this._advancedSearchService.Cantons.Any(canton => canton.Name == "San José"), Is.True);
+                Assert.That(this._advancedSearchService.Cantons.Any(canton => canton.Name == "Tibás"), Is.True);
+                Assert.That(this._advancedSearchService.Cantons.Any(canton => canton.Name == "Desamparados"), Is.True);
             });
         }
         
@@ -123,14 +129,14 @@ namespace Locompro.Tests.Services
         {
             await this._advancedSearchService.ObtainCategoriesAsync();
             
-            Assert.Greater(this._advancedSearchService.Categories.Count, 0);
+            Assert.That(this._advancedSearchService.Categories.Count, Is.GreaterThan(0));
             
             Assert.Multiple(() =>
             {
-                Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Sombreros"));
-                Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Zapatos"));
-                Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Ropa"));
-                Assert.IsTrue(this._advancedSearchService.Categories.Any(category => category.Name == "Accesorios"));
+                Assert.That(this._advancedSearchService.Categories.Any(category => category.Name == "Sombreros"), Is.True);
+                Assert.That(this._advancedSearchService.Categories.Any(category => category.Name == "Zapatos"), Is.True);
+                Assert.That(this._advancedSearchService.Categories.Any(category => category.Name == "Ropa"), Is.True);
+                Assert.That(this._advancedSearchService.Categories.Any(category => category.Name == "Accesorios"), Is.True);
             });
         }
     }

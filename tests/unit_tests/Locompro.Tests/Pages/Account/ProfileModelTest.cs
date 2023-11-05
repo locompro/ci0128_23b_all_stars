@@ -137,7 +137,7 @@ public class ProfileModelTest
         var result = await _profileModel.OnPostChangePasswordAsync();
 
         // Assert
-        Assert.IsInstanceOf<RedirectToRouteResult>(result);
+        Assert.That(result, Is.InstanceOf<RedirectToRouteResult>());
     }
 
     // Test for invalid password change
@@ -161,13 +161,15 @@ public class ProfileModelTest
 
         // Act
         var result = await _profileModel.OnPostChangePasswordAsync();
-
-        // Assert
-        Assert.That(result, Is.InstanceOf<PageResult>());
-        Assert.That(_passwordModalStoreMock.Object.HasErrors, Is.EqualTo(true));
+        Assert.Multiple(() =>
+        {
+            // Assert
+            Assert.That(result, Is.InstanceOf<PageResult>());
+            Assert.That(_passwordModalStoreMock.Object.HasErrors, Is.EqualTo(true));
+        });
     }
 
-// Test for valid password change
+    // Test for valid password change
     [Test]
     public async Task OnPostChangePasswordAsync_ValidPasswordChange_RedirectsToPage()
     {
@@ -191,10 +193,12 @@ public class ProfileModelTest
 
         // Act
         var result = await _profileModel.OnPostChangePasswordAsync();
-
-        // Assert
-        Assert.That(result, Is.InstanceOf<RedirectToPageResult>());
-        Assert.That(_passwordModalStoreMock.Object.HasErrors, Is.EqualTo(false));
+        Assert.Multiple(() =>
+        {
+            // Assert
+            Assert.That(result, Is.InstanceOf<RedirectToPageResult>());
+            Assert.That(_passwordModalStoreMock.Object.HasErrors, Is.EqualTo(false));
+        });
         _authServiceMock.Verify(
             auth => auth.ChangePassword(It.Is<string>(s => s == "correctPassword"),
                 It.Is<string>(s => s == "newPassword123")), Times.Once);
@@ -250,8 +254,11 @@ public class ProfileModelTest
         _userServiceMock.Verify(us => us.Update(It.Is<User>(u => u.Email == userDataUpdate.Email)), Times.Once);
         _userServiceMock.Verify(us => us.Update(It.Is<User>(u => u.Address == userDataUpdate.GetAddress())),
             Times.Once);
-        Assert.That(_profileModel.TempData["IsUserDataUpdated"], Is.EqualTo(true));
-        Assert.That(_userDataModalStoreMock.Object.HasErrors, Is.EqualTo(false));
+        Assert.Multiple(() =>
+        {
+            Assert.That(_profileModel.TempData["IsUserDataUpdated"], Is.EqualTo(true));
+            Assert.That(_userDataModalStoreMock.Object.HasErrors, Is.EqualTo(false));
+        });
     }
 
     [Test]
@@ -276,11 +283,13 @@ public class ProfileModelTest
 
         // Act
         var result = await _profileModel.OnPostUpdateUserDataAsync();
-
-        // Assert
-        Assert.That(result, Is.InstanceOf<PageResult>());
-        Assert.That(_profileModel.TempData["IsUserDataUpdated"], Is.Null.Or.EqualTo(false));
-        Assert.That(_userDataModalStoreMock.Object.HasErrors, Is.EqualTo(true));
+        Assert.Multiple(() =>
+        {
+            // Assert
+            Assert.That(result, Is.InstanceOf<PageResult>());
+            Assert.That(_profileModel.TempData["IsUserDataUpdated"], Is.Null.Or.EqualTo(false));
+            Assert.That(_userDataModalStoreMock.Object.HasErrors, Is.EqualTo(true));
+        });
         _userServiceMock.Verify(us => us.Update(It.IsAny<User>()), Times.Never);
         _userDataModalStoreMock.Verify(store => store.StoreError(It.IsAny<string>()), Times.AtLeastOnce);
     }

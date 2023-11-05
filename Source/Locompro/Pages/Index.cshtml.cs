@@ -7,7 +7,9 @@ using Locompro.Models;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
+using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace Locompro.Pages
 {
@@ -16,7 +18,9 @@ namespace Locompro.Pages
     /// </summary>
     public class IndexModel : SearchPageModel
     {
-        public IndexModel(AdvancedSearchInputService advancedSearchServiceHandler) : base(advancedSearchServiceHandler)
+        public IndexModel(AdvancedSearchInputService advancedSearchServiceHandler,
+            IHttpContextAccessor httpContextAccessor)
+            : base(advancedSearchServiceHandler, httpContextAccessor)
         {
         }
     }
