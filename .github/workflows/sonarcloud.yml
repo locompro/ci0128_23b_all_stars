@@ -50,5 +50,6 @@ jobs:
         shell: powershell
         run: |
           .\.sonar\scanner\dotnet-sonarscanner begin /k:"locompro_ci0128_23b_all_stars" /o:"locompro" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.branch.name="${{ github.ref_name }}"  /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html /d:sonar.dotnet.excludeTestProjects=true
+          dotnet build
           dotnet dotcover test --dcReportType=HTML
           .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}" 
