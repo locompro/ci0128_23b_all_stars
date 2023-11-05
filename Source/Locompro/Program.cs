@@ -1,12 +1,10 @@
-using System;
-using System.Text.Json.Serialization;
 using Locompro.Common;
 using Microsoft.EntityFrameworkCore;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Services;
 using Locompro.Models;
-using Locompro.Services.AuthInterfaces;
+using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Locompro.Services.Tasks;
 using UserService = Locompro.Data.Repositories;
@@ -115,11 +113,17 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<IPicturesService, PicturesService>();
     builder.Services.AddScoped<SearchService>();
 
-    //Register Hosted Services
-    builder.Services.AddScoped<IModerationService, ModerationService>();
-    builder.Services.AddSingleton<IScheduledTask, AddPossibleModeratorsTask>();
-    builder.Services.AddHostedService<TaskSchedulerService>();
-
 
     builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
+    
+    RegisterHostedServices(builder);
+}
+
+// Register each related task next to each other. At the end of the related tasks, register the hosted service.
+// The Hosted Service will run all the tasks in the order they were registered.
+void RegisterHostedServices(WebApplicationBuilder builder)
+{
+    // Moderation tasks
+    builder.Services.AddSingleton<IScheduledTask, AddPossibleModeratorsTask>();
+    builder.Services.AddHostedService<TaskSchedulerService>();
 }

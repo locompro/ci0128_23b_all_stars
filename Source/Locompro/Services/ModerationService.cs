@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Locompro.Common;
 using Locompro.Models;
-using Locompro.Services.AuthInterfaces;
+using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 
 namespace Locompro.Services;
