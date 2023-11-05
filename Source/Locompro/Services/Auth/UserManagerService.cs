@@ -125,4 +125,10 @@ public class UserManagerService : IUserManagerService
     {
         return _userManager.RemoveClaimAsync(user, claim);
     }
+
+    public Task<IList<Claim>> GetClaimsOfTypesAsync(User user, string claimType)
+    {
+        var claims = _userManager.GetClaimsAsync(user).Result;
+        return Task.FromResult(claims.Where(c => c.Type == claimType).ToList() as IList<Claim>);
+    }
 }

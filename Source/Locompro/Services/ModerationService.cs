@@ -15,6 +15,9 @@ public class ModerationService : IModerationService
     private readonly IUserManagerService _userManagerService;
     private readonly ILogger<ModerationService> _logger;
 
+    private readonly string[] _rolesCheckedInAssignment =
+        { RoleNames.Moderator, RoleNames.RejectedModeratorRole, RoleNames.PossibleModerator };
+
     public ModerationService(ILoggerFactory loggerFactory, IUserService userService,
         IUserManagerService userManagerService)
     {
@@ -31,10 +34,10 @@ public class ModerationService : IModerationService
     {
         // Get the list of users who are qualified to be moderators.
         var qualifiedUserIDs = GetQualifiedUserIDs();
-        foreach (var qualifiedUserId in qualifiedUserIDs)
-        {
-            await AddPossibleModeratorRoleAsync(qualifiedUserId.Id);
-        }
+
+        var tasks = qualifiedUserIDs.Select(user => AddPossibleModeratorRoleAsync(user.Id)).ToList();
+
+        await Task.WhenAll(tasks);
     }
 
     /// <summary>
@@ -51,18 +54,18 @@ public class ModerationService : IModerationService
     /// </summary>
     /// <param name="userID">The ID of the user to potentially assign the role to.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    /// <exception cref="InvalidOperationException">Thrown if the user cannot be found or if the role cannot be assigned.</exception>
     private async Task AddPossibleModeratorRoleAsync(string userID)
     {
         var user = await _userManagerService.FindByIdAsync(userID);
         if (user == null)
         {
             _logger.LogError($"Could not find user with ID '{userID}'.");
+            return;
         }
 
-        if (await _userManagerService.IsInRoleAsync(user, RoleNames.Moderator))
+        if (await IsUserInAnyIncompatibleRoleAsync(user, _rolesCheckedInAssignment))
         {
-            _logger.LogInformation($"User with ID '{userID}' is already a moderator.");
+            _logger.LogInformation($"User with ID '{userID}' is already in an incompatible role.");
             return;
         }
 
@@ -77,5 +80,17 @@ public class ModerationService : IModerationService
         {
             _logger.LogInformation($"Assigned 'PossibleModerator' role to user with ID '{userID}'.");
         }
+    }
+
+    /// <summary>
+    /// Asynchronously determines if the specified user is in any of the given roles that are considered incompatible.
+    /// </summary>
+    /// <param name="user">The user to check for incompatible roles.</param>
+    /// <param name="rolesToCheck">The roles to check against the user's current roles.</param>
+    /// <returns>The task result contains a boolean value that is true if the user is in any of the roles provided; otherwise, false.</returns>
+    private async Task<bool> IsUserInAnyIncompatibleRoleAsync(User user, IEnumerable<string> rolesToCheck)
+    {
+        var userRoles = await _userManagerService.GetClaimsOfTypesAsync(user, ClaimTypes.Role);
+        return rolesToCheck.Any(role => userRoles.Any(userRole => userRole.Value == role));
     }
 }

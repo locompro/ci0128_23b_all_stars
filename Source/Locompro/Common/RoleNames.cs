@@ -14,4 +14,6 @@ public static class RoleNames
     /// The role name for users who are potential moderators.
     /// </summary>
     public const string PossibleModerator = "PossibleModerator";
+    
+    public const string RejectedModeratorRole = "RejectedModeratorRole";
 }

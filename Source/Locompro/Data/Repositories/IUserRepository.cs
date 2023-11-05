@@ -10,5 +10,5 @@ public interface IUserRepository : ICrudRepository<User, string>
     /// <summary>
     /// Gets a list users that are qualified to be moderators
     /// </summary>
-    List<GetQualifiedUserIDsResult> GetQualifiedUserIDsAsync();
+    List<GetQualifiedUserIDsResult> GetQualifiedUserIDs();
 }

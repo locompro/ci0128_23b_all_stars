@@ -34,7 +34,7 @@ CREATE OR ALTER FUNCTION GetQualifiedUserIDs(
         RETURN
             (
                 SELECT au.Id
-                FROM AspNetUsers au
+                FROM AspNetUsers au Left Join AspNetUserClaims ac on au.Id = ac.UserId
                 WHERE (SELECT COUNT(*)
                        FROM Submissions s
                        WHERE s.UserId = au.Id)

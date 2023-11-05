@@ -86,4 +86,15 @@ public interface IUserManagerService
     /// the <see cref="IdentityResult"/> of the delete operation.
     /// </returns>
     public Task<IdentityResult> DeleteClaimAsync(User user, Claim claim);
+
+    /// <summary>
+    /// Asynchronously retrieves claims of the specified types for the given user.
+    /// </summary>
+    /// <param name="user">The user for whom to retrieve claims.</param>
+    /// <param name="claimTypes">An enumerable of claim type strings to specify which claims to retrieve.</param>
+    /// <returns>
+    /// A task that represents the asynchronous read operation. The task result contains
+    /// an enumerable of <see cref="Claim"/> objects that match the specified claim types.
+    /// </returns>
+    public Task<IList<Claim>> GetClaimsOfTypesAsync(User user, string claimType);
 }

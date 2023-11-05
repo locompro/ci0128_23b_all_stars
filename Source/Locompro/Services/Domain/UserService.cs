@@ -32,7 +32,7 @@ namespace Locompro.Services.Domain
         public List<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
         {
             // Delegates the call to the user repository
-            return _userRepository.GetQualifiedUserIDsAsync();
+            return _userRepository.GetQualifiedUserIDs();
         }
     }
 }

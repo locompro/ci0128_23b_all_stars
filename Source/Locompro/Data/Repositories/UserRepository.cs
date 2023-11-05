@@ -21,7 +21,7 @@ public class UserRepository : CrudRepository<User, string>, IUserRepository
     /// Retrieves a list of qualified user IDs asynchronously.
     /// </summary>
     /// <returns>A list of <see cref="GetQualifiedUserIDsResult"/> representing qualified users.</returns>
-    public List<GetQualifiedUserIDsResult> GetQualifiedUserIDsAsync()
+    public List<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
     {
         // Cast the base Context to LocomproContext to access specific stored procedures or functions.
         var myContext = (LocomproContext)Context;

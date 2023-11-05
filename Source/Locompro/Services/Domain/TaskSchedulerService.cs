@@ -5,7 +5,7 @@ namespace Locompro.Services.Domain;
 /// <summary>
 /// Schedules and manages the execution of background tasks.
 /// </summary>
-public sealed class TaskSchedulerService : IHostedService, IDisposable
+public sealed class TaskSchedulerService : IHostedService
 {
     private readonly IEnumerable<IScheduledTask> _tasks;
     private readonly ILogger<TaskSchedulerService> _logger;
@@ -52,11 +52,20 @@ public sealed class TaskSchedulerService : IHostedService, IDisposable
     public Task StopAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Stopping scheduler");
-        foreach (var timer in _timers)
+        foreach (var timer in _timers.ToList())
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                _logger.LogInformation("StopAsync operation was canceled.");
+                return Task.FromCanceled(cancellationToken);
+            }
+
             timer.Change(Timeout.Infinite, 0);
+            timer.Dispose();
+            _timers.Remove(timer);
         }
 
+        _logger.LogInformation("All timers have been stopped and disposed.");
         return Task.CompletedTask;
     }
 
@@ -78,17 +87,6 @@ public sealed class TaskSchedulerService : IHostedService, IDisposable
         }
 
         _logger.LogInformation("Finished executing task {TaskName}.", taskState.Task.GetType().Name);
-    }
-
-    /// <summary>
-    /// Releases all resources used by the <see cref="TaskSchedulerService"/>.
-    /// </summary>
-    public void Dispose()
-    {
-        foreach (var timer in _timers)
-        {
-            timer?.Dispose();
-        }
     }
 
     /// <summary>
