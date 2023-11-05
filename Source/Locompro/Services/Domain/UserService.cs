@@ -22,7 +22,7 @@ namespace Locompro.Services.Domain
         public UserService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
         {
             // Retrieves the user repository from the unit of work
-            _userRepository = UnitOfWork.GetRepository<IUserRepository>();
+            _userRepository = UnitOfWork.GetSpecialRepository<IUserRepository>();
         }
 
         /// <summary>

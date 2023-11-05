@@ -113,7 +113,7 @@ public class LocomproContext : IdentityDbContext<User>
 
     [DbFunction("GetPictures", "dbo")]
     public IQueryable<GetPicturesResult> GetPictures(string storeName, int productId, int maxPictures) =>
-        FromExpression((() => GetPictures(storeName, productId, maxPictures)));
+        FromExpression(() => GetPictures(storeName, productId, maxPictures));
 
     [DbFunction("CountRatedSubmissions", "dbo")]
     public int CountRatedSubmissions(string userId) => throw new NotSupportedException();
