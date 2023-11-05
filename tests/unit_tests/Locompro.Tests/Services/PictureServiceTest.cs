@@ -1,6 +1,7 @@
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Pages.Util;
 using Locompro.Services.Domain;
 using Microsoft.Extensions.Logging;

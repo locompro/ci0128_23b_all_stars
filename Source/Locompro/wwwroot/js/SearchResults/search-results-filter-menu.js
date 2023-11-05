@@ -53,7 +53,6 @@ class SearchResultsFilterMenu {
 
             categoryFilter.appendChild(todosOption);
             for (const category of this.filters.get("Categories")) {
-                console.log("category: " + category);
                 const option = document.createElement("option");
                 option.value = category;
                 option.innerHTML = category;
@@ -86,7 +85,10 @@ class SearchResultsFilterMenu {
                     passedAllFilters = passedAllFilters && item.Price >= value;
                 } else if (type === "MaxPrice") {
                     passedAllFilters = passedAllFilters && item.Price <= value;
-                } else if (item[type] !== value) {
+                } else if (type === "Category") {
+                    passedAllFilters = passedAllFilters &&
+                        item.Categories.some(category => value.includes(category))
+                } else if(item[type] !== value) {
                     passedAllFilters = false;
                 }
             }

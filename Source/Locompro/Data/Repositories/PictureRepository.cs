@@ -1,4 +1,5 @@
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Services;
 using Locompro.Services.Domain;
 using Microsoft.EntityFrameworkCore;

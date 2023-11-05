@@ -6,6 +6,7 @@ using Locompro.Common.Search;
 using Locompro.Common.Search.QueryBuilder;
 using Locompro.Data;
 using Locompro.Data.Repositories;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
 
@@ -37,7 +38,7 @@ public class SearchService : Service, ISearchService
     /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
     /// It then returns a list of items that match all the criteria.
     /// </summary>
-    public async Task<List<Item>> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria)
+    public async Task<List<ItemVm>> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria)
     {
         // add the list of unfiltered search criteria to the query builder
         foreach (ISearchCriterion searchCriterion in unfilteredSearchCriteria)
@@ -58,7 +59,7 @@ public class SearchService : Service, ISearchService
 
         if (searchQueries.IsEmpty)
         {
-            return new List<Item>();
+            return new List<ItemVm>();
         }
 
         // get the submissions that match the search functions
@@ -68,10 +69,10 @@ public class SearchService : Service, ISearchService
 
         if (!submissions.Any())
         {
-            return new List<Item>();
+            return new List<ItemVm>();
         }
 
-        IEnumerable<Item> items = await GetItems(submissions);
+        IEnumerable<ItemVm> items = await GetItems(submissions);
 
         return items.ToList();
     }
@@ -82,9 +83,9 @@ public class SearchService : Service, ISearchService
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>
-    private static async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
+    private static async Task<IEnumerable<ItemVm>> GetItems(IEnumerable<Submission> submissions)
     {
-        var items = new List<Item>();
+        var items = new List<ItemVm>();
 
         // Group submissions by store
         var submissionsByStore = submissions.GroupBy(s => s.Store);
@@ -108,7 +109,7 @@ public class SearchService : Service, ISearchService
     /// </summary>
     /// <param name="itemGrouping"></param>
     /// <returns></returns>
-    private static async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
+    private static async Task<ItemVm> GetItem(IGrouping<Product, Submission> itemGrouping)
     {
         // Get best submission for its information
         var bestSubmission = GetBestSubmission(itemGrouping);
@@ -124,7 +125,7 @@ public class SearchService : Service, ISearchService
             categories.AddRange(submission.Product.Categories.Select(c => c.Name).ToList());
         }
         
-        var item = new Item(
+        var item = new ItemVm(
             bestSubmission,
             GetFormattedDate
         )
@@ -142,13 +143,13 @@ public class SearchService : Service, ISearchService
     /// </summary>
     /// <param name="submissions"> submissions to be turned into display submissions</param>
     /// <returns></returns>
-    private static List<SubmissionViewModel> GetDisplaySubmissions(List<Submission> submissions)
+    private static List<SubmissionVm> GetDisplaySubmissions(List<Submission> submissions)
     {
-        List<SubmissionViewModel> displaySubmissions = new List<SubmissionViewModel>();
+        List<SubmissionVm> displaySubmissions = new List<SubmissionVm>();
         
         foreach (var submission in submissions)
         {
-            displaySubmissions.Add(new SubmissionViewModel(submission, GetFormattedDate));
+            displaySubmissions.Add(new SubmissionVm(submission, GetFormattedDate));
         }
 
         return displaySubmissions;

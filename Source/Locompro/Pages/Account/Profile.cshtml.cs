@@ -1,5 +1,8 @@
 ﻿using Locompro.Common;
+using Locompro.Common.ErrorStore;
 using Locompro.Models;
+using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services;
 using Locompro.Services.Auth;
@@ -20,11 +23,11 @@ public class ProfileModel : PageModel
     private readonly IAuthService _authService;
     private readonly IDomainService<Canton, string> _cantonService;
 
-    [BindProperty] public ProfileViewModel UserProfile { get; set; }
+    [BindProperty] public ProfileVm UserProfile { get; set; }
 
-    [BindProperty] public PasswordChangeViewModel PasswordChange { get; set; }
+    [BindProperty] public PasswordChangeVm PasswordChange { get; set; }
 
-    [BindProperty] public UserDataUpdateViewModel UserDataUpdate { get; set; }
+    [BindProperty] public UserDataUpdateVm UserDataUpdate { get; set; }
 
     public IErrorStore ChangePasswordModalErrors { get; set; }
 
@@ -157,7 +160,7 @@ public class ProfileModel : PageModel
     /// <param name="user">The user whose information will be displayed.</param>
     private void SetProfileViewModel(User user)
     {
-        UserProfile = new ProfileViewModel(user);
+        UserProfile = new ProfileVm(user);
     }
 
     /// <summary>

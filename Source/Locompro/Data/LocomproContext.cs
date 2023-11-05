@@ -1,6 +1,8 @@
 ﻿using System.Reflection;
 using Castle.Core.Internal;
 using Locompro.Models;
+using Locompro.Models.Entities;
+using Locompro.Models.Results;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -17,6 +19,7 @@ public class LocomproContext : IdentityDbContext<User>
     public DbSet<Canton> Cantons { get; set; } = default!;
     public DbSet<Category> Categories { get; set; } = default!;
     public DbSet<Submission> Submissions { get; set; } = default!;
+    public DbSet<Report> Reports { get; set; } = default!;
     public DbSet<Store> Stores { get; set; } = default!;
     public DbSet<Product> Products { get; set; } = default!;
     public DbSet<Picture> Pictures { get; set; } = default!;
@@ -65,7 +68,7 @@ public class LocomproContext : IdentityDbContext<User>
             .WithMany(c => c.Products);
 
         builder.Entity<Submission>()
-            .HasKey(s => new { Username = s.UserId, s.EntryTime });
+            .HasKey(s => new { s.UserId, s.EntryTime });
 
         builder.Entity<Submission>()
             .HasOne(s => s.Store)
@@ -81,8 +84,30 @@ public class LocomproContext : IdentityDbContext<User>
 
         builder.Entity<Submission>()
             .HasOne(s => s.User)
-            .WithMany()
+            .WithMany(u => u.Submissions)
             .HasForeignKey(s => s.UserId)
+            .IsRequired();
+        
+        builder.Entity<Submission>()
+            .HasMany(s => s.Reports)
+            .WithOne(r => r.Submission)
+            .IsRequired();
+        
+        builder.Entity<Report>()
+            .HasKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime, r.UserId });
+
+        builder.Entity<Report>()
+            .HasOne(r => r.Submission)
+            .WithMany(s => s.Reports)
+            .HasForeignKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime })
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+        
+        builder.Entity<Report>()
+            .HasOne(r => r.User)
+            .WithMany()
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.ClientSetNull)
             .IsRequired();
 
         builder.Entity<User>()

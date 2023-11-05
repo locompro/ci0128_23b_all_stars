@@ -1,4 +1,5 @@
 ﻿using Locompro.Models;
+using Locompro.Models.Results;
 
 namespace Locompro.Services.Domain
 {

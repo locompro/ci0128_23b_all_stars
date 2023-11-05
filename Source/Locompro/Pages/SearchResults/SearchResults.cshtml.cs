@@ -20,6 +20,7 @@ using System;
 using System.IO;
 using System.Text;
 using Locompro.Common.Search.SearchMethodRegistration;
+using Locompro.Models.Entities;
 
 namespace Locompro.Pages.SearchResults;
 
@@ -29,7 +30,7 @@ namespace Locompro.Pages.SearchResults;
 public class SearchResultsModel : SearchPageModel
 {
     private IConfiguration Configuration { get; set; }
-    public SearchViewModel SearchViewModel { get; set; }
+    public SearchVm SearchVm { get; set; }
     
     private readonly ISearchService _searchService;
 
@@ -60,7 +61,7 @@ public class SearchResultsModel : SearchPageModel
         _searchService = searchService;
         _pictureService = pictureService;
         Configuration = configuration;
-        SearchViewModel = new SearchViewModel
+        SearchVm = new SearchVm
         {
             ResultsPerPage = Configuration.GetValue("PageSize", 4)
         };
@@ -79,11 +80,11 @@ public class SearchResultsModel : SearchPageModel
     public void OnGetAsync()
     {
         // prevents system from crashing, but in essence, leads to a re-request where data is no longer null
-        SearchViewModel = GetCachedDataFromSession<SearchViewModel>("SearchQueryViewModel", false) ?? new SearchViewModel();
+        SearchVm = GetCachedDataFromSession<SearchVm>("SearchQueryViewModel", false) ?? new SearchVm();
 
         ValidateInput();
         
-        CacheDataInSession(SearchViewModel, "SearchData");
+        CacheDataInSession(SearchVm, "SearchData");
     }
     
     /// <summary>
@@ -92,24 +93,24 @@ public class SearchResultsModel : SearchPageModel
     /// <returns> json file with search results and search info data</returns>
     public async Task<IActionResult> OnGetGetSearchResultsAsync()
     {
-        SearchViewModel = GetCachedDataFromSession<SearchViewModel>("SearchData", false);
+        SearchVm = GetCachedDataFromSession<SearchVm>("SearchData", false);
         
         // get items from search service
         List<ISearchCriterion> searchParameters = new List<ISearchCriterion>()
         {
-            new SearchCriterion<string>(SearchParameterTypes.Name, SearchViewModel.ProductName),
-            new SearchCriterion<string>(SearchParameterTypes.Province, SearchViewModel.ProvinceSelected),
-            new SearchCriterion<string>(SearchParameterTypes.Canton, SearchViewModel.CantonSelected),
-            new SearchCriterion<long>(SearchParameterTypes.Minvalue, SearchViewModel.MinPrice),
-            new SearchCriterion<long>(SearchParameterTypes.Maxvalue, SearchViewModel.MaxPrice),
-            new SearchCriterion<string>(SearchParameterTypes.Category, SearchViewModel.CategorySelected),
-            new SearchCriterion<string>(SearchParameterTypes.Model, SearchViewModel.ModelSelected),
-            new SearchCriterion<string>(SearchParameterTypes.Brand, SearchViewModel.BrandSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Name, SearchVm.ProductName),
+            new SearchCriterion<string>(SearchParameterTypes.Province, SearchVm.ProvinceSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Canton, SearchVm.CantonSelected),
+            new SearchCriterion<long>(SearchParameterTypes.Minvalue, SearchVm.MinPrice),
+            new SearchCriterion<long>(SearchParameterTypes.Maxvalue, SearchVm.MaxPrice),
+            new SearchCriterion<string>(SearchParameterTypes.Category, SearchVm.CategorySelected),
+            new SearchCriterion<string>(SearchParameterTypes.Model, SearchVm.ModelSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Brand, SearchVm.BrandSelected),
         };
         
-        SearchViewModel.ResultsPerPage = Configuration.GetValue("PageSize", 4);
+        SearchVm.ResultsPerPage = Configuration.GetValue("PageSize", 4);
 
-        List<Item> searchResults = null;
+        List<ItemVm> searchResults = null;
 
         try
         {
@@ -123,7 +124,7 @@ public class SearchResultsModel : SearchPageModel
         string searchResultsJson = GetJsonFrom(
             new{
                 SearchResults = searchResults,
-                Data = SearchViewModel
+                Data = SearchVm
             });
 
         return Content(searchResultsJson);
@@ -168,19 +169,19 @@ public class SearchResultsModel : SearchPageModel
     /// </summary>
     private void ValidateInput()
     {
-        if (!string.IsNullOrEmpty(SearchViewModel.ProvinceSelected) && SearchViewModel.ProvinceSelected.Equals(SearchPageModel.EmptyValue))
+        if (!string.IsNullOrEmpty(SearchVm.ProvinceSelected) && SearchVm.ProvinceSelected.Equals(SearchPageModel.EmptyValue))
         {
-            SearchViewModel.ProvinceSelected = null;
+            SearchVm.ProvinceSelected = null;
         }
         
-        if (!string.IsNullOrEmpty(SearchViewModel.CantonSelected) && SearchViewModel.CantonSelected.Equals(SearchPageModel.EmptyValue))
+        if (!string.IsNullOrEmpty(SearchVm.CantonSelected) && SearchVm.CantonSelected.Equals(SearchPageModel.EmptyValue))
         {
-            SearchViewModel.CantonSelected = null;
+            SearchVm.CantonSelected = null;
         }
 
-        if (!string.IsNullOrEmpty(SearchViewModel.CategorySelected) && SearchViewModel.CategorySelected.Equals(SearchPageModel.EmptyValue))
+        if (!string.IsNullOrEmpty(SearchVm.CategorySelected) && SearchVm.CategorySelected.Equals(SearchPageModel.EmptyValue))
         {
-            SearchViewModel.CategorySelected = null;
+            SearchVm.CategorySelected = null;
         } 
     }
 
@@ -189,7 +190,7 @@ public class SearchResultsModel : SearchPageModel
     /// </summary>
     public async Task OnPostUpdateSubmissionRatingAsync()
     {
-        RatingViewModel clientRatingChange = await GetDataSentByClient<RatingViewModel>();
+        RatingVm clientRatingChange = await GetDataSentByClient<RatingVm>();
 
         if (clientRatingChange == null)
         {

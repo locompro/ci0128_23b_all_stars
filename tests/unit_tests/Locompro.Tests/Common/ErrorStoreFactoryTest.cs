@@ -1,4 +1,5 @@
 ﻿using Locompro.Common;
+using Locompro.Common.ErrorStore;
 
 namespace Locompro.Tests.Common;
 

@@ -105,14 +105,14 @@
 
         <div class="mb-3">
             <label class="form-label text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Descripción</label>
-            <textarea class="form-control" asp-for="SubmissionViewModel.Description" type="text" id="mainDescription" placeholder="Descripción" 
+            <textarea class="form-control" asp-for="SubmissionVm.Description" type="text" id="mainDescription" placeholder="Descripción" 
                         style="margin-bottom: 10px;"></textarea>
         </div>
 
         <div class="mb-3" style="margin-top: 15px;">
             <label class="form-label d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Precio (₡)</label>
-            <input class="form-control mb-2" asp-for="SubmissionViewModel.Price" type="text" placeholder="Precio">
-            <span class="text-danger field-validation-valid" asp-validation-for="SubmissionViewModel.Price"></span>
+            <input class="form-control mb-2" asp-for="SubmissionVm.Price" type="text" placeholder="Precio">
+            <span class="text-danger field-validation-valid" asp-validation-for="SubmissionVm.Price"></span>
         </div>
         <!-- placeholder for image submit -->
         <div class="row">

@@ -1,3 +1,4 @@
+import {initSelect2} from "./autocomplete.js";
 
 
 var modalShown = false;

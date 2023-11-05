@@ -1,6 +1,7 @@
 using Locompro.Common.Search;
 using Locompro.Data.Repositories;
 using Locompro.Models;
+using Locompro.Models.Entities;
 
 namespace Locompro.Services.Domain;
 
@@ -24,7 +25,7 @@ public interface ISubmissionService : IDomainService<Submission, SubmissionKey>
     /// <summary>
     /// Updates the rating of a submission
     /// </summary>
-    /// <param name="ratingViewModel"> view model with submission to replace info and new rating </param>
+    /// <param name="ratingVm"> view model with submission to replace info and new rating </param>
     /// <returns></returns>
-    Task UpdateSubmissionRating(RatingViewModel ratingViewModel);
+    Task UpdateSubmissionRating(RatingVm ratingVm);
 }

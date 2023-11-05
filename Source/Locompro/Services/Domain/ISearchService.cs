@@ -1,9 +1,10 @@
 using Locompro.Common.Search;
 using Locompro.Models;
+using Locompro.Models.ViewModels;
 
 namespace Locompro.Services.Domain;
 
 public interface ISearchService
 {
-    Task<List<Item>> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria);
+    Task<List<ItemVm>> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria);
 }

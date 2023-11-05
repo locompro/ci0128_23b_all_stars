@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using Locompro.Common;
 using Locompro.Models;
+using Locompro.Models.Entities;
+using Locompro.Models.Results;
 using Locompro.Services;
 using Microsoft.AspNetCore.Identity;
 

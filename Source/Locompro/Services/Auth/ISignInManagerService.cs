@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Locompro.Services.Auth;

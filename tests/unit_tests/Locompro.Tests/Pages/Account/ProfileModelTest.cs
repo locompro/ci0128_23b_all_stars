@@ -1,5 +1,8 @@
 ﻿using Locompro.Common;
+using Locompro.Common.ErrorStore;
 using Locompro.Models;
+using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Account;
 using Locompro.Services.Auth;
@@ -152,7 +155,7 @@ public class ProfileModelTest
         };
         _userServiceMock.Setup(us => us.Get(It.IsAny<string>())).ReturnsAsync(user);
         _authServiceMock.Setup(auth => auth.IsCurrentPasswordCorrect(It.IsAny<string>())).ReturnsAsync(false);
-        _profileModel.PasswordChange = new PasswordChangeViewModel
+        _profileModel.PasswordChange = new PasswordChangeVm
         {
             CurrentPassword = "incorrectPassword",
             NewPassword = "newPassword123",
@@ -184,7 +187,7 @@ public class ProfileModelTest
         _authServiceMock.Setup(auth =>
             auth.ChangePassword(It.Is<string>(s => s == "correctPassword"), It.Is<string>(s => s == "newPassword123")));
 
-        _profileModel.PasswordChange = new PasswordChangeViewModel
+        _profileModel.PasswordChange = new PasswordChangeVm
         {
             CurrentPassword = "correctPassword",
             NewPassword = "newPassword123",
@@ -236,7 +239,7 @@ public class ProfileModelTest
         };
         _userServiceMock.Setup(us => us.Get(It.IsAny<string>())).ReturnsAsync(user);
 
-        var userDataUpdate = new UserDataUpdateViewModel
+        var userDataUpdate = new UserDataUpdateVm
         {
             Email = "a@a.com",
             Province = " San jose",
@@ -272,7 +275,7 @@ public class ProfileModelTest
         };
         _userServiceMock.Setup(us => us.Get(It.IsAny<string>())).ReturnsAsync(user);
 
-        var userDataUpdate = new UserDataUpdateViewModel
+        var userDataUpdate = new UserDataUpdateVm
         {
             Email = null,
             Province = "San Jose",
@@ -332,7 +335,7 @@ public class ProfileModelTest
         };
         _userServiceMock.Setup(us => us.Get(It.IsAny<string>())).ReturnsAsync(user);
         _authServiceMock.Setup(auth => auth.IsCurrentPasswordCorrect(It.IsAny<string>())).ReturnsAsync(false);
-        _profileModel.PasswordChange = new PasswordChangeViewModel
+        _profileModel.PasswordChange = new PasswordChangeVm
         {
             CurrentPassword = "incorrectPassword",
             NewPassword = "newPassword123"
@@ -361,7 +364,7 @@ public class ProfileModelTest
             Submissions = new List<Submission>()
         };
         _userServiceMock.Setup(us => us.Get(It.IsAny<string>())).ReturnsAsync(user);
-        _profileModel.UserDataUpdate = new UserDataUpdateViewModel(); // Assume IsUpdateValid() returns false
+        _profileModel.UserDataUpdate = new UserDataUpdateVm(); // Assume IsUpdateValid() returns false
 
         // Act
         var result = await _profileModel.OnPostUpdateUserDataAsync();

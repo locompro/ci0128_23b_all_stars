@@ -4,6 +4,8 @@ using Locompro.Common.Search.SearchMethodRegistration;
 using Locompro.Data;
 using Locompro.Models;
 using Locompro.Data.Repositories;
+using Locompro.Models.Entities;
+using Locompro.Models.ViewModels;
 using Locompro.Services;
 using Locompro.Services.Domain;
 using Microsoft.EntityFrameworkCore;
@@ -247,7 +249,7 @@ public class SearchServiceTest
         };
 
         // Act
-        List<Item> searchResults = await _searchService!.GetSearchResults(searchCriteria);
+        List<ItemVm> searchResults = await _searchService!.GetSearchResults(searchCriteria);
 
         // Assert
         Assert.That(searchResults, Is.Not.Null);
@@ -585,7 +587,7 @@ public class SearchServiceTest
         };
 
         // Act
-        List<Item> results = _searchService!.GetSearchResults(searchCriteria).Result.ToList();
+        List<ItemVm> results = _searchService!.GetSearchResults(searchCriteria).Result.ToList();
 
         // Assert
         Assert.That(results, Is.Not.Null);

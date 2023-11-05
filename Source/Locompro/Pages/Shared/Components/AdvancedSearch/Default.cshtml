@@ -3,6 +3,7 @@
 @using Locompro.Services.Domain
 @using Newtonsoft.Json
 @using Locompro.Models
+@using Locompro.Models.Entities
 @model AdvancedSearchModalModel;
 
 
@@ -65,7 +66,7 @@
                 </div>
                 <div class="col-xxl mb-3 category-input-container">
                     <label class="form-label d-lg-flex justify-content-lg-start">Categoría</label>
-                    <select id="categoryName"
+                    <select id="categoryDropdown"
                             class="form-select" style="font-family:Roboto, sans-serif; min-width: 210px;">
                         <option value="" disabled selected hidden>Seleccionar</option>
                         @foreach (var category in categories)

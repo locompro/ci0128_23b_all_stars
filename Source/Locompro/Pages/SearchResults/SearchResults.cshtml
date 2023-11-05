@@ -17,7 +17,7 @@
                 <div class=" search-box form-control pe-4 rounded-pill input-group">
                     <div class="search-bar-encapsulate">
                         <input type="text"
-                               value="@Model.SearchViewModel.ProductName"
+                               value="@Model.SearchVm.ProductName"
                                class="form-control rounded-pill search-bar"
                                name="query"
                                placeholder="Ingresar nombre de producto"
@@ -133,7 +133,7 @@
             <div class="modal-dialog modal-xl">
                 <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
                     <div class="modal-body">
-                        @await Html.PartialAsync("_ItemDisplay", Model.SearchViewModel)
+                        @await Html.PartialAsync("_ItemDisplay", Model.SearchVm)
                     </div>
                 </div>
             </div>
