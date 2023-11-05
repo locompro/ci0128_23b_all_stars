@@ -1,5 +1,9 @@
 namespace Locompro.Models;
 
+/// <summary>
+/// View Model for updating the rating of a submission
+/// Rating is a string for json parsing reasons
+/// </summary>
 public class RatingViewModel
 {
     public string SubmissionUserId { get; set; }

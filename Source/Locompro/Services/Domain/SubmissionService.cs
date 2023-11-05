@@ -2,6 +2,7 @@ using Locompro.Common.Search;
 using Locompro.Data;
 using Locompro.Models;
 using Locompro.Data.Repositories;
+using Locompro.Models.ViewModels;
 
 namespace Locompro.Services.Domain;
 
@@ -27,14 +28,57 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
     }
 
     /// <inheritdoc />
-    public async Task UpdateSubmissionRating(string userId, DateTime entryTime, int newRating)
+    public async Task UpdateSubmissionRating(RatingViewModel ratingViewModel)
     {
-        Submission submissionToUpdate = await _submissionRepository.GetByIdAsync(new SubmissionKey() { UserId = userId, EntryTime = entryTime });
+        ValidateRatingViewModel(ratingViewModel);
         
-        PlaceNewSubmissionRating(submissionToUpdate, newRating);
+        SubmissionKey submissionKey = new SubmissionKey()
+        {
+            UserId = ratingViewModel.SubmissionUserId,
+            EntryTime = ratingViewModel.SubmissionEntryTime
+        };
+        
+        Submission submissionToUpdate =
+            await _submissionRepository.GetByIdAsync(submissionKey);
+
+        if (submissionToUpdate == null)
+        {
+            throw new InvalidOperationException("No submission for user:" + submissionKey.UserId + " and entry time: " +
+                                                submissionKey.EntryTime + " was found.");
+        }
+        
+        PlaceNewSubmissionRating(submissionToUpdate, int.Parse(ratingViewModel.Rating));
         
         _submissionRepository.UpdateAsync(submissionToUpdate);
         await UnitOfWork.SaveChangesAsync();
+    }
+    
+    /// <summary>
+    /// Checks if view model is valid, will throw exceptions accordingly
+    /// </summary>
+    /// <param name="ratingViewModel"></param>
+    /// <exception cref="ArgumentException"></exception>
+    private static void ValidateRatingViewModel(RatingViewModel ratingViewModel)
+    {
+        if (ratingViewModel == null)
+        {
+            throw new ArgumentException("Provided rating view model was null");
+        }
+
+        if (ratingViewModel.SubmissionUserId == null)
+        {
+            throw new ArgumentException("Provided rating view model was missing submission key");
+        }
+
+        if (ratingViewModel.Rating == null)
+        {
+            throw new ArgumentException("Provided rating view model was missing rating");
+        }
+
+        if (int.Parse(ratingViewModel.Rating) < 1 || int.Parse(ratingViewModel.Rating) > 5)
+        {
+            throw new ArgumentException("Provided rating was not between 1 and 5"); 
+        }
     }
     
     /// <summary>

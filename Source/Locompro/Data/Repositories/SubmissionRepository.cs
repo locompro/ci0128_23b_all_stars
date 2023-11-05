@@ -68,19 +68,4 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
         
         return await submissionsResults.ToListAsync();
     }
-
-    /// <inheritdoc />
-    public async Task UpdateSubmissionRating(string userId, DateTime entryTime, int newRating)
-    {
-        Submission submissionToUpdate = await Set.SingleOrDefaultAsync(
-            submission => submission.UserId== userId &&
-                          submission.EntryTime == entryTime);
-        
-        submissionToUpdate.Rating = newRating;
-        
-        Context.Update(submissionToUpdate);
-    }
-
-    
-    
 }

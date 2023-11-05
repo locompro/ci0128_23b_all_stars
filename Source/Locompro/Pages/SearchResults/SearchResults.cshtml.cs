@@ -109,7 +109,16 @@ public class SearchResultsModel : SearchPageModel
         
         SearchViewModel.ResultsPerPage = Configuration.GetValue("PageSize", 4);
 
-        List<Item> searchResults = await _searchService.GetSearchResults(searchParameters);
+        List<Item> searchResults = null;
+
+        try
+        {
+            searchResults = await _searchService.GetSearchResults(searchParameters);
+        } catch (Exception e)
+        {
+            Logger.LogError("Error when attempting to get search results: " + e.Message);
+        }
+        
         
         string searchResultsJson = GetJsonFrom(
             new{
@@ -128,7 +137,16 @@ public class SearchResultsModel : SearchPageModel
     /// <returns></returns>
     public async Task<ContentResult> OnGetGetPicturesAsync(string productName, string storeName)
     {
-        List<Picture> itemPictures = await _pictureService.GetPicturesForItem(5, productName, storeName);
+        List<Picture> itemPictures = null;
+        
+        try
+        {
+            itemPictures = await _pictureService.GetPicturesForItem(5, productName, storeName);
+        } catch (Exception e)
+        {
+            Logger.LogError("Error when attempting to get pictures for item: " + e.Message);
+        }
+        
 
         List<string> formattedPictures = PictureParser.Serialize(itemPictures);
         
@@ -172,13 +190,18 @@ public class SearchResultsModel : SearchPageModel
     public async Task OnPostUpdateSubmissionRatingAsync()
     {
         RatingViewModel clientRatingChange = await GetDataSentByClient<RatingViewModel>();
-        
-        if (clientRatingChange != null)
+
+        if (clientRatingChange == null)
         {
-            await _submissionService.UpdateSubmissionRating(
-                clientRatingChange.SubmissionUserId,
-                clientRatingChange.SubmissionEntryTime,
-                int.Parse(clientRatingChange.Rating));
+            Logger.LogError("Client rating change was null when attempting to update submission rating");
+        }
+        
+        try
+        {
+            await _submissionService.UpdateSubmissionRating(clientRatingChange);
+        } catch (Exception e)
+        {
+            Logger.LogError("Error when attempting to update submission rating: " + e.Message);
         }
     }
 }
