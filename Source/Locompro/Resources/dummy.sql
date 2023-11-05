@@ -37,7 +37,8 @@ VALUES ('Laptop', 'Inspiron 15', 'Dell', 0),
        ('Afeitadora', 'Series 9', 'Braun', 0),
        ('Lavadora', 'TurboDrum', 'LG', 0),
        ('Cámara', 'EOS 2000D', 'Canon', 0),
-       ('Laptop', null, 'Toshiba', 1);
+       ('Laptop', '2ad', 'Toshiba', 1);
+
 
 -- Insert data into ProductCategories table
 INSERT INTO CategoryProduct (CategoriesName, ProductsId)
@@ -77,38 +78,38 @@ DECLARE @productTimeOffset int = 0; -- Time offset for each product
 
 -- Looping through users
 WHILE @userId <= 4
-BEGIN
-    -- Resetting product ID and product time offset for each user
-    SET @productId = 1;
-    SET @productTimeOffset = 0;
+    BEGIN
+        -- Resetting product ID and product time offset for each user
+        SET @productId = 1;
+        SET @productTimeOffset = 0;
 
-    -- Loop through products
-    WHILE @productId <= 13
-BEGIN
-        -- Calculate the total time offset
-        DECLARE @totalTimeOffset int = @userTimeOffset + @productTimeOffset;
+        -- Loop through products
+        WHILE @productId <= 13
+            BEGIN
+                -- Calculate the total time offset
+                DECLARE @totalTimeOffset int = @userTimeOffset + @productTimeOffset;
 
-        -- Inserting submissions for each user and product
-INSERT INTO dbo.Submissions (UserId, EntryTime, Status, Price, Rating, Description, StoreName, ProductId)
-VALUES
-    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -@totalTimeOffset, GETDATE()), 0, 300000, 4.5, 'Excelente producto', 'Super San José', @productId),
-    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 100), GETDATE()), 0, 310000, 4.7, 'Muy buena calidad', 'Tienda Escazú', @productId),
-    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 200), GETDATE()), 0, 305000, 4.6, 'Recomendado', 'Mercado Moravia', @productId),
-    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 300), GETDATE()), 0, 312000, 4.8, 'Funciona perfectamente', 'Comercio Curri', @productId),
-    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 400), GETDATE()), 0, 299000, 4.4, 'Buen precio', 'Bodega Tibás', @productId),
-    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 500), GETDATE()), 0, 308000, 4.9, 'Excelente oferta', 'Almacén Desampa', @productId),
-    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 600), GETDATE()), 0, 300000, 4.5, 'Excelente producto', 'Super Heredia', @productId),
-    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 700), GETDATE()), 0, 310000, 4.7, 'Muy buena calidad', 'Tienda Alajuela', @productId),
-    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 800), GETDATE()), 0, 305000, 4.6, 'Recomendado', 'Bazar Cartago', @productId),
-    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 900), GETDATE()), 0, 312000, 4.8, 'Funciona perfectamente', 'Mercado Limón', @productId),
-    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 1000), GETDATE()), 0, 299000, 4.4, 'Buen precio', 'Almacén Puntarenas', @productId);
+                -- Inserting submissions for each user and product
+                INSERT INTO dbo.Submissions (UserId, EntryTime, Status, Price, Rating, Description, StoreName, ProductId, NumberOfRatings)
+                VALUES
+                    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -@totalTimeOffset, GETDATE()), 0, 300000, 4.5, 'Excelente producto', 'Super San José', @productId,0),
+                    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 100), GETDATE()), 0, 310000, 4.7, 'Muy buena calidad', 'Tienda Escazú', @productId,0),
+                    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 200), GETDATE()), 0, 305000, 4.6, 'Recomendado', 'Mercado Moravia', @productId,0),
+                    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 300), GETDATE()), 0, 312000, 4.8, 'Funciona perfectamente', 'Comercio Curri', @productId,0),
+                    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 400), GETDATE()), 0, 299000, 4.4, 'Buen precio', 'Bodega Tibás', @productId,0),
+                    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 500), GETDATE()), 0, 308000, 4.9, 'Excelente oferta', 'Almacén Desampa', @productId,0),
+                    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 600), GETDATE()), 0, 300000, 4.5, 'Excelente producto', 'Super Heredia', @productId,0),
+                    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 700), GETDATE()), 0, 310000, 4.7, 'Muy buena calidad', 'Tienda Alajuela', @productId,0),
+                    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 800), GETDATE()), 0, 305000, 4.6, 'Recomendado', 'Bazar Cartago', @productId,0),
+                    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 900), GETDATE()), 0, 312000, 4.8, 'Funciona perfectamente', 'Mercado Limón', @productId,0),
+                    (CAST(@userId AS nvarchar(450)), DATEADD(MILLISECOND, -(@totalTimeOffset + 1000), GETDATE()), 0, 299000, 4.4, 'Buen precio', 'Almacén Puntarenas', @productId,0);
 
 -- Increment product ID and product time offset for unique timestamps
-SET @productId = @productId + 1;
-        SET @productTimeOffset = @productTimeOffset + 1100; -- Increment the product offset by 1.1 seconds
-END
+                SET @productId = @productId + 1;
+                SET @productTimeOffset = @productTimeOffset + 1100; -- Increment the product offset by 1.1 seconds
+            END
 
-    -- Increment user ID and user time offset for the next loop iteration
-    SET @userId = @userId + 1;
-    SET @userTimeOffset = @userTimeOffset + 60000; -- Increment the user offset by 60 seconds
-END;
+        -- Increment user ID and user time offset for the next loop iteration
+        SET @userId = @userId + 1;
+        SET @userTimeOffset = @userTimeOffset + 60000; -- Increment the user offset by 60 seconds
+    END;

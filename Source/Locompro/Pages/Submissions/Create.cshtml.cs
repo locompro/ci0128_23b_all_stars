@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Locompro.Models;
 using Locompro.Models.ViewModels;
@@ -6,10 +5,8 @@ using Locompro.Pages.Util;
 using Locompro.Services;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 
 namespace Locompro.Pages.Submissions;
 
@@ -90,9 +87,9 @@ public class CreateModel : PageModel
 
         SubmissionViewModel.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         
-        IFormFileCollection formFiles = Request.Form.Files;
+        var formFiles = Request.Form.Files;
 
-        List<PictureViewModel> picturesVMs = PictureParser.Parse(formFiles);
+        var picturesVMs = PictureParser.Parse(formFiles);
 
         await _contributionService.AddSubmission(StoreVm, ProductVm, SubmissionViewModel, picturesVMs);
 

@@ -21,4 +21,5 @@ public class User : IdentityUser
     public Status Status { get; set; } = Status.Active;
     
     public virtual ICollection<Submission> Submissions { get; set; }
+    
 }

@@ -43,4 +43,4 @@ public class Item
         this.Model = bestSubmission.Product.Model ?? "";
         this.Brand = bestSubmission.Product.Brand ?? "";
     }
-};
+}
