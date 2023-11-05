@@ -1,5 +1,6 @@
 using Locompro.Data;
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services;
 using Locompro.Services.Domain;
@@ -43,21 +44,21 @@ public class ContributionServiceTests
     public async Task AddSubmission_CreatesNewSubmission()
     {
         // Arrange
-        var storeViewModel = new StoreViewModel();
-        var productViewModel = new ProductViewModel();
+        var storeViewModel = new StoreVm();
+        var productViewModel = new ProductVm();
 
         // Setup mock behavior
         _storeService.Setup(s => s.Get(It.IsAny<string>())).ReturnsAsync(new Store());
         _productService.Setup(p => p.Get(It.IsAny<int>())).ReturnsAsync(new Product());
 
-        SubmissionViewModel submissionVM = new SubmissionViewModel()
+        SubmissionVm submissionVM = new SubmissionVm()
         {
             Description = "Test Description",
             Price = 100,
             UserId = "TestUser"
         };
 
-        List<PictureViewModel> pictureVM = new List<PictureViewModel>();
+        List<PictureVm> pictureVM = new List<PictureVm>();
         
         // Act
         await _contributionService.AddSubmission(storeViewModel, productViewModel, submissionVM, pictureVM);
@@ -77,33 +78,33 @@ public class ContributionServiceTests
     public async Task AddSubmission_AddsPictures()
     {
         // Arrange
-        var storeViewModel = new StoreViewModel();
-        var productViewModel = new ProductViewModel();
+        var storeViewModel = new StoreVm();
+        var productViewModel = new ProductVm();
 
         // Setup mock behavior
         _storeService.Setup(s => s.Get(It.IsAny<string>())).ReturnsAsync(new Store());
         _productService.Setup(p => p.Get(It.IsAny<int>())).ReturnsAsync(new Product());
 
-        SubmissionViewModel submissionVM = new SubmissionViewModel()
+        SubmissionVm submissionVM = new SubmissionVm()
         {
             Description = "Test Description",
             Price = 100,
             UserId = "TestUser"
         };
 
-        List<PictureViewModel> pictureVM = new List<PictureViewModel>()
+        List<PictureVm> pictureVM = new List<PictureVm>()
         {
-            new PictureViewModel()
+            new PictureVm()
             {
                 Name = "Pic1",
                 PictureData = new byte[] {0,1,2,3,4}
             },
-            new PictureViewModel()
+            new PictureVm()
             {
                 Name = "Pic2",
                 PictureData = new byte[] {0,1,2,3,4}
             },
-            new PictureViewModel()
+            new PictureVm()
             {
                 Name = "Pic3",
                 PictureData = new byte[] {0,1,2,3,4}

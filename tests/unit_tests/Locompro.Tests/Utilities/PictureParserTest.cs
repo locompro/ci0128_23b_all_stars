@@ -1,4 +1,5 @@
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Locompro.Pages.Util;
@@ -15,7 +16,7 @@ public class PictureParserTest
         IFormFileCollection files = new FormFileCollection();
         
         // Act
-        List<PictureViewModel> pictures = PictureParser.Parse(files);
+        List<PictureVm> pictures = PictureParser.Parse(files);
         
         // Assert
         Assert.That(pictures, Is.Not.Null);
@@ -30,7 +31,7 @@ public class PictureParserTest
         
         IFormFile file = new FormFile(ms, 0, 5, "Test", "Test.jpg");
         
-        PictureViewModel picture = PictureParser.ParseSinglePicture(file);
+        PictureVm picture = PictureParser.ParseSinglePicture(file);
         
         Assert.Multiple(() =>
         {
@@ -46,7 +47,7 @@ public class PictureParserTest
         IFormFile file2 = new FormFile(new MemoryStream(), 0, 0, "Test", "Test.jpeg");
         IFormFile file3 = new FormFile(new MemoryStream(), 0, 0, "Test", "Test.png");
         
-        List<PictureViewModel> pictures = PictureParser.Parse(new FormFileCollection() { file, file2, file3 });
+        List<PictureVm> pictures = PictureParser.Parse(new FormFileCollection() { file, file2, file3 });
         
         Assert.That(pictures, Has.Count.EqualTo(3));
     }
@@ -56,7 +57,7 @@ public class PictureParserTest
     {
         IFormFile file = new FormFile(new MemoryStream(), 0, 0, "Test", "Test.txt");
         
-        List<PictureViewModel> pictures = PictureParser.Parse(new FormFileCollection() { file });
+        List<PictureVm> pictures = PictureParser.Parse(new FormFileCollection() { file });
         
         Assert.That(pictures, Is.Empty);
     }

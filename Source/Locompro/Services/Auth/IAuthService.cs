@@ -10,7 +10,7 @@ public interface IAuthService
     /// </summary>
     /// <param name="inputData">Data entered by the user in the view</param>
     /// <returns>The result of the registration attempt.</returns>
-    Task<IdentityResult> Register(RegisterViewModel inputData);
+    Task<IdentityResult> Register(RegisterVm inputData);
 
     /// <summary>
     ///     Attempts to sign in a user using the provided username and password.
@@ -21,7 +21,7 @@ public interface IAuthService
     ///     If the login is successful, a log entry will be created stating "User logged in."
     ///     The method will not lock out the user even after multiple failed login attempts.
     /// </remarks>
-    Task<SignInResult> Login(LoginViewModel inputData);
+    Task<SignInResult> Login(LoginVm inputData);
 
     /// <summary>
     ///     Signs out the current logged-in user.

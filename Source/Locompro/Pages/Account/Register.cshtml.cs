@@ -22,7 +22,7 @@ namespace Locompro.Pages.Account
             this.authService = authService;
         }
 
-        [BindProperty] public RegisterViewModel Input { get; set; }
+        [BindProperty] public RegisterVm Input { get; set; }
 
         public string ReturnUrl { get; set; }
 

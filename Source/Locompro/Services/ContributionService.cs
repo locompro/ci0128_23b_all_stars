@@ -1,5 +1,6 @@
 using Locompro.Data;
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Util;
 using Locompro.Services.Domain;
@@ -32,23 +33,23 @@ public class ContributionService : Service, IContributionService
         _submissionService = submissionService;
     }
 
-    public async Task AddSubmission(StoreViewModel storeViewModel, ProductViewModel productViewModel,
-        SubmissionViewModel submissionViewModel, List<PictureViewModel> picturesVMs)
+    public async Task AddSubmission(StoreVm storeVm, ProductVm productVm,
+        SubmissionVm submissionVm, List<PictureVm> picturesVMs)
     {
-        Store store = await BuildStore(storeViewModel);
+        Store store = await BuildStore(storeVm);
 
-        Product product = await BuildProduct(productViewModel);
+        Product product = await BuildProduct(productVm);
 
         DateTime entryTime = DateTime.Now;
 
-        List<Picture> pictures = BuildPictures(picturesVMs, entryTime, submissionViewModel.UserId);
+        List<Picture> pictures = BuildPictures(picturesVMs, entryTime, submissionVm.UserId);
         
         Submission submission = new Submission()
         {
-            UserId = submissionViewModel.UserId,
+            UserId = submissionVm.UserId,
             EntryTime = entryTime,
-            Price = submissionViewModel.Price,
-            Description = submissionViewModel.Description,
+            Price = submissionVm.Price,
+            Description = submissionVm.Description,
             Store = store,
             Product = product,
             Pictures = pictures
@@ -57,40 +58,40 @@ public class ContributionService : Service, IContributionService
         await _submissionService.Add(submission);
     }
 
-    private async Task<Store> BuildStore(StoreViewModel storeViewModel)
+    private async Task<Store> BuildStore(StoreVm storeVm)
     {
-        if (storeViewModel.IsExistingStore())
+        if (storeVm.IsExistingStore())
         {
-            return await _storeService.Get(storeViewModel.SName);
+            return await _storeService.Get(storeVm.SName);
         }
 
-        Canton canton = await _cantonService.Get(OnlyCountry, storeViewModel.Province, storeViewModel.Canton);
+        Canton canton = await _cantonService.Get(OnlyCountry, storeVm.Province, storeVm.Canton);
 
         Store store = new Store
         {
-            Name = storeViewModel.SName,
+            Name = storeVm.SName,
             Canton = canton,
-            Address = storeViewModel.Address,
-            Telephone = storeViewModel.Telephone
+            Address = storeVm.Address,
+            Telephone = storeVm.Telephone
         };
 
         return store;
     }
 
-    private async Task<Product> BuildProduct(ProductViewModel productViewModel)
+    private async Task<Product> BuildProduct(ProductVm productVm)
     {
-        if (productViewModel.IsExistingProduct())
+        if (productVm.IsExistingProduct())
         {
-            return await _productService.Get(productViewModel.Id);
+            return await _productService.Get(productVm.Id);
         }
         
-        Category category = await _categoryService.Get(productViewModel.Category);
+        Category category = await _categoryService.Get(productVm.Category);
 
         Product product = new Product()
         {
-            Name = productViewModel.PName,
-            Model = productViewModel.Model,
-            Brand = productViewModel.Brand,
+            Name = productVm.PName,
+            Model = productVm.Model,
+            Brand = productVm.Brand,
             Categories = new List<Category>()
         };
 
@@ -102,12 +103,12 @@ public class ContributionService : Service, IContributionService
         return product;
     }
 
-    private static List<Picture> BuildPictures(List<PictureViewModel> pictureVms, DateTime entryTime, string userId)
+    private static List<Picture> BuildPictures(List<PictureVm> pictureVms, DateTime entryTime, string userId)
     {
         List<Picture> pictures = new List<Picture>();
         int pictureIndex = 0;
         
-        foreach (PictureViewModel pictureVm in pictureVms) 
+        foreach (PictureVm pictureVm in pictureVms) 
         {
             pictures.Add(
                 new Picture

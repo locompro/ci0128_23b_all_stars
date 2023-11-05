@@ -4,6 +4,6 @@ namespace Locompro.Services;
 
 public interface IContributionService
 {
-    Task AddSubmission(StoreViewModel storeViewModel, ProductViewModel productViewModel,
-        SubmissionViewModel submissionViewModel, List<PictureViewModel> picturesVMs);
+    Task AddSubmission(StoreVm storeVm, ProductVm productVm,
+        SubmissionVm submissionVm, List<PictureVm> picturesVMs);
 }

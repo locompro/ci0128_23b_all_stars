@@ -93,6 +93,7 @@
 	  <Compile Remove="Repositories\CountryRepository.cs" />
 	  <Compile Remove="Repositories\StoreRepository.cs" />
 	  <Compile Remove="Repositories\StringIdRepository.cs" />
+	  <Compile Remove="Models\Submission.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -2,8 +2,9 @@
 @using Locompro.Services.Domain
 @using Newtonsoft.Json
 @using Locompro.Models
+@using Locompro.Models.Entities
 @inject INamedEntityDomainService<Country, string> CountryService
-@model StoreViewModel
+@model StoreVm
 
 @{
     var country = await CountryService.Get("Costa Rica");

@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using Locompro.Models;
+using Locompro.Models.Entities;
 
 namespace Locompro.Common.Search.SearchMethodRegistration;
 

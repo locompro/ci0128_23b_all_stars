@@ -1,5 +1,6 @@
 using System.Drawing;
 using Locompro.Data.Repositories;
+using Locompro.Models.Entities;
 
 namespace Locompro.Services.Domain;
 using Locompro.Models;

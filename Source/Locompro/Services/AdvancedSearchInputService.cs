@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Services.Domain;
 
 namespace Locompro.Services

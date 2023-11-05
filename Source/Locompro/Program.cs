@@ -1,9 +1,11 @@
 using Locompro.Common;
+using Locompro.Common.ErrorStore;
 using Microsoft.EntityFrameworkCore;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Services;
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Locompro.Services.Tasks;

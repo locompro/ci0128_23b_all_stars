@@ -3,6 +3,7 @@ using Locompro.Common.Search;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Services.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -111,7 +112,7 @@ public class SubmissionServiceTest
     public async Task AddingFirstRatingToSubmissionResultsInNewSubmissionRatingBeingSame()
     {
         MockDataSetup();
-        RatingViewModel newRating = new RatingViewModel()
+        RatingVm newRating = new RatingVm()
         {
             SubmissionUserId = "User1",
             SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
@@ -137,7 +138,7 @@ public class SubmissionServiceTest
     public async Task AddingSecondRatingToSubmissionResultsInNewSubmissionRatingBeingAverage()
     {
         MockDataSetup();
-        RatingViewModel newRating = new RatingViewModel()
+        RatingVm newRating = new RatingVm()
         {
             SubmissionUserId = "User1",
             SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
@@ -166,7 +167,7 @@ public class SubmissionServiceTest
     public async Task AddingRatingOnNonExistentSubmissionThrowsException()
     {
         MockDataSetup();
-        RatingViewModel newRating = new RatingViewModel()
+        RatingVm newRating = new RatingVm()
         {
             SubmissionUserId = "User1",
             SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
@@ -187,7 +188,7 @@ public class SubmissionServiceTest
     public async Task AddingNullRatingComponentThrowsException()
     {
         MockDataSetup();
-        RatingViewModel newRating = new RatingViewModel()
+        RatingVm newRating = new RatingVm()
         {
             SubmissionUserId = "User1",
             SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
@@ -209,7 +210,7 @@ public class SubmissionServiceTest
     public async Task AddingRatingComponentWithInvalidRatingThrowsException()
     {
         MockDataSetup();
-        RatingViewModel newRating = new RatingViewModel()
+        RatingVm newRating = new RatingVm()
         {
             SubmissionUserId = "User1",
             SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
@@ -237,14 +238,14 @@ public class SubmissionServiceTest
     public void AddingRatingWithInvalidParametersThrowsException()
     {
         MockDataSetup();
-        RatingViewModel newRating = new RatingViewModel()
+        RatingVm newRating = new RatingVm()
         {
             SubmissionUserId = null,
             SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
             Rating = "5"
         };
 
-        RatingViewModel newRating1 = new RatingViewModel()
+        RatingVm newRating1 = new RatingVm()
         {
             SubmissionUserId = "User1",
             SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
@@ -269,7 +270,7 @@ public class SubmissionServiceTest
     {
         MockDataSetup();
 
-        RatingViewModel newRating = new RatingViewModel()
+        RatingVm newRating = new RatingVm()
         {
             SubmissionUserId = "User8",
             SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
