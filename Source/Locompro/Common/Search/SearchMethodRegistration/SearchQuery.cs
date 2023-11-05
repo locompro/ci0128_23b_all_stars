@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using Locompro.Models;
 
-namespace Locompro.Common.Search;
+namespace Locompro.Common.Search.SearchMethodRegistration;
 
 /// <summary>
 /// Generic search query

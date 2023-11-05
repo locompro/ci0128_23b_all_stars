@@ -34,13 +34,13 @@ public class Item
         Func<Submission, string> getFormattedDate)
     {
         this.LastSubmissionDate = getFormattedDate(bestSubmission);
-        this.Name = bestSubmission.Product.Name;
+        this.Name = bestSubmission.Product.Name ?? "";
         this.Price = bestSubmission.Price;
-        this.Store = bestSubmission.Store.Name;
-        this.Canton = bestSubmission.Store.Canton.Name;
-        this.Province = bestSubmission.Store.Canton.Province.Name;
-        this.Description = bestSubmission.Description;
-        this.Model = bestSubmission.Product.Model;
-        this.Brand = bestSubmission.Product.Brand;
+        this.Store = bestSubmission.Store.Name ?? "";
+        this.Canton = bestSubmission.Store.Canton.Name ?? "";
+        this.Province = bestSubmission.Store.Canton.Province.Name ?? "";
+        this.Description = bestSubmission.Description ?? "";
+        this.Model = bestSubmission.Product.Model ?? "";
+        this.Brand = bestSubmission.Product.Brand ?? "";
     }
 };

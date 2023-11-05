@@ -38,4 +38,6 @@ public class Submission
     public virtual Product Product { get; set; }
     
     public virtual ICollection<Picture> Pictures { get; set; }
+    
+    public long NumberOfRatings { get; set; }
 }
