@@ -2,7 +2,6 @@ using System.Globalization;
 using Locompro.Models;
 using System.Text.RegularExpressions;
 using Locompro.Common.Search;
-using Locompro.Common.Search.Interfaces;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models.ViewModels;
@@ -24,7 +23,7 @@ public class SearchService : Service, ISearchService
     /// <param name="unitOfWork"> generic unit of work</param>
     /// <param name="loggerFactory"> logger </param>
     /// <param name="searchDomainService"></param>
-    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, ISearchDomainService searchDomainService, IPicturesService picturesService) :
+    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, ISearchDomainService searchDomainService, IPictureService pictureService) :
         base(unitOfWork, loggerFactory)
     {
         _searchDomainService = searchDomainService;

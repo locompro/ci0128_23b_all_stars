@@ -7,6 +7,7 @@ using System;
 using System.Threading.Tasks;
 using Locompro.Models.ViewModels;
 using Locompro.Services;
+using Locompro.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

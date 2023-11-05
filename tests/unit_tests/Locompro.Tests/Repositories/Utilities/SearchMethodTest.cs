@@ -48,6 +48,9 @@ public class SearchMethodTest
             
             searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Brand);
             Assert.IsNotNull(searchParam);
+            
+            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Category);
+            Assert.IsNotNull(searchParam);
         });
     }
 }

@@ -1,12 +1,22 @@
 ﻿@page
+@using Locompro.Services.Domain
+@using Locompro.Models
 @model IndexModel
+@inject INamedEntityDomainService<Category, string> CategoryDomainServicep
 @using (Html.BeginForm()) 
 {
     @Html.AntiForgeryToken()
 }
 
+
+@{
+    var categories = CategoryDomainServicep.GetAll().Result.ToList();
+}
 <!-- get the css file with main menu formats -->
 <link rel="stylesheet" href="~/css/MainMenu.css" asp-append-version="true"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet"/>
+<link rel="stylesheet" href="~/css/custom-select2-styles.css"/>
 
 <h1 class="d-flex justify-content-center" style="padding-top: 0px;margin-top: 180px;margin-bottom: 55px;font-size: 75px;">LoCoMPro</h1>
 
@@ -44,7 +54,7 @@
             <div id="modalContainer"
                  style="margin-left: auto; margin-right: auto;">
             </div>
-            <div id="advancedSearchButtonContainer" class ="advanced-search-button">
+            <div id="advancedSearchButtonContainer" class="advanced-search-button">
                 <button class="index-advanced-search-button-initial"
                         id="advancedSearchButton">
                     Búsqueda avanzada
@@ -55,6 +65,7 @@
 </div>
 
 @section Scripts{
-    <script src="~/js/search.js"></script>
-    <script src="~/js/Index.js"></script>
+    <script type="module" src="~/js/search.js"></script>
+    <script type="module" src="~/js/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
 }

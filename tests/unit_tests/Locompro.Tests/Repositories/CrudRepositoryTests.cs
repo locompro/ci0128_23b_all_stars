@@ -97,7 +97,7 @@ namespace Locompro.Tests.Repositories
             userToUpdate.Address = "NewAddressA";
 
             // Act
-            await _userRepository.UpdateAsync(userToUpdate);
+            _userRepository.UpdateAsync(userToUpdate);
             var updatedUser = await _userRepository.GetByIdAsync("1");
 
             // Assert

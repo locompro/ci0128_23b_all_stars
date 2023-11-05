@@ -7,7 +7,7 @@ namespace Locompro.Data.Repositories;
 /// Generic repository for an application entity type with string ID.
 /// </summary>
 /// <typeparam name="T">Type of entity handled by repository.</typeparam>
-public class NamedEntityRepository<T, I> : CrudRepository<T, I>, INamedEntityRepository<T, I> where T: class
+public class NamedEntityRepository<T, TK> : CrudRepository<T, TK>, INamedEntityRepository<T, TK> where T: class
 {
     /// <summary>
     /// Constructs a string ID repository for a given context.

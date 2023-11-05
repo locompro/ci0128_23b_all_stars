@@ -3,6 +3,7 @@ using Locompro.Models;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Account;
 using Locompro.Services;
+using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

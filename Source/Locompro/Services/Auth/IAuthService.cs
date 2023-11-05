@@ -1,7 +1,7 @@
 using Locompro.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 
-namespace Locompro.Services;
+namespace Locompro.Services.Auth;
 
 public interface IAuthService
 {

@@ -4,6 +4,7 @@
 #nullable disable
 
 using Locompro.Services;
+using Locompro.Services.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 

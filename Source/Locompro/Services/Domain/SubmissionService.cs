@@ -11,7 +11,7 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
     
     public SubmissionService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
     {
-        _submissionRepository = UnitOfWork.GetRepository<ISubmissionRepository>();
+        _submissionRepository = UnitOfWork.GetSpecialRepository<ISubmissionRepository>();
     }
 
     /// <inheritdoc />
