@@ -15,6 +15,7 @@ public class SubmissionVm
         EntryTime = getFormattedDate(submission) ?? "";
         Price = submission.Price;
         Description = submission.Description ?? "";
+        Status = submission.Status;
         UserId = submission.UserId ?? "";
         Rating = submission.Rating;
         NonFormatedEntryTime = submission.EntryTime;
@@ -22,6 +23,8 @@ public class SubmissionVm
 
     [BindProperty] [StringLength(120)] public string Description { get; init; }
 
+    public SubmissionStatus Status { get; set; }
+    
     public string UserId { get; set; }
 
     [BindProperty]

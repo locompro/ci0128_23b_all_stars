@@ -312,3 +312,42 @@ window.addEventListener('beforeunload', function (e) {
         });
     e.returnValue = '';
 });
+
+// Inside your document ready function, when setting up the form submission listener:
+document.addEventListener('DOMContentLoaded', function () {
+    const reportForm = document.getElementById('reportForm');
+    reportForm.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the default form submit
+
+        // Get the submission ID from the form (assuming you set it somewhere on click before form submit)
+        const submissionUserId = reportForm.querySelector('input[name="ReportVm.SubmissionUserId"]').value;
+        const submissionEntryTime = reportForm.querySelector('input[name="ReportVm.SubmissionEntryTime"]').value;
+        const submissionId = submissionUserId + submissionEntryTime;
+
+        // Send the form data using fetch API
+        fetch(reportForm.action, {
+            method: 'POST',
+            body: new FormData(reportForm)
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Find the button by the submission ID and disable it
+                const reportButtonToDisable = document.querySelector(`button[data-id="${submissionId}"]`);
+                if (reportButtonToDisable) {
+                    reportButtonToDisable.disabled = true;
+                }
+                
+                // Display a success message or update the UI as necessary
+                $('#descriptionModal').modal('hide');
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+                // Handle any errors
+            });
+    });
+});

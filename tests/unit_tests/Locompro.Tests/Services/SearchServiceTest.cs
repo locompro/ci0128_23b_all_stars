@@ -30,7 +30,7 @@ public class SearchServiceTest
         ISearchDomainService searchDomainService =
             new SearchDomainService(_unitOfWorkMock.Object, loggerFactoryMock.Object);
 
-        _searchService = new SearchService(_unitOfWorkMock.Object, loggerFactoryMock.Object, searchDomainService, null);
+        _searchService = new SearchService(loggerFactoryMock.Object, searchDomainService, null);
     }
 
     private Mock<ISubmissionRepository>? _submissionRepositoryMock;

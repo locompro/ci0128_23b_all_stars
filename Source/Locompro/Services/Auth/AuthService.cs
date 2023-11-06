@@ -13,13 +13,11 @@ public class AuthService : Service, IAuthService
     private readonly IUserManagerService _userManager;
     private readonly IUserStore<User> _userStore;
 
-    public AuthService(
-        IUnitOfWork unitOfWork,
-        ILoggerFactory loggerFactory,
+    public AuthService(ILoggerFactory loggerFactory,
         ISignInManagerService signInManager,
         IUserManagerService userManager,
         IUserStore<User> userStore,
-        IUserEmailStore<User> emailStore = null) : base(unitOfWork, loggerFactory)
+        IUserEmailStore<User> emailStore = null) : base(loggerFactory)
     {
         _signInManager = signInManager;
         _userManager = userManager;

@@ -2,6 +2,7 @@
 using Locompro.Common;
 using Locompro.Models.Entities;
 using Locompro.Models.Results;
+using Locompro.Models.ViewModels;
 using Locompro.Services;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
@@ -14,12 +15,19 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class ModerationServiceTests
 {
+    private Mock<IUserService> _mockUserService;
+    private Mock<IUserManagerService> _mockUserManagerService;
+    private Mock<IReportService> _mockReportService;
+    private Mock<ILogger<ModerationService>> _mockLogger;
+    private ModerationService _moderationService;
+    
     [SetUp]
     public void SetUp()
     {
         // Create mock instances
         _mockUserService = new Mock<IUserService>();
         _mockUserManagerService = new Mock<IUserManagerService>();
+        _mockReportService = new Mock<IReportService>();
         _mockLogger = new Mock<ILogger<ModerationService>>();
 
         // Setup mock logger factory to return the mock logger
@@ -29,13 +37,8 @@ public class ModerationServiceTests
 
         // Create an instance of the service to test
         _moderationService = new ModerationService(mockLoggerFactory.Object, _mockUserService.Object,
-            _mockUserManagerService.Object);
+            _mockUserManagerService.Object, _mockReportService.Object);
     }
-
-    private Mock<IUserService> _mockUserService;
-    private Mock<IUserManagerService> _mockUserManagerService;
-    private Mock<ILogger<ModerationService>> _mockLogger;
-    private ModerationService _moderationService;
 
     /// <summary>
     ///     Tests that the AssignPossibleModeratorsAsync method successfully assigns the 'PossibleModerator' role

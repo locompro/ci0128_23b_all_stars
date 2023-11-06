@@ -19,12 +19,12 @@ public class SearchService : Service, ISearchService
     /// <summary>
     ///     Constructor for the search service
     /// </summary>
-    /// <param name="unitOfWork"> generic unit of work</param>
     /// <param name="loggerFactory"> logger </param>
     /// <param name="searchDomainService"></param>
-    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, ISearchDomainService searchDomainService,
+    /// <param name="pictureService"></param>
+    public SearchService(ILoggerFactory loggerFactory, ISearchDomainService searchDomainService,
         IPictureService pictureService) :
-        base(unitOfWork, loggerFactory)
+        base(loggerFactory)
     {
         _searchDomainService = searchDomainService;
         _queryBuilder = new QueryBuilder();

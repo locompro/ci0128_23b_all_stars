@@ -1,7 +1,10 @@
 ﻿using System.Security.Claims;
 using Locompro.Common;
+using Locompro.Common.Mappers;
+using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.Results;
+using Locompro.Models.ViewModels;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 
@@ -10,22 +13,21 @@ namespace Locompro.Services;
 /// <summary>
 ///     Provides services for moderating users, including assigning moderator roles to qualified users.
 /// </summary>
-public class ModerationService : IModerationService
+public class ModerationService : Service, IModerationService
 {
-    private readonly ILogger<ModerationService> _logger;
-
     private readonly string[] _rolesCheckedInAssignment =
         { RoleNames.Moderator, RoleNames.RejectedModeratorRole, RoleNames.PossibleModerator };
 
     private readonly IUserManagerService _userManagerService;
     private readonly IUserService _userService;
+    private readonly IReportService _reportService; 
 
     public ModerationService(ILoggerFactory loggerFactory, IUserService userService,
-        IUserManagerService userManagerService)
+        IUserManagerService userManagerService, IReportService reportService) : base(loggerFactory)
     {
         _userService = userService;
         _userManagerService = userManagerService;
-        _logger = loggerFactory.CreateLogger<ModerationService>();
+        _reportService = reportService;
     }
 
     /// <summary>
@@ -40,6 +42,12 @@ public class ModerationService : IModerationService
         var tasks = qualifiedUserIDs.Select(user => AddPossibleModeratorRoleAsync(user.Id)).ToList();
 
         await Task.WhenAll(tasks);
+    }
+
+    /// <inheritdoc />
+    public async Task ReportSubmission(ReportDto reportDto)
+    {
+        await _reportService.Add(reportDto);
     }
 
     /// <summary>
@@ -61,13 +69,13 @@ public class ModerationService : IModerationService
         var user = await _userManagerService.FindByIdAsync(userID);
         if (user == null)
         {
-            _logger.LogError($"Could not find user with ID '{userID}'.");
+            Logger.LogError($"Could not find user with ID '{userID}'.");
             return;
         }
 
         if (await IsUserInAnyIncompatibleRoleAsync(user, _rolesCheckedInAssignment))
         {
-            _logger.LogInformation($"User with ID '{userID}' is already in an incompatible role.");
+            Logger.LogInformation($"User with ID '{userID}' is already in an incompatible role.");
             return;
         }
 
@@ -75,9 +83,9 @@ public class ModerationService : IModerationService
             await _userManagerService.AddClaimAsync(user, new Claim(ClaimTypes.Role, RoleNames.PossibleModerator));
 
         if (!result.Succeeded)
-            _logger.LogError($"Could not assign 'PossibleModerator' role to user with ID '{userID}'.");
+            Logger.LogError($"Could not assign 'PossibleModerator' role to user with ID '{userID}'.");
         else
-            _logger.LogInformation($"Assigned 'PossibleModerator' role to user with ID '{userID}'.");
+            Logger.LogInformation($"Assigned 'PossibleModerator' role to user with ID '{userID}'.");
     }
 
     /// <summary>
