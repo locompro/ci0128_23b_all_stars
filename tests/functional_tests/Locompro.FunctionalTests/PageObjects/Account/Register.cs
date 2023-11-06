@@ -5,7 +5,6 @@ namespace Locompro.FunctionalTests.PageObjects.Account;
 
 public class Register : BasePage
 {
-    public string Url => "https://localhost:5001/Account/Register";
 
     protected IWebElement emailInput => Driver.FindElement(By.Id("EmailInput"));
     protected IWebElement usernameInput => Driver.FindElement(By.Id("UsernameInput"));

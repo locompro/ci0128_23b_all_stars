@@ -4,7 +4,7 @@ using OpenQA.Selenium;
 
 public class BasePage
 {
-    protected IWebDriver Driver { get; }
+    public IWebDriver Driver { get; }
 
     public BasePage(IWebDriver driver)
     {

@@ -7,7 +7,6 @@ namespace Locompro.FunctionalTests.PageObjects.Account;
 public class Login : BasePage
 {
     protected WebDriver _driver;
-    public string Url => "https://localhost:5001/Account/Login";
 
     private By _usernameBy => By.Id("usernameInput");
     private By _passwordBy => By.Id("passwordInput");
