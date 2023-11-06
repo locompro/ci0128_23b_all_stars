@@ -4,18 +4,18 @@ class SearchResultsSubmissionRating {
         this.ratingCell = ratingCell;
         this.stars = [];
     }
-    
+
     buildRating() {
         const ratingStars = document.createElement("div");
         ratingStars.classList.add("rating");
-        
+
         let rating = this.submission.Rating;
         for (let starIndex = 0; starIndex < 5; starIndex++) {
             let starRating = Math.max(0, Math.min(1, rating));
             rating--;
             this.stars.push(new RatingStar(ratingStars, this.stars, (starRating >= 0.5), starIndex, this.submission));
         }
-        
+
         this.ratingCell.appendChild(ratingStars);
     }
 }
@@ -31,14 +31,14 @@ class RatingStar {
         this.element = document.createElement("div");
         this.element.classList.add("star-container");
         this.element.classList.add("star-icon");
-        
+
         this.element.textContent = "★";
-        
+
         this.element.style.position = 'relative';
         this.element.style.display = 'inline-block';
-        this.element.style.fontSize = '24px'; 
-        this.element.style.color = originalState? 'gold' : 'grey';
-        
+        this.element.style.fontSize = '24px';
+        this.element.style.color = originalState ? 'gold' : 'grey';
+
         this.ratingDiv.style.display = 'inline-block';
         this.element.style.display = 'inline-block';
 
@@ -49,17 +49,17 @@ class RatingStar {
 
         this.ratingDiv.appendChild(this.element);
     }
-    
+
     setRating() {
         this.starList[0].updateStarRatings(0, this.starIndex + 1);
-        
+
         this.notifyNewRatingToServer();
     }
-    
-     updateStarLook(isHovered) {
+
+    updateStarLook(isHovered) {
         if (isHovered) {
             let color = "gold";
-            
+
             for (let currentStar of this.starList) {
                 currentStar.element.style.color = color;
                 if (currentStar === this) {
@@ -68,47 +68,47 @@ class RatingStar {
             }
         } else {
             for (let currentStar of this.starList) {
-               currentStar.restoreToOriginalState();
+                currentStar.restoreToOriginalState();
             }
         }
-     }
-     
-     restoreToOriginalState() {
-        this.element.style.color = this.colored? 'gold' : 'grey';
-     }
-     
-     updateStarRatings(nextStarToUpdate, ratingSet) {
+    }
+
+    restoreToOriginalState() {
+        this.element.style.color = this.colored ? 'gold' : 'grey';
+    }
+
+    updateStarRatings(nextStarToUpdate, ratingSet) {
         let starRating = 0;
-        
+
         if (ratingSet >= 1) {
             starRating = 1;
         }
-        
+
         ratingSet = ratingSet - starRating;
         this.starList[nextStarToUpdate].colored = starRating >= 0.5;
-        this.element.style.color = this.colored? 'gold' : 'grey';
-        
+        this.element.style.color = this.colored ? 'gold' : 'grey';
+
         nextStarToUpdate++;
 
-         if (nextStarToUpdate === this.starList.length) {
-             return;
-         }
-        
+        if (nextStarToUpdate === this.starList.length) {
+            return;
+        }
+
         this.starList[nextStarToUpdate].updateStarRatings(nextStarToUpdate, ratingSet);
-     }
-     
-     notifyNewRatingToServer() {
+    }
+
+    notifyNewRatingToServer() {
         let url = window.location.pathname;
         url += "?handler=UpdateSubmissionRating";
-        
+
         this.submission.Rating = this.starIndex + 1;
-        
+
         let dataToSend = {
             submissionUserId: this.submission.UserId,
             submissionEntryTime: this.submission.NonFormatedEntryTime,
             Rating: "" + this.submission.Rating
         };
-        
+
         fetch(url, {
             method: 'POST',
             headers: {
@@ -118,9 +118,9 @@ class RatingStar {
             body: JSON.stringify(dataToSend)
         })
             .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-        });
-     }
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            });
+    }
 }

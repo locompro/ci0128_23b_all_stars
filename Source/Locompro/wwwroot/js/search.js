@@ -40,11 +40,11 @@ async function loadCantons(response) {
     try {
         // wait for cantons json file to be received
         const data = await response.json();
-    
+
         // Clear existing options in the optgroup
         const optgroup = document.getElementById('cantonDropdown');
         optgroup.innerHTML = '';
-    
+
         // Populate with new options based on fetched data
         data.forEach(function (canton) {
             const option = document.createElement('option');
@@ -52,17 +52,18 @@ async function loadCantons(response) {
             optgroup.appendChild(option);
         });
     } catch (error) {
-    console.error('Error loading cantons:', error);
+        console.error('Error loading cantons:', error);
     }
 }
 
 function performSearchButtonShared(modalShownParam) {
     try {
         searchResultsPage.requestSent = true;
-    } catch (error) {}
-    
+    } catch (error) {
+    }
+
     const dataToSend = getDataToSend(modalShownParam);
-    
+
     if (dataToSend === null) {
         return
     }
@@ -174,8 +175,8 @@ function validatePriceInput(button) {
 
 // script to search on enter press
 document.addEventListener("keyup", function (event) {
-        event.preventDefault();
-        if (event.key === "Enter") { // Use event.key instead of event.keyCode
-            document.getElementById("searchButton").click();
-        }
-    });
+    event.preventDefault();
+    if (event.key === "Enter") { // Use event.key instead of event.keyCode
+        document.getElementById("searchButton").click();
+    }
+});

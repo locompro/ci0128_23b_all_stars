@@ -118,7 +118,7 @@ class SearchResultsPictureContainer {
             this.slides[currentSlide].style.display = "none";
         }
 
-        this.slides[this.currentSlideIndex-1].style.display = "block";
+        this.slides[this.currentSlideIndex - 1].style.display = "block";
     }
 
     /**

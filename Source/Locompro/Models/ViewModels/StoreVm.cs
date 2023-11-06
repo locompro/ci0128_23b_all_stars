@@ -1,11 +1,10 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using Locompro.Common;
 
 namespace Locompro.Models.ViewModels;
 
 /// <summary>
-/// Incoming new store details.
+///     Incoming new store details.
 /// </summary>
 public class StoreVm
 {
@@ -13,7 +12,7 @@ public class StoreVm
     [Required(ErrorMessage = "Seleccionar una tienda.")]
     [StringLength(60)]
     [DisplayName("Nombre")]
-    public string SName { get; set; }   // not a typo
+    public string SName { get; set; } // not a typo
 
     [Required(ErrorMessage = "Ingresar la dirección de la tienda.")]
     [StringLength(35)]
@@ -34,7 +33,7 @@ public class StoreVm
     [Required(ErrorMessage = "Seleccionar el cantón de la tienda.")]
     [DisplayName("Cantón")]
     public string Canton { get; set; }
-    
+
     public bool IsExistingStore()
     {
         return !string.IsNullOrEmpty(SName) &&

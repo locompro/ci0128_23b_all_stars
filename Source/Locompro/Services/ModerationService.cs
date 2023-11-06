@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using Locompro.Common;
-using Locompro.Models;
 using Locompro.Models.Entities;
 using Locompro.Models.Results;
 using Locompro.Services.Auth;
@@ -9,16 +8,17 @@ using Locompro.Services.Domain;
 namespace Locompro.Services;
 
 /// <summary>
-/// Provides services for moderating users, including assigning moderator roles to qualified users.
+///     Provides services for moderating users, including assigning moderator roles to qualified users.
 /// </summary>
 public class ModerationService : IModerationService
 {
-    private readonly IUserService _userService;
-    private readonly IUserManagerService _userManagerService;
     private readonly ILogger<ModerationService> _logger;
 
     private readonly string[] _rolesCheckedInAssignment =
         { RoleNames.Moderator, RoleNames.RejectedModeratorRole, RoleNames.PossibleModerator };
+
+    private readonly IUserManagerService _userManagerService;
+    private readonly IUserService _userService;
 
     public ModerationService(ILoggerFactory loggerFactory, IUserService userService,
         IUserManagerService userManagerService)
@@ -29,7 +29,7 @@ public class ModerationService : IModerationService
     }
 
     /// <summary>
-    /// Asynchronously assigns the 'PossibleModerator' role to qualified users.
+    ///     Asynchronously assigns the 'PossibleModerator' role to qualified users.
     /// </summary>
     /// <returns>A task representing the asynchronous operation.</returns>
     public async Task AssignPossibleModeratorsAsync()
@@ -43,7 +43,7 @@ public class ModerationService : IModerationService
     }
 
     /// <summary>
-    /// Retrieves a list of user IDs for users who are qualified to be moderators.
+    ///     Retrieves a list of user IDs for users who are qualified to be moderators.
     /// </summary>
     /// <returns>A list of qualified user IDs.</returns>
     private List<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
@@ -52,7 +52,7 @@ public class ModerationService : IModerationService
     }
 
     /// <summary>
-    /// Asynchronously assigns the 'PossibleModerator' role to a user, if they don't already have the 'Moderator' role.
+    ///     Asynchronously assigns the 'PossibleModerator' role to a user, if they don't already have the 'Moderator' role.
     /// </summary>
     /// <param name="userID">The ID of the user to potentially assign the role to.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
@@ -75,21 +75,20 @@ public class ModerationService : IModerationService
             await _userManagerService.AddClaimAsync(user, new Claim(ClaimTypes.Role, RoleNames.PossibleModerator));
 
         if (!result.Succeeded)
-        {
             _logger.LogError($"Could not assign 'PossibleModerator' role to user with ID '{userID}'.");
-        }
         else
-        {
             _logger.LogInformation($"Assigned 'PossibleModerator' role to user with ID '{userID}'.");
-        }
     }
 
     /// <summary>
-    /// Asynchronously determines if the specified user is in any of the given roles that are considered incompatible.
+    ///     Asynchronously determines if the specified user is in any of the given roles that are considered incompatible.
     /// </summary>
     /// <param name="user">The user to check for incompatible roles.</param>
     /// <param name="rolesToCheck">The roles to check against the user's current roles.</param>
-    /// <returns>The task result contains a boolean value that is true if the user is in any of the roles provided; otherwise, false.</returns>
+    /// <returns>
+    ///     The task result contains a boolean value that is true if the user is in any of the roles provided; otherwise,
+    ///     false.
+    /// </returns>
     private async Task<bool> IsUserInAnyIncompatibleRoleAsync(User user, IEnumerable<string> rolesToCheck)
     {
         var userRoles = await _userManagerService.GetClaimsOfTypesAsync(user, ClaimTypes.Role);
