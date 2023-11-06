@@ -29,7 +29,15 @@ class SearchResultsModal {
                 "SearchResults");
 
         this.submissionsRatings = [];
+        this.reportedSubmissions = [];
 
+        $('#descriptionModal').on('show.bs.modal', function () {
+            // Use a short delay to apply the style change to the backdrop
+            setTimeout(() => {
+                $('.modal-backdrop').last().css('opacity', '0');
+            }, 0);
+        });
+        
         // Populate the modal with the selected item's details
         this.populateModal();
     }
@@ -69,6 +77,27 @@ class SearchResultsModal {
             const ratingCell = row.insertCell(3);
             this.submissionsRatings.push(new SearchResultsSubmissionRating(submission, ratingCell));
             this.submissionsRatings[this.submissionsRatings.length - 1].buildRating();
+
+            // Prepare report button
+            const reportButton = document.createElement('button');
+            
+            reportButton.textContent = 'Reportar';
+            reportButton.className = 'btn btn-primary';
+            reportButton.setAttribute('data-id', submission.UserId); // Assign the unique identifier to the button
+            reportButton.setAttribute('data-bs-toggle', 'modal');
+            reportButton.setAttribute('data-bs-target', '#descriptionModal');
+            reportButton.addEventListener('click', () => {
+                
+            const submissionUserIdInput = document.querySelector('input[name="ReportVm.SubmissionUserId"]');
+            const submissionEntryTimeInput = document.querySelector('input[name="ReportVm.SubmissionEntryTime"]');
+            
+            submissionUserIdInput.value = submission.UserId;
+            submissionEntryTimeInput.value = submission.NonFormatedEntryTime;
+            });
+
+            // Inserting the report button cell
+            const reportCell = row.insertCell(4);
+            reportCell.appendChild(reportButton);
         }
     }
 
