@@ -1,4 +1,6 @@
-﻿using Locompro.Common.ErrorStore;
+﻿using System.Security.Claims;
+using Locompro.Common;
+using Locompro.Common.ErrorStore;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
@@ -19,6 +21,7 @@ public class ProfileModel : PageModel
     private readonly IAuthService _authService;
     private readonly IDomainService<Canton, string> _cantonService;
     private readonly IDomainService<User, string> _userService;
+    private readonly IUserManagerService _userManagerService;
 
 
     /// <summary>
@@ -28,14 +31,17 @@ public class ProfileModel : PageModel
     /// <param name="authService">Service for authentication related operations.</param>
     /// <param name="cantonService">To get canton related information </param>
     /// <param name="errorStoreFactory"></param>
-    public ProfileModel(IDomainService<User, string> userService, IAuthService authService,
-        IDomainService<Canton, string> cantonService, IErrorStoreFactory errorStoreFactory)
+    /// <param name="userManagerService"></param>
+    public ProfileModel(IDomainService<User, string> userService, IAuthService authService, 
+        IDomainService<Canton, string> cantonService, IErrorStoreFactory errorStoreFactory, IUserManagerService userManagerService)
     {
         _userService = userService;
         _authService = authService;
         _cantonService = cantonService;
+        _userManagerService = userManagerService;
         ChangePasswordModalErrors = errorStoreFactory.Create();
         UpdateUserDataModalErrors = errorStoreFactory.Create();
+        DeclineModerationModalErrors = errorStoreFactory.Create();
     }
 
     [BindProperty] public ProfileVm UserProfile { get; set; }
@@ -48,10 +54,13 @@ public class ProfileModel : PageModel
 
     public IErrorStore UpdateUserDataModalErrors { get; set; }
 
+    public IErrorStore DeclineModerationModalErrors { get; set; }
+
     public bool IsPasswordChanged { get; set; }
 
     public bool IsUserDataUpdated { get; set; }
-
+    public bool IsNoLongerModerator { get; set; }
+    public bool IsModerator { get; set; }
 
     /// <summary>
     ///     Handler for the GET request to load the user's profile page.
@@ -59,8 +68,10 @@ public class ProfileModel : PageModel
     /// <returns>The user's profile page.</returns>
     public async Task<IActionResult> OnGetAsync()
     {
-        var user = await _userService.Get(_authService.GetUserId());
+        var user = await _userManagerService.FindByIdAsync(_authService.GetUserId());
         if (user == null) return RedirectToRoute("Account/Login");
+        //await AddClaim(user);
+        IsModerator = await HasModeratorClaim(user);
         SetProfileViewModel(user);
         RecoverTemporaryFlags();
         ClearStoredErrors();
@@ -122,6 +133,38 @@ public class ProfileModel : PageModel
         await _userService.Update(user);
 
         StoreTemporaryFlag("IsUserDataUpdated", true);
+        return RedirectToPage();
+    }
+    
+    private async Task<bool> HasModeratorClaim(User user)
+    {
+        return await _userManagerService.IsInRoleAsync(user, RoleNames.Moderator);
+    }
+
+    private async Task AddClaim(User user)
+    {
+        
+        var claim = new Claim(ClaimTypes.Role, RoleNames.Moderator);
+        await _userManagerService.AddClaimAsync(user, claim);
+    }
+    
+    public async Task<IActionResult> OnPostDeclineModerationAsync()
+    {
+        var user = await _userService.Get(_authService.GetUserId());
+        if (user == null) return RedirectToRoute("Account/Login");
+
+        if (!await _authService.IsCurrentPasswordCorrect(PasswordChange.CurrentPassword))
+        {
+            DeclineModerationModalErrors.StoreError("La contraseña actual no es correcta.");
+            SetProfileViewModel(user);
+            return Page();
+        }
+        var claim = new Claim(ClaimTypes.Role, RoleNames.Moderator);
+        await _userManagerService.DeleteClaimAsync(user, claim);
+
+        await _authService.RefreshUserLogin();
+
+        StoreTemporaryFlag("IsModerationRoleDeclined", true);
         return RedirectToPage();
     }
 
@@ -191,6 +234,7 @@ public class ProfileModel : PageModel
     {
         IsPasswordChanged = RecoverTemporaryFlag("IsPasswordChanged");
         IsUserDataUpdated = RecoverTemporaryFlag("IsUserDataUpdated");
+        IsNoLongerModerator = RecoverTemporaryFlag("IsModerationRoleDeclined");
     }
 
     /// <summary>
