@@ -1,4 +1,3 @@
-using System.Net;
 using Castle.Core.Internal;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
@@ -10,6 +9,7 @@ using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
 using Locompro.Pages.Util;
 using Locompro.Services;
+using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +27,11 @@ public class SearchResultsModel : SearchPageModel
     private readonly ISearchService _searchService;
 
     private readonly ISubmissionService _submissionService;
+    
+    private readonly IModerationService _moderationService;
+    
+    private readonly IAuthService _authService;
+
     private IConfiguration Configuration { get; set; }
     
     /// <summary>
@@ -47,7 +52,8 @@ public class SearchResultsModel : SearchPageModel
         IConfiguration configuration,
         ISearchService searchService,
         ISubmissionService submissionService,
-        IModerationService moderationService)
+        IModerationService moderationService,
+        IAuthService authService)
         : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler)
     {
         _searchService = searchService;
@@ -61,6 +67,8 @@ public class SearchResultsModel : SearchPageModel
         _searchService = searchService;
         _pictureService = pictureService;
         _submissionService = submissionService;
+        _moderationService = moderationService;
+        _authService = authService;
     }
 
     /// <summary>
@@ -159,18 +167,34 @@ public class SearchResultsModel : SearchPageModel
         return Content(GetJsonFrom(formattedPictures));
     }
 
-    public async Task<JsonResult> OnPostReportSubmissionAsync(ReportVm reportVm)
+    
+    public async Task<IActionResult> OnPostReportSubmissionAsync(ReportVm reportVm)
     {
+        
+        // TODO: Set up client side handler to accept redirect
+        
+        if (!_authService.IsLoggedIn())
+        {
+            return RedirectToRoute("Account/Login");
+        }
+        
         try
         {
-            // Your asynchronous processing logic here
-            // await some async operation
+            var reportMapper = new ReportMapper();
+
+            var reportDto = reportMapper.ToDto(reportVm);
+
+            reportDto.UserId = _authService.GetUserId();
+
+            await _moderationService.ReportSubmission(reportDto);
+            
+            Logger.LogInformation("Report submitted successfully {}", reportVm);
 
             return new JsonResult(new { success = true, message = "Report submitted successfully" });
         }
         catch (Exception ex)
         {
-            // Log the exception
+            Logger.LogError(ex, "Failed to submit report {}", reportVm);
 
             Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             return new JsonResult(new { success = false, message = ex.Message });
@@ -195,8 +219,15 @@ public class SearchResultsModel : SearchPageModel
     /// <summary>
     ///     Updates the rating of a given submission
     /// </summary>
-    public async Task OnPostUpdateSubmissionRatingAsync()
+    public async Task<IActionResult> OnPostUpdateSubmissionRatingAsync()
     {
+        // TODO: Set up client side handler to accept redirect
+        
+        if (!_authService.IsLoggedIn())
+        {
+            return RedirectToRoute("Account/Login");
+        }
+        
         var clientRatingChange = await GetDataSentByClient<RatingVm>();
 
         if (clientRatingChange == null)
@@ -210,5 +241,7 @@ public class SearchResultsModel : SearchPageModel
         {
             Logger.LogError("Error when attempting to update submission rating: " + e.Message);
         }
+
+        return new JsonResult(new { success = true, message = "Ratings updated submitted successfully" });
     }
 }
