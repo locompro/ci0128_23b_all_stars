@@ -1,4 +1,5 @@
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -38,9 +39,9 @@ public abstract class SearchPageModel : BasePageModel
     /// <returns></returns>
     public async Task<IActionResult> OnPostReturnResultsAsync()
     {
-        SearchViewModel searchViewModel = await GetDataSentByClient<SearchViewModel>();
+        SearchVm searchVm = await GetDataSentByClient<SearchVm>();
         
-        CacheDataInSession(searchViewModel, "SearchQueryViewModel");
+        CacheDataInSession(searchVm, "SearchQueryViewModel");
         
         return RedirectToPage("/SearchResults/SearchResults");
     }

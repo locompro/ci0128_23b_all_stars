@@ -2,6 +2,7 @@ using Locompro.Common.Search;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models;
+using Locompro.Models.Entities;
 
 namespace Locompro.Services.Domain;
 

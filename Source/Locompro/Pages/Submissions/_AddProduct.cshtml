@@ -2,8 +2,9 @@
 @using Locompro.Services.Domain
 @using Newtonsoft.Json
 @using Locompro.Models
+@using Locompro.Models.Entities
 @inject INamedEntityDomainService<Category, string> CategoryService
-@model ProductViewModel
+@model ProductVm
 
 @{
     var categories = (await CategoryService.GetAll()).ToList();

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Locompro.Services;
 using Locompro.Models;
 using Castle.Core.Internal;
+using Locompro.Models.Entities;
 
 namespace Locompro.Pages.Modals.AdvancedSearch;
 

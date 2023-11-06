@@ -2,6 +2,7 @@ using System.Linq.Dynamic.Core;
 using Locompro.Common;
 using Locompro.Common.Search;
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Data.Repositories;

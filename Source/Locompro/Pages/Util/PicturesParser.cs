@@ -1,4 +1,5 @@
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 
 namespace Locompro.Pages.Util;
@@ -13,15 +14,15 @@ public static class PictureParser
     /// </summary>
     /// <param name="uploadedFiles"></param>
     /// <returns></returns>
-    public static List<PictureViewModel> Parse(IFormFileCollection uploadedFiles)
+    public static List<PictureVm> Parse(IFormFileCollection uploadedFiles)
     {
-        List<PictureViewModel> pictures = new List<PictureViewModel>();
+        List<PictureVm> pictures = new List<PictureVm>();
         
         foreach(IFormFile file in uploadedFiles)
         {
             if (IsValidImage(file))
             {
-                PictureViewModel picture = ParseSinglePicture(file);
+                PictureVm picture = ParseSinglePicture(file);
             
                 pictures.Add(picture);
             }
@@ -49,12 +50,12 @@ public static class PictureParser
     /// </summary>
     /// <param name="file"></param>
     /// <returns></returns>
-    public static PictureViewModel ParseSinglePicture(IFormFile file)
+    public static PictureVm ParseSinglePicture(IFormFile file)
     {
         MemoryStream ms = new MemoryStream();
             
         file.CopyTo(ms);
-        PictureViewModel picture = new PictureViewModel
+        PictureVm picture = new PictureVm
         {
             Name = file.FileName,
             PictureData = ms.ToArray()

@@ -1,6 +1,8 @@
 ﻿using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models;
+using Locompro.Models.Entities;
+using Locompro.Models.Results;
 
 namespace Locompro.Services.Domain
 {

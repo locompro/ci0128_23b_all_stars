@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Locompro.Data;
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
 
@@ -55,7 +56,7 @@ public class AuthService : Service, IAuthService
     /// </summary>
     /// <param name="inputData">Data entered by the user in the view</param>
     /// <returns>The result of the registration attempt.</returns>
-    public async Task<IdentityResult> Register(RegisterViewModel inputData)
+    public async Task<IdentityResult> Register(RegisterVm inputData)
     {
         var user = CreateUser();
 
@@ -99,7 +100,7 @@ public class AuthService : Service, IAuthService
     ///     If the login is successful, a log entry will be created stating "User logged in."
     ///     The method will not lock out the user even after multiple failed login attempts.
     /// </remarks>
-    public async Task<SignInResult> Login(LoginViewModel inputData)
+    public async Task<SignInResult> Login(LoginVm inputData)
     {
         var result = await _signInManager.PasswordSignInAsync(inputData.UserName, inputData.Password,
             inputData.RememberMe, false);

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Util;
 using Locompro.Services;
@@ -20,13 +21,13 @@ namespace Locompro.Pages.Submissions;
 public class CreateModel : PageModel
 {
     [BindProperty]
-    public StoreViewModel StoreVm { get; set; }
+    public StoreVm StoreVm { get; set; }
     
     [BindProperty]
-    public ProductViewModel ProductVm { get; set; }
+    public ProductVm ProductVm { get; set; }
     
     [BindProperty]
-    public SubmissionViewModel SubmissionViewModel { get; set; }
+    public SubmissionVm SubmissionVm { get; set; }
     
     private readonly INamedEntityDomainService<Store, string> _storeService;
 
@@ -88,13 +89,13 @@ public class CreateModel : PageModel
             return Page();
         }
 
-        SubmissionViewModel.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        SubmissionVm.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         
         IFormFileCollection formFiles = Request.Form.Files;
 
-        List<PictureViewModel> picturesVMs = PictureParser.Parse(formFiles);
+        List<PictureVm> picturesVMs = PictureParser.Parse(formFiles);
 
-        await _contributionService.AddSubmission(StoreVm, ProductVm, SubmissionViewModel, picturesVMs);
+        await _contributionService.AddSubmission(StoreVm, ProductVm, SubmissionVm, picturesVMs);
 
         return RedirectToPage("/Index");
     }

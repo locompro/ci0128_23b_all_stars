@@ -1,4 +1,5 @@
 using Locompro.Models;
+using Locompro.Models.Entities;
 
 namespace Locompro.Data.Repositories;
 
