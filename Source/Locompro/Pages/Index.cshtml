@@ -3,7 +3,7 @@
 @using Locompro.Models
 @using Locompro.Models.Entities
 @model IndexModel
-@inject INamedEntityDomainService<Category, string> CategoryDomainServicep
+@inject INamedEntityDomainService<Category, string> CategoryDomainService
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
@@ -11,7 +11,7 @@
 
 
 @{
-    var categories = CategoryDomainServicep.GetAll().Result.ToList();
+    var categories = CategoryDomainService.GetAll().Result.ToList();
 }
 
 <!-- get the css file with main menu formats -->
@@ -67,7 +67,7 @@
 </div>
 
 @section Scripts{
-    <script type="module" src="~/js/search.js"></script>
-    <script type="module" src="~/js/index.js"></script>
+    <script src="~/js/search.js"></script>
+    <script src="~/js/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
 }
