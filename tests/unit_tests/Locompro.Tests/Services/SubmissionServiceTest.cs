@@ -291,6 +291,70 @@ public class SubmissionServiceTest
     }
 
     /// <summary>
+    ///     
+    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
+    [Test]
+    public async Task DeleteSubmissionDeletesSubmission()
+    {
+        MockDataSetup();
+        
+        var submissionKey = new SubmissionKey
+        {
+            UserId = "User1",
+            EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
+        };
+        
+        await _submissionService.DeleteSubmissionAsync(submissionKey);
+        _submissionCrudRepositoryMock.Verify(repo => repo.DeleteAsync(submissionKey), Times.Once);
+        
+        Assert.That(await _submissionCrudRepositoryMock.Object.GetByIdAsync(submissionKey), Is.Null);
+    }
+    
+    /// <summary>
+    ///     
+    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
+    [Test]
+    public async Task UpdateSubmissionStatusUpdatesSubmissionStatus()
+    {
+        MockDataSetup();
+        
+        var submissionKey = new SubmissionKey
+        {
+            UserId = "User1",
+            EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
+        };
+        
+        await _submissionService.UpdateSubmissionStatusAsync(submissionKey, SubmissionStatus.Moderated);
+        
+        Submission submissionToCheck = await _submissionCrudRepositoryMock.Object.GetByIdAsync(submissionKey);
+        
+        Assert.That(submissionToCheck.Status, Is.EqualTo(SubmissionStatus.Moderated));
+    }
+    
+    /// <summary>
+    ///     
+    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
+    [Test]
+    public async Task GetItemSubmissionsReturnsSubmissions()
+    {
+        MockDataSetup();
+        
+        var storeName = "Store1";
+        var productId = 1;
+        var productName = "Product1";
+        
+        var submission = await _submissionService.GetItemSubmissions(storeName, productName);
+
+        var submissions = submission as Submission[] ?? submission.ToArray();
+        Assert.That(submissions, Is.Not.Null);
+        Assert.That(submissions.Length, Is.EqualTo(2));
+    }
+
+
+    /// <summary>
     ///     Sets up the mock for the submission repository so that it behaves as expected for the tests
     /// </summary>
     private void MockDataSetup()
@@ -695,6 +759,34 @@ public class SubmissionServiceTest
             {
                 return submissions.SingleOrDefault(submission => submission.UserId == submissionKey.UserId &&
                                                                  submission.EntryTime == submissionKey.EntryTime);
+            });
+
+        _submissionCrudRepositoryMock
+            .Setup(repository => repository.DeleteAsync(It.IsAny<SubmissionKey>()))
+            .Returns((SubmissionKey submissionKey) =>
+            {
+                var submission = submissions.SingleOrDefault(submission => submission.UserId == submissionKey.UserId &&
+                                                                           submission.EntryTime ==
+                                                                           submissionKey.EntryTime);
+                if (submission != null) submissions.Remove(submission);
+                
+                return Task.CompletedTask;
+            });
+
+        _submissionCrudRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(It.IsAny<SubmissionKey>()))
+            .ReturnsAsync((SubmissionKey submissionKey) =>
+            {
+                return submissions.SingleOrDefault(submission => submission.UserId == submissionKey.UserId &&
+                                                                 submission.EntryTime == submissionKey.EntryTime);
+            });
+        
+        
+        _submissionCrudRepositoryMock
+            .Setup(repository => repository.GetItemSubmissions(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync((string storeName, string productName) =>
+            {
+                return submissions.Where(submission => submission.Store.Name == storeName && submission.Product.Name == productName);
             });
     }
 }

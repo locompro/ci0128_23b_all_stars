@@ -128,7 +128,8 @@ public class SearchResultsModel : SearchPageModel
             new
             {
                 SearchResults = searchResults,
-                Data = SearchVm
+                Data = SearchVm,
+                Redirect = (searchResults is { Count: 0 }? "redirect" : null)
             });
 
         return Content(searchResultsJson);
@@ -233,6 +234,6 @@ public class SearchResultsModel : SearchPageModel
             Logger.LogError("Error when attempting to update submission rating: " + e.Message);
         }
 
-        return new JsonResult(new { success = true, message = "Ratings updated submitted successfully" });
+        return new JsonResult(new { ok = true, message = "Ratings updated submitted successfully" });
     }
 }

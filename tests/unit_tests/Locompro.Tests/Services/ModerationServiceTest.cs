@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
 using Locompro.Common;
+using Locompro.Data;
+using Locompro.Data.Repositories;
 using Locompro.Models.Entities;
 using Locompro.Models.Results;
 using Locompro.Models.ViewModels;
@@ -15,11 +17,13 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class ModerationServiceTests
 {
-    private Mock<IUserService> _mockUserService;
-    private Mock<IUserManagerService> _mockUserManagerService;
-    private Mock<IReportService> _mockReportService;
-    private Mock<ILogger<ModerationService>> _mockLogger;
-    private ModerationService _moderationService;
+    private Mock<IUserService> _mockUserService = null!;
+    private Mock<IUserManagerService> _mockUserManagerService = null!;
+    private Mock<ILogger<ModerationService>> _mockLogger = null!;
+    private Mock<ISubmissionService> _submissionService = null!;
+    private ModerationService _moderationService = null!;
+    private List<Submission> _submissions = null!;
+    private Mock<IReportService> _mockReportService = null!;
     
     [SetUp]
     public void SetUp()
@@ -29,6 +33,9 @@ public class ModerationServiceTests
         _mockUserManagerService = new Mock<IUserManagerService>();
         _mockReportService = new Mock<IReportService>();
         _mockLogger = new Mock<ILogger<ModerationService>>();
+        
+        _submissionService = new Mock<ISubmissionService>();
+       
 
         // Setup mock logger factory to return the mock logger
         var mockLoggerFactory = new Mock<ILoggerFactory>();
@@ -37,7 +44,40 @@ public class ModerationServiceTests
 
         // Create an instance of the service to test
         _moderationService = new ModerationService(mockLoggerFactory.Object, _mockUserService.Object,
-            _mockUserManagerService.Object, _mockReportService.Object);
+            _mockUserManagerService.Object, _submissionService.Object, _mockReportService.Object);
+
+        _submissions = new List<Submission>();
+        
+        _submissionService
+            .Setup(repository => repository.DeleteSubmissionAsync(It.IsAny<SubmissionKey>()))
+            .Returns((SubmissionKey submissionKey) =>
+            {
+                _submissions.RemoveAll(submission => submission.UserId == submissionKey.UserId &&
+                                                            submission.EntryTime == submissionKey.EntryTime);
+                return Task.CompletedTask;
+            });
+        _submissionService
+            .Setup(repository =>
+                repository.UpdateSubmissionStatusAsync(It.IsAny<SubmissionKey>(), It.IsAny<SubmissionStatus>()))
+            .Returns((SubmissionKey submissionKey, SubmissionStatus status) =>
+            {
+                var submission = _submissions.Find(submission =>
+                    submission.UserId == submissionKey.UserId &&
+                    submission.EntryTime.Year == submissionKey.EntryTime.Year &&
+                    submission.EntryTime.Month == submissionKey.EntryTime.Month &&
+                    submission.EntryTime.Day == submissionKey.EntryTime.Day &&
+                    submission.EntryTime.Hour == submissionKey.EntryTime.Hour &&
+                    submission.EntryTime.Minute == submissionKey.EntryTime.Minute &&
+                    submission.EntryTime.Second == submissionKey.EntryTime.Second);
+                if (submission != null)
+                {
+                    submission.Status = status;
+                }
+                
+                return Task.CompletedTask;
+            });
+        
+        _mockReportService = new Mock<IReportService>();    
     }
 
     /// <summary>
@@ -101,7 +141,7 @@ public class ModerationServiceTests
             .Returns(qualifiedUsers);
 
         _mockUserManagerService.Setup(x => x.FindByIdAsync(It.IsAny<string>()))
-            .ReturnsAsync((User)null);
+            .ReturnsAsync((User)null!);
 
         // Act
         await _moderationService.AssignPossibleModeratorsAsync();
@@ -112,7 +152,7 @@ public class ModerationServiceTests
             It.IsAny<EventId>(),
             It.Is<It.IsAnyType>((o, t) => true),
             It.IsAny<Exception>(),
-            It.Is<Func<It.IsAnyType, Exception, string>>((o, t) => true)));
+            It.Is<Func<It.IsAnyType, Exception, string>>((o, t) => true)!));
     }
 
     /// <summary>
@@ -156,7 +196,7 @@ public class ModerationServiceTests
             It.IsAny<EventId>(),
             It.Is<It.IsAnyType>((o, t) => true),
             It.IsAny<Exception>(),
-            It.Is<Func<It.IsAnyType, Exception, string>>((o, t) => true)));
+            It.Is<Func<It.IsAnyType, Exception, string>>((o, t) => true)!));
     }
 
     /// <summary>
@@ -199,6 +239,111 @@ public class ModerationServiceTests
             It.IsAny<EventId>(),
             It.Is<It.IsAnyType>((o, t) => true),
             It.IsAny<Exception>(),
-            It.Is<Func<It.IsAnyType, Exception, string>>((o, t) => true)));
+            It.Is<Func<It.IsAnyType, Exception, string>>((o, t) => true)!));
+    }
+
+    /// <summary>
+    ///     If moderator sends action to erase a submission, it is erased
+    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
+    [Test]
+    public async Task ReportActionToEraseSubmissionErasesSubmission()
+    {
+        _submissions = new List<Submission>();
+        _submissions.Add(new Submission()
+        {
+            UserId = "1",
+            EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc)
+        });
+
+        ModeratorActionOnReportVm modAction = new()
+        {
+            SubmissionUserId = "1",
+            SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
+            Action = ModeratorActions.EraseSubmission
+        };
+
+        await _moderationService.ActOnReport(modAction);
+        
+        Assert.That(_submissions, Is.Empty);
+    }
+    
+    /// <summary>
+    ///     If a moderator acts to remove a report, the report is removed
+    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
+    [Test]
+    public async Task ReportActionToEraseReportErasesReport()
+    {
+        _submissions = new List<Submission>();
+        
+        _submissions.Add(new Submission()
+        {
+            UserId = "1",
+            EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
+            Reports = new List<Report>()
+            {
+                new Report()
+                {
+                    UserId = "2",
+                    SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc)
+                }
+            }
+        });
+        
+        ModeratorActionOnReportVm modAction = new()
+        {
+            SubmissionUserId = "1",
+            SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
+            Action = ModeratorActions.EraseReport
+        };
+        
+        await _moderationService.ActOnReport(modAction);
+        
+        Assert.That(_submissions[0].Status, Is.EqualTo(SubmissionStatus.Moderated));
+    }
+
+    /// <summary>
+    ///     If an invalid action is sent, then it is caught
+    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
+    [Test]
+    public void ReportActionInvalidOrDefaultThrowException()
+    {
+        _submissions = new List<Submission>();
+        
+        _submissions.Add(new Submission()
+        {
+            UserId = "1",
+            EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
+            Reports = new List<Report>()
+            {
+                new Report()
+                {
+                    UserId = "2",
+                    SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc)
+                }
+            }
+        });
+        
+        ModeratorActionOnReportVm modAction = new()
+        {
+            SubmissionUserId = "1",
+            SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
+            Action = ModeratorActions.Default
+        };
+
+        ModeratorActionOnReportVm modAction1 = new()
+        {
+            SubmissionUserId = "1",
+            SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
+            Action = (ModeratorActions) 3
+        };
+        
+        Assert.Multiple(() =>
+        {
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _moderationService.ActOnReport(modAction));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _moderationService.ActOnReport(modAction1));
+        });
     }
 }

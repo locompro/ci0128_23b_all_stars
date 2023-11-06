@@ -29,11 +29,19 @@ public interface ISubmissionService : IDomainService<Submission, SubmissionKey>
     /// <param name="ratingVm"> view model with submission to replace info and new rating </param>
     /// <returns></returns>
     Task UpdateSubmissionRating(RatingVm ratingVm);
-    
+
     /// <summary>
-    /// Acts on a report
+    /// Deletes submission
     /// </summary>
-    /// <param name="moderatorActionOnReportVm"> Report action information</param>
+    /// <param name="submissionKey"> key of submission to be deleted</param>
     /// <returns></returns>
-    Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm);
+    Task DeleteSubmissionAsync(SubmissionKey submissionKey);
+
+    /// <summary>
+    /// Updated the status of a submission
+    /// </summary>
+    /// <param name="submissionKey"> key of submission to be updated</param>
+    /// <param name="submissionStatus"> new status of submission </param>
+    /// <returns></returns>
+    Task UpdateSubmissionStatusAsync(SubmissionKey submissionKey, SubmissionStatus submissionStatus);
 }
