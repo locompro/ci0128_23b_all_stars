@@ -5,20 +5,15 @@ using Moq;
 namespace Locompro.Tests.Services.Tasks;
 
 /// <summary>
-/// Contains unit tests for the AddPossibleModeratorsTask class, ensuring that the scheduled task
-/// correctly calls the moderation service to assign possible moderators.
+///     Contains unit tests for the AddPossibleModeratorsTask class, ensuring that the scheduled task
+///     correctly calls the moderation service to assign possible moderators.
 /// </summary>
 /// <author>Brandon Alonso Mora Umaña - C15179</author>
 [TestFixture]
 public class AddPossibleModeratorsTaskTest
 {
-    private Mock<IServiceProvider> _mockServiceProvider;
-    private Mock<IServiceScope> _mockServiceScope;
-    private Mock<IServiceScopeFactory> _mockServiceScopeFactory;
-    private Mock<IModerationService> _mockModerationService;
-
     /// <summary>
-    /// Set up the test environment, mocking the necessary services and scope factory.
+    ///     Set up the test environment, mocking the necessary services and scope factory.
     /// </summary>
     /// <author>Brandon Alonso Mora Umaña - C15179</author>
     [SetUp]
@@ -43,10 +38,15 @@ public class AddPossibleModeratorsTaskTest
             .Returns(_mockServiceScopeFactory.Object);
     }
 
+    private Mock<IServiceProvider> _mockServiceProvider;
+    private Mock<IServiceScope> _mockServiceScope;
+    private Mock<IServiceScopeFactory> _mockServiceScopeFactory;
+    private Mock<IModerationService> _mockModerationService;
+
     /// <summary>
-    /// Tests that the ExecuteAsync method on AddPossibleModeratorsTask calls the AssignPossibleModeratorsAsync
-    /// method on the IModerationService exactly once, verifying that the task correctly triggers
-    /// the moderation action.
+    ///     Tests that the ExecuteAsync method on AddPossibleModeratorsTask calls the AssignPossibleModeratorsAsync
+    ///     method on the IModerationService exactly once, verifying that the task correctly triggers
+    ///     the moderation action.
     /// </summary>
     /// <author>Brandon Alonso Mora Umaña - C15179</author>
     [Test]

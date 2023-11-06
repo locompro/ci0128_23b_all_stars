@@ -1,15 +1,13 @@
-﻿using NUnit.Framework.Constraints;
-
-namespace Locompro.Services.Tasks;
+﻿namespace Locompro.Services.Tasks;
 
 /// <summary>
-/// Interface for a task that runs in the background.
+///     Interface for a task that runs in the background.
 /// </summary>
 public interface IScheduledTask
 {
     /// <summary>
-    /// Identifies how often the task should run.
-    /// Format: [Days,] Hours, Minutes, Seconds
+    ///     Identifies how often the task should run.
+    ///     Format: [Days,] Hours, Minutes, Seconds
     /// </summary>
     TimeSpan Interval { get; }
 

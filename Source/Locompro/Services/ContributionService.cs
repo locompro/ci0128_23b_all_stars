@@ -1,8 +1,6 @@
 using Locompro.Data;
-using Locompro.Models;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
-using Locompro.Pages.Util;
 using Locompro.Services.Domain;
 
 namespace Locompro.Services;
@@ -13,11 +11,11 @@ public class ContributionService : Service, IContributionService
 
     private readonly ICantonService _cantonService;
 
-    private readonly INamedEntityDomainService<Store, string> _storeService;
+    private readonly INamedEntityDomainService<Category, string> _categoryService;
 
     private readonly INamedEntityDomainService<Product, int> _productService;
 
-    private readonly INamedEntityDomainService<Category, string> _categoryService;
+    private readonly INamedEntityDomainService<Store, string> _storeService;
 
     private readonly ISubmissionService _submissionService;
 
@@ -36,15 +34,15 @@ public class ContributionService : Service, IContributionService
     public async Task AddSubmission(StoreVm storeVm, ProductVm productVm,
         SubmissionVm submissionVm, List<PictureVm> picturesVMs)
     {
-        Store store = await BuildStore(storeVm);
+        var store = await BuildStore(storeVm);
 
-        Product product = await BuildProduct(productVm);
+        var product = await BuildProduct(productVm);
 
-        DateTime entryTime = DateTime.Now;
+        var entryTime = DateTime.Now;
 
-        List<Picture> pictures = BuildPictures(picturesVMs, entryTime, submissionVm.UserId);
-        
-        Submission submission = new Submission()
+        var pictures = BuildPictures(picturesVMs, entryTime, submissionVm.UserId);
+
+        var submission = new Submission
         {
             UserId = submissionVm.UserId,
             EntryTime = entryTime,
@@ -60,14 +58,11 @@ public class ContributionService : Service, IContributionService
 
     private async Task<Store> BuildStore(StoreVm storeVm)
     {
-        if (storeVm.IsExistingStore())
-        {
-            return await _storeService.Get(storeVm.SName);
-        }
+        if (storeVm.IsExistingStore()) return await _storeService.Get(storeVm.SName);
 
-        Canton canton = await _cantonService.Get(OnlyCountry, storeVm.Province, storeVm.Canton);
+        var canton = await _cantonService.Get(OnlyCountry, storeVm.Province, storeVm.Canton);
 
-        Store store = new Store
+        var store = new Store
         {
             Name = storeVm.SName,
             Canton = canton,
@@ -80,14 +75,11 @@ public class ContributionService : Service, IContributionService
 
     private async Task<Product> BuildProduct(ProductVm productVm)
     {
-        if (productVm.IsExistingProduct())
-        {
-            return await _productService.Get(productVm.Id);
-        }
-        
-        Category category = await _categoryService.Get(productVm.Category);
+        if (productVm.IsExistingProduct()) return await _productService.Get(productVm.Id);
 
-        Product product = new Product()
+        var category = await _categoryService.Get(productVm.Category);
+
+        var product = new Product
         {
             Name = productVm.PName,
             Model = productVm.Model,
@@ -95,20 +87,17 @@ public class ContributionService : Service, IContributionService
             Categories = new List<Category>()
         };
 
-        if (category != null)
-        {
-            product.Categories.Add(category);
-        }
+        if (category != null) product.Categories.Add(category);
 
         return product;
     }
 
     private static List<Picture> BuildPictures(List<PictureVm> pictureVms, DateTime entryTime, string userId)
     {
-        List<Picture> pictures = new List<Picture>();
-        int pictureIndex = 0;
-        
-        foreach (PictureVm pictureVm in pictureVms) 
+        var pictures = new List<Picture>();
+        var pictureIndex = 0;
+
+        foreach (var pictureVm in pictureVms)
         {
             pictures.Add(
                 new Picture

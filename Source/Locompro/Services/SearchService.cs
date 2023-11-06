@@ -1,11 +1,7 @@
-using System.Globalization;
-using Locompro.Models;
-using System.Text.RegularExpressions;
 using Locompro.Common;
 using Locompro.Common.Search;
 using Locompro.Common.Search.QueryBuilder;
 using Locompro.Data;
-using Locompro.Data.Repositories;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
@@ -14,19 +10,19 @@ namespace Locompro.Services;
 
 public class SearchService : Service, ISearchService
 {
-    private readonly ISearchDomainService _searchDomainService;
-
-    private readonly IQueryBuilder _queryBuilder;
-
     public const int ImageAmountPerItem = 5;
 
+    private readonly IQueryBuilder _queryBuilder;
+    private readonly ISearchDomainService _searchDomainService;
+
     /// <summary>
-    /// Constructor for the search service
+    ///     Constructor for the search service
     /// </summary>
     /// <param name="unitOfWork"> generic unit of work</param>
     /// <param name="loggerFactory"> logger </param>
     /// <param name="searchDomainService"></param>
-    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, ISearchDomainService searchDomainService, IPictureService pictureService) :
+    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, ISearchDomainService searchDomainService,
+        IPictureService pictureService) :
         base(unitOfWork, loggerFactory)
     {
         _searchDomainService = searchDomainService;
@@ -34,52 +30,45 @@ public class SearchService : Service, ISearchService
     }
 
     /// <summary>
-    /// Searches for items based on the criteria provided in the search view model.
-    /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
-    /// It then returns a list of items that match all the criteria.
+    ///     Searches for items based on the criteria provided in the search view model.
+    ///     This method aggregates results from multiple queries such as by product name, by product model, and by
+    ///     canton/province.
+    ///     It then returns a list of items that match all the criteria.
     /// </summary>
     public async Task<List<ItemVm>> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria)
     {
         // add the list of unfiltered search criteria to the query builder
-        foreach (ISearchCriterion searchCriterion in unfilteredSearchCriteria)
-        {
+        foreach (var searchCriterion in unfilteredSearchCriteria)
             try
             {
-                this._queryBuilder.AddSearchCriterion(searchCriterion);
+                _queryBuilder.AddSearchCriterion(searchCriterion);
             }
             catch (ArgumentException exception)
             {
                 // if the search criterion is invalid, report on it but continue execution
-                this.Logger.LogWarning(exception.ToString());
+                Logger.LogWarning(exception.ToString());
             }
-        }
 
         // compose the list of search functions
-        SearchQueries searchQueries = this._queryBuilder.GetSearchFunction();
+        var searchQueries = _queryBuilder.GetSearchFunction();
 
-        if (searchQueries.IsEmpty)
-        {
-            return new List<ItemVm>();
-        }
+        if (searchQueries.IsEmpty) return new List<ItemVm>();
 
         // get the submissions that match the search functions
-        IEnumerable<Submission> submissions = await this._searchDomainService.GetSearchResults(searchQueries);
+        var submissions = await _searchDomainService.GetSearchResults(searchQueries);
 
         _queryBuilder.Reset();
 
-        if (!submissions.Any())
-        {
-            return new List<ItemVm>();
-        }
+        if (!submissions.Any()) return new List<ItemVm>();
 
-        IEnumerable<ItemVm> items = await GetItems(submissions);
+        var items = await GetItems(submissions);
 
         return items.ToList();
     }
 
     /// <summary>
-    /// Gets all the items to be displayed in the search results
-    /// from a list of submissions
+    ///     Gets all the items to be displayed in the search results
+    ///     from a list of submissions
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>
@@ -93,19 +82,16 @@ public class SearchService : Service, ISearchService
         foreach (var store in submissionsByStore)
         {
             var submissionsByProduct = store.GroupBy(s => s.Product);
-            foreach (var product in submissionsByProduct)
-            {
-                items.Add(await GetItem(product));
-            }
+            foreach (var product in submissionsByProduct) items.Add(await GetItem(product));
         }
 
         return items;
     }
 
     /// <summary>
-    /// Produces an item from a group of submissions
-    /// Gets the best submission from the group of items
-    /// uses its information for the item to be shown
+    ///     Produces an item from a group of submissions
+    ///     Gets the best submission from the group of items
+    ///     uses its information for the item to be shown
     /// </summary>
     /// <param name="itemGrouping"></param>
     /// <returns></returns>
@@ -113,18 +99,15 @@ public class SearchService : Service, ISearchService
     {
         // Get best submission for its information
         var bestSubmission = GetBestSubmission(itemGrouping);
-        
-        List<string> categories = new List<string>();
 
-        foreach (Submission submission in itemGrouping)
+        var categories = new List<string>();
+
+        foreach (var submission in itemGrouping)
         {
-            if (submission.Product.Categories == null)
-            {
-                continue;
-            }
+            if (submission.Product.Categories == null) continue;
             categories.AddRange(submission.Product.Categories.Select(c => c.Name).ToList());
         }
-        
+
         var item = new ItemVm(
             bestSubmission,
             GetFormattedDate
@@ -136,28 +119,25 @@ public class SearchService : Service, ISearchService
 
         return await Task.FromResult(item);
     }
-    
+
     /// <summary>
-    /// Constructs a list of display submissions from a list of submissions
-    /// Reduces the amount of memory necesary to display submissions
+    ///     Constructs a list of display submissions from a list of submissions
+    ///     Reduces the amount of memory necesary to display submissions
     /// </summary>
     /// <param name="submissions"> submissions to be turned into display submissions</param>
     /// <returns></returns>
     private static List<SubmissionVm> GetDisplaySubmissions(List<Submission> submissions)
     {
-        List<SubmissionVm> displaySubmissions = new List<SubmissionVm>();
-        
-        foreach (var submission in submissions)
-        {
-            displaySubmissions.Add(new SubmissionVm(submission, GetFormattedDate));
-        }
+        var displaySubmissions = new List<SubmissionVm>();
+
+        foreach (var submission in submissions) displaySubmissions.Add(new SubmissionVm(submission, GetFormattedDate));
 
         return displaySubmissions;
     }
 
     /// <summary>
-    /// Extracts from entry time, the date in the format yyyy-mm-dd
-    /// to be shown in the results page
+    ///     Extracts from entry time, the date in the format yyyy-mm-dd
+    ///     to be shown in the results page
     /// </summary>
     /// <param name="submission"></param>
     /// <returns></returns>
@@ -167,8 +147,8 @@ public class SearchService : Service, ISearchService
     }
 
     /// <summary>
-    /// According to established heuristics determines best best submission
-    /// from among a list of submissions
+    ///     According to established heuristics determines best best submission
+    ///     from among a list of submissions
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>

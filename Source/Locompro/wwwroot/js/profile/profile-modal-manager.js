@@ -39,7 +39,7 @@ export class ProfileModalManager {
     }
 
     /**
-     * Clears the errors when the modal is closed. As it can be close with the close button or the reset button, 
+     * Clears the errors when the modal is closed. As it can be close with the close button or the reset button,
      * it sets up an event listener for both.
      * @returns {ProfileModalManager} - The current instance for chaining.
      * @memberof ProfileModalManager

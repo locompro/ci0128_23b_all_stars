@@ -1,5 +1,5 @@
-using Locompro.Models.ViewModels;
 using Locompro.Models.Dtos;
+using Locompro.Models.ViewModels;
 
 namespace Locompro.Common.Mappers;
 

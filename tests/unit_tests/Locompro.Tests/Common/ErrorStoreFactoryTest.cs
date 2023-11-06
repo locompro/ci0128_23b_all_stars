@@ -1,22 +1,21 @@
-﻿using Locompro.Common;
-using Locompro.Common.ErrorStore;
+﻿using Locompro.Common.ErrorStore;
 
 namespace Locompro.Tests.Common;
 
 /// <summary>
-/// This class contains unit tests for the <see cref="ErrorStoreFactory"/> class.
+///     This class contains unit tests for the <see cref="ErrorStoreFactory" /> class.
 /// </summary>
 [TestFixture]
 public class ErrorStoreFactoryTests
 {
     /// <summary>
-    /// An instance of <see cref="ErrorStoreFactory"/> to be used for testing.
+    ///     An instance of <see cref="ErrorStoreFactory" /> to be used for testing.
     /// </summary>
     /// <author> A. Badilla-Olivas b80874 </author>
     private readonly ErrorStoreFactory _factory;
 
     /// <summary>
-    /// Constructor to initialize the <see cref="ErrorStoreFactory"/> instance.
+    ///     Constructor to initialize the <see cref="ErrorStoreFactory" /> instance.
     /// </summary>
     public ErrorStoreFactoryTests()
     {
@@ -24,7 +23,8 @@ public class ErrorStoreFactoryTests
     }
 
     /// <summary>
-    /// Tests that the <see cref="ErrorStoreFactory.Create"/> method returns a non-null <see cref="IErrorStore"/> instance.
+    ///     Tests that the <see cref="ErrorStoreFactory.Create" /> method returns a non-null <see cref="IErrorStore" />
+    ///     instance.
     /// </summary>
     /// <author> A. Badilla-Olivas b80874 </author>
     [Test]
@@ -39,7 +39,8 @@ public class ErrorStoreFactoryTests
     }
 
     /// <summary>
-    /// Tests that the <see cref="ErrorStoreFactory.Create"/> method returns a new instance of <see cref="IErrorStore"/> on each call.
+    ///     Tests that the <see cref="ErrorStoreFactory.Create" /> method returns a new instance of <see cref="IErrorStore" />
+    ///     on each call.
     /// </summary>
     /// <author> A. Badilla-Olivas b80874 </author>
     [Test]

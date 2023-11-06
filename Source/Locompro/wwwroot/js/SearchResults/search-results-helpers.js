@@ -55,7 +55,7 @@ function performSearchButton() {
     performSearchButtonShared(modalShown);
 }
 
-async function loadProvince(optionSelected){
+async function loadProvince(optionSelected) {
     await loadProvinceShared(optionSelected, "SearchResults");
 }
 
@@ -98,8 +98,8 @@ function onModalClose(modalId) {
 }
 
 // Observer for changes in style attribute of the modal
-const observer = new MutationObserver(function(mutationsList) {
-    mutationsList.forEach(function(mutation) {
+const observer = new MutationObserver(function (mutationsList) {
+    mutationsList.forEach(function (mutation) {
         if (mutation.type === "attributes" && mutation.attributeName === "style" && mutation.target.style.display === "none") {
             onModalClose(mutation.target.id);
         }
@@ -108,6 +108,6 @@ const observer = new MutationObserver(function(mutationsList) {
 
 // Observe changes in all elements with IDs containing "modal"
 const modalElements = document.querySelectorAll('[id*="ItemModal"]');
-modalElements.forEach(function(modal) {
-    observer.observe(modal, { attributes: true });
+modalElements.forEach(function (modal) {
+    observer.observe(modal, {attributes: true});
 });

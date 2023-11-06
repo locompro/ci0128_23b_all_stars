@@ -3,8 +3,8 @@
  * Sets up the initial behavior when the document is ready.
  * @module profile-main
  */
-import { ProfileModalManager } from './profile-modal-manager.js';
-import { ProvinceHandler } from './province-handler.js';
+import {ProfileModalManager} from './profile-modal-manager.js';
+import {ProvinceHandler} from './province-handler.js';
 
 /**
  * On ready it creates instances of `ProfileModalManager` and `ProvinceHandler`
@@ -17,19 +17,19 @@ $(document).ready(() => {
         '#ChangePasswordErrorList',
         '#ChangePasswordModalErrors'
     );
-    
+
     const updateUserDataModal = new ProfileModalManager(
         '#UpdateUserDataModal',
         '#UpdateUserModalErrorsList',
         '#UpdateUserModalErrors'
     );
-    
+
     const provinceHandler = new ProvinceHandler(
         '#UserDataUpdate_Province',
         '#UserDataUpdate_Canton',
         '?handler=Cantons'
     );
-    
+
     // Show modals and clear any existing errors when modal is closed
     changePasswordModal.showModal().clearErrors();
     updateUserDataModal.showModal().clearErrors();

@@ -1,5 +1,4 @@
 using Locompro.Data;
-using Locompro.Models;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services;
@@ -12,16 +11,6 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class ContributionServiceTests
 {
-    private ContributionService _contributionService;
-
-    // Mocks for your dependencies
-    private Mock<IUnitOfWork> _unitOfWork;
-    private Mock<ICantonService> _cantonService;
-    private Mock<INamedEntityDomainService<Store, string>> _storeService;
-    private Mock<INamedEntityDomainService<Product, int>> _productService;
-    private Mock<INamedEntityDomainService<Category, string>> _categoryService;
-    private Mock<ISubmissionService> _submissionService;
-
     [SetUp]
     public void Setup()
     {
@@ -33,13 +22,24 @@ public class ContributionServiceTests
         _categoryService = new Mock<INamedEntityDomainService<Category, string>>();
         _submissionService = new Mock<ISubmissionService>();
 
-        Mock<ILoggerFactory> loggerFactory = new Mock<ILoggerFactory>();
+        var loggerFactory = new Mock<ILoggerFactory>();
 
         _contributionService = new ContributionService(_unitOfWork.Object, loggerFactory.Object, _cantonService.Object,
             _storeService.Object,
             _productService.Object, _categoryService.Object, _submissionService.Object);
     }
 
+    private ContributionService _contributionService;
+
+    // Mocks for your dependencies
+    private Mock<IUnitOfWork> _unitOfWork;
+    private Mock<ICantonService> _cantonService;
+    private Mock<INamedEntityDomainService<Store, string>> _storeService;
+    private Mock<INamedEntityDomainService<Product, int>> _productService;
+    private Mock<INamedEntityDomainService<Category, string>> _categoryService;
+    private Mock<ISubmissionService> _submissionService;
+
+    /// <author>Ariel Arevalo Alvarado B50562</author>
     [Test]
     public async Task AddSubmission_CreatesNewSubmission()
     {
@@ -51,15 +51,15 @@ public class ContributionServiceTests
         _storeService.Setup(s => s.Get(It.IsAny<string>())).ReturnsAsync(new Store());
         _productService.Setup(p => p.Get(It.IsAny<int>())).ReturnsAsync(new Product());
 
-        SubmissionVm submissionVM = new SubmissionVm()
+        var submissionVM = new SubmissionVm
         {
             Description = "Test Description",
             Price = 100,
             UserId = "TestUser"
         };
 
-        List<PictureVm> pictureVM = new List<PictureVm>();
-        
+        var pictureVM = new List<PictureVm>();
+
         // Act
         await _contributionService.AddSubmission(storeViewModel, productViewModel, submissionVM, pictureVM);
 
@@ -74,6 +74,7 @@ public class ContributionServiceTests
         )), Times.Once);
     }
 
+    /// <author>Ariel Arevalo Alvarado B50562</author>
     [Test]
     public async Task AddSubmission_AddsPictures()
     {
@@ -85,32 +86,32 @@ public class ContributionServiceTests
         _storeService.Setup(s => s.Get(It.IsAny<string>())).ReturnsAsync(new Store());
         _productService.Setup(p => p.Get(It.IsAny<int>())).ReturnsAsync(new Product());
 
-        SubmissionVm submissionVM = new SubmissionVm()
+        var submissionVM = new SubmissionVm
         {
             Description = "Test Description",
             Price = 100,
             UserId = "TestUser"
         };
 
-        List<PictureVm> pictureVM = new List<PictureVm>()
+        var pictureVM = new List<PictureVm>
         {
-            new PictureVm()
+            new()
             {
                 Name = "Pic1",
-                PictureData = new byte[] {0,1,2,3,4}
+                PictureData = new byte[] { 0, 1, 2, 3, 4 }
             },
-            new PictureVm()
+            new()
             {
                 Name = "Pic2",
-                PictureData = new byte[] {0,1,2,3,4}
+                PictureData = new byte[] { 0, 1, 2, 3, 4 }
             },
-            new PictureVm()
+            new()
             {
                 Name = "Pic3",
-                PictureData = new byte[] {0,1,2,3,4}
+                PictureData = new byte[] { 0, 1, 2, 3, 4 }
             }
         };
-        
+
         // Act
         await _contributionService.AddSubmission(storeViewModel, productViewModel, submissionVM, pictureVM);
 

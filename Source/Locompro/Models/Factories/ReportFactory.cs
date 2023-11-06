@@ -15,7 +15,7 @@ public class ReportFactory : GenericEntityFactory<ReportDto, Report>
             Description = dto.Description
         };
     }
-    
+
     protected override ReportDto BuildDto(Report entity)
     {
         return new ReportDto
