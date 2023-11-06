@@ -13,4 +13,11 @@ public class ReportVm
     public string UserName { get; set; }
 
     public string Description { get; set; }
+    
+    public override string ToString()
+    {
+        return $"ReportVm: SubmissionUserId={SubmissionUserId}, " +
+               $"SubmissionEntryTime={SubmissionEntryTime}, " +
+               $"UserId={UserId}";
+    }
 }
