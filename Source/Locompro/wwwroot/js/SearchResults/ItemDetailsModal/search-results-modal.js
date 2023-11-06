@@ -29,7 +29,15 @@ class SearchResultsModal {
                 "SearchResults");
 
         this.submissionsRatings = [];
+        this.reportedSubmissions = [];
 
+        $('#descriptionModal').on('show.bs.modal', function () {
+            // Use a short delay to apply the style change to the backdrop
+            setTimeout(() => {
+                $('.modal-backdrop').last().css('opacity', '0');
+            }, 0);
+        });
+        
         // Populate the modal with the selected item's details
         this.populateModal();
     }
@@ -64,11 +72,44 @@ class SearchResultsModal {
             // Inserting the description cell
             const descriptionCell = row.insertCell(2);
             descriptionCell.innerHTML = submission.Description;
-            
+
             // Inserting the rating cell
             const ratingCell = row.insertCell(3);
+            ratingCell.style.textAlign = 'center';
             this.submissionsRatings.push(new SearchResultsSubmissionRating(submission, ratingCell));
             this.submissionsRatings[this.submissionsRatings.length - 1].buildRating();
+
+            // Prepare report button
+            const reportButton = document.createElement('button');
+            reportButton.className = 'btn btn-primary';
+            reportButton.type = 'submit';
+            
+            // Create the icon element
+            let icon = document.createElement('i');
+            icon.classList.add('fa', 'fa-flag');
+
+            // Append the icon to the button
+            reportButton.appendChild(icon);
+
+            if(submission.Status !== 'Moderated') {
+                const submissionId = submission.UserId + submission.NonFormatedEntryTime;
+                
+                reportButton.setAttribute('data-id', submissionId);
+                reportButton.setAttribute('data-bs-toggle', 'modal');
+                reportButton.setAttribute('data-bs-target', '#descriptionModal');
+
+                reportButton.addEventListener('click', () => {
+                    document.querySelector('input[name="ReportVm.SubmissionUserId"]').value = submission.UserId;
+                    document.querySelector('input[name="ReportVm.SubmissionEntryTime"]').value = submission.NonFormatedEntryTime;
+                });
+            } else {
+                reportButton.disabled = true;
+            }
+
+            // Inserting the report button cell
+            const reportCell = row.insertCell(4);
+            reportCell.style.textAlign = 'center';
+            reportCell.appendChild(reportButton);
         }
     }
 

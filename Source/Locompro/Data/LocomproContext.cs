@@ -1,6 +1,6 @@
-﻿using System.Reflection;
-using Castle.Core.Internal;
-using Locompro.Models;
+﻿using Castle.Core.Internal;
+using Locompro.Models.Entities;
+using Locompro.Models.Results;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -8,27 +8,28 @@ using Microsoft.EntityFrameworkCore;
 namespace Locompro.Data;
 
 /// <summary>
-/// ORM interface for Locompro.
+///     ORM interface for Locompro.
 /// </summary>
 public class LocomproContext : IdentityDbContext<User>
 {
-    public DbSet<Country> Countries { get; set; } = default!;
-    public DbSet<Province> Provinces { get; set; } = default!;
-    public DbSet<Canton> Cantons { get; set; } = default!;
-    public DbSet<Category> Categories { get; set; } = default!;
-    public DbSet<Submission> Submissions { get; set; } = default!;
-    public DbSet<Store> Stores { get; set; } = default!;
-    public DbSet<Product> Products { get; set; } = default!;
-    public DbSet<Picture> Pictures { get; set; } = default!;
-
     /// <summary>
-    /// Constructs a Locompro context.
+    ///     Constructs a Locompro context.
     /// </summary>
     /// <param name="options">Context creation options.</param>
     public LocomproContext(DbContextOptions<LocomproContext> options)
         : base(options)
     {
     }
+
+    public DbSet<Country> Countries { get; set; } = default!;
+    public DbSet<Province> Provinces { get; set; } = default!;
+    public DbSet<Canton> Cantons { get; set; } = default!;
+    public DbSet<Category> Categories { get; set; } = default!;
+    public DbSet<Submission> Submissions { get; set; } = default!;
+    public DbSet<Report> Reports { get; set; } = default!;
+    public DbSet<Store> Stores { get; set; } = default!;
+    public DbSet<Product> Products { get; set; } = default!;
+    public DbSet<Picture> Pictures { get; set; } = default!;
 
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder builder)
@@ -65,7 +66,7 @@ public class LocomproContext : IdentityDbContext<User>
             .WithMany(c => c.Products);
 
         builder.Entity<Submission>()
-            .HasKey(s => new { Username = s.UserId, s.EntryTime });
+            .HasKey(s => new { s.UserId, s.EntryTime });
 
         builder.Entity<Submission>()
             .HasOne(s => s.Store)
@@ -81,8 +82,30 @@ public class LocomproContext : IdentityDbContext<User>
 
         builder.Entity<Submission>()
             .HasOne(s => s.User)
-            .WithMany()
+            .WithMany(u => u.Submissions)
             .HasForeignKey(s => s.UserId)
+            .IsRequired();
+
+        builder.Entity<Submission>()
+            .HasMany(s => s.Reports)
+            .WithOne(r => r.Submission)
+            .IsRequired();
+
+        builder.Entity<Report>()
+            .HasKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime, r.UserId });
+
+        builder.Entity<Report>()
+            .HasOne(r => r.Submission)
+            .WithMany(s => s.Reports)
+            .HasForeignKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime })
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
+        builder.Entity<Report>()
+            .HasOne(r => r.User)
+            .WithMany()
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.ClientSetNull)
             .IsRequired();
 
         builder.Entity<User>()
@@ -93,7 +116,7 @@ public class LocomproContext : IdentityDbContext<User>
             .HasKey(p => new { p.SubmissionUserId, p.SubmissionEntryTime, p.Index });
 
         builder.Entity<Picture>()
-            .HasOne<Submission>(p => p.Submission)
+            .HasOne(p => p.Submission)
             .WithMany(s => s.Pictures)
             .HasForeignKey(p => new { p.SubmissionUserId, p.SubmissionEntryTime })
             .IsRequired();
@@ -112,17 +135,25 @@ public class LocomproContext : IdentityDbContext<User>
     }
 
     [DbFunction("GetPictures", "dbo")]
-    public IQueryable<GetPicturesResult> GetPictures(string storeName, int productId, int maxPictures) =>
-        FromExpression(() => GetPictures(storeName, productId, maxPictures));
+    public IQueryable<GetPicturesResult> GetPictures(string storeName, int productId, int maxPictures)
+    {
+        return FromExpression(() => GetPictures(storeName, productId, maxPictures));
+    }
 
     [DbFunction("CountRatedSubmissions", "dbo")]
-    public int CountRatedSubmissions(string userId) => throw new NotSupportedException();
+    public int CountRatedSubmissions(string userId)
+    {
+        throw new NotSupportedException();
+    }
 
     [DbFunction("GetQualifiedUserIDs", "dbo")]
-    public IQueryable<GetQualifiedUserIDsResult> GetQualifiedUserIDs() => FromExpression((() => GetQualifiedUserIDs()));
+    public IQueryable<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
+    {
+        return FromExpression(() => GetQualifiedUserIDs());
+    }
 
     /// <summary>
-    /// Assigns each parent category of a product to the product.
+    ///     Assigns each parent category of a product to the product.
     /// </summary>
     /// <param name="categoryName"></param>
     /// <param name="productId"></param>
@@ -140,7 +171,7 @@ public class LocomproContext : IdentityDbContext<User>
     }
 
     /// <summary>
-    /// Deletes every submission that has been deemed inappropriate by a moderator.
+    ///     Deletes every submission that has been deemed inappropriate by a moderator.
     /// </summary>
     public virtual async Task DeleteModeratedSubmissions()
     {

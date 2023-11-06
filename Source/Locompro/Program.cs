@@ -1,12 +1,12 @@
-using Locompro.Common;
-using Microsoft.EntityFrameworkCore;
+using Locompro.Common.ErrorStore;
 using Locompro.Data;
 using Locompro.Data.Repositories;
+using Locompro.Models.Entities;
 using Locompro.Services;
-using Locompro.Models;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Locompro.Services.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -59,18 +59,32 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddLogging();
     builder.Services.AddRazorPages();
     builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
+    try
+    {
+        var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
+                                 throw new InvalidOperationException("Env environment variable not found.");
 
-    string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
-                             throw new InvalidOperationException("Env environment variable not found.");
+        string connectionString =
+            "Server=localhost\\SQLEXPRESS;Database=Locompro;Trusted_Connection=True;MultipleActiveResultSets=true;Encrypt=False;";
 
-    var connectionString =
-        builder.Configuration.GetValue<string>($"{environmentName}_ConnectionString__LocomproContext") ??
-        throw new InvalidOperationException("Secret connection string not found.");
-
-    // Add DbContext using SQL Server
-    builder.Services.AddDbContext<LocomproContext>(options => options.UseLazyLoadingProxies()
-        .UseSqlServer(connectionString));
-
+        if (environmentName == "Production")
+        {
+            Console.WriteLine("Please enter the connection string for the Production server:");
+            connectionString = Console.ReadLine();
+        }
+        builder.Services.AddDbContext<LocomproContext>(options =>
+        {
+            if (connectionString != null)
+                options.UseLazyLoadingProxies()
+                    .UseSqlServer(connectionString);
+        });
+        
+    }
+    catch (InvalidOperationException e)
+    {
+        Console.WriteLine(e);
+        Environment.Exit(1);
+    }
     // Set LocomproContext as the default DbContext
     builder.Services.AddScoped<DbContext, LocomproContext>();
 
@@ -92,6 +106,8 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ICantonRepository, CantonRepository>();
     builder.Services.AddScoped<IPictureRepository, PictureRepository>();
     builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IProductRepository, ProductRepository>();
+    
 
     // Register domain services
     builder.Services.AddScoped(typeof(INamedEntityDomainService<,>), typeof(NamedEntityDomainService<,>));
@@ -100,7 +116,9 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ICantonService, CantonService>();
     builder.Services.AddScoped<ISignInManagerService, SignInManagerService>();
     builder.Services.AddScoped<IUserManagerService, UserManagerService>();
-    builder.Services.AddScoped<IUserService, Locompro.Services.Domain.UserService>();
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IReportService, ReportService>();
+    builder.Services.AddScoped<IProductService, ProductService>();
 
     // Register application services
     builder.Services.AddScoped<IContributionService, ContributionService>();
@@ -115,13 +133,10 @@ void RegisterServices(WebApplicationBuilder builder)
 
 
     builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
-    
+
     // Add session support
-    builder.Services.AddSession(options =>
-    {
-        options.IdleTimeout = TimeSpan.FromMinutes(5);
-    });
-    
+    builder.Services.AddSession(options => { options.IdleTimeout = TimeSpan.FromMinutes(5); });
+
     RegisterHostedServices(builder);
 }
 
@@ -132,5 +147,4 @@ void RegisterHostedServices(WebApplicationBuilder builder)
     // Moderation tasks
     builder.Services.AddSingleton<IScheduledTask, AddPossibleModeratorsTask>();
     builder.Services.AddHostedService<TaskSchedulerService>();
-    
 }

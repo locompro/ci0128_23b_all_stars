@@ -1,17 +1,25 @@
-﻿@using Locompro.Services
+﻿@using Locompro.Common
 @using Locompro.Services.Auth
 
+@inject IUserManagerService UserManagerService
 @inject IAuthService AuthService
 @{
     var currentPage = Context.Request.Path.Value;
     var isLoggedIn = AuthService.IsLoggedIn();
+    var userId = AuthService.GetUserId();
+    var isModerator = false;
+    if (isLoggedIn)
+    {
+        var user = await UserManagerService.FindByIdAsync(userId);
+        isModerator = await UserManagerService.IsInRoleAsync(user, RoleNames.Moderator);
+    }
 }
 
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
 
 <head>
-    @await RenderSectionAsync("Head", required: false)
+    @await RenderSectionAsync("Head", false)
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>LoCoMPro</title>
@@ -57,16 +65,19 @@
                                     <i class="fa fa-plus" style="margin-right: 8px;"></i>Aportar
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Account/Profile">
-                                    <i class="fa fa-user" style="margin-right: 8px;"></i>Profile
-                                </a>
-                            </li>
+                            @if (isModerator)
+                            {
+                                <li class="nav-item">
+                                    <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Moderation/Moderator">
+                                       <i class="fa fa-gavel"></i> Moderar
+                                    </a>
+                                </li>
+                            }
                         </ul>
                     </div>
                 }
             </div>
-    
+
             <div class="col text-center">
                 <!-- Title, shown unless on the main menu -->
                 @if (!currentPage!.EndsWith("/"))
@@ -78,19 +89,26 @@
             <div class="col">
                 <!-- Right side buttons -->
                 <div class="d-flex justify-content-end">
-                    @if (isLoggedIn)
-                    {
-                        <form asp-page="/Account/Logout" method="post" class="d-inline-block">
-                            <button type="submit" class="btn btn-primary ps-4 pe-4 rounded-pill">Cerrar sesión</button>
-                        </form>
-                    }
-                    else
-                    {
-                        @if (currentPage != "/Account/Login")
+                    <ul class="navbar-nav">
+                        @if (isLoggedIn)
                         {
-                            <a class="btn btn-primary" role="button" asp-page="/Account/Login">Iniciar sesión</a>
+                            <li class="nav-item" style="margin-right: 10px">
+                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Account/Profile">
+                                    <i class="fa fa-user" style="margin-left: 8px;"></i>  Perfil
+                                </a>
+                            </li>
+                            <form asp-page="/Account/Logout" method="post" class="d-inline-block">
+                                <button type="submit" class="btn btn-primary ps-4 pe-4 rounded-pill">Cerrar sesión</button>
+                            </form>
                         }
-                    }
+                        else
+                        {
+                            @if (currentPage != "/Account/Login")
+                            {
+                                <a class="btn btn-primary" role="button" asp-page="/Account/Login">Iniciar sesión</a>
+                            }
+                        }
+                    </ul>
                 </div>
             </div>
         </div>
@@ -111,7 +129,7 @@
     <div class="container">
         <ul class="list-inline my-2">
             <li class="list-inline-item">
-                <a class="link-secondary" asp-page="Privacy" >Política de privacidad</a>
+                <a class="link-secondary" asp-page="Privacy">Política de privacidad</a>
             </li>
             <li class="list-inline-item">
                 <a class="link-secondary" href="#">Terminos y condiciones</a>
@@ -126,6 +144,6 @@
 
 <partial name="_ValidationScriptsPartial"/>
 
-@await RenderSectionAsync("Scripts", required: false)
+@await RenderSectionAsync("Scripts", false)
 </body>
 </html>

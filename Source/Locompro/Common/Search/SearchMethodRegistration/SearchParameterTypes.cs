@@ -1,8 +1,8 @@
 namespace Locompro.Common.Search.SearchMethodRegistration;
 
 /// <summary>
-/// List of all possible search paramaters
-/// Add one here to add a new search parameter
+///     List of all possible search paramaters
+///     Add one here to add a new search parameter
 /// </summary>
 public enum SearchParameterTypes
 {
@@ -14,5 +14,6 @@ public enum SearchParameterTypes
     Maxvalue,
     Category,
     Model,
-    Brand
+    Brand,
+    HasNAmountReports
 }

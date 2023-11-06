@@ -1,8 +1,9 @@
-﻿using Locompro.Common;
-using Locompro.Models;
+﻿using System.Security.Claims;
+using Locompro.Common.ErrorStore;
+using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Account;
-using Locompro.Services;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Http;
@@ -19,34 +20,6 @@ namespace Locompro.Tests.Pages.Account;
 [TestFixture]
 public class ProfileModelTest
 {
-    private readonly Mock<IDomainService<User, string>> _userServiceMock;
-    private readonly Mock<IAuthService> _authServiceMock;
-    private readonly Mock<IDomainService<Canton, string>> _cantonServiceMock;
-    private readonly Mock<IErrorStore> _passwordModalStoreMock;
-    private readonly Mock<IErrorStore> _userDataModalStoreMock;
-
-    private readonly ProfileModel _profileModel;
-
-    public ProfileModelTest()
-    {
-        _userServiceMock = new Mock<IDomainService<User, string>>();
-        _authServiceMock = new Mock<IAuthService>();
-        _cantonServiceMock = new Mock<IDomainService<Canton, string>>();
-        Mock<IErrorStoreFactory> errorStoreFactoryMock = new();
-        errorStoreFactoryMock.Setup(factory => factory.Create()).Returns(new Mock<IErrorStore>().Object);
-
-        _profileModel = new ProfileModel(
-            _userServiceMock.Object,
-            _authServiceMock.Object,
-            _cantonServiceMock.Object,
-            errorStoreFactoryMock.Object);
-
-        _passwordModalStoreMock = new Mock<IErrorStore>();
-        _userDataModalStoreMock = new Mock<IErrorStore>();
-        _profileModel.ChangePasswordModalErrors = _passwordModalStoreMock.Object;
-        _profileModel.UpdateUserDataModalErrors = _userDataModalStoreMock.Object;
-    }
-
     /// <summary>
     ///     Initializes mock objects and a new instance of the ProfileModel class for each test.
     /// </summary>
@@ -66,6 +39,41 @@ public class ProfileModelTest
         _passwordModalStoreMock.Setup(store => store.HasErrors).Returns(() => errorCountPasswordModal > 0);
     }
 
+    private readonly Mock<IDomainService<User, string>> _userServiceMock;
+    private readonly Mock<IAuthService> _authServiceMock;
+    private readonly Mock<IDomainService<Canton, string>> _cantonServiceMock;
+    private readonly Mock<IErrorStore> _passwordModalStoreMock;
+    private readonly Mock<IErrorStore> _userDataModalStoreMock;
+    private readonly Mock<IErrorStore> _declineModerationModalStoreMock;
+    private readonly Mock<IUserManagerService> _userManagerServiceMock;
+
+    private readonly ProfileModel _profileModel;
+
+    public ProfileModelTest()
+    {
+        _userServiceMock = new Mock<IDomainService<User, string>>();
+        _authServiceMock = new Mock<IAuthService>();
+        _cantonServiceMock = new Mock<IDomainService<Canton, string>>();
+        _userManagerServiceMock = new Mock<IUserManagerService>();
+        Mock<IErrorStoreFactory> errorStoreFactoryMock = new();
+        errorStoreFactoryMock.Setup(factory => factory.Create()).Returns(new Mock<IErrorStore>().Object);
+
+        _profileModel = new ProfileModel(
+            _userServiceMock.Object,
+            _authServiceMock.Object,
+            _cantonServiceMock.Object,
+            errorStoreFactoryMock.Object,
+            _userManagerServiceMock.Object
+        );
+
+        _passwordModalStoreMock = new Mock<IErrorStore>();
+        _userDataModalStoreMock = new Mock<IErrorStore>();
+        _declineModerationModalStoreMock = new Mock<IErrorStore>();
+        _profileModel.ChangePasswordModalErrors = _passwordModalStoreMock.Object;
+        _profileModel.UpdateUserDataModalErrors = _userDataModalStoreMock.Object;
+        _profileModel.DeclineModerationModalErrors = _declineModerationModalStoreMock.Object;
+    }
+
     /// <summary>
     ///     Tests the OnGetAsync method by simulating a scenario where the user is not found,
     ///     and verifying the method redirects to the Login page.
@@ -74,8 +82,8 @@ public class ProfileModelTest
     public async Task OnGetAsync_UserNotFound_RedirectsToLoginPage()
     {
         // Arrange
-        _userServiceMock
-            .Setup(us => us.Get(It.IsAny<string>()))
+        _userManagerServiceMock
+            .Setup(us => us.FindByIdAsync(It.IsAny<string>()))
             .ReturnsAsync((User)null!);
 
         // Act
@@ -93,20 +101,8 @@ public class ProfileModelTest
     public async Task OnGetAsync_UserFound_ReturnsPage()
     {
         // Arrange
-        var user = new User
-        {
-            Id = "user1",
-            Email = " ",
-            Rating = 1,
-            Name = "Name",
-            Address = "some address",
-            Submissions = new List<Submission>()
-        };
-
-        _userServiceMock
-            .Setup(us => us.Get(It.IsAny<string>()))
-            .ReturnsAsync(user);
-
+        var user = CreateFakeUserDefault();
+        _userManagerServiceMock.Setup(ums => ums.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
         // Instantiate a new TempDataDictionary
         var tempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
 
@@ -130,8 +126,8 @@ public class ProfileModelTest
     public async Task OnPostChangePasswordAsync_UserNotFound_RedirectsToLoginPage()
     {
         // Arrange
-        _userServiceMock
-            .Setup(us => us.Get(It.IsAny<string>()))
+        _userManagerServiceMock
+            .Setup(us => us.FindByIdAsync(It.IsAny<string>()))
             .ReturnsAsync((User)null!);
 
         // Act
@@ -146,14 +142,10 @@ public class ProfileModelTest
     public async Task OnPostChangePasswordAsync_InvalidCurrentPassword_RendersPageWithError()
     {
         // Arrange
-        var user = new User
-        {
-            Id = "user1", Email = "a@g.com", Rating = 1, Name = "Name", Address = "some address",
-            Submissions = new List<Submission>()
-        };
-        _userServiceMock.Setup(us => us.Get(It.IsAny<string>())).ReturnsAsync(user);
+        var user = CreateFakeUserDefault();
+        _userManagerServiceMock.Setup(us => us.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
         _authServiceMock.Setup(auth => auth.IsCurrentPasswordCorrect(It.IsAny<string>())).ReturnsAsync(false);
-        _profileModel.PasswordChange = new PasswordChangeViewModel
+        _profileModel.PasswordChange = new PasswordChangeVm
         {
             CurrentPassword = "incorrectPassword",
             NewPassword = "newPassword123",
@@ -175,17 +167,14 @@ public class ProfileModelTest
     public async Task OnPostChangePasswordAsync_ValidPasswordChange_RedirectsToPage()
     {
         // Arrange
-        var user = new User
-        {
-            Id = "user1", Email = "a@g.com", Rating = 1, Name = "Name", Address = "some address"
-        };
-        _userServiceMock.Setup(us => us.Get(It.IsAny<string>())).ReturnsAsync(user);
+        var user = CreateFakeUserDefault();
+        _userManagerServiceMock.Setup(us => us.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
         _authServiceMock.Setup(auth => auth.IsCurrentPasswordCorrect(It.Is<string>(s => s == "correctPassword")))
             .ReturnsAsync(true);
         _authServiceMock.Setup(auth =>
             auth.ChangePassword(It.Is<string>(s => s == "correctPassword"), It.Is<string>(s => s == "newPassword123")));
 
-        _profileModel.PasswordChange = new PasswordChangeViewModel
+        _profileModel.PasswordChange = new PasswordChangeVm
         {
             CurrentPassword = "correctPassword",
             NewPassword = "newPassword123",
@@ -215,8 +204,8 @@ public class ProfileModelTest
     public async Task OnPostUpdateUserDataAsync_UserNotFound_RedirectsToLoginPage()
     {
         // Arrange
-        _userServiceMock
-            .Setup(us => us.Get(It.IsAny<string>()))
+        _userManagerServiceMock
+            .Setup(us => us.FindByIdAsync(It.IsAny<string>()))
             .ReturnsAsync((User)null!);
 
         // Act
@@ -230,14 +219,10 @@ public class ProfileModelTest
     public async Task OnPostUpdateUserDataAsync_UserFound_ValidUpdate()
     {
         // Arrange
-        var user = new User
-        {
-            Id = "user1", Email = "some@email.com", Rating = 1, Name = "Name", Address = "some address",
-            Submissions = new List<Submission>()
-        };
-        _userServiceMock.Setup(us => us.Get(It.IsAny<string>())).ReturnsAsync(user);
+        var user = CreateFakeUserDefault();
+        _userManagerServiceMock.Setup(us => us.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
 
-        var userDataUpdate = new UserDataUpdateViewModel
+        var userDataUpdate = new UserDataUpdateVm
         {
             Email = "a@a.com",
             Province = " San jose",
@@ -266,14 +251,10 @@ public class ProfileModelTest
     public async Task OnPostUpdateUserDataAsync_UserFound_InvalidUpdate()
     {
         // Arrange
-        var user = new User
-        {
-            Id = "user1", Email = "some@email.com", Rating = 1, Name = "Name", Address = "some address",
-            Submissions = new List<Submission>()
-        };
+        var user = CreateFakeUserDefault();
         _userServiceMock.Setup(us => us.Get(It.IsAny<string>())).ReturnsAsync(user);
 
-        var userDataUpdate = new UserDataUpdateViewModel
+        var userDataUpdate = new UserDataUpdateVm
         {
             Email = null,
             Province = "San Jose",
@@ -310,9 +291,8 @@ public class ProfileModelTest
         var result = await _profileModel.OnGetCantonsAsync(province);
 
         // Assert
-        var jsonResult = result;
-        Assert.That(jsonResult, Is.Not.Null);
-        var cantons = jsonResult.Value as List<CantonDto>;
+        Assert.That(result, Is.Not.Null);
+        var cantons = result.Value as List<CantonDto>;
         Assert.That(cantons, Is.Not.Null);
         Assert.That(cantons!, Is.Empty);
     }
@@ -326,14 +306,10 @@ public class ProfileModelTest
     public async Task OnPostChangePasswordAsync_IncorrectCurrentPassword_RendersPageWithError()
     {
         // Arrange
-        var user = new User
-        {
-            Id = "user1", Email = "some@email.com", Rating = 1, Name = "Name", Address = "some address",
-            Submissions = new List<Submission>()
-        };
-        _userServiceMock.Setup(us => us.Get(It.IsAny<string>())).ReturnsAsync(user);
+        var user = CreateFakeUserDefault();
+        _userManagerServiceMock.Setup(us => us.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
         _authServiceMock.Setup(auth => auth.IsCurrentPasswordCorrect(It.IsAny<string>())).ReturnsAsync(false);
-        _profileModel.PasswordChange = new PasswordChangeViewModel
+        _profileModel.PasswordChange = new PasswordChangeVm
         {
             CurrentPassword = "incorrectPassword",
             NewPassword = "newPassword123"
@@ -356,13 +332,9 @@ public class ProfileModelTest
     public async Task OnPostUpdateUserDataAsync_InvalidUpdateData_RendersPageWithError()
     {
         // Arrange
-        var user = new User
-        {
-            Id = "user1", Email = "some@email.com", Rating = 1, Name = "Name", Address = "some address",
-            Submissions = new List<Submission>()
-        };
-        _userServiceMock.Setup(us => us.Get(It.IsAny<string>())).ReturnsAsync(user);
-        _profileModel.UserDataUpdate = new UserDataUpdateViewModel(); // Assume IsUpdateValid() returns false
+        var user = CreateFakeUserDefault();
+        _userManagerServiceMock.Setup(us => us.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
+        _profileModel.UserDataUpdate = new UserDataUpdateVm(); // Assume IsUpdateValid() returns false
 
         // Act
         var result = await _profileModel.OnPostUpdateUserDataAsync();
@@ -406,5 +378,81 @@ public class ProfileModelTest
                 Assert.That(returnedCantonList[1].Name, Is.EqualTo(cantonList[1].Name));
             });
         }
+    }
+
+    // Test for successful moderation role declination
+    [Test]
+    public async Task OnPostDeclineModerationAsync_SuccessfulDeclination_RedirectsToPage()
+    {
+        // Arrange
+        var user = CreateFakeUserDefault();
+        _userManagerServiceMock.Setup(us => us.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
+        _authServiceMock.Setup(auth => auth.IsCurrentPasswordCorrect(It.IsAny<string>())).ReturnsAsync(true);
+        _userManagerServiceMock.Setup(ums => ums.DeleteClaimAsync(It.IsAny<User>(), It.IsAny<Claim>()));
+        _userManagerServiceMock.Setup(ums => ums.AddClaimAsync(It.IsAny<User>(), It.IsAny<Claim>()));
+        _authServiceMock.Setup(auth => auth.RefreshUserLogin());
+
+        // Set the current password to something
+        _profileModel.PasswordChange = new PasswordChangeVm
+        {
+            CurrentPassword = "correctPassword"
+        };
+
+        // Act
+        var result = await _profileModel.OnPostDeclineModerationAsync();
+
+        // Assert
+        _userManagerServiceMock.Verify(ums => ums.DeleteClaimAsync(user, It.IsAny<Claim>()), Times.Once);
+        _userManagerServiceMock.Verify(ums => ums.AddClaimAsync(user, It.IsAny<Claim>()), Times.Once);
+        _authServiceMock.Verify(auth => auth.RefreshUserLogin(), Times.Once);
+        Assert.That(result, Is.InstanceOf<RedirectToPageResult>());
+    }
+
+// Test for user not found
+    [Test]
+    public async Task OnPostDeclineModerationAsync_UserNotFound_RedirectsToLogin()
+    {
+        // Arrange
+        _userManagerServiceMock.Setup(ums => ums.FindByIdAsync(It.IsAny<string>())).ReturnsAsync((User)null!);
+
+        // Act
+        var result = await _profileModel.OnPostDeclineModerationAsync();
+
+        // Assert
+        Assert.That(result, Is.InstanceOf<RedirectToRouteResult>());
+        var redirectToRouteResult = (RedirectToRouteResult)result;
+        Assert.That(redirectToRouteResult.RouteName, Is.EqualTo("Account/Login"));
+    }
+
+// Test for incorrect password
+    [Test]
+    public async Task OnPostDeclineModerationAsync_IncorrectPassword_RendersPageWithError()
+    {
+        // Arrange
+        var user = CreateFakeUserDefault();
+        _userManagerServiceMock.Setup(us => us.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
+        _authServiceMock.Setup(auth => auth.IsCurrentPasswordCorrect(It.IsAny<string>())).ReturnsAsync(false);
+
+        _profileModel.DeclineRoleUpdate = new DeclineModeratorViewModel
+        {
+            CurrentPassword = "incorrectPassword"
+        };
+
+        // Act
+        var result = await _profileModel.OnPostDeclineModerationAsync();
+
+        // Assert
+        Assert.That(result, Is.InstanceOf<PageResult>());
+        _declineModerationModalStoreMock.Verify(store => store.StoreError(It.IsAny<string>()), Times.Once);
+    }
+
+    private User CreateFakeUserDefault()
+    {
+        var user = new User
+        {
+            Id = "user1", Email = "some@email.com", Rating = 1, Name = "Name", Address = "some address",
+            Submissions = new List<Submission>()
+        };
+        return user;
     }
 }

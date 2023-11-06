@@ -1,11 +1,11 @@
 using Locompro.Data;
 using Locompro.Data.Repositories;
-using Locompro.Models;
+using Locompro.Models.Entities;
 
 namespace Locompro.Services.Domain;
 
 /// <summary>
-/// Key to find an picture in the database by its key
+///     Key to find an picture in the database by its key
 /// </summary>
 public class PictureKey
 {
@@ -15,14 +15,14 @@ public class PictureKey
 }
 
 /// <summary>
-/// Service for handling the access of pictures
+///     Service for handling the access of pictures
 /// </summary>
 public class PictureService : DomainService<Picture, PictureKey>, IPictureService
 {
     private readonly IPictureRepository _pictureRepository;
-    
+
     /// <summary>
-    /// Constructor
+    ///     Constructor
     /// </summary>
     /// <param name="unitOfWork"></param>
     /// <param name="loggerFactory"></param>
@@ -33,7 +33,7 @@ public class PictureService : DomainService<Picture, PictureKey>, IPictureServic
     }
 
     /// <summary>
-    /// Returns the given pictures for an item described by the product name and the store name
+    ///     Returns the given pictures for an item described by the product name and the store name
     /// </summary>
     /// <param name="pictureAmount"> Max amount of pictures that it is wished to be retrieved</param>
     /// <param name="productName"> Name of the product that has the pictures</param>

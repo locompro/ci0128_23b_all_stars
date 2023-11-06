@@ -1,29 +1,29 @@
-﻿using Moq;
-using Microsoft.Extensions.Logging;
+﻿using Locompro.Services.Domain;
 using Locompro.Services.Tasks;
-using Locompro.Services.Domain;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Locompro.Tests;
 
 /// <summary>
-/// A mock scheduled task for unit testing the TaskSchedulerService.
-/// Author: Brandon Alonso Mora Umaña.
+///     A mock scheduled task for unit testing the TaskSchedulerService.
+///     Author: Brandon Alonso Mora Umaña.
 /// </summary>
 public class MockScheduledTask : IScheduledTask
 {
     /// <summary>
-    /// Gets the interval at which the task should run.
+    ///     Gets or sets a value indicating whether the task has been executed.
+    /// </summary>
+    public bool Executed { get; set; }
+
+    /// <summary>
+    ///     Gets the interval at which the task should run.
     /// </summary>
     public TimeSpan Interval { get; } = TimeSpan.FromMilliseconds(600); // Short interval for testing
 
     /// <summary>
-    /// Gets or sets a value indicating whether the task has been executed.
-    /// </summary>
-    public bool Executed { get; set; } = false;
-
-    /// <summary>
-    /// Simulates the task's asynchronous execution.
-    /// Author: Brandon Alonso Mora Umaña.
+    ///     Simulates the task's asynchronous execution.
+    ///     Author: Brandon Alonso Mora Umaña.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token that the task will observe.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
@@ -36,19 +36,15 @@ public class MockScheduledTask : IScheduledTask
 }
 
 /// <summary>
-/// Test fixture for the TaskSchedulerService.
-/// Author: Brandon Alonso Mora Umaña.
+///     Test fixture for the TaskSchedulerService.
+///     Author: Brandon Alonso Mora Umaña.
 /// </summary>
 [TestFixture]
 public class TaskSchedulerServiceTests
 {
-    private Mock<ILogger<TaskSchedulerService>> _mockLogger;
-    private TaskSchedulerService _service;
-    private MockScheduledTask _mockScheduledTask;
-
     /// <summary>
-    /// Sets up the test environment before each test.
-    /// Author: Brandon Alonso Mora Umaña.
+    ///     Sets up the test environment before each test.
+    ///     Author: Brandon Alonso Mora Umaña.
     /// </summary>
     [SetUp]
     public void Setup()
@@ -58,9 +54,13 @@ public class TaskSchedulerServiceTests
         _service = new TaskSchedulerService(new[] { _mockScheduledTask }, _mockLogger.Object);
     }
 
+    private Mock<ILogger<TaskSchedulerService>> _mockLogger;
+    private TaskSchedulerService _service;
+    private MockScheduledTask _mockScheduledTask;
+
     /// <summary>
-    /// Ensures that tasks are scheduled correctly when StartAsync is called.
-    /// Author: Brandon Alonso Mora Umaña.
+    ///     Ensures that tasks are scheduled correctly when StartAsync is called.
+    ///     Author: Brandon Alonso Mora Umaña.
     /// </summary>
     [Test]
     public async Task StartAsync_SchedulesTasksCorrectly()
@@ -75,15 +75,15 @@ public class TaskSchedulerServiceTests
     }
 
     /// <summary>
-    /// Ensures that tasks are stopped correctly when StopAsync is called.
-    /// Author: Brandon Alonso Mora Umaña.
+    ///     Ensures that tasks are stopped correctly when StopAsync is called.
+    ///     Author: Brandon Alonso Mora Umaña.
     /// </summary>
     [Test]
     public async Task StopAsync_StopsTasks()
     {
         // Arrange
         await _service.StartAsync(CancellationToken.None);
-        
+
         // Act
         await _service.StopAsync(CancellationToken.None);
 

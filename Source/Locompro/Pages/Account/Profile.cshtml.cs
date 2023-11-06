@@ -1,7 +1,9 @@
-﻿using Locompro.Common;
-using Locompro.Models;
+﻿using System.Security.Claims;
+using Locompro.Common;
+using Locompro.Common.ErrorStore;
+using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
-using Locompro.Services;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -16,23 +18,10 @@ namespace Locompro.Pages.Account;
 [Authorize]
 public class ProfileModel : PageModel
 {
-    private readonly IDomainService<User, string> _userService;
     private readonly IAuthService _authService;
     private readonly IDomainService<Canton, string> _cantonService;
-
-    [BindProperty] public ProfileViewModel UserProfile { get; set; }
-
-    [BindProperty] public PasswordChangeViewModel PasswordChange { get; set; }
-
-    [BindProperty] public UserDataUpdateViewModel UserDataUpdate { get; set; }
-
-    public IErrorStore ChangePasswordModalErrors { get; set; }
-
-    public IErrorStore UpdateUserDataModalErrors { get; set; }
-
-    public bool IsPasswordChanged { get; set; }
-
-    public bool IsUserDataUpdated { get; set; }
+    private readonly IDomainService<User, string> _userService;
+    private readonly IUserManagerService _userManagerService;
 
 
     /// <summary>
@@ -42,16 +31,39 @@ public class ProfileModel : PageModel
     /// <param name="authService">Service for authentication related operations.</param>
     /// <param name="cantonService">To get canton related information </param>
     /// <param name="errorStoreFactory"></param>
+    /// <param name="userManagerService"></param>
     public ProfileModel(IDomainService<User, string> userService, IAuthService authService,
-        IDomainService<Canton, string> cantonService, IErrorStoreFactory errorStoreFactory)
+        IDomainService<Canton, string> cantonService, IErrorStoreFactory errorStoreFactory,
+        IUserManagerService userManagerService)
     {
         _userService = userService;
         _authService = authService;
         _cantonService = cantonService;
+        _userManagerService = userManagerService;
         ChangePasswordModalErrors = errorStoreFactory.Create();
         UpdateUserDataModalErrors = errorStoreFactory.Create();
+        DeclineModerationModalErrors = errorStoreFactory.Create();
     }
 
+    [BindProperty] public ProfileVm UserProfile { get; set; }
+
+    [BindProperty] public PasswordChangeVm PasswordChange { get; set; }
+
+    [BindProperty] public UserDataUpdateVm UserDataUpdate { get; set; }
+    
+    [BindProperty] public DeclineModeratorViewModel DeclineRoleUpdate { get; set; }
+
+    public IErrorStore ChangePasswordModalErrors { get; set; }
+
+    public IErrorStore UpdateUserDataModalErrors { get; set; }
+
+    public IErrorStore DeclineModerationModalErrors { get; set; }
+
+    public bool IsPasswordChanged { get; set; }
+
+    public bool IsUserDataUpdated { get; set; }
+    public bool IsNoLongerModerator { get; set; }
+    public bool IsModerator { get; set; }
 
     /// <summary>
     ///     Handler for the GET request to load the user's profile page.
@@ -59,8 +71,11 @@ public class ProfileModel : PageModel
     /// <returns>The user's profile page.</returns>
     public async Task<IActionResult> OnGetAsync()
     {
-        var user = await _userService.Get(_authService.GetUserId());
+        var user = await GetCurrentUser();
         if (user == null) return RedirectToRoute("Account/Login");
+
+        IsModerator = await IsUserModerator(user);
+
         SetProfileViewModel(user);
         RecoverTemporaryFlags();
         ClearStoredErrors();
@@ -68,22 +83,23 @@ public class ProfileModel : PageModel
     }
 
     /// <summary>
-    /// Handles a POST request to change the user's password.
+    ///     Handles a POST request to change the user's password.
     /// </summary>
     /// <returns>
-    /// If the user is not found, redirects to the Login page.
-    /// If the current password is incorrect, re-renders the page with error messages
-    /// On success, changes the password, refreshes the user login, and redirects to the profile page.
+    ///     If the user is not found, redirects to the Login page.
+    ///     If the current password is incorrect, re-renders the page with error messages
+    ///     On success, changes the password, refreshes the user login, and redirects to the profile page.
     /// </returns>
     public async Task<IActionResult> OnPostChangePasswordAsync()
     {
-        var user = await _userService.Get(_authService.GetUserId());
+        var user = await GetCurrentUser();
         if (user == null) return RedirectToRoute("Account/Login");
 
         if (!await _authService.IsCurrentPasswordCorrect(PasswordChange.CurrentPassword))
         {
             ChangePasswordModalErrors.StoreError("La contraseña actual no es correcta.");
             SetProfileViewModel(user);
+            IsModerator = await IsUserModerator(user);
             return Page();
         }
 
@@ -96,16 +112,16 @@ public class ProfileModel : PageModel
     }
 
     /// <summary>
-    /// Handles a POST request to update the user's data.
+    ///     Handles a POST request to update the user's data.
     /// </summary>
     /// <returns>
-    /// If the user is not found, redirects to the Login page.
-    /// If the update data is invalid, re-renders the page with an error message.
-    /// On success, updates the user data and redirects to the profile page.
+    ///     If the user is not found, redirects to the Login page.
+    ///     If the update data is invalid, re-renders the page with an error message.
+    ///     On success, updates the user data and redirects to the profile page.
     /// </returns>
     public async Task<IActionResult> OnPostUpdateUserDataAsync()
     {
-        var user = await _userService.Get(_authService.GetUserId());
+        var user = await GetCurrentUser();
 
         if (user == null) return RedirectToRoute("Account/Login");
 
@@ -115,6 +131,7 @@ public class ProfileModel : PageModel
             UpdateUserDataModalErrors.StoreError(
                 "Se debe ingresar al menos un email o una dirección completa (Provincia, Cantón y Dirección Exacta).");
             SetProfileViewModel(user);
+            IsModerator = await IsUserModerator(user);
             return Page();
         }
 
@@ -124,13 +141,37 @@ public class ProfileModel : PageModel
         StoreTemporaryFlag("IsUserDataUpdated", true);
         return RedirectToPage();
     }
+
+
+    public async Task<IActionResult> OnPostDeclineModerationAsync()
+    {
+        var user = await GetCurrentUser();
+        if (user == null) return RedirectToRoute("Account/Login");
+
+        if (!await _authService.IsCurrentPasswordCorrect(DeclineRoleUpdate.CurrentPassword))
+        {
+            DeclineModerationModalErrors.StoreError("La contraseña actual no es correcta.");
+            SetProfileViewModel(user);
+            IsModerator = await IsUserModerator(user);
+            return Page();
+        }
+
+        await DeleteModeratorRole(user);
+        await AddClaimDeclinedModerator(user);
+        await _authService.RefreshUserLogin();
+
+        StoreTemporaryFlag("IsModerationRoleDeclined", true);
+        return RedirectToPage();
+    }
+
     /// <summary>
-    /// Handles ajax GET request to retrieve canton names based on the specified province.
+    ///     Handles ajax GET request to retrieve canton names based on the specified province.
     /// </summary>
     /// <param name="province">The name of the province.</param>
     /// <returns>
-    /// A JSON result containing a list of <see cref="CantonDto"/> objects representing the cantons in the specified province.
-    /// If the province parameter is null or empty, returns an empty list.
+    ///     A JSON result containing a list of <see cref="CantonDto" /> objects representing the cantons in the specified
+    ///     province.
+    ///     If the province parameter is null or empty, returns an empty list.
     /// </returns>
     public async Task<JsonResult> OnGetCantonsAsync(string province)
     {
@@ -157,7 +198,7 @@ public class ProfileModel : PageModel
     /// <param name="user">The user whose information will be displayed.</param>
     private void SetProfileViewModel(User user)
     {
-        UserProfile = new ProfileViewModel(user);
+        UserProfile = new ProfileVm(user);
     }
 
     /// <summary>
@@ -189,6 +230,7 @@ public class ProfileModel : PageModel
     {
         IsPasswordChanged = RecoverTemporaryFlag("IsPasswordChanged");
         IsUserDataUpdated = RecoverTemporaryFlag("IsUserDataUpdated");
+        IsNoLongerModerator = RecoverTemporaryFlag("IsModerationRoleDeclined");
     }
 
     /// <summary>
@@ -204,12 +246,54 @@ public class ProfileModel : PageModel
             .Select(c => new CantonDto(c))
             .ToList() ?? new List<CantonDto>();
     }
+
     /// <summary>
-    ///   Clears all the stored error messages.
+    ///     Clears all the stored error messages.
     /// </summary>
     private void ClearStoredErrors()
     {
         ChangePasswordModalErrors.ClearStore();
         UpdateUserDataModalErrors.ClearStore();
+    }
+
+    /// <summary>
+    ///     Asynchronously determines if the given user is in the moderator role.
+    /// </summary>
+    /// <param name="user">The user to check for the moderator role.</param>
+    /// <returns> a boolean result which is true if the user is in the moderator role.</returns>
+    private async Task<bool> IsUserModerator(User user)
+    {
+        return await _userManagerService.IsInRoleAsync(user, RoleNames.Moderator);
+    }
+
+    /// <summary>
+    ///     Asynchronously adds a claim to the user indicating that the moderator role has been declined.
+    /// </summary>
+    /// <param name="user">The user to add the rejected moderator role claim to.</param>
+    /// <returns> operation of adding the claim.</returns>
+    private async Task AddClaimDeclinedModerator(User user)
+    {
+        var claim = new Claim(ClaimTypes.Role, RoleNames.RejectedModeratorRole);
+        await _userManagerService.AddClaimAsync(user, claim);
+    }
+
+    /// <summary>
+    ///     Asynchronously deletes the moderator role claim from the user.
+    /// </summary>
+    /// <param name="user">The user to remove the moderator role claim from.</param>
+    /// <returns> operation of deleting the claim.</returns>
+    private async Task DeleteModeratorRole(User user)
+    {
+        var claim = new Claim(ClaimTypes.Role, RoleNames.Moderator);
+        await _userManagerService.DeleteClaimAsync(user, claim);
+    }
+
+    /// <summary>
+    ///     Asynchronously retrieves the current user.
+    /// </summary>
+    /// <returns> the current user </returns>
+    private async Task<User> GetCurrentUser()
+    {
+        return await _userManagerService.FindByIdAsync(_authService.GetUserId());
     }
 }

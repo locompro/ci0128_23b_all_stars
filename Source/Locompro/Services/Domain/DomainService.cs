@@ -1,83 +1,85 @@
 ﻿using Locompro.Data;
 using Locompro.Data.Repositories;
 
-namespace Locompro.Services.Domain
+namespace Locompro.Services.Domain;
+
+/// <summary>
+///     Generic domain service for an application entity type.
+/// </summary>
+/// <typeparam name="T">Type of entity handled by service.</typeparam>
+/// <typeparam name="TK">Type of key used by entity.</typeparam>
+public class DomainService<T, TK> : Service, IDomainService<T, TK>
+    where T : class
 {
+    protected readonly IUnitOfWork UnitOfWork;
+    protected readonly ICrudRepository<T, TK> CrudRepository;
+
     /// <summary>
-    /// Generic domain service for an application entity type.
+    ///     Constructs a domain service for a given repository.
     /// </summary>
-    /// <typeparam name="T">Type of entity handled by service.</typeparam>
-    /// <typeparam name="TK">Type of key used by entity.</typeparam>
-    public class DomainService<T, TK> : Service, IDomainService<T, TK>
-        where T : class
+    /// <param name="unitOfWork">Unit of work to handle transactions.</param>
+    /// <param name="loggerFactory">Factory for service logger.</param>
+    public DomainService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory)
+        : base(loggerFactory)
     {
-        protected readonly ICrudRepository<T, TK> CrudRepository;
+        UnitOfWork = unitOfWork;
+        CrudRepository = UnitOfWork.GetCrudRepository<T, TK>();
+    }
 
-        /// <summary>
-        /// Constructs a domain service for a given repository.
-        /// </summary>
-        /// <param name="unitOfWork">Unit of work to handle transactions.</param>
-        /// <param name="loggerFactory">Factory for service logger.</param>
-        public DomainService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory)
-            : base(unitOfWork, loggerFactory)
+    /// <inheritdoc />
+    public async Task<T> Get(TK id)
+    {
+        return await CrudRepository.GetByIdAsync(id);
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<T>> GetAll()
+    {
+        return await CrudRepository.GetAllAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task Add(T entity)
+    {
+        try
         {
-            this.CrudRepository = UnitOfWork.GetCrudRepository<T, TK>();
+            await CrudRepository.AddAsync(entity);
+            await UnitOfWork.SaveChangesAsync();
         }
-
-        /// <inheritdoc />
-        public async Task<T> Get(TK id)
+        catch (Exception e)
         {
-            return await CrudRepository.GetByIdAsync(id);
+            Logger.LogError(e, "Failed to add entity");
+            throw;
         }
+    }
 
-        /// <inheritdoc />
-        public async Task<IEnumerable<T>> GetAll()
+    /// <inheritdoc />
+    public async Task Update(T entity)
+    {
+        try
         {
-            return await CrudRepository.GetAllAsync();
+            CrudRepository.UpdateAsync(entity);
+            await UnitOfWork.SaveChangesAsync();
         }
-
-        /// <inheritdoc />
-        public async Task Add(T entity)
+        catch (Exception e)
         {
-            try
-            {
-                await CrudRepository.AddAsync(entity);
-                await UnitOfWork.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e, "Failed to add entity");
-                throw;
-            }
+            Logger.LogError(e, "Failed to update entity");
+            throw;
         }
+    }
 
-        /// <inheritdoc />
-        public async Task Update(T entity)
-        {try
-            {
-                CrudRepository.UpdateAsync(entity);
-                await UnitOfWork.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e, "Failed to update entity");
-                throw;
-            }
-        }
-
-        /// <inheritdoc />
-        public async Task Delete(TK id)
+    /// <inheritdoc />
+    public async Task Delete(TK id)
+    {
+        try
         {
-            try
-            {
-                await CrudRepository.DeleteAsync(id);
-                await UnitOfWork.SaveChangesAsync();
-            }
-            catch (Exception e)
-            {
-                Logger.LogError(e, "Failed to delete entity");
-                throw;
-            }
+            await CrudRepository.DeleteAsync(id);
+            await UnitOfWork.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Failed to delete entity");
+            throw;
         }
     }
 }

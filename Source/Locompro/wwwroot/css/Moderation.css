@@ -1,0 +1,27 @@
+.green-button {
+    background-color: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    
+    width: 200px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.red-button {
+    background-color: #EE4B2B;
+    color: white;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+
+    width: 200px;
+    margin-left: 50px;
+    margin-right: 50px;
+}

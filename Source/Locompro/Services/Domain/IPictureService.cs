@@ -1,16 +1,14 @@
-using System.Drawing;
-using Locompro.Data.Repositories;
+using Locompro.Models.Entities;
 
 namespace Locompro.Services.Domain;
-using Locompro.Models;
 
 /// <summary>
-/// Iterface for services for handling the access of pictures
+///     Iterface for services for handling the access of pictures
 /// </summary>
 public interface IPictureService : IDomainService<Picture, PictureKey>
 {
     /// <summary>
-    /// Returns the given pictures for an item described by the product name and the store name
+    ///     Returns the given pictures for an item described by the product name and the store name
     /// </summary>
     /// <param name="pictureAmount"> Max amount of pictures that it is wished to be retrieved</param>
     /// <param name="productName"> Name of the product that has the pictures</param>

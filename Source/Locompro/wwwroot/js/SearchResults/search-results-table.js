@@ -24,7 +24,7 @@ class SearchResultsTableBody {
         this.tableBody.innerHTML = "";
         this.searchResults = searchResults;
         this.currentPage = currentPage;
-        
+
         for (let resultIndex = this.currentPage * this.resultsPerPage;
              resultIndex < this.searchResults.length && resultIndex < (this.currentPage + 1) * this.resultsPerPage;
              resultIndex++) {
@@ -45,10 +45,10 @@ class SearchResultsTableBody {
         row.setAttribute("data-bs-toggle", "modal");
         row.setAttribute("data-bs-target", "#ItemModal");
 
-        row.addEventListener("click", function() {
+        row.addEventListener("click", function () {
             selectItem(resultIndex);
         });
-        
+
         return row;
     }
 
@@ -84,5 +84,5 @@ class SearchResultsTableBody {
         let submissionTimeCell = row.insertCell(7);
         submissionTimeCell.innerHTML = item.LastSubmissionDate;
     }
-    
+
 }

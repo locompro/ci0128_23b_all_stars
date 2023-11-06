@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using Locompro.Models;
+using Locompro.Models.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace Locompro.Services.Auth;
@@ -70,7 +70,7 @@ public class UserManagerService : IUserManagerService
     }
 
     /// <summary>
-    /// Checks if a user is in a given role
+    ///     Checks if a user is in a given role
     /// </summary>
     /// <param name="user"> The user</param>
     /// <param name="role"> The name of the role to check</param>
@@ -85,12 +85,12 @@ public class UserManagerService : IUserManagerService
     }
 
     /// <summary>
-    /// Asynchronously finds a user based on the user ID.
+    ///     Asynchronously finds a user based on the user ID.
     /// </summary>
     /// <param name="userId">The user's ID to search for.</param>
     /// <returns>
-    /// The task result contains
-    /// the user corresponding to the specified ID if found; otherwise, null.
+    ///     The task result contains
+    ///     the user corresponding to the specified ID if found; otherwise, null.
     /// </returns>
     public Task<User> FindByIdAsync(string userId)
     {
@@ -98,14 +98,14 @@ public class UserManagerService : IUserManagerService
     }
 
     /// <summary>
-    /// Asynchronously adds a claim to a user.
+    ///     Asynchronously adds a claim to a user.
     /// </summary>
     /// <param name="user">The user to add the claim to.</param>
     /// <param name="claim">The claim to add.</param>
     /// <returns>
-    /// A task that represents the asynchronous operation of adding a claim to the user.
-    /// The task result contains an <see cref="IdentityResult"/> indicating the success
-    /// or failure of the operation.
+    ///     A task that represents the asynchronous operation of adding a claim to the user.
+    ///     The task result contains an <see cref="IdentityResult" /> indicating the success
+    ///     or failure of the operation.
     /// </returns>
     public Task<IdentityResult> AddClaimAsync(User user, Claim claim)
     {
@@ -113,13 +113,13 @@ public class UserManagerService : IUserManagerService
     }
 
     /// <summary>
-    /// Asynchronously deletes a claim from a user.
+    ///     Asynchronously deletes a claim from a user.
     /// </summary>
     /// <param name="user">The user from whom the claim is to be deleted.</param>
     /// <param name="claim">The claim to be deleted from the user.</param>
     /// <returns>
-    /// A task that represents the asynchronous delete operation. The task result contains
-    /// the <see cref="IdentityResult"/> of the delete operation.
+    ///     A task that represents the asynchronous delete operation. The task result contains
+    ///     the <see cref="IdentityResult" /> of the delete operation.
     /// </returns>
     public Task<IdentityResult> DeleteClaimAsync(User user, Claim claim)
     {

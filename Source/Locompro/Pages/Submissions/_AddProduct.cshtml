@@ -1,14 +1,13 @@
-@using Locompro.Models.ViewModels
+@inject INamedEntityDomainService<Category, string> CategoryService
+@using Locompro.Models.Entities
 @using Locompro.Services.Domain
 @using Newtonsoft.Json
-@using Locompro.Models
-@inject INamedEntityDomainService<Category, string> CategoryService
-@model ProductViewModel
+@model Locompro.Models.ViewModels.ProductVm
 
 @{
     var categories = (await CategoryService.GetAll()).ToList();
 
-    var projectedCategories = categories.Select(c => new 
+    var projectedCategories = categories.Select(c => new
     {
         c.Name
     }).ToList();

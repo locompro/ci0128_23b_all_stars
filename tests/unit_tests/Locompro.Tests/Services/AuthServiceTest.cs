@@ -1,8 +1,7 @@
 ﻿using System.Security.Claims;
 using Locompro.Data;
-using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
-using Locompro.Services;
 using Locompro.Services.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -16,12 +15,12 @@ namespace Locompro.Tests.Services;
 /// </summary>
 public class AuthServiceTest
 {
-    private readonly Mock<IUserStore<User>> _userStoreMock;
     private readonly Mock<IUserEmailStore<User>> _emailStoreMock;
     private readonly Mock<ILogger<AuthService>> _loggerMock;
+    private readonly AuthService _service;
     private readonly Mock<ISignInManagerService> _signInManagerMock;
     private readonly Mock<IUserManagerService> _userManagerMock;
-    private readonly AuthService _service;
+    private readonly Mock<IUserStore<User>> _userStoreMock;
 
     /// <summary>
     ///     Initializes a new instance of the <see cref="AuthServiceTest" /> class.
@@ -41,9 +40,7 @@ public class AuthServiceTest
         var loggerFactoryMock = new Mock<ILoggerFactory>();
         loggerFactoryMock.Setup(lf => lf.CreateLogger(It.IsAny<string>())).Returns(_loggerMock.Object);
 
-        _service = new AuthService(
-            unitOfWorkMock.Object,
-            loggerFactoryMock.Object,
+        _service = new AuthService(loggerFactoryMock.Object,
             _signInManagerMock.Object,
             _userManagerMock.Object,
             _userStoreMock.Object,
@@ -73,7 +70,7 @@ public class AuthServiceTest
     public async Task Register_UserRegistrationSucceeds_ReturnsIdentityResultSuccess()
     {
         // Arrange
-        var inputData = new RegisterViewModel
+        var inputData = new RegisterVm
             { UserName = "TestUser", Email = "test@example.com", Password = "TestPassword123!" };
         var identityResult = IdentityResult.Success;
 
@@ -103,7 +100,7 @@ public class AuthServiceTest
     public async Task Register_UserRegistrationFails_ReturnsIdentityResultFailure()
     {
         // Arrange
-        var inputData = new RegisterViewModel
+        var inputData = new RegisterVm
             { UserName = "TestUser", Email = "test@example.com", Password = "Test" };
         var identityResult = IdentityResult.Failed();
 
@@ -203,7 +200,7 @@ public class AuthServiceTest
     public async Task Login_SuccessfulLogin()
     {
         // Arrange
-        var inputData = new LoginViewModel { UserName = "TestUser", Password = "TestPassword123!" };
+        var inputData = new LoginVm { UserName = "TestUser", Password = "TestPassword123!" };
 
         _signInManagerMock.Setup(x =>
                 x.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, false))
@@ -232,7 +229,7 @@ public class AuthServiceTest
     public async Task Login_FailedLogin()
     {
         // Arrange
-        var inputData = new LoginViewModel { UserName = "TestUser", Password = "WrongPassword" };
+        var inputData = new LoginVm { UserName = "TestUser", Password = "WrongPassword" };
 
         _signInManagerMock.Setup(x =>
                 x.PasswordSignInAsync(inputData.UserName, inputData.Password, inputData.RememberMe, false))
@@ -336,7 +333,7 @@ public class AuthServiceTest
         // Assert
         _signInManagerMock.Verify(sm => sm.RefreshSignInAsync(user), Times.Once);
     }
-    
+
     /// <summary>
     ///     Creates a <see cref="ClaimsPrincipal" /> object with a single claim of type
     ///     <see cref="ClaimTypes.NameIdentifier" />

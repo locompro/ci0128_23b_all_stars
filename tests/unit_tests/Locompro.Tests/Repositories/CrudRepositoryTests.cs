@@ -1,126 +1,129 @@
 using Locompro.Data;
-using Locompro.Models;
 using Locompro.Data.Repositories;
+using Locompro.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Locompro.Tests.Repositories
+namespace Locompro.Tests.Repositories;
+
+[TestFixture]
+public class CrudRepositoryTests
 {
-    [TestFixture]
-    public class CrudRepositoryTests
+    [SetUp]
+    public void SetUp()
     {
-        private ILoggerFactory _loggerFactory;
-        private LocomproContext _context;
-        private ICrudRepository<User, string> _userRepository;
+        _loggerFactory = LoggerFactory.Create(builder => { });
 
-        [SetUp]
-        public void SetUp()
+        var options = new DbContextOptionsBuilder<LocomproContext>()
+            .UseInMemoryDatabase("InMemoryDbForTesting")
+            .Options;
+        _context = new LocomproContext(options);
+        _context.Database.EnsureDeleted(); // Make sure the db is clean
+        _context.Database.EnsureCreated();
+
+        // Add known entities
+        _context.Set<User>().Add(new User
+            { Id = "1", Name = "UserA", Address = "AddressA", Rating = 5.0f, Status = Status.Active });
+        _context.Set<User>().Add(new User
+            { Id = "2", Name = "UserB", Address = "AddressB", Rating = 3.0f, Status = Status.Active });
+        _context.SaveChanges();
+
+        _userRepository = new CrudRepository<User, string>(_context, _loggerFactory);
+    }
+
+    private ILoggerFactory _loggerFactory;
+    private LocomproContext _context;
+    private ICrudRepository<User, string> _userRepository;
+
+    /// <author>Ariel Arevalo Alvarado B50562</author>
+    [Test]
+    public async Task GetByIdAsync_ShouldReturnEntity()
+    {
+        // Arrange
+        var id = "1";
+        var expectedName = "UserA";
+        var expectedAddress = "AddressA";
+
+        // Act
+        var result = await _userRepository.GetByIdAsync(id);
+
+        // Assert
+        Assert.Multiple(() =>
         {
-            _loggerFactory = LoggerFactory.Create(builder => { });
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Id, Is.EqualTo(id));
+            Assert.That(result.Name, Is.EqualTo(expectedName));
+            Assert.That(result.Address, Is.EqualTo(expectedAddress));
+        });
+    }
 
-            var options = new DbContextOptionsBuilder<LocomproContext>()
-                .UseInMemoryDatabase(databaseName: "InMemoryDbForTesting")
-                .Options;
-            _context = new LocomproContext(options);
-            _context.Database.EnsureDeleted(); // Make sure the db is clean
-            _context.Database.EnsureCreated();
+    /// <author>Ariel Arevalo Alvarado B50562</author>
+    [Test]
+    public async Task GetAllAsync_ShouldReturnAllEntities()
+    {
+        // Act
+        var result = await _userRepository.GetAllAsync();
 
-            // Add known entities
-            _context.Set<User>().Add(new User
-                { Id = "1", Name = "UserA", Address = "AddressA", Rating = 5.0f, Status = Status.Active });
-            _context.Set<User>().Add(new User
-                { Id = "2", Name = "UserB", Address = "AddressB", Rating = 3.0f, Status = Status.Active });
-            _context.SaveChanges();
-
-            _userRepository = new CrudRepository<User, string>(_context, _loggerFactory);
-        }
-
-        [Test]
-        public async Task GetByIdAsync_ShouldReturnEntity()
+        // Assert
+        Assert.Multiple(() =>
         {
-            // Arrange
-            string id = "1";
-            string expectedName = "UserA";
-            string expectedAddress = "AddressA";
+            var enumerable = result as User[] ?? result.ToArray();
+            Assert.That(enumerable, Is.Not.Null);
+            Assert.That(enumerable, Has.Length.EqualTo(2));
+        });
+    }
 
-            // Act
-            var result = await _userRepository.GetByIdAsync(id);
+    /// <author>Ariel Arevalo Alvarado B50562</author>
+    [Test]
+    public async Task AddAsync_ShouldAddEntity()
+    {
+        // Arrange
+        var newUser = new User
+            { Id = "3", Name = "UserC", Address = "AddressC", Rating = 4.0f, Status = Status.Active };
 
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(result, Is.Not.Null);
-                Assert.That(result.Id, Is.EqualTo(id));
-                Assert.That(result.Name, Is.EqualTo(expectedName));
-                Assert.That(result.Address, Is.EqualTo(expectedAddress));
-            });
-        }
+        // Act
+        await _userRepository.AddAsync(newUser);
+        var result = await _userRepository.GetByIdAsync("3");
 
-        [Test]
-        public async Task GetAllAsync_ShouldReturnAllEntities()
+        // Assert
+        Assert.Multiple(() =>
         {
-            // Act
-            var result = await _userRepository.GetAllAsync();
+            Assert.That(result, Is.Not.Null);
+            Assert.That(result.Id, Is.EqualTo("3"));
+            Assert.That(result.Name, Is.EqualTo("UserC"));
+            Assert.That(result.Address, Is.EqualTo("AddressC"));
+        });
+    }
 
-            // Assert
-            Assert.Multiple(() =>
-            {
-                User[] enumerable = result as User[] ?? result.ToArray();
-                Assert.That(enumerable, Is.Not.Null);
-                Assert.That(enumerable, Has.Length.EqualTo(2));
-            });
-        }
+    /// <author>Ariel Arevalo Alvarado B50562</author>
+    [Test]
+    public async Task UpdateAsync_ShouldUpdateEntity()
+    {
+        // Arrange
+        var userToUpdate = await _userRepository.GetByIdAsync("1");
+        userToUpdate.Address = "NewAddressA";
 
-        [Test]
-        public async Task AddAsync_ShouldAddEntity()
+        // Act
+        _userRepository.UpdateAsync(userToUpdate);
+        var updatedUser = await _userRepository.GetByIdAsync("1");
+
+        // Assert
+        Assert.Multiple(() =>
         {
-            // Arrange
-            var newUser = new User
-                { Id = "3", Name = "UserC", Address = "AddressC", Rating = 4.0f, Status = Status.Active };
+            Assert.That(updatedUser, Is.Not.Null);
+            Assert.That(updatedUser.Id, Is.EqualTo("1"));
+            Assert.That(updatedUser.Address, Is.EqualTo("NewAddressA"));
+        });
+    }
 
-            // Act
-            await _userRepository.AddAsync(newUser);
-            var result = await _userRepository.GetByIdAsync("3");
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(result, Is.Not.Null);
-                Assert.That(result.Id, Is.EqualTo("3"));
-                Assert.That(result.Name, Is.EqualTo("UserC"));
-                Assert.That(result.Address, Is.EqualTo("AddressC"));
-            });
-        }
-
-        [Test]
-        public async Task UpdateAsync_ShouldUpdateEntity()
-        {
-            // Arrange
-            var userToUpdate = await _userRepository.GetByIdAsync("1");
-            userToUpdate.Address = "NewAddressA";
-
-            // Act
-            _userRepository.UpdateAsync(userToUpdate);
-            var updatedUser = await _userRepository.GetByIdAsync("1");
-
-            // Assert
-            Assert.Multiple(() =>
-            {
-                Assert.That(updatedUser, Is.Not.Null);
-                Assert.That(updatedUser.Id, Is.EqualTo("1"));
-                Assert.That(updatedUser.Address, Is.EqualTo("NewAddressA"));
-            });
-        }
-
-        public async Task DeleteAsync_ShouldDeleteEntity()
-        {
-            // Arrange
-            string id = "2";
-            // Act
-            await _userRepository.DeleteAsync(id);
-            var result = await _userRepository.GetByIdAsync(id);
-            // Assert
-            Assert.That(result, Is.Null);
-        }
+    public async Task DeleteAsync_ShouldDeleteEntity()
+    {
+        // Arrange
+        var id = "2";
+        // Act
+        await _userRepository.DeleteAsync(id);
+        var result = await _userRepository.GetByIdAsync(id);
+        // Assert
+        Assert.That(result, Is.Null);
     }
 }

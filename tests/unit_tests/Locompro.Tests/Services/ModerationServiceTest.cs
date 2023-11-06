@@ -1,12 +1,14 @@
-﻿using Moq;
-using Locompro.Services.Domain;
-using Locompro.Services.Auth;
-using Microsoft.Extensions.Logging;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Locompro.Common;
-using Locompro.Models;
+using Locompro.Models.Entities;
+using Locompro.Models.Results;
+using Locompro.Models.ViewModels;
 using Locompro.Services;
+using Locompro.Services.Auth;
+using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Locompro.Tests.Services;
 
@@ -15,15 +17,17 @@ public class ModerationServiceTests
 {
     private Mock<IUserService> _mockUserService;
     private Mock<IUserManagerService> _mockUserManagerService;
+    private Mock<IReportService> _mockReportService;
     private Mock<ILogger<ModerationService>> _mockLogger;
     private ModerationService _moderationService;
-
+    
     [SetUp]
     public void SetUp()
     {
         // Create mock instances
         _mockUserService = new Mock<IUserService>();
         _mockUserManagerService = new Mock<IUserManagerService>();
+        _mockReportService = new Mock<IReportService>();
         _mockLogger = new Mock<ILogger<ModerationService>>();
 
         // Setup mock logger factory to return the mock logger
@@ -33,12 +37,12 @@ public class ModerationServiceTests
 
         // Create an instance of the service to test
         _moderationService = new ModerationService(mockLoggerFactory.Object, _mockUserService.Object,
-            _mockUserManagerService.Object);
+            _mockUserManagerService.Object, _mockReportService.Object);
     }
 
     /// <summary>
-    /// Tests that the AssignPossibleModeratorsAsync method successfully assigns the 'PossibleModerator' role
-    /// to all qualified users.
+    ///     Tests that the AssignPossibleModeratorsAsync method successfully assigns the 'PossibleModerator' role
+    ///     to all qualified users.
     /// </summary>
     /// <author>Brandon Alonso Mora Umaña - C15179</author>
     [Test]
@@ -47,8 +51,8 @@ public class ModerationServiceTests
         // Arrange
         var qualifiedUsers = new List<GetQualifiedUserIDsResult>
         {
-            new GetQualifiedUserIDsResult { Id = "user1" },
-            new GetQualifiedUserIDsResult { Id = "user2" }
+            new() { Id = "user1" },
+            new() { Id = "user2" }
         };
 
         _mockUserService.Setup(x => x.GetQualifiedUserIDs())
@@ -81,7 +85,7 @@ public class ModerationServiceTests
     }
 
     /// <summary>
-    /// Tests that the AssignPossibleModeratorsAsync method logs an error when a user cannot be found.
+    ///     Tests that the AssignPossibleModeratorsAsync method logs an error when a user cannot be found.
     /// </summary>
     /// <author>Brandon Alonso Mora Umaña - C15179</author>
     [Test]
@@ -90,7 +94,7 @@ public class ModerationServiceTests
         // Arrange
         var qualifiedUsers = new List<GetQualifiedUserIDsResult>
         {
-            new GetQualifiedUserIDsResult { Id = "user1" }
+            new() { Id = "user1" }
         };
 
         _mockUserService.Setup(x => x.GetQualifiedUserIDs())
@@ -112,7 +116,7 @@ public class ModerationServiceTests
     }
 
     /// <summary>
-    /// Tests that the AssignPossibleModeratorsAsync method logs an error if the role cannot be assigned to the user.
+    ///     Tests that the AssignPossibleModeratorsAsync method logs an error if the role cannot be assigned to the user.
     /// </summary>
     /// <author>Brandon Alonso Mora Umaña - C15179</author>
     [Test]
@@ -121,7 +125,7 @@ public class ModerationServiceTests
         // Arrange
         var qualifiedUsers = new List<GetQualifiedUserIDsResult>
         {
-            new GetQualifiedUserIDsResult { Id = "user1" }
+            new() { Id = "user1" }
         };
 
         _mockUserService.Setup(x => x.GetQualifiedUserIDs())
@@ -156,7 +160,8 @@ public class ModerationServiceTests
     }
 
     /// <summary>
-    /// Tests that the AssignPossibleModeratorsAsync method logs an informational message if the user is already a moderator.
+    ///     Tests that the AssignPossibleModeratorsAsync method logs an informational message if the user is already a
+    ///     moderator.
     /// </summary>
     /// <author>Brandon Alonso Mora Umaña - C15179</author>
     [Test]
@@ -165,7 +170,7 @@ public class ModerationServiceTests
         // Arrange
         var qualifiedUsers = new List<GetQualifiedUserIDsResult>
         {
-            new GetQualifiedUserIDsResult { Id = "user1" }
+            new() { Id = "user1" }
         };
 
         _mockUserService.Setup(x => x.GetQualifiedUserIDs())
@@ -183,7 +188,7 @@ public class ModerationServiceTests
                 x.GetClaimsOfTypesAsync( // This is the method that checks if the user has the role
                     It.IsAny<User>(),
                     It.IsAny<string>()))
-            .ReturnsAsync(new List<Claim>() { new Claim(ClaimTypes.Role, RoleNames.Moderator) });
+            .ReturnsAsync(new List<Claim> { new(ClaimTypes.Role, RoleNames.Moderator) });
 
         // Act
         await _moderationService.AssignPossibleModeratorsAsync();

@@ -3,16 +3,16 @@
 namespace Locompro.Services.Domain;
 
 /// <summary>
-/// Schedules and manages the execution of background tasks.
+///     Schedules and manages the execution of background tasks.
 /// </summary>
 public sealed class TaskSchedulerService : IHostedService
 {
-    private readonly IEnumerable<IScheduledTask> _tasks;
     private readonly ILogger<TaskSchedulerService> _logger;
+    private readonly IEnumerable<IScheduledTask> _tasks;
     private readonly List<Timer> _timers = new();
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="TaskSchedulerService"/> class.
+    ///     Initializes a new instance of the <see cref="TaskSchedulerService" /> class.
     /// </summary>
     /// <param name="tasks">The collection of scheduled tasks to be managed.</param>
     /// <param name="logger">The logger to be used for logging information and errors.</param>
@@ -23,7 +23,7 @@ public sealed class TaskSchedulerService : IHostedService
     }
 
     /// <summary>
-    /// Starts the task scheduler service, scheduling the configured tasks to run at their defined intervals.
+    ///     Starts the task scheduler service, scheduling the configured tasks to run at their defined intervals.
     /// </summary>
     /// <param name="cancellationToken">A token that can be used to cancel the start process.</param>
     /// <returns>A task that represents the asynchronous start operation.</returns>
@@ -33,10 +33,10 @@ public sealed class TaskSchedulerService : IHostedService
         foreach (var task in _tasks)
         {
             var timer = new Timer(
-                callback: ExecuteTask,
-                state: new TaskState { Task = task, Token = cancellationToken },
-                dueTime: TimeSpan.Zero,
-                period: task.Interval);
+                ExecuteTask,
+                new TaskState { Task = task, Token = cancellationToken },
+                TimeSpan.Zero,
+                task.Interval);
 
             _timers.Add(timer);
         }
@@ -45,7 +45,7 @@ public sealed class TaskSchedulerService : IHostedService
     }
 
     /// <summary>
-    /// Stops the task scheduler service, ensuring that all scheduled tasks are no longer invoked.
+    ///     Stops the task scheduler service, ensuring that all scheduled tasks are no longer invoked.
     /// </summary>
     /// <param name="cancellationToken">A token that can be used to cancel the stop process.</param>
     /// <returns>A task that represents the asynchronous stop operation.</returns>
@@ -70,7 +70,7 @@ public sealed class TaskSchedulerService : IHostedService
     }
 
     /// <summary>
-    /// Executes the given scheduled task.
+    ///     Executes the given scheduled task.
     /// </summary>
     /// <param name="state">The state object containing the scheduled task and cancellation token.</param>
     private async void ExecuteTask(object state)
@@ -90,17 +90,17 @@ public sealed class TaskSchedulerService : IHostedService
     }
 
     /// <summary>
-    /// Represents the state of a scheduled task, including the task itself and a cancellation token.
+    ///     Represents the state of a scheduled task, including the task itself and a cancellation token.
     /// </summary>
     private class TaskState
     {
         /// <summary>
-        /// Gets the scheduled task to be executed.
+        ///     Gets the scheduled task to be executed.
         /// </summary>
         public IScheduledTask Task { get; init; }
 
         /// <summary>
-        /// Gets the cancellation token associated with the scheduled task.
+        ///     Gets the cancellation token associated with the scheduled task.
         /// </summary>
         public CancellationToken Token { get; init; }
     }

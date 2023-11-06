@@ -87,7 +87,7 @@ class ProductModalManager extends ModalManager {
             dropdownParent: $('#addProductModal .modal-content'),
             language: select2SpanishLanguageSettings
         });
-        
+
         $("#partialProductName").rules("add", {
             required: true,
             messages: {
@@ -98,8 +98,8 @@ class ProductModalManager extends ModalManager {
 
     addAndValidate() {
         super.addAndValidate();
-        if(!this.shouldClearFlag) {
-         $("#partialProductId").val(-1)   
+        if (!this.shouldClearFlag) {
+            $("#partialProductId").val(-1)
         }
     }
 }
@@ -193,28 +193,3 @@ $(document).ready(function () {
     $("#mainForm").validate();
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('file').addEventListener('change', function () {
-        const fileInput = this;
-        const errorElement = document.getElementById('fileError');
-        const maxSize = 5000000; // 5MB in bytes
-        
-        errorElement.style.display = 'none';
-    
-        for (let i = 0; i < fileInput.files.length; i++) {
-            const file = fileInput.files[i];
-    
-            if (file.size > maxSize) {
-                errorElement.innerHTML = 'Archivo "' + file.name + '" supera el tamaño máximo de 5MB.';
-                errorElement.style.display = 'block';
-                fileInput.value = '';
-            }
-        }
-        
-        console.log(fileInput.files.length);
-    });
-    
-    document.getElementById('addSubmissionBtn').addEventListener('click', function () {
-        console.log('clicked');
-    });
-});

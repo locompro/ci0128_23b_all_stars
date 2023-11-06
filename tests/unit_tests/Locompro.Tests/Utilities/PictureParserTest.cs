@@ -1,7 +1,7 @@
-using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
-using Microsoft.AspNetCore.Http;
 using Locompro.Pages.Util;
+using Microsoft.AspNetCore.Http;
 
 namespace Locompro.Tests.Utilities;
 
@@ -13,30 +13,30 @@ public class PictureParserTest
     {
         // Arrange
         IFormFileCollection files = new FormFileCollection();
-        
+
         // Act
-        List<PictureViewModel> pictures = PictureParser.Parse(files);
-        
+        List<PictureVm> pictures = PictureParser.Parse(files);
+
         // Assert
         Assert.That(pictures, Is.Not.Null);
     }
-    
+
     [Test]
     public void ParseSingleImage()
     {
-        MemoryStream ms = new MemoryStream();
+        var ms = new MemoryStream();
         byte[] data = { 0, 1, 2, 3, 4 };
         ms.Write(data, 0, data.Length);
-        
+
         IFormFile file = new FormFile(ms, 0, 5, "Test", "Test.jpg");
-        
-        PictureViewModel picture = PictureParser.ParseSinglePicture(file);
-        
+
+        var picture = PictureParser.ParseSinglePicture(file);
+
         Assert.Multiple(() =>
         {
             Assert.That(picture.Name, Is.EqualTo("Test.jpg"));
             Assert.That(picture.PictureData, Is.EqualTo(data));
-        }); 
+        });
     }
 
     [Test]
@@ -45,9 +45,9 @@ public class PictureParserTest
         IFormFile file = new FormFile(new MemoryStream(), 0, 0, "Test", "Test.jpg");
         IFormFile file2 = new FormFile(new MemoryStream(), 0, 0, "Test", "Test.jpeg");
         IFormFile file3 = new FormFile(new MemoryStream(), 0, 0, "Test", "Test.png");
-        
-        List<PictureViewModel> pictures = PictureParser.Parse(new FormFileCollection() { file, file2, file3 });
-        
+
+        List<PictureVm> pictures = PictureParser.Parse(new FormFileCollection { file, file2, file3 });
+
         Assert.That(pictures, Has.Count.EqualTo(3));
     }
 
@@ -55,9 +55,9 @@ public class PictureParserTest
     public void ParserRejectsInvalidFormat()
     {
         IFormFile file = new FormFile(new MemoryStream(), 0, 0, "Test", "Test.txt");
-        
-        List<PictureViewModel> pictures = PictureParser.Parse(new FormFileCollection() { file });
-        
+
+        List<PictureVm> pictures = PictureParser.Parse(new FormFileCollection { file });
+
         Assert.That(pictures, Is.Empty);
     }
 
@@ -66,15 +66,15 @@ public class PictureParserTest
     {
         byte[] data = { 0, 1, 2, 3, 4 };
         byte[] data2 = { 5, 6, 7, 8, 9 };
-        
-        List<Picture> pictures = new List<Picture>()
+
+        var pictures = new List<Picture>
         {
-            new Picture()
+            new()
             {
                 PictureTitle = "title",
                 PictureData = data
             },
-            new Picture()
+            new()
             {
                 PictureTitle = "title2",
                 PictureData = data2
@@ -82,7 +82,7 @@ public class PictureParserTest
         };
 
         List<string> serializedPictures = PictureParser.Serialize(pictures);
-        
+
         Assert.Multiple(() =>
         {
             Assert.That(serializedPictures, Has.Count.EqualTo(2));
@@ -95,9 +95,9 @@ public class PictureParserTest
     public void ParserSerializesRawData()
     {
         byte[] rawData = { 0, 1, 2, 3, 4 };
-        
-        string serializedData = PictureParser.SerializeData(rawData);
-        
+
+        var serializedData = PictureParser.SerializeData(rawData);
+
         Assert.That(serializedData, Is.EqualTo($"data:image/png;base64,{Convert.ToBase64String(rawData)}"));
     }
 }

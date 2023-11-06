@@ -1,18 +1,18 @@
 using System.Linq.Expressions;
-using Locompro.Models;
+using Locompro.Models.Entities;
 
 namespace Locompro.Common.Search.SearchMethodRegistration;
 
 /// <summary>
-/// Singleton class that is used to store all the search strategies
+///     Singleton class that is used to store all the search strategies
 /// </summary>
 public class SearchMethods
 {
     private static SearchMethods _instance;
     private readonly Dictionary<SearchParameterTypes, SearchParam> _searchParameters;
-    
+
     /// <summary>
-    /// Singleton private constructor
+    ///     Singleton private constructor
     /// </summary>
     private SearchMethods()
     {
@@ -21,43 +21,47 @@ public class SearchMethods
     }
 
     /// <summary>
-    /// returns instance of the singleton class
+    ///     returns instance of the singleton class
     /// </summary>
     public static SearchMethods GetInstance => _instance ??= new SearchMethods();
 
     /// <summary>
-    /// Adds a new search parameter, strategy or way to search for a submission
+    ///     Adds a new search parameter, strategy or way to search for a submission
     /// </summary>
     /// <param name="parameterName"> the name to find which strategy to use </param>
     /// <param name="searchQuery"> the strategy of how to find a submission </param>
-    /// <param name="activationQualifier"> a function used to determine whether the search is to be performed or not. e.g. if string is not null then search </param>
-    private void AddSearchParameter<T>(SearchParameterTypes parameterName, Expression<Func<Submission, T, bool>> searchQuery, Func<T, bool> activationQualifier)
+    /// <param name="activationQualifier">
+    ///     a function used to determine whether the search is to be performed or not. e.g. if
+    ///     string is not null then search
+    /// </param>
+    private void AddSearchParameter<T>(SearchParameterTypes parameterName,
+        Expression<Func<Submission, T, bool>> searchQuery, Func<T, bool> activationQualifier)
     {
         _searchParameters.Add(
             parameterName,
             new SearchParam
-                {
-                    SearchQuery = new SearchQuery<T>() { QueryFunction = searchQuery},
-                    ActivationQualifier = new ActivationQualifier<T>() { QualifierFunction = activationQualifier}
-                }
+            {
+                SearchQuery = new SearchQuery<T> { QueryFunction = searchQuery },
+                ActivationQualifier = new ActivationQualifier<T> { QualifierFunction = activationQualifier }
+            }
         );
     }
 
     /// <summary>
-    /// returns the search strategy or method that corresponds to the parameter name
-    /// if the parameter name is not found, returns null
+    ///     returns the search strategy or method that corresponds to the parameter name
+    ///     if the parameter name is not found, returns null
     /// </summary>
     /// <param name="parameterName"> name of the parameter whose strategy or method is sought</param>
     /// <returns> search strategy or method </returns>
     public SearchParam GetSearchMethodByName(SearchParameterTypes parameterName)
     {
-        _searchParameters.TryGetValue(parameterName, out SearchParam searchParameter);
-        
+        _searchParameters.TryGetValue(parameterName, out var searchParameter);
+
         return searchParameter;
     }
 
     /// <summary>
-    /// Returns whether the parameter type has been mapped to a search method
+    ///     Returns whether the parameter type has been mapped to a search method
     /// </summary>
     /// <param name="parameterName"></param>
     /// <returns> if a search method for the parameter type has been added </returns>
@@ -67,7 +71,7 @@ public class SearchMethods
     }
 
     /// <summary>
-    /// Method where all the search parameters are to be added
+    ///     Method where all the search parameters are to be added
     /// </summary>
     private void AddAllSearchParameters()
     {
@@ -98,18 +102,23 @@ public class SearchMethods
 
         // find by category
         AddSearchParameter<string>(SearchParameterTypes.Category,
-            ((submission, category) =>
-                submission.Product.Categories.Any(existingCategory => existingCategory.Name.Equals(category))),
+            (submission, category) =>
+                submission.Product.Categories.Any(existingCategory => existingCategory.Name.Equals(category)),
             category => !string.IsNullOrEmpty(category));
-        
+
         // find if price is more than min price
         AddSearchParameter<long>(SearchParameterTypes.Minvalue
             , (submission, minVal) => submission.Price > minVal
             , minVal => minVal != 0);
-       
+
         // find if price is less than max value
         AddSearchParameter<long>(SearchParameterTypes.Maxvalue
             , (submission, maxVal) => submission.Price < maxVal
             , maxVal => maxVal != 0);
+        
+        // find if submission has been reported an specific amount of times at minimum
+        AddSearchParameter<int>(SearchParameterTypes.HasNAmountReports
+            , (submission, minReportAmount) => submission.Reports != null && submission.Reports.Count >= minReportAmount
+            , minReportAmount => minReportAmount > 0);
     }
 }

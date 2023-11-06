@@ -1,19 +1,16 @@
-﻿using Locompro.Common;
+﻿using Locompro.Common.ErrorStore;
 
 namespace Locompro.Tests.Common;
 
 /// <summary>
-/// This class contains unit tests for the ErrorStore class.
+///     This class contains unit tests for the ErrorStore class.
 /// </summary>
 /// <author>Your Name</author>
 [TestFixture]
 public class ErrorStoreTest
 {
-    private ErrorStore _errorStore = null!;
-    
-
     /// <summary>
-    /// Initializes a new instance of the ErrorStore class for each test.
+    ///     Initializes a new instance of the ErrorStore class for each test.
     /// </summary>
     /// <author> A. Badilla-Olivas b80874 </author>
     [SetUp]
@@ -22,8 +19,11 @@ public class ErrorStoreTest
         _errorStore = new ErrorStore();
     }
 
+    private ErrorStore _errorStore = null!;
+
     /// <summary>
-    /// Tests the StoreError method by adding a single error to the store and verifying the error count and HasErrors property.
+    ///     Tests the StoreError method by adding a single error to the store and verifying the error count and HasErrors
+    ///     property.
     /// </summary>
     /// <author> A. Badilla-Olivas b80874 </author>
     [Test]
@@ -41,7 +41,8 @@ public class ErrorStoreTest
     }
 
     /// <summary>
-    /// Tests the StoreErrors method by adding multiple errors to the store and verifying the error count and HasErrors property.
+    ///     Tests the StoreErrors method by adding multiple errors to the store and verifying the error count and HasErrors
+    ///     property.
     /// </summary>
     /// <author> A. Badilla-Olivas b80874 </author>
     [Test]
@@ -59,7 +60,8 @@ public class ErrorStoreTest
     }
 
     /// <summary>
-    /// Tests the ClearStore method by adding an error to the store, clearing the store, and verifying the error count and HasErrors property.
+    ///     Tests the ClearStore method by adding an error to the store, clearing the store, and verifying the error count and
+    ///     HasErrors property.
     /// </summary>
     /// <author> A. Badilla-Olivas b80874 </author>
     [Test]
@@ -77,7 +79,8 @@ public class ErrorStoreTest
     }
 
     /// <summary>
-    /// Tests the GetErrors method by adding multiple errors to the store, retrieving the errors, and verifying the retrieved errors match the stored errors.
+    ///     Tests the GetErrors method by adding multiple errors to the store, retrieving the errors, and verifying the
+    ///     retrieved errors match the stored errors.
     /// </summary>
     /// <author> A. Badilla-Olivas b80874 </author>
     [Test]

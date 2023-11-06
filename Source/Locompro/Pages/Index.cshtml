@@ -1,16 +1,16 @@
 ﻿@page
+@using Locompro.Models.Entities
 @using Locompro.Services.Domain
-@using Locompro.Models
 @model IndexModel
-@inject INamedEntityDomainService<Category, string> CategoryDomainServicep
-@using (Html.BeginForm()) 
+@inject INamedEntityDomainService<Category, string> CategoryDomainService
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 }
 
 
 @{
-    var categories = CategoryDomainServicep.GetAll().Result.ToList();
+    var categories = CategoryDomainService.GetAll().Result.ToList();
 }
 
 <!-- get the css file with main menu formats -->
@@ -27,8 +27,7 @@
         <div id="mainPageSearchGroup">
             <div>
                 <div id="searchBar" class="justify-content-center form-actions input-group search-bar-default">
-                    <div class="search-box form-control pe-4 rounded-pill input-group"
-                         style="">
+                    <div class="search-box form-control pe-4 rounded-pill input-group">
                         <div style="width: 100%; padding-right: 20px">
                             <input type="text"
                                    class="form-control rounded-pill"
@@ -68,4 +67,5 @@
 @section Scripts{
     <script src="~/js/search.js"></script>
     <script src="~/js/index.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
 }

@@ -1,7 +1,8 @@
 using Locompro.Common.Search;
 using Locompro.Data;
-using Locompro.Models;
 using Locompro.Data.Repositories;
+using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 
 namespace Locompro.Services.Domain;
@@ -9,7 +10,7 @@ namespace Locompro.Services.Domain;
 public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubmissionService
 {
     private readonly ISubmissionRepository _submissionRepository;
-    
+
     public SubmissionService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
     {
         _submissionRepository = UnitOfWork.GetSpecialRepository<ISubmissionRepository>();
@@ -28,108 +29,130 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
     }
 
     /// <inheritdoc />
-    public async Task UpdateSubmissionRating(RatingViewModel ratingViewModel)
+    public async Task UpdateSubmissionRating(RatingVm ratingVm)
     {
-        ValidateRatingViewModel(ratingViewModel);
-        
-        SubmissionKey submissionKey = new SubmissionKey()
+        ValidateRatingViewModel(ratingVm);
+
+        var submissionKey = new SubmissionKey
         {
-            UserId = ratingViewModel.SubmissionUserId,
-            EntryTime = ratingViewModel.SubmissionEntryTime
+            UserId = ratingVm.SubmissionUserId,
+            EntryTime = ratingVm.SubmissionEntryTime
         };
-        
-        Submission submissionToUpdate =
+
+        var submissionToUpdate =
             await _submissionRepository.GetByIdAsync(submissionKey);
 
         if (submissionToUpdate == null)
-        {
             throw new InvalidOperationException("No submission for user:" + submissionKey.UserId + " and entry time: " +
                                                 submissionKey.EntryTime + " was found.");
-        }
-        
-        PlaceNewSubmissionRating(submissionToUpdate, int.Parse(ratingViewModel.Rating));
-        
+
+        PlaceNewSubmissionRating(submissionToUpdate, int.Parse(ratingVm.Rating));
+
         _submissionRepository.UpdateAsync(submissionToUpdate);
         await UnitOfWork.SaveChangesAsync();
     }
-    
+
     /// <summary>
-    /// Checks if view model is valid, will throw exceptions accordingly
+    ///     Checks if view model is valid, will throw exceptions accordingly
     /// </summary>
-    /// <param name="ratingViewModel"></param>
+    /// <param name="ratingVm"></param>
     /// <exception cref="ArgumentException"></exception>
-    private static void ValidateRatingViewModel(RatingViewModel ratingViewModel)
+    private static void ValidateRatingViewModel(RatingVm ratingVm)
     {
-        if (ratingViewModel == null)
-        {
-            throw new ArgumentException("Provided rating view model was null");
-        }
+        if (ratingVm == null) throw new ArgumentException("Provided rating view model was null");
 
-        if (ratingViewModel.SubmissionUserId == null)
-        {
+        if (ratingVm.SubmissionUserId == null)
             throw new ArgumentException("Provided rating view model was missing submission key");
-        }
 
-        if (ratingViewModel.Rating == null)
-        {
-            throw new ArgumentException("Provided rating view model was missing rating");
-        }
+        if (ratingVm.Rating == null) throw new ArgumentException("Provided rating view model was missing rating");
 
-        if (int.Parse(ratingViewModel.Rating) < 1 || int.Parse(ratingViewModel.Rating) > 5)
-        {
-            throw new ArgumentException("Provided rating was not between 1 and 5"); 
-        }
+        if (int.Parse(ratingVm.Rating) < 1 || int.Parse(ratingVm.Rating) > 5)
+            throw new ArgumentException("Provided rating was not between 1 and 5");
     }
-    
+
     /// <summary>
-    /// Places the new rating in the submission
-    /// Considers previous ratings and calculates a new average
+    ///     Places the new rating in the submission
+    ///     Considers previous ratings and calculates a new average
     /// </summary>
     /// <param name="submissionToUpdate"> submission where rating will be placed </param>
     /// <param name="newRating"> new rating to be placed </param>
     private static void PlaceNewSubmissionRating(Submission submissionToUpdate, int newRating)
     {
-        float currentRating = submissionToUpdate.Rating;
-        long submissionRatingsAmount = submissionToUpdate.NumberOfRatings;
-        
+        var currentRating = submissionToUpdate.Rating;
+        var submissionRatingsAmount = submissionToUpdate.NumberOfRatings;
+
         submissionRatingsAmount = GetNewRatingAmount(submissionRatingsAmount, currentRating);
         currentRating = CalculateNewRating(currentRating, newRating, submissionRatingsAmount);
 
         submissionToUpdate.Rating = currentRating;
         submissionToUpdate.NumberOfRatings = submissionRatingsAmount;
     }
-    
+
     /// <summary>
-    /// Calculates a new rating as the average of all ratings
+    ///     Calculates a new rating as the average of all ratings
     /// </summary>
-    /// <remarks> calculation goes as follows: ((currentAmountOfRatings*currentRating) + newRating) /
-    /// newRatingsAmount </remarks>>
+    /// <remarks>
+    ///     calculation goes as follows: ((currentAmountOfRatings*currentRating) + newRating) /
+    ///     newRatingsAmount
+    /// </remarks>
+    /// >
     /// <param name="currentRating"> submission rating before considering new rating</param>
     /// <param name="newRating"> new incoming rating to be added </param>
     /// <param name="submissionRatingsAmount"> the current amount of ratings </param>
     /// <returns> result of old rating average and new rating </returns>
     private static float CalculateNewRating(float currentRating, int newRating, long submissionRatingsAmount)
     {
-        float newCalculatedRating = (submissionRatingsAmount - 1) * currentRating;
+        var newCalculatedRating = (submissionRatingsAmount - 1) * currentRating;
         newCalculatedRating += newRating;
         newCalculatedRating /= submissionRatingsAmount;
-        
+
         return newCalculatedRating;
     }
-    
+
     /// <summary>
-    /// Gets the new amount of ratings
+    ///     Gets the new amount of ratings
     /// </summary>
     /// <param name="currentRatingAmount"></param>
     /// <param name="currentRating"></param>
     /// <returns></returns>
     private static long GetNewRatingAmount(long currentRatingAmount, double currentRating)
     {
-        if (currentRatingAmount == 0 && currentRating != 0)
-        {
-            currentRatingAmount++;
-        }
-        
+        if (currentRatingAmount == 0 && currentRating != 0) currentRatingAmount++;
+
         return currentRatingAmount + 1;
+    }
+
+    /// <inheritdoc />
+    public async Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm)
+    {
+        SubmissionKey submissionKey = new ()
+        {
+            UserId = moderatorActionOnReportVm.SubmissionUserId,
+            EntryTime = moderatorActionOnReportVm.SubmissionEntryTime
+        };
+        
+        Console.WriteLine("\n\n\n\n\nActing on report: " + moderatorActionOnReportVm.Action);
+        Console.WriteLine("Submission key: " + submissionKey.UserId + " " + submissionKey.EntryTime + "\n\n\n");
+        
+        switch (moderatorActionOnReportVm.Action)
+        {
+            case ModeratorActions.EraseSubmission:
+                //await _submissionRepository.DeleteAsync(submissionKey);
+                break;
+            case ModeratorActions.EraseReport:
+                Submission submission = await _submissionRepository.GetByIdAsync(submissionKey);
+
+                if (submission == null)
+                {
+                    Console.WriteLine("Submission was null");
+                }
+                
+                submission.Status = SubmissionStatus.Moderated;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(moderatorActionOnReportVm));
+        }
+
+        await UnitOfWork.SaveChangesAsync();
     }
 }
