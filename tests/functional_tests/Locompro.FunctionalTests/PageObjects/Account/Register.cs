@@ -27,11 +27,11 @@ public class Register : BasePage
 
     public bool IsRegistered()
     {
-        return base.IsLoggedIn();
+        return base.IsLogoutDisplayed();
     }
-
-    public bool IsRegisterPage()
+    
+    public void GoTo()
     {
-        return Driver.Url.Contains("Account/Register");
+        Driver.Navigate().GoToUrl("https://localhost:7249/Account/Register");
     }
 }

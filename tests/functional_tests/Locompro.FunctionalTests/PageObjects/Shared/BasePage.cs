@@ -47,7 +47,7 @@ public class BasePage
         LoginButton.Click();
     }
     
-    public bool IsLoggedIn()
+    public bool IsLogoutDisplayed()
     {
         return LogoutButton.Displayed;
     }

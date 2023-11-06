@@ -19,8 +19,8 @@ public class ProfileTest
 
     private readonly UserData _userData = new()
     {
-        Email = "Juan@juan",
-        Username = "Juan",
+        Email = "Juan3@juan3",
+        Username = "Juan3",
         Password = "Password@123"
     };
 
