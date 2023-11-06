@@ -120,5 +120,11 @@ public class SearchMethods
         AddSearchParameter<int>(SearchParameterTypes.HasNAmountReports
             , (submission, minReportAmount) => submission.Reports != null && submission.Reports.Count >= minReportAmount
             , minReportAmount => minReportAmount > 0);
+
+        // find if submission has been reported an specific amount of times at minimum
+        AddSearchParameter<string>(SearchParameterTypes.UserId
+            , (submission, userId) => submission.UserId.Contains(userId)
+            , userId => !string.IsNullOrEmpty(userId));
+
     }
 }
