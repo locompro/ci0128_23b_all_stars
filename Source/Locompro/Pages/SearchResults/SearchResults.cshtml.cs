@@ -1,3 +1,4 @@
+using System.Net;
 using Castle.Core.Internal;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
