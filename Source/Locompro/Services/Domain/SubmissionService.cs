@@ -3,6 +3,7 @@ using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models;
 using Locompro.Models.Entities;
+using Locompro.Models.ViewModels;
 
 namespace Locompro.Services.Domain;
 
@@ -119,5 +120,34 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
         if (currentRatingAmount == 0 && currentRating != 0) currentRatingAmount++;
 
         return currentRatingAmount + 1;
+    }
+    
+    /// <inheritdoc />
+    public async Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm)
+    {
+        ModeratorActions action = moderatorActionOnReportVm.Action;
+        string submissionUserId = moderatorActionOnReportVm.SubmissionUserId;
+        DateTime submissionEntryTime = moderatorActionOnReportVm.SubmissionEntryTime;
+        
+        var submissionKey = new SubmissionKey
+        {
+            UserId = submissionUserId,
+            EntryTime = submissionEntryTime
+        };
+        
+        switch (action)
+        {
+            case ModeratorActions.EraseSubmission:
+                await _submissionRepository.DeleteAsync(submissionKey);
+                break;
+            case ModeratorActions.EraseReport:
+                Submission submission = await _submissionRepository.GetByIdAsync(submissionKey);
+                submission.Status = SubmissionStatus.Moderated;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(moderatorActionOnReportVm));
+        }
+
+        await UnitOfWork.SaveChangesAsync();
     }
 }

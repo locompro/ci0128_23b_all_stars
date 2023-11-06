@@ -1,7 +1,9 @@
 using Castle.Core.Internal;
+using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration;
 using Locompro.Models;
+using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
@@ -102,14 +104,15 @@ public class SearchResultsModel : SearchPageModel
 
         try
         {
-            searchResults = await _searchService.GetSearchResults(searchParameters);
+            ItemMapper itemMapper = new();
+            SubmissionDto submissionDto = await _searchService.GetSearchResults(searchParameters);
+            searchResults = itemMapper.ToVm(submissionDto);
         }
         catch (Exception e)
         {
             Logger.LogError("Error when attempting to get search results: " + e.Message);
         }
-
-
+        
         var searchResultsJson = GetJsonFrom(
             new
             {
@@ -138,8 +141,7 @@ public class SearchResultsModel : SearchPageModel
         {
             Logger.LogError("Error when attempting to get pictures for item: " + e.Message);
         }
-
-
+        
         var formattedPictures = PictureParser.Serialize(itemPictures);
 
         if (itemPictures.IsNullOrEmpty())
