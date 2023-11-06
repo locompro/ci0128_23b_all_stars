@@ -15,12 +15,12 @@ public class UserService : Service, IUserService
     /// <summary>
     ///     Initializes a new instance of the <see cref="UserService" /> class.
     /// </summary>
-    /// <param name="unitOfWork">The unit of work for coordinating the work of multiple repositories.</param>
     /// <param name="loggerFactory">The factory used to create loggers.</param>
-    public UserService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
+    /// <param name="userRepository"></param>
+    public UserService(ILoggerFactory loggerFactory, IUserRepository userRepository) : base(loggerFactory)
     {
         // Retrieves the user repository from the unit of work
-        _userRepository = UnitOfWork.GetSpecialRepository<IUserRepository>();
+        _userRepository = userRepository;
     }
 
     /// <inheritdoc/>

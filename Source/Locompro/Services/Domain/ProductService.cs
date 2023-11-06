@@ -8,8 +8,8 @@ public class ProductService : Service, IProductService
 {
     private readonly IProductRepository _productRepository;
 
-    public ProductService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory,
-        IProductRepository productRepository) : base(unitOfWork, loggerFactory)
+    public ProductService(ILoggerFactory loggerFactory,
+        IProductRepository productRepository) : base(loggerFactory)
     {
         _productRepository = productRepository;
     }

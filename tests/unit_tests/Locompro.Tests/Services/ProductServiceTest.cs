@@ -29,13 +29,12 @@ namespace Locompro.Tests.Services
             _mockProductRepository = new Mock<IProductRepository>();
 
             // Mock unit of work (if methods we're testing used it, we would set it up)
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
 
             // Mock logger factory (we use a NullLoggerFactory as we're not testing logging here)
             var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             // Instantiate the service with the mocked dependencies
-            _productService = new ProductService(mockUnitOfWork.Object, loggerFactory, _mockProductRepository.Object);
+            _productService = new ProductService(loggerFactory, _mockProductRepository.Object);
         }
 
         /// <summary>
