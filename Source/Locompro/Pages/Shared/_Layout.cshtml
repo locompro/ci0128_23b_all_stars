@@ -7,8 +7,12 @@
     var currentPage = Context.Request.Path.Value;
     var isLoggedIn = AuthService.IsLoggedIn();
     var userId = AuthService.GetUserId();
-    var user = await UserManagerService.FindByIdAsync(userId);
-    var isModerator = await UserManagerService.IsInRoleAsync(user, RoleNames.Moderator);
+    var isModerator = false;
+    if (isLoggedIn)
+    {
+        var user = await UserManagerService.FindByIdAsync(userId);
+        isModerator = await UserManagerService.IsInRoleAsync(user, RoleNames.Moderator);
+    }
 }
 
 <!DOCTYPE html>
