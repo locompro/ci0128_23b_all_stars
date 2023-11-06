@@ -115,6 +115,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ISignInManagerService, SignInManagerService>();
     builder.Services.AddScoped<IUserManagerService, UserManagerService>();
     builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IReportService, ReportService>();
 
     // Register application services
     builder.Services.AddScoped<IContributionService, ContributionService>();

@@ -24,7 +24,7 @@ public class ContributionServiceTests
 
         var loggerFactory = new Mock<ILoggerFactory>();
 
-        _contributionService = new ContributionService(_unitOfWork.Object, loggerFactory.Object, _cantonService.Object,
+        _contributionService = new ContributionService(loggerFactory.Object, _cantonService.Object,
             _storeService.Object,
             _productService.Object, _categoryService.Object, _submissionService.Object);
     }

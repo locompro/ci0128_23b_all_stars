@@ -17,8 +17,17 @@ public class ReportService : DomainService<Report, string>, IReportService
 
         var report = reportFactory.FromDto(reportDto);
 
-        await CrudRepository.AddAsync(report);
+        try
+        {
+            await CrudRepository.AddAsync(report);
 
-        await UnitOfWork.SaveChangesAsync();
+            await UnitOfWork.SaveChangesAsync();
+            Logger.LogInformation("Successfully added report {}", reportDto);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to add report {}", reportDto);
+            throw;
+        }
     }
 }
