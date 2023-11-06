@@ -1,32 +1,34 @@
-using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Locompro.Services;
-using Locompro.Models;
-using Microsoft.Extensions.Configuration;
+using System.Net;
+using Castle.Core.Internal;
 using Locompro.Common;
-using Locompro.Repositories.Utilities;
+using Locompro.Common.Mappers;
+using Locompro.Common.Search;
+using Locompro.Common.Search.SearchMethodRegistration;
+using Locompro.Models.Dtos;
+using Locompro.Models.ViewModels;
+using Locompro.Pages.Shared;
+using Locompro.Services;
+
+
 
 namespace Locompro.Pages.SearchResults
 {
-    public class ContributionsPageModel : PageModel
+    public class ContributionsPageModel : BasePageModel
     {
         private readonly SearchService _searchService;
         private readonly IConfiguration _configuration;
         private readonly int _pageSize;
 
-        public PaginatedList<Submission> DisplaySubmissions { get; set; }
+        public PaginatedList<ItemVm> DisplaySubmissions { get; set; }
         public double DisplayAmount { get; set; }
-        public string ProductName { get; set; }
-        public string NameSort { get; set; }
-        public string CurrentSort { get; set; }
-        public string CurrentUser { get; set; }
+        public string CurrentUserId { get; set; }
 
 
-        public ContributionsPageModel(AdvancedSearchInputService advancedSearchServiceHandler,
-            IConfiguration configuration,
-            SearchService searchService)
+        public ContributionsPageModel(ILoggerFactory loggerFactory, 
+                                    IHttpContextAccessor httpContextAccessor, 
+                                    IConfiguration configuration, 
+                                    SearchService searchService)
+                                    : base(loggerFactory, httpContextAccessor)
         {
             _searchService = searchService;
             _configuration = configuration;
@@ -35,19 +37,24 @@ namespace Locompro.Pages.SearchResults
 
         public async Task OnGetAsync(int? pageIndex, string query)
         {
-            CurrentUser = query;
-
-            List<SearchCriterion> searchParameters = new List<SearchCriterion>()
+            CurrentUserId = query;
+            var searchParameters = new List<ISearchCriterion>
             {
-            new SearchCriterion(SearchParam.SearchParameterTypes.Username, CurrentUser),
+              new SearchCriterion<string>(SearchParameterTypes.UserId, query),
             };
-
-            List<Item> _items = await _searchService.GetSearchResults(searchParameters);
-            List<Submission> _submissions = _items
-                .SelectMany(item => item.Submissions)
-                .OrderBy(submission => submission.EntryTime)
-                .ToList(); DisplayAmount = _submissions.Count;
-            DisplaySubmissions = PaginatedList<Submission>.Create(_submissions, pageIndex ?? 1, _pageSize);
+            List<ItemVm> searchResults = null;
+            try
+            {
+                ItemMapper itemMapper = new();
+                SubmissionDto submissionDto = await _searchService.GetSearchResults(searchParameters);
+                searchResults = itemMapper.ToVm(submissionDto);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError("Error when attempting to get search results: " + e.Message);
+            }
+            DisplayAmount = searchResults.Count;
+            DisplaySubmissions = PaginatedList<ItemVm>.Create(searchResults, pageIndex ?? 1, _pageSize);
         }
     }
 }
