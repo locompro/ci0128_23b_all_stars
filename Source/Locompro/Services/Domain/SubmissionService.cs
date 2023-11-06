@@ -121,27 +121,32 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
 
         return currentRatingAmount + 1;
     }
-    
+
     /// <inheritdoc />
     public async Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm)
     {
-        ModeratorActions action = moderatorActionOnReportVm.Action;
-        string submissionUserId = moderatorActionOnReportVm.SubmissionUserId;
-        DateTime submissionEntryTime = moderatorActionOnReportVm.SubmissionEntryTime;
-        
-        var submissionKey = new SubmissionKey
+        SubmissionKey submissionKey = new ()
         {
-            UserId = submissionUserId,
-            EntryTime = submissionEntryTime
+            UserId = moderatorActionOnReportVm.SubmissionUserId,
+            EntryTime = moderatorActionOnReportVm.SubmissionEntryTime
         };
         
-        switch (action)
+        Console.WriteLine("\n\n\n\n\nActing on report: " + moderatorActionOnReportVm.Action);
+        Console.WriteLine("Submission key: " + submissionKey.UserId + " " + submissionKey.EntryTime + "\n\n\n");
+        
+        switch (moderatorActionOnReportVm.Action)
         {
             case ModeratorActions.EraseSubmission:
-                await _submissionRepository.DeleteAsync(submissionKey);
+                //await _submissionRepository.DeleteAsync(submissionKey);
                 break;
             case ModeratorActions.EraseReport:
                 Submission submission = await _submissionRepository.GetByIdAsync(submissionKey);
+
+                if (submission == null)
+                {
+                    Console.WriteLine("Submission was null");
+                }
+                
                 submission.Status = SubmissionStatus.Moderated;
                 break;
             default:

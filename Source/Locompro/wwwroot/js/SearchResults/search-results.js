@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function () {
             searchResultsPage.populateTableWithResults();
         })
         .catch(() => {
-            console.error('Error loading pictures');
         });
 });
 

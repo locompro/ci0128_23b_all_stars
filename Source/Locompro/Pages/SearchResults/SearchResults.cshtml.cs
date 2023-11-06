@@ -19,12 +19,15 @@ namespace Locompro.Pages.SearchResults;
 /// </summary>
 public class SearchResultsModel : SearchPageModel
 {
+    public SearchVm SearchVm { get; set; }
+    
     private readonly IPictureService _pictureService;
 
     private readonly ISearchService _searchService;
 
     private readonly ISubmissionService _submissionService;
-
+    private IConfiguration Configuration { get; set; }
+    
     /// <summary>
     ///     Constructor
     /// </summary>
@@ -57,9 +60,6 @@ public class SearchResultsModel : SearchPageModel
         _pictureService = pictureService;
         _submissionService = submissionService;
     }
-
-    private IConfiguration Configuration { get; set; }
-    public SearchVm SearchVm { get; set; }
 
     /// <summary>
     ///     When page is first called, gets search query data from session

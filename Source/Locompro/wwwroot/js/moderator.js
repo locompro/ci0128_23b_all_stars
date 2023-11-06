@@ -8,9 +8,11 @@ function reportAction(reportActions, userId, entryTime) {
     url += "?handler=ActOnReport";
     
     console.log(reportActions);
+    
+    console.log(">>" + entryTime);
 
     let dataToSend = {
-        Action: " " + reportActions,
+        Action: "" + reportActions,
         SubmissionUserId: userId,
         SubmissionEntryTime: entryTime
     };
@@ -28,4 +30,13 @@ function reportAction(reportActions, userId, entryTime) {
                 throw new Error('Network response was not ok');
             }
         });
+}
+
+function changeModeratorPage(element) {
+    let page = element.getValue();
+    
+    let url = window.location.pathname;
+    url + "?pageIndex=" + page;
+    
+    window.location.href = url;
 }
