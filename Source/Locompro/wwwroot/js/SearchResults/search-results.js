@@ -326,7 +326,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // Send the form data using fetch API
         fetch(reportForm.action, {
             method: 'POST',
-            body: new FormData(reportForm)
+            body: new FormData(reportForm),
+            headers: {
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            }
         })
             .then(response => {
                 if (!response.ok) {

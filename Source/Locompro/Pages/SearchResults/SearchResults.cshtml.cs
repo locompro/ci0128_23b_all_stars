@@ -169,16 +169,8 @@ public class SearchResultsModel : SearchPageModel
     }
 
     
-    public async Task<IActionResult> OnPostReportSubmissionAsync(ReportVm reportVm)
+    public async Task<JsonResult> OnPostReportSubmissionAsync(ReportVm reportVm)
     {
-        
-        // TODO: Set up client side handler to accept redirect
-        
-        if (!_authService.IsLoggedIn())
-        {
-            return RedirectToRoute("Account/Login");
-        }
-        
         try
         {
             var reportMapper = new ReportMapper();
@@ -220,13 +212,11 @@ public class SearchResultsModel : SearchPageModel
     /// <summary>
     ///     Updates the rating of a given submission
     /// </summary>
-    public async Task<IActionResult> OnPostUpdateSubmissionRatingAsync()
+    public async Task<JsonResult> OnPostUpdateSubmissionRatingAsync()
     {
-        // TODO: Set up client side handler to accept redirect
-        
         if (!_authService.IsLoggedIn())
         {
-            return RedirectToRoute("Account/Login");
+            return new JsonResult(new { redirectUrl = "/Account/Login" });
         }
         
         var clientRatingChange = await GetDataSentByClient<RatingVm>();

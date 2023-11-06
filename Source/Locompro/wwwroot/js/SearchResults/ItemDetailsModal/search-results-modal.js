@@ -56,6 +56,9 @@ class SearchResultsModal {
         // Building the picture container with the product images
         this.pictureContainer.buildPictureContainer();
 
+        const isLoggedInElement = document.getElementById('isLoggedIn');
+        const isLoggedIn = isLoggedInElement.getAttribute('data') === 'True';
+        
         // Populating the submissions table with entries
         for (const submission of this.searchResults[this.itemSelected].Submissions) {
             const row = this.submissionsTable.insertRow();
@@ -99,8 +102,13 @@ class SearchResultsModal {
                 reportButton.setAttribute('data-bs-target', '#descriptionModal');
 
                 reportButton.addEventListener('click', () => {
+                    if (!isLoggedIn) {
+                        window.location.href = '/Account/Login'; // Redirect to the login page if not logged in
+                        return; // Exit the function to prevent the rest of the code from running
+                    }
+
                     document.querySelector('input[name="ReportVm.SubmissionUserId"]').value = submission.UserId;
-                    document.querySelector('input[name="ReportVm.SubmissionEntryTime"]').value = submission.NonFormatedEntryTime;
+                    document.querySelector('input[name="ReportVm.SubmissionEntryTime"]').value = submission.NonFormatedEntryTime;                
                 });
             } else {
                 reportButton.disabled = true;
