@@ -1,362 +1,248 @@
-using System;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Locompro.Services;
+using System.Net;
 using Castle.Core.Internal;
-using Newtonsoft.Json;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Threading.Tasks;
-using Locompro.Common;
+using Locompro.Common.Mappers;
+using Locompro.Common.Search;
+using Locompro.Common.Search.SearchMethodRegistration;
 using Locompro.Models;
-using Microsoft.Extensions.Configuration;
-using Locompro.Repositories.Utilities;
+using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
+using Locompro.Models.ViewModels;
+using Locompro.Pages.Shared;
+using Locompro.Pages.Util;
+using Locompro.Services;
+using Locompro.Services.Auth;
+using Locompro.Services.Domain;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Locompro.Pages.SearchResults;
 
 /// <summary>
-/// Page model for the search results page
+///     Page model for the search results page
 /// </summary>
-public class SearchResultsModel : PageModel
+public class SearchResultsModel : SearchPageModel
 {
-    /// <summary>
-    /// Service that handles the advanced search modal
-    /// </summary>
-    private readonly AdvancedSearchInputService _advancedSearchServiceHandler;
+    public SearchVm SearchVm { get; set; }
+    
+    private readonly IPictureService _pictureService;
 
-    private readonly SearchService _searchService;
+    private readonly ISearchService _searchService;
 
-    /// <summary>
-    /// Configuration to get the page size
-    /// </summary>
-    private readonly IConfiguration _configuration;
+    private readonly ISubmissionService _submissionService;
+    
+    private readonly IModerationService _moderationService;
+    
+    private readonly IAuthService _authService;
 
-    /// <summary>
-    /// Buffer for page size according to Paginated List and configuration
-    /// </summary>
-    private readonly int _pageSize;
-
-    /// <summary>
-    /// Paginated list of products found
-    /// </summary>
-    public PaginatedList<Item> DisplayItems { get; set; }
-
-    /// <summary>
-    /// List of all items found
-    /// </summary>
-    private List<Item> _items;
-
-    /// <summary>
-    /// Amount of items found
-    /// </summary>
-    public double ItemsAmount { get; set; }
-
-    /// <summary>
-    /// Name of product that was searched
-    /// </summary>
-    public string ProductName { get; set; }
-
-    public string ProvinceSelected { get; set; }
-    public string CantonSelected { get; set; }
-    public string CategorySelected { get; set; }
-    public long MinPrice { get; set; }
-    public long MaxPrice { get; set; }
-    public string ModelSelected { get; set; }
-    public string BrandSelected { get; set; }
-    public string CurrentFilter { get; set; }
-        
-    public string NameSort { get; set; }
-        
-    public string CurrentSort { get; set; }
-    public string CantonSort { get; set; }
-    public string ProvinceSort { get; set; }
+    private IConfiguration Configuration { get; set; }
     
     /// <summary>
-    /// Constructor
+    ///     Constructor
     /// </summary>
-    /// <param name="searchService"></param>
+    /// <param name="loggerFactory"></param>
+    /// <param name="httpContextAccessor"></param>
     /// <param name="advancedSearchServiceHandler"></param>
+    /// <param name="pictureService"></param>
     /// <param name="configuration"></param>
-    public SearchResultsModel(
+    /// <param name="searchService"></param>
+    /// <param name="submissionService"></param>
+    /// <param name="moderationService"></param>
+    public SearchResultsModel(ILoggerFactory loggerFactory,
+        IHttpContextAccessor httpContextAccessor,
         AdvancedSearchInputService advancedSearchServiceHandler,
+        IPictureService pictureService,
         IConfiguration configuration,
-        SearchService searchService)
+        ISearchService searchService,
+        ISubmissionService submissionService,
+        IModerationService moderationService,
+        IAuthService authService)
+        : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler)
     {
         _searchService = searchService;
-        _advancedSearchServiceHandler = advancedSearchServiceHandler;
-        _configuration = configuration;
-        _pageSize = _configuration.GetValue("PageSize", 4);
+        _pictureService = pictureService;
+        Configuration = configuration;
+        SearchVm = new SearchVm
+        {
+            ResultsPerPage = Configuration.GetValue("PageSize", 4)
+        };
+
+        _searchService = searchService;
+        _pictureService = pictureService;
+        _submissionService = submissionService;
+        _moderationService = moderationService;
+        _authService = authService;
     }
 
     /// <summary>
-    /// Gets the items to be displayed in the search results
+    ///     When page is first called, gets search query data from session
+    ///     sent by either another search or search from another source
+    ///     Since html is returned, it is not possible to send a model
+    ///     so instead it stores the search data and waits for page to request it after building html
     /// </summary>
-    /// <param name="pageIndex"></param>
-    /// <param name="sorting"></param>
-    /// <param name="query"></param>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
-    /// <param name="brand"></param>
-    /// <param name="currentFilter"></param>
-    /// <param name="sortOrder"></param>
-    public async Task OnGetAsync(int? pageIndex,
-        bool? sorting,
-        string query,
-        string province,
-        string canton,
-        long minValue,
-        long maxValue,
-        string category,
-        string model,
-        string brand,
-        string currentFilter,
-        string sortOrder)
+    public void OnGetAsync()
     {
-       
-        // validate input
-        ValidateInput(province, canton, minValue, maxValue, category, model, brand);
-        
-        ProductName = query;
-        
-        // set up sorting parameters
-        SetSortingParameters(sortOrder, (sorting is not null));
-        
+        // prevents system from crashing, but in essence, leads to a re-request where data is no longer null
+        SearchVm = GetCachedDataFromSession<SearchVm>("SearchQueryViewModel", false) ?? new SearchVm();
+
+        ValidateInput();
+
+        CacheDataInSession(SearchVm, "SearchData");
+    }
+
+    /// <summary>
+    ///     When requesting search results, fetches search query data and returns search results
+    /// </summary>
+    /// <returns> json file with search results and search info data</returns>
+    public async Task<IActionResult> OnGetGetSearchResultsAsync()
+    {
+        SearchVm = GetCachedDataFromSession<SearchVm>("SearchData", false);
+
         // get items from search service
-        List<SearchCriterion> searchParameters = new List<SearchCriterion>()
+        var searchParameters = new List<ISearchCriterion>
         {
-            new SearchCriterion(SearchParam.SearchParameterTypes.Name, ProductName),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Province, ProvinceSelected),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Canton, CantonSelected),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Minvalue, MinPrice.ToString()),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Maxvalue, MaxPrice.ToString()),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Category, CategorySelected),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Model, ModelSelected),
-            new SearchCriterion(SearchParam.SearchParameterTypes.Brand, BrandSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Name, SearchVm.ProductName),
+            new SearchCriterion<string>(SearchParameterTypes.Province, SearchVm.ProvinceSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Canton, SearchVm.CantonSelected),
+            new SearchCriterion<long>(SearchParameterTypes.Minvalue, SearchVm.MinPrice),
+            new SearchCriterion<long>(SearchParameterTypes.Maxvalue, SearchVm.MaxPrice),
+            new SearchCriterion<string>(SearchParameterTypes.Category, SearchVm.CategorySelected),
+            new SearchCriterion<string>(SearchParameterTypes.Model, SearchVm.ModelSelected),
+            new SearchCriterion<string>(SearchParameterTypes.Brand, SearchVm.BrandSelected)
         };
 
-        _items = await this._searchService.GetSearchResults(searchParameters);
-        
-        // get amount of items found    
-        ItemsAmount = _items.Count;
-        
-        // order items by sort order
-        OrderItems();
-        
-        // create paginated list and set it to be displayed
-        this.DisplayItems = PaginatedList<Item>.Create(_items, pageIndex ?? 1, _pageSize);
-    }
+        SearchVm.ResultsPerPage = Configuration.GetValue("PageSize", 4);
 
-    /// <summary>
-    /// Changes input from front end into values usable for search engine
-    /// </summary>
-    /// <param name="province"></param>
-    /// <param name="canton"></param>
-    /// <param name="minValue"></param>
-    /// <param name="maxValue"></param>
-    /// <param name="category"></param>
-    /// <param name="model"></param>
-    /// <param name="brand"></param>
-    private void ValidateInput(
-        string province,
-        string canton,
-        long minValue,
-        long maxValue,
-        string category,
-        string model,
-        string brand)
-    {
-        if (!string.IsNullOrEmpty(province) && province.Equals("Ninguno"))
+        List<ItemVm> searchResults = null;
+
+        try
         {
-            province = null;
+            ItemMapper itemMapper = new();
+            SubmissionDto submissionDto = await _searchService.GetSearchResults(searchParameters);
+            searchResults = itemMapper.ToVm(submissionDto);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("Error when attempting to get search results: " + e.Message);
         }
         
-        if (!string.IsNullOrEmpty(canton) && canton.Equals("Ninguno"))
-        {
-            canton = null;
-        }
-
-        if (!string.IsNullOrEmpty(category) && category.Equals("Ninguno"))
-        {
-            category = null;
-        } 
-        
-       ProvinceSelected = province;
-       CantonSelected = canton;
-       MinPrice = minValue;
-       MaxPrice = maxValue;
-       CategorySelected = category;
-       ModelSelected = model;
-       BrandSelected = brand;
-    }
-
-    /// <summary>
-    /// Manages all sorting done to items in list
-    /// </summary>
-    /// <param name="sortOrder"></param>
-    /// <param name="sorting"></param>
-    private void SetSortingParameters(string sortOrder, bool sorting)
-    {
-        if (!sorting && !string.IsNullOrEmpty(sortOrder))
-        {
-            CurrentSort = NameSort = sortOrder;
-            return;
-        }
-
-        // Define a dictionary to hold the reverse sortOrder mappings
-        Dictionary<string, string> sortMappings = new Dictionary<string, string>
-        {
-            { "name_asc", "name_desc" },
-            { "name_desc", "name_asc" },
-            { "province_asc", "province_desc" },
-            { "province_desc", "province_asc" },
-            { "canton_asc", "canton_desc" },
-            { "canton_desc", "canton_asc" },
-        };
-
-        // If sortOrder is null or not in the dictionary, set default values
-        if (string.IsNullOrEmpty(sortOrder) || !sortMappings.ContainsKey(sortOrder))
-        {
-            CurrentSort = NameSort = "name_desc";
-            ProvinceSort = "province_asc";
-            CantonSort = "canton_asc";
-            return;
-        }
-
-        // Update sorting based on the mapping and set CurrentSort
-        switch (sortOrder)
-        {
-            case "name_asc":
-            case "name_desc":
-                CurrentSort = NameSort = sortMappings[sortOrder];
-                break;
-            case "province_asc":
-            case "province_desc":
-                CurrentSort = ProvinceSort = sortMappings[sortOrder];
-                break;
-            case "canton_asc":
-            case "canton_desc":
-                CurrentSort = CantonSort = sortMappings[sortOrder];
-                break;
-        }
-    }
-
-
-
-
-    /// <summary>
-    /// Orders items
-    /// </summary>
-    void OrderItems()
-    {
-        switch (NameSort)
-        {
-            case "name_desc":
-                _items = _items.OrderByDescending(item => item.Name).ToList();
-                break;
-            case "name_asc":
-                _items = _items.OrderBy(item => item.Name).ToList();
-                break;
-        }
-
-        if(!string.IsNullOrEmpty(ProvinceSort))
-        {
-            switch (ProvinceSort)
+        var searchResultsJson = GetJsonFrom(
+            new
             {
-                case "province_desc":
-                    _items = _items.OrderByDescending(item => item.Province).ToList();
-                    break;
-                case "province_asc":
-                    _items = _items.OrderBy(item => item.Province).ToList();
-                    break;
-            }
+                SearchResults = searchResults,
+                Data = SearchVm
+            });
+
+        return Content(searchResultsJson);
+    }
+
+    /// <summary>
+    ///     Returns a list of pictures for a given item
+    /// </summary>
+    /// <param name="productName"> product name of an item </param>
+    /// <param name="storeName"> store name of an item</param>
+    /// <returns></returns>
+    public async Task<ContentResult> OnGetGetPicturesAsync(string productName, string storeName)
+    {
+        List<Picture> itemPictures = null;
+
+        try
+        {
+            itemPictures = await _pictureService.GetPicturesForItem(5, productName, storeName);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("Error when attempting to get pictures for item: " + e.Message);
+        }
+        
+        var formattedPictures = PictureParser.Serialize(itemPictures);
+
+        if (itemPictures.IsNullOrEmpty())
+        {
+            const string defaultPictureFilePath = "wwwroot/Pictures/No_Image_Picture.png";
+
+            var defaultPicture = await System.IO.File.ReadAllBytesAsync(defaultPictureFilePath);
+
+            formattedPictures.Add(PictureParser.SerializeData(defaultPicture));
         }
 
-        if(!string.IsNullOrEmpty(CantonSort))
-        {
-            switch (CantonSort)
-            {
-                case "canton_desc":
-                    _items = _items.OrderByDescending(item => item.Canton).ToList();
-                    break;
-                case "canton_asc":
-                    _items = _items.OrderBy(item => item.Canton).ToList();
-                    break;
-            }
-        }
+        // return list of pictures serialized as json
+        return Content(GetJsonFrom(formattedPictures));
     }
+
     
-    /// <summary>
-    /// Returns the view component for the advanced search modal
-    /// </summary>
-    /// <returns></returns>
-    public IActionResult OnGetAdvancedSearch()
+    public async Task<IActionResult> OnPostReportSubmissionAsync(ReportVm reportVm)
     {
-        // generate the view component
-        var viewComponentResult = ViewComponent("AdvancedSearch", this._advancedSearchServiceHandler);
+        
+        // TODO: Set up client side handler to accept redirect
+        
+        if (!_authService.IsLoggedIn())
+        {
+            return RedirectToRoute("Account/Login");
+        }
+        
+        try
+        {
+            var reportMapper = new ReportMapper();
 
-        // return it for it to be integrated
-        return viewComponentResult;
+            var reportDto = reportMapper.ToDto(reportVm);
+
+            reportDto.UserId = _authService.GetUserId();
+
+            await _moderationService.ReportSubmission(reportDto);
+            
+            Logger.LogInformation("Report submitted successfully {}", reportVm);
+
+            return new JsonResult(new { success = true, message = "Report submitted successfully" });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to submit report {}", reportVm);
+
+            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            return new JsonResult(new { success = false, message = ex.Message });
+        }
     }
 
     /// <summary>
-    /// Updates the cantons and province selected for the advanced search modal
+    ///     Validates if the input provided by the user is valid
     /// </summary>
-    /// <param name="province"></param>
-    /// <returns></returns>
-    public async Task<IActionResult> OnGetUpdateProvince(string province)
+    private void ValidateInput()
     {
-        string cantonsJson = "";
+        if (!string.IsNullOrEmpty(SearchVm.ProvinceSelected) && SearchVm.ProvinceSelected.Equals(EmptyValue))
+            SearchVm.ProvinceSelected = null;
 
-        // if province is none
-        if (province.Equals("Ninguno"))
+        if (!string.IsNullOrEmpty(SearchVm.CantonSelected) && SearchVm.CantonSelected.Equals(EmptyValue))
+            SearchVm.CantonSelected = null;
+
+        if (!string.IsNullOrEmpty(SearchVm.CategorySelected) && SearchVm.CategorySelected.Equals(EmptyValue))
+            SearchVm.CategorySelected = null;
+    }
+
+    /// <summary>
+    ///     Updates the rating of a given submission
+    /// </summary>
+    public async Task<IActionResult> OnPostUpdateSubmissionRatingAsync()
+    {
+        // TODO: Set up client side handler to accept redirect
+        
+        if (!_authService.IsLoggedIn())
         {
-            // create empty list
-            List<Canton> emptyCantonList = new List<Canton>
-            {
-                // add none back as an option
-                new Canton{CountryName = "Ninguno",
-                    Name = "Ninguno", 
-                    ProvinceName = "Ninguno"}
-            };
-
-            // set new list to service canton list
-            _advancedSearchServiceHandler.Cantons = emptyCantonList;
+            return RedirectToRoute("Account/Login");
         }
-        else
+        
+        var clientRatingChange = await GetDataSentByClient<RatingVm>();
+
+        if (clientRatingChange == null)
+            Logger.LogError("Client rating change was null when attempting to update submission rating");
+
+        try
         {
-            // update the model with all cantons in the given province
-            await _advancedSearchServiceHandler.ObtainCantonsAsync(province);
-
-            _advancedSearchServiceHandler.Cantons.Add(
-                new Canton{CountryName = "Ninguno",
-                    Name = "Ninguno", 
-                    ProvinceName = "Ninguno"}
-            );
-
-            foreach (var canton in _advancedSearchServiceHandler.Cantons)
-            {
-                Console.WriteLine(canton.Name);
-            }
+            await _submissionService.UpdateSubmissionRating(clientRatingChange);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("Error when attempting to update submission rating: " + e.Message);
         }
 
-        // prevent the json serializer from looping infinitely
-        var settings = new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-        };
-
-        // generate the json file with the cantons
-        cantonsJson = JsonConvert.SerializeObject(_advancedSearchServiceHandler.Cantons, settings);
-
-        // specify the content type as a json file
-        Response.ContentType = "application/json";
-
-        // send to client
-        return Content(cantonsJson);
+        return new JsonResult(new { success = true, message = "Ratings updated submitted successfully" });
     }
 }

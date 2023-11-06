@@ -1,8 +1,8 @@
-@using Locompro.Models.ViewModels
+@inject INamedEntityDomainService<Country, string> CountryService
+@using Locompro.Models.Entities
 @using Locompro.Services.Domain
 @using Newtonsoft.Json
-@inject CountryService CountryService
-@model StoreViewModel
+@model Locompro.Models.ViewModels.StoreVm
 
 @{
     var country = await CountryService.Get("Costa Rica");
@@ -27,10 +27,10 @@
             </fieldset>
         </div>
         <div class="mb-2">
-            <label asp-for="Name" class="form-label d-lg-flex justify-content-lg-start"></label>
-            <input asp-for="Name" class="form-control" placeholder="Nombre" id="partialStoreName">
+            <label asp-for="SName" class="form-label d-lg-flex justify-content-lg-start"></label>
+            <input asp-for="SName" class="form-control" placeholder="Nombre" id="partialStoreName">
         </div>
-        <span class="text-danger field-validation-valid pb-2" id="partialStoreNameValid" asp-validation-for="Name"></span>
+        <span class="text-danger field-validation-valid pb-2" id="partialStoreNameValid" asp-validation-for="SName"></span>
         <div class="mb-2">
             <label asp-for="Province" class="form-label d-lg-flex justify-content-lg-start"></label>
             <select asp-for="Province" id="partialStoreProvince"
@@ -46,7 +46,7 @@
         <div class="mb-2">
             <label asp-for="Canton" class="form-label d-lg-flex justify-content-lg-start"></label>
             <select asp-for="Canton" id="partialStoreCanton"
-                    class="form-select"  style="font-family:Roboto, sans-serif; min-width: 210px;">
+                    class="form-select" style="font-family:Roboto, sans-serif; min-width: 210px;">
                 <option value="" disabled selected hidden>Seleccionar</option>
                 <!-- Options will be dynamically populated here -->
             </select>

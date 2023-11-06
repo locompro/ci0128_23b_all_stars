@@ -1,28 +1,28 @@
 using Locompro.Data;
-using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
-using Microsoft.AspNetCore.Identity;
 
 namespace Locompro.Services;
 
-public class ContributionService : AbstractService
+public class ContributionService : Service, IContributionService
 {
     private const string OnlyCountry = "Costa Rica";
 
-    private readonly CantonService _cantonService;
+    private readonly ICantonService _cantonService;
 
-    private readonly StoreService _storeService;
+    private readonly INamedEntityDomainService<Category, string> _categoryService;
 
-    private readonly ProductService _productService;
+    private readonly INamedEntityDomainService<Product, int> _productService;
 
-    private readonly CategoryService _categoryService;
+    private readonly INamedEntityDomainService<Store, string> _storeService;
 
-    private readonly SubmissionService _submissionService;
+    private readonly ISubmissionService _submissionService;
 
-    public ContributionService(UnitOfWork unitOfWork, ILoggerFactory loggerFactory, CantonService cantonService,
-        StoreService storeService, ProductService productService, CategoryService categoryService,
-        SubmissionService submissionService) : base(unitOfWork, loggerFactory)
+    public ContributionService(ILoggerFactory loggerFactory, ICantonService cantonService,
+        INamedEntityDomainService<Store, string> storeService, INamedEntityDomainService<Product, int> productService,
+        INamedEntityDomainService<Category, string> categoryService, ISubmissionService submissionService)
+        : base(loggerFactory)
     {
         _cantonService = cantonService;
         _storeService = storeService;
@@ -31,73 +31,87 @@ public class ContributionService : AbstractService
         _submissionService = submissionService;
     }
 
-    public async Task AddSubmission(StoreViewModel storeViewModel, ProductViewModel productViewModel,
-        string description, int price, string userId)
+    public async Task AddSubmission(StoreVm storeVm, ProductVm productVm,
+        SubmissionVm submissionVm, List<PictureVm> picturesVMs)
     {
-        Store store = await BuildStore(storeViewModel);
+        var store = await BuildStore(storeVm);
 
-        Product product = await BuildProduct(productViewModel);
+        var product = await BuildProduct(productVm);
 
-        Submission submission = new Submission()
+        var entryTime = DateTime.Now;
+
+        var pictures = BuildPictures(picturesVMs, entryTime, submissionVm.UserId);
+
+        var submission = new Submission
         {
-            Username = userId,
-            EntryTime = DateTime.Now,
-            Price = price,
-            Description = description,
+            UserId = submissionVm.UserId,
+            EntryTime = entryTime,
+            Price = submissionVm.Price,
+            Description = submissionVm.Description,
             Store = store,
-            Product = product
+            Product = product,
+            Pictures = pictures
         };
 
         await _submissionService.Add(submission);
     }
 
-    private async Task<Store> BuildStore(StoreViewModel storeViewModel)
+    private async Task<Store> BuildStore(StoreVm storeVm)
     {
-        if (storeViewModel.IsExistingStore())
-        {
-            return await _storeService.Get(storeViewModel.Name);
-        }
-        else
-        {
-            Canton canton = await _cantonService.Get(OnlyCountry, storeViewModel.Province, storeViewModel.Canton);
+        if (storeVm.IsExistingStore()) return await _storeService.Get(storeVm.SName);
 
-            Store store = new Store
-            {
-                Name = storeViewModel.Name,
-                Canton = canton,
-                Address = storeViewModel.Address,
-                Telephone = storeViewModel.Telephone
-            };
+        var canton = await _cantonService.Get(OnlyCountry, storeVm.Province, storeVm.Canton);
 
-            return store;
-        }
+        var store = new Store
+        {
+            Name = storeVm.SName,
+            Canton = canton,
+            Address = storeVm.Address,
+            Telephone = storeVm.Telephone
+        };
+
+        return store;
     }
 
-    private async Task<Product> BuildProduct(ProductViewModel productViewModel)
+    private async Task<Product> BuildProduct(ProductVm productVm)
     {
-        if (productViewModel.IsNewProduct())
+        if (productVm.IsExistingProduct()) return await _productService.Get(productVm.Id);
+
+        var category = await _categoryService.Get(productVm.Category);
+
+        var product = new Product
         {
-            // TODO: Set up to add new category through select2
+            Name = productVm.PName,
+            Model = productVm.Model,
+            Brand = productVm.Brand,
+            Categories = new List<Category>()
+        };
 
-            Category category = await _categoryService.Get(productViewModel.Category);
+        if (category != null) product.Categories.Add(category);
 
-            Product product = new Product()
-            {
-                Name = productViewModel.Name,
-                Model = productViewModel.Model,
-                Brand = productViewModel.Brand,
-            };
+        return product;
+    }
 
-            if (category != null)
-            {
-                product.Categories.Add(category);
-            }
+    private static List<Picture> BuildPictures(List<PictureVm> pictureVms, DateTime entryTime, string userId)
+    {
+        var pictures = new List<Picture>();
+        var pictureIndex = 0;
 
-            return product;
-        }
-        else
+        foreach (var pictureVm in pictureVms)
         {
-            return await _productService.Get(productViewModel.Id.GetValueOrDefault());
+            pictures.Add(
+                new Picture
+                {
+                    Index = pictureIndex,
+                    SubmissionUserId = userId,
+                    SubmissionEntryTime = entryTime,
+                    PictureTitle = pictureVm.Name,
+                    PictureData = pictureVm.PictureData
+                });
+
+            pictureIndex++;
         }
+
+        return pictures;
     }
 }
