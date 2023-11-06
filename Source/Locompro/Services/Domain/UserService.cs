@@ -5,10 +5,7 @@ using Locompro.Models.Results;
 
 namespace Locompro.Services.Domain;
 
-/// <summary>
-///     Provides services for user domain operations, interfacing with the user repository.
-/// </summary>
-public class UserService : DomainService<User, string>, IUserService
+public class UserService : Service, IUserService
 {
     /// <summary>
     ///     The repository for performing user-related operations.
@@ -26,10 +23,7 @@ public class UserService : DomainService<User, string>, IUserService
         _userRepository = UnitOfWork.GetSpecialRepository<IUserRepository>();
     }
 
-    /// <summary>
-    ///     Retrieves a list of qualified user IDs from the user repository.
-    /// </summary>
-    /// <returns>A list of <see cref="GetQualifiedUserIDsResult" /> representing qualified user IDs.</returns>
+    /// <inheritdoc/>
     public List<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
     {
         // Delegates the call to the user repository
