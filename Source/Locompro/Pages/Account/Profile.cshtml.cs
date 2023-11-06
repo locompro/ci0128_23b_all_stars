@@ -1,10 +1,7 @@
-﻿using Locompro.Common;
-using Locompro.Common.ErrorStore;
-using Locompro.Models;
+﻿using Locompro.Common.ErrorStore;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
-using Locompro.Services;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Authorization;
@@ -19,23 +16,9 @@ namespace Locompro.Pages.Account;
 [Authorize]
 public class ProfileModel : PageModel
 {
-    private readonly IDomainService<User, string> _userService;
     private readonly IAuthService _authService;
     private readonly IDomainService<Canton, string> _cantonService;
-
-    [BindProperty] public ProfileVm UserProfile { get; set; }
-
-    [BindProperty] public PasswordChangeVm PasswordChange { get; set; }
-
-    [BindProperty] public UserDataUpdateVm UserDataUpdate { get; set; }
-
-    public IErrorStore ChangePasswordModalErrors { get; set; }
-
-    public IErrorStore UpdateUserDataModalErrors { get; set; }
-
-    public bool IsPasswordChanged { get; set; }
-
-    public bool IsUserDataUpdated { get; set; }
+    private readonly IDomainService<User, string> _userService;
 
 
     /// <summary>
@@ -55,6 +38,20 @@ public class ProfileModel : PageModel
         UpdateUserDataModalErrors = errorStoreFactory.Create();
     }
 
+    [BindProperty] public ProfileVm UserProfile { get; set; }
+
+    [BindProperty] public PasswordChangeVm PasswordChange { get; set; }
+
+    [BindProperty] public UserDataUpdateVm UserDataUpdate { get; set; }
+
+    public IErrorStore ChangePasswordModalErrors { get; set; }
+
+    public IErrorStore UpdateUserDataModalErrors { get; set; }
+
+    public bool IsPasswordChanged { get; set; }
+
+    public bool IsUserDataUpdated { get; set; }
+
 
     /// <summary>
     ///     Handler for the GET request to load the user's profile page.
@@ -71,12 +68,12 @@ public class ProfileModel : PageModel
     }
 
     /// <summary>
-    /// Handles a POST request to change the user's password.
+    ///     Handles a POST request to change the user's password.
     /// </summary>
     /// <returns>
-    /// If the user is not found, redirects to the Login page.
-    /// If the current password is incorrect, re-renders the page with error messages
-    /// On success, changes the password, refreshes the user login, and redirects to the profile page.
+    ///     If the user is not found, redirects to the Login page.
+    ///     If the current password is incorrect, re-renders the page with error messages
+    ///     On success, changes the password, refreshes the user login, and redirects to the profile page.
     /// </returns>
     public async Task<IActionResult> OnPostChangePasswordAsync()
     {
@@ -99,12 +96,12 @@ public class ProfileModel : PageModel
     }
 
     /// <summary>
-    /// Handles a POST request to update the user's data.
+    ///     Handles a POST request to update the user's data.
     /// </summary>
     /// <returns>
-    /// If the user is not found, redirects to the Login page.
-    /// If the update data is invalid, re-renders the page with an error message.
-    /// On success, updates the user data and redirects to the profile page.
+    ///     If the user is not found, redirects to the Login page.
+    ///     If the update data is invalid, re-renders the page with an error message.
+    ///     On success, updates the user data and redirects to the profile page.
     /// </returns>
     public async Task<IActionResult> OnPostUpdateUserDataAsync()
     {
@@ -127,13 +124,15 @@ public class ProfileModel : PageModel
         StoreTemporaryFlag("IsUserDataUpdated", true);
         return RedirectToPage();
     }
+
     /// <summary>
-    /// Handles ajax GET request to retrieve canton names based on the specified province.
+    ///     Handles ajax GET request to retrieve canton names based on the specified province.
     /// </summary>
     /// <param name="province">The name of the province.</param>
     /// <returns>
-    /// A JSON result containing a list of <see cref="CantonDto"/> objects representing the cantons in the specified province.
-    /// If the province parameter is null or empty, returns an empty list.
+    ///     A JSON result containing a list of <see cref="CantonDto" /> objects representing the cantons in the specified
+    ///     province.
+    ///     If the province parameter is null or empty, returns an empty list.
     /// </returns>
     public async Task<JsonResult> OnGetCantonsAsync(string province)
     {
@@ -207,8 +206,9 @@ public class ProfileModel : PageModel
             .Select(c => new CantonDto(c))
             .ToList() ?? new List<CantonDto>();
     }
+
     /// <summary>
-    ///   Clears all the stored error messages.
+    ///     Clears all the stored error messages.
     /// </summary>
     private void ClearStoredErrors()
     {

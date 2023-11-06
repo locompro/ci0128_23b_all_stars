@@ -1,6 +1,4 @@
-﻿using Locompro.Common;
-using Locompro.Common.ErrorStore;
-using Locompro.Models;
+﻿using Locompro.Common.ErrorStore;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
@@ -21,6 +19,25 @@ namespace Locompro.Tests.Pages.Account;
 [TestFixture]
 public class ProfileModelTest
 {
+    /// <summary>
+    ///     Initializes mock objects and a new instance of the ProfileModel class for each test.
+    /// </summary>
+    [SetUp]
+    public void SetUp()
+    {
+        _userServiceMock.Reset();
+        _authServiceMock.Reset();
+        _cantonServiceMock.Reset();
+        var errorCountUserUpdateModal = 0;
+        _userDataModalStoreMock.Setup(store => store.StoreError(It.IsAny<string>()))
+            .Callback(() => errorCountUserUpdateModal++);
+        _userDataModalStoreMock.Setup(store => store.HasErrors).Returns(() => errorCountUserUpdateModal > 0);
+        var errorCountPasswordModal = 0;
+        _passwordModalStoreMock.Setup(store => store.StoreError(It.IsAny<string>()))
+            .Callback(() => errorCountPasswordModal++);
+        _passwordModalStoreMock.Setup(store => store.HasErrors).Returns(() => errorCountPasswordModal > 0);
+    }
+
     private readonly Mock<IDomainService<User, string>> _userServiceMock;
     private readonly Mock<IAuthService> _authServiceMock;
     private readonly Mock<IDomainService<Canton, string>> _cantonServiceMock;
@@ -47,25 +64,6 @@ public class ProfileModelTest
         _userDataModalStoreMock = new Mock<IErrorStore>();
         _profileModel.ChangePasswordModalErrors = _passwordModalStoreMock.Object;
         _profileModel.UpdateUserDataModalErrors = _userDataModalStoreMock.Object;
-    }
-
-    /// <summary>
-    ///     Initializes mock objects and a new instance of the ProfileModel class for each test.
-    /// </summary>
-    [SetUp]
-    public void SetUp()
-    {
-        _userServiceMock.Reset();
-        _authServiceMock.Reset();
-        _cantonServiceMock.Reset();
-        var errorCountUserUpdateModal = 0;
-        _userDataModalStoreMock.Setup(store => store.StoreError(It.IsAny<string>()))
-            .Callback(() => errorCountUserUpdateModal++);
-        _userDataModalStoreMock.Setup(store => store.HasErrors).Returns(() => errorCountUserUpdateModal > 0);
-        var errorCountPasswordModal = 0;
-        _passwordModalStoreMock.Setup(store => store.StoreError(It.IsAny<string>()))
-            .Callback(() => errorCountPasswordModal++);
-        _passwordModalStoreMock.Setup(store => store.HasErrors).Returns(() => errorCountPasswordModal > 0);
     }
 
     /// <summary>

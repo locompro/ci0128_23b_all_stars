@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Locompro.Data;
-using Locompro.Models;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -9,10 +8,10 @@ namespace Locompro.Services.Auth;
 
 public class AuthService : Service, IAuthService
 {
+    private readonly IUserEmailStore<User> _emailStore;
     private readonly ISignInManagerService _signInManager;
     private readonly IUserManagerService _userManager;
     private readonly IUserStore<User> _userStore;
-    private readonly IUserEmailStore<User> _emailStore;
 
     public AuthService(
         IUnitOfWork unitOfWork,
@@ -26,29 +25,6 @@ public class AuthService : Service, IAuthService
         _userManager = userManager;
         _userStore = userStore;
         _emailStore = emailStore ?? GetEmailStore();
-    }
-
-    /// <summary>
-    ///     Creates a new instance of the <see cref="User" /> class.
-    /// </summary>
-    /// <returns>A new instance of the <see cref="User" /> class.</returns>
-    /// <exception cref="InvalidOperationException">
-    ///     Thrown when the <see cref="User" /> class cannot be instantiated. This could be due to the class being abstract,
-    ///     lacking a parameterless constructor, or other reflection-related issues. When this exception is thrown,
-    ///     consider overriding the registration page located at /Areas/Identity/Pages/Account/Register.cshtml.
-    /// </exception>
-    private static User CreateUser()
-    {
-        try
-        {
-            return Activator.CreateInstance<User>();
-        }
-        catch
-        {
-            throw new InvalidOperationException($"Can't create an instance of '{nameof(User)}'. " +
-                                                $"Ensure that '{nameof(User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
-                                                $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
-        }
     }
 
     /// <summary>
@@ -71,24 +47,6 @@ public class AuthService : Service, IAuthService
         }
 
         return result;
-    }
-
-    /// <summary>
-    ///     Retrieves the user email store associated with the current user manager instance.
-    /// </summary>
-    /// <returns>
-    ///     An instance of the user email store implementing the <see cref="IUserEmailStore{TUser}" /> interface.
-    /// </returns>
-    /// <remarks>
-    ///     This method is used to obtain an instance of the user email store, which allows managing user email addresses
-    ///     and related operations such as email confirmation and password reset.
-    /// </remarks>
-    private IUserEmailStore<User> GetEmailStore()
-    {
-        if (!_userManager.SupportsUserEmail)
-            throw new NotSupportedException("The default UI requires a user store with email support.");
-
-        return (IUserEmailStore<User>)_userStore;
     }
 
     /// <summary>
@@ -164,11 +122,52 @@ public class AuthService : Service, IAuthService
     }
 
     /// <summary>
-    ///   Refreshes the user login.
+    ///     Refreshes the user login.
     /// </summary>
     public async Task RefreshUserLogin()
     {
         var user = await _userManager.GetUserAsync(_signInManager.Context.User);
         await _signInManager.RefreshSignInAsync(user);
+    }
+
+    /// <summary>
+    ///     Creates a new instance of the <see cref="User" /> class.
+    /// </summary>
+    /// <returns>A new instance of the <see cref="User" /> class.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown when the <see cref="User" /> class cannot be instantiated. This could be due to the class being abstract,
+    ///     lacking a parameterless constructor, or other reflection-related issues. When this exception is thrown,
+    ///     consider overriding the registration page located at /Areas/Identity/Pages/Account/Register.cshtml.
+    /// </exception>
+    private static User CreateUser()
+    {
+        try
+        {
+            return Activator.CreateInstance<User>();
+        }
+        catch
+        {
+            throw new InvalidOperationException($"Can't create an instance of '{nameof(User)}'. " +
+                                                $"Ensure that '{nameof(User)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                                                $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+        }
+    }
+
+    /// <summary>
+    ///     Retrieves the user email store associated with the current user manager instance.
+    /// </summary>
+    /// <returns>
+    ///     An instance of the user email store implementing the <see cref="IUserEmailStore{TUser}" /> interface.
+    /// </returns>
+    /// <remarks>
+    ///     This method is used to obtain an instance of the user email store, which allows managing user email addresses
+    ///     and related operations such as email confirmation and password reset.
+    /// </remarks>
+    private IUserEmailStore<User> GetEmailStore()
+    {
+        if (!_userManager.SupportsUserEmail)
+            throw new NotSupportedException("The default UI requires a user store with email support.");
+
+        return (IUserEmailStore<User>)_userStore;
     }
 }

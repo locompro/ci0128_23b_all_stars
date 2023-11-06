@@ -5,19 +5,19 @@ using Microsoft.EntityFrameworkCore;
 namespace Locompro.Data;
 
 /// <summary>
-/// DB transaction handler.
+///     DB transaction handler.
 /// </summary>
 public class UnitOfWork : IUnitOfWork
 {
-    private readonly ILogger _logger;
     private readonly DbContext _context;
+    private readonly ILogger _logger;
 
     private readonly ILoggerFactory _loggerFactory;
     private readonly ConcurrentDictionary<Type, IRepository> _repositories;
     private readonly Dictionary<Type, Func<IRepository>> _specialRepositoryFactories;
 
     /// <summary>
-    /// Constructs a unit of work for a given context.
+    ///     Constructs a unit of work for a given context.
     /// </summary>
     /// <param name="loggerFactory">Logger for unit of work.</param>
     /// <param name="context"></param>

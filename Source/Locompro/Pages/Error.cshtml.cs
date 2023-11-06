@@ -1,8 +1,6 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Diagnostics;
-using Locompro.Models;
-using Microsoft.Extensions.Logging;
 
 namespace Locompro.Pages;
 
@@ -20,6 +18,10 @@ public class ErrorModel : PageModel
     {
         _logger = logger;
     }
+
+    public string? RequestId { get; set; }
+
+    public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
     public void OnGet()
     {

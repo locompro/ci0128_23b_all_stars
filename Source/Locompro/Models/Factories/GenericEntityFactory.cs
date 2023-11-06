@@ -6,20 +6,14 @@ public abstract class GenericEntityFactory<TD, TE> : IEntityFactory<TD, TE>
 {
     public TE FromDto(TD dto)
     {
-        if (dto == null)
-        {
-            throw new ArgumentNullException(nameof(dto));
-        }
+        if (dto == null) throw new ArgumentNullException(nameof(dto));
 
         return BuildEntity(dto);
     }
 
     public TD ToDto(TE entity)
     {
-        if (entity == null)
-        {
-            throw new ArgumentNullException(nameof(entity));
-        }
+        if (entity == null) throw new ArgumentNullException(nameof(entity));
 
         return BuildDto(entity);
     }

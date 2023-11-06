@@ -4,7 +4,7 @@ using Locompro.Data.Repositories;
 namespace Locompro.Services.Domain;
 
 /// <summary>
-/// Generic domain service for an application entity type with string ID.
+///     Generic domain service for an application entity type with string ID.
 /// </summary>
 /// <typeparam name="T">Type of entity handled by service.</typeparam>
 /// <typeparam name="TK"></typeparam>

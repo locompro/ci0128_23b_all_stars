@@ -1,9 +1,9 @@
 .advanced-search-modal-container {
-    padding-left:0px;
-    padding-right:0px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
-.advanced-search-modal-secondary-container{
+.advanced-search-modal-secondary-container {
     margin-top: 0px;
     padding-top: 0px;
     padding-bottom: 0px;
@@ -26,7 +26,7 @@
 .province-input-container {
     margin-left: 5px;
     margin-right: 0px;
-    
+
     padding-right: 0px;
 }
 
@@ -46,19 +46,19 @@
 }
 
 .price-range-input-group {
-    margin-top:0px;
+    margin-top: 0px;
 }
 
 .minValue-input-container {
-    margin-left:5px;
-    margin-right:0px;
-    
+    margin-left: 5px;
+    margin-right: 0px;
+
     padding-right: 0px;
 }
 
 .maxValue-input-container {
-    margin-left:5px;
-    margin-right:5px;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .filtering-input-group {
