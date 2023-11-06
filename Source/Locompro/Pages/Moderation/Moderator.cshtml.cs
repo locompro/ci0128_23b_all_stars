@@ -11,21 +11,21 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Locompro.Pages.Moderation;
 
+/// <summary>
+/// Moderator page model
+/// Displays all submissions that have been reported
+/// </summary>
 public class ModeratorPageModel : BasePageModel
 {
     public long ItemsAmount { get; set; }
     
     public PaginatedList<ModerationSubmissionVm> DisplayItems { get; set; }
-    
-    public ModerationSubmissionVm SelectedSubmission { get; set; }
 
     private readonly ISearchService _searchService;
     
     private readonly ISubmissionService _submissionService;
     
     private readonly IConfiguration _configuration;
-
-    private List<ModerationSubmissionVm> _reports;
     
     public ModeratorPageModel(
         ILoggerFactory loggerFactory,
@@ -39,21 +39,31 @@ public class ModeratorPageModel : BasePageModel
         _submissionService = submissionService;
     }
     
+    /// <summary>
+    /// Creates html for the page on get request
+    /// </summary>
+    /// <param name="pageIndex"></param>
     public async Task OnGet(int? pageIndex)
     {
         await PopulatePageData(pageIndex);
     }
-
+    
+    /// <summary>
+    /// On post receives the moderator action on a report
+    /// </summary>
     public async Task OnPostActOnReport()
     {
-        
         ModeratorActionOnReportVm moderatorActionOnReportVm = await GetDataSentByClient<ModeratorActionOnReportVm>();
-        
-        Console.WriteLine(moderatorActionOnReportVm.Action + " : " + moderatorActionOnReportVm.SubmissionUserId + " : " + moderatorActionOnReportVm.SubmissionEntryTime);
-        
-        
-    }
 
+        await _submissionService.ActOnReport(moderatorActionOnReportVm);
+        
+        await PopulatePageData(0);
+    }
+    
+    /// <summary>
+    /// Fills internal class data with the data to be displayed on the page
+    /// </summary>
+    /// <param name="pageIndex"></param>
     private async Task PopulatePageData(int? pageIndex)
     {
         List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
@@ -64,13 +74,14 @@ public class ModeratorPageModel : BasePageModel
         SubmissionDto submissionDto = await _searchService.GetSearchResults(searchCriteria);
         
         ModerationSubmissionMapper mapper = new ();
-        _reports = mapper.ToVm(submissionDto);
         
-        ItemsAmount = _reports.Count;
+        List<ModerationSubmissionVm> reports = mapper.ToVm(submissionDto);
+        
+        ItemsAmount = reports.Count;
         
         DisplayItems =
             PaginatedList<ModerationSubmissionVm>.Create(
-                _reports, 
+                reports, 
                 pageIndex?? 0,
                 _configuration.GetValue("PageSize", 4));
     }
