@@ -87,8 +87,8 @@ function getDataToSend(modalShownParam) {
         minValue = document.getElementById("minValue").value;
         maxValue = document.getElementById("maxValue").value;
         categoryValue = document.getElementById("categoryDropdown").value;
-        modelValue = document.getElementById("modelInput").value;
-        brandValue = document.getElementById("brandInput").value;
+        modelValue = document.getElementById("modelDropdown").value;
+        brandValue = document.getElementById("brandDropdown").value;
 
         redirect += searchValue
             + "&province=" + provinceValue
