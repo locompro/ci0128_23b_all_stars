@@ -110,7 +110,7 @@ const select2SpanishLanguageSettings = {
 };
 
 function initSelect2() {
-    const staticDropdowns = [$('#categoryDropdown')];
+    const staticDropdowns = [$('#categoryDropdown'), $('#brandDropdown'), $('#modelDropdown')];
 
     staticDropdowns.forEach(function (d) {
         d.select2({
