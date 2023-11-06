@@ -11,11 +11,6 @@ public class PasswordChangeVm
     /// <summary>
     ///     The current password of the user.
     /// </summary>
-    [Required(ErrorMessage = "La contraseña actual es requerida.")]
-    [RegularExpression("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).{6,}$",
-        ErrorMessage =
-            "La contraseña actual debe tener al menos una letra mayúscula, una minúscula, un número y un caracter especial. Minimo 6 caracteres.")]
-    [DataType(DataType.Password)]
     [DisplayName("Contraseña actual")]
     public string CurrentPassword { get; set; }
 
