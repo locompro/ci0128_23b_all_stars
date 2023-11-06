@@ -2,7 +2,7 @@
 @using Locompro.Models.Entities
 @using Locompro.Services.Domain
 @model IndexModel
-@inject INamedEntityDomainService<Category, string> CategoryDomainServicep
+@inject INamedEntityDomainService<Category, string> CategoryDomainService
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
@@ -10,7 +10,7 @@
 
 
 @{
-    var categories = CategoryDomainServicep.GetAll().Result.ToList();
+    var categories = CategoryDomainService.GetAll().Result.ToList();
 }
 
 <!-- get the css file with main menu formats -->
