@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Locompro.Models;
 using Locompro.Models.Entities;
@@ -7,10 +6,8 @@ using Locompro.Pages.Util;
 using Locompro.Services;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 
 namespace Locompro.Pages.Submissions;
 
@@ -91,11 +88,11 @@ public class CreateModel : PageModel
 
         SubmissionVm.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         
-        IFormFileCollection formFiles = Request.Form.Files;
+        var formFiles = Request.Form.Files;
+        
+        var pictureVMs = PictureParser.Parse(formFiles);
 
-        List<PictureVm> picturesVMs = PictureParser.Parse(formFiles);
-
-        await _contributionService.AddSubmission(StoreVm, ProductVm, SubmissionVm, picturesVMs);
+        await _contributionService.AddSubmission(StoreVm, ProductVm, SubmissionVm, pictureVMs);
 
         return RedirectToPage("/Index");
     }

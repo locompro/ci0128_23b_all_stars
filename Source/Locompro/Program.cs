@@ -61,18 +61,32 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddLogging();
     builder.Services.AddRazorPages();
     builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
+    try
+    {
+        string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
+                                 throw new InvalidOperationException("Env environment variable not found.");
 
-    string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
-                             throw new InvalidOperationException("Env environment variable not found.");
+        string connectionString =
+            "Server=localhost\\SQLEXPRESS;Database=Locompro;Trusted_Connection=True;MultipleActiveResultSets=true;Encrypt=False;";
 
-    var connectionString =
-        builder.Configuration.GetValue<string>($"{environmentName}_ConnectionString__LocomproContext") ??
-        throw new InvalidOperationException("Secret connection string not found.");
-
-    // Add DbContext using SQL Server
-    builder.Services.AddDbContext<LocomproContext>(options => options.UseLazyLoadingProxies()
-        .UseSqlServer(connectionString));
-
+        if (environmentName == "Production")
+        {
+            Console.WriteLine("Please enter the connection string for the Production server:");
+            connectionString = Console.ReadLine();
+        }
+        builder.Services.AddDbContext<LocomproContext>(options =>
+        {
+            if (connectionString != null)
+                options.UseLazyLoadingProxies()
+                    .UseSqlServer(connectionString);
+        });
+        
+    }
+    catch (InvalidOperationException e)
+    {
+        Console.WriteLine(e);
+        Environment.Exit(1);
+    }
     // Set LocomproContext as the default DbContext
     builder.Services.AddScoped<DbContext, LocomproContext>();
 

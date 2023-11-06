@@ -24,8 +24,8 @@
     }
 };
 
-export function initSelect2() {
-    const staticDropdowns = [$('#categoryName')];
+export function initSelect2(){
+    const staticDropdowns = [$('#categoryDropdown')];
     
     staticDropdowns.forEach(function (d) {
         d.select2({
