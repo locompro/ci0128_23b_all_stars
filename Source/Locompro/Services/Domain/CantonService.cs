@@ -10,7 +10,7 @@ public class CantonService : DomainService<Canton, string>, ICantonService
 
     public CantonService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
     {
-        _cantonRepository = UnitOfWork.GetRepository<ICantonRepository>();
+        _cantonRepository = UnitOfWork.GetSpecialRepository<ICantonRepository>();
     }
 
     public async Task<Canton> Get(string country, string province, string canton)

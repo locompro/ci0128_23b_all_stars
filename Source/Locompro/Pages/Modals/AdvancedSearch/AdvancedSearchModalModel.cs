@@ -25,6 +25,8 @@ public class AdvancedSearchModalModel
     /// Categories shown in the advanced search modal
     /// </summary>
     public List<Category> categories { get; set; }
+    
+    public Category categorySelected { get; set; }
 
     /// <summary>
     /// Province that was selected and used to select cantons to be shown

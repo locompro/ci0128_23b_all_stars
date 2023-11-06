@@ -1,7 +1,8 @@
 ﻿namespace Locompro.Models;
 
 /// <summary>
-/// The result of a search for qualified users.
+/// Users qualified to be a moderator.
+/// Result of a procedure call.
 /// </summary>
 public class GetQualifiedUserIDsResult
 {

@@ -11,5 +11,8 @@ public class SearchQueries
 {
     public List<Expression<Func<Submission, bool>>> SearchQueryFunctions { get; init; }
     
+    /// <summary>
+    /// returns if the search query is empty
+    /// </summary>
     public bool IsEmpty => this.SearchQueryFunctions.Count == 0;
 }

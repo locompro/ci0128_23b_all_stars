@@ -65,7 +65,7 @@ namespace Locompro.Tests.Repositories
             {
                 User[] enumerable = result as User[] ?? result.ToArray();
                 Assert.That(enumerable, Is.Not.Null);
-                Assert.That(enumerable.Length, Is.EqualTo(2));
+                Assert.That(enumerable, Has.Length.EqualTo(2));
             });
         }
 
@@ -97,7 +97,7 @@ namespace Locompro.Tests.Repositories
             userToUpdate.Address = "NewAddressA";
 
             // Act
-            await _userRepository.UpdateAsync(userToUpdate);
+            _userRepository.UpdateAsync(userToUpdate);
             var updatedUser = await _userRepository.GetByIdAsync("1");
 
             // Assert

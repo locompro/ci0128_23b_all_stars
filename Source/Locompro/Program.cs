@@ -4,8 +4,12 @@ using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Services;
 using Locompro.Models;
-using Locompro.Services.AuthInterfaces;
+using Locompro.Services.Auth;
 using Locompro.Services.Domain;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -88,15 +92,13 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped(typeof(INamedEntityRepository<,>), typeof(NamedEntityRepository<,>));
     builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
     builder.Services.AddScoped<ICantonRepository, CantonRepository>();
-    builder.Services.AddScoped<ProductRepository>();
-    builder.Services.AddScoped<IPicturesRepository, PicturesRepository>();
+    builder.Services.AddScoped<IPictureRepository, PictureRepository>();
 
     // Register domain services
     builder.Services.AddScoped(typeof(INamedEntityDomainService<,>), typeof(NamedEntityDomainService<,>));
     builder.Services.AddScoped(typeof(IDomainService<,>), typeof(DomainService<,>));
     builder.Services.AddScoped<ISubmissionService, SubmissionService>();
     builder.Services.AddScoped<ICantonService, CantonService>();
-    builder.Services.AddScoped<ProductService>();
     builder.Services.AddScoped<ISignInManagerService, SignInManagerService>();
     builder.Services.AddScoped<IUserManagerService, UserManagerService>();
 
@@ -107,7 +109,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<AdvancedSearchInputService>();
     builder.Services.AddScoped<ISearchDomainService, SearchDomainService>();
     builder.Services.AddScoped<ISearchService, SearchService>();
-    builder.Services.AddScoped<IPicturesService, PicturesService>();
+    builder.Services.AddScoped<IPictureService, PictureService>();
     builder.Services.AddScoped<SearchService>();
     
     builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
@@ -116,6 +118,6 @@ void RegisterServices(WebApplicationBuilder builder)
     // Add session support
     builder.Services.AddSession(options =>
     {
-        options.IdleTimeout = TimeSpan.FromMinutes(2);
+        options.IdleTimeout = TimeSpan.FromMinutes(5);
     });
 }

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Locompro.Services;
 using Locompro.Models.ViewModels;
+using Locompro.Services.Auth;
 
 namespace Locompro.Pages.Account
 {

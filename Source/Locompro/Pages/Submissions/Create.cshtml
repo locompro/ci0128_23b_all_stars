@@ -18,7 +18,7 @@
     <fieldset>
         <legend>Producto</legend>
     </fieldset>
-    <form class="text-center" method="post" enctype="multipart/form-data">
+    <form class="text-center" id="mainForm" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <div class="mb-3">
                 <label class="form-label text-start text-sm-start text-md-start text-lg-start text-xl-start text-xxl-start d-lg-flex d-xl-flex justify-content-lg-start justify-content-xl-start">Tienda</label>
@@ -52,7 +52,7 @@
                             @Html.Partial("_AddStore", Model.StoreVm)
                         </div>
                         <div class="modal-footer">
-                            <button type="button" id="hideAddStoreBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" id="hideAddStoreBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="button" id="addStoreBtn" class="btn btn-primary">Agregar tienda</button>
                         </div>
                     </div>
@@ -94,7 +94,7 @@
                             @Html.Partial("_AddProduct", Model.ProductVm)
                         </div>
                         <div class="modal-footer">
-                            <button type="button" id="hideAddProductBtn" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" id="hideAddProductBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="button" id="addProductBtn" class="btn btn-primary">Agregar producto</button>
                         </div>
                     </div>
@@ -134,8 +134,7 @@
                        id="file"
                        name="file"
                        type="file"
-                       multiple="multiple"
-                       max="5000000">
+                       multiple="multiple">
                 <small id="fileHelp" class="form-text text-muted">Tamaño máximo por imagen: 5MB</small>
                 <div id="fileError" class="alert alert-danger" style="display: none;"></div>
             </div>

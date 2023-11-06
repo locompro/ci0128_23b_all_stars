@@ -1,5 +1,6 @@
 
 using Locompro.Common.Search;
+using Locompro.Common.Search.SearchMethodRegistration;
 
 namespace Locompro.Tests.Repositories.Utilities;
 
@@ -47,6 +48,9 @@ public class SearchMethodTest
             Assert.IsNotNull(searchParam);
             
             searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Brand);
+            Assert.IsNotNull(searchParam);
+            
+            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Category);
             Assert.IsNotNull(searchParam);
         });
     }

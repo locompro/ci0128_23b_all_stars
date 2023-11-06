@@ -6,8 +6,8 @@ namespace Locompro.Data.Repositories
     /// Generic repository for an application entity type.
     /// </summary>
     /// <typeparam name="T">Type of entity handled by repository.</typeparam>
-    /// <typeparam name="I">Type of key used by entity.</typeparam>
-    public class CrudRepository<T, I> : ICrudRepository<T, I> where T: class
+    /// <typeparam name="TK">Type of key used by entity.</typeparam>
+    public class CrudRepository<T, TK> : ICrudRepository<T, TK> where T: class
     {
         protected readonly ILogger Logger;
         protected readonly DbContext Context;
@@ -26,7 +26,7 @@ namespace Locompro.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task<T> GetByIdAsync(I id) => await Set.FindAsync(id);
+        public virtual async Task<T> GetByIdAsync(TK id) => await Set.FindAsync(id);
 
         /// <inheritdoc />
         public async Task<IEnumerable<T>> GetAllAsync() => await Set.ToListAsync();
@@ -42,7 +42,7 @@ namespace Locompro.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task UpdateAsync(T entity) {
+        public void UpdateAsync(T entity) {
             if (entity == null)
             {
                 throw new ArgumentNullException(nameof(entity));
@@ -52,7 +52,7 @@ namespace Locompro.Data.Repositories
         }
 
         /// <inheritdoc />
-        public async Task DeleteAsync(I id)
+        public virtual async Task DeleteAsync(TK id)
         {
             var entity = await GetByIdAsync(id);
             if (entity != null)

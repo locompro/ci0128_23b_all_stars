@@ -85,7 +85,10 @@ class SearchResultsFilterMenu {
                     passedAllFilters = passedAllFilters && item.Price >= value;
                 } else if (type === "MaxPrice") {
                     passedAllFilters = passedAllFilters && item.Price <= value;
-                } else if (item[type] !== value) {
+                } else if (type === "Category") {
+                    passedAllFilters = passedAllFilters &&
+                        item.Categories.some(category => value.includes(category))
+                } else if(item[type] !== value) {
                     passedAllFilters = false;
                 }
             }
@@ -151,10 +154,12 @@ class SearchResultsFilterMenu {
             if (!this.filters.get("Models").includes(item.Model)) {
                 this.filters.get("Models").push(item.Model);
             }
-
-            for (let category in item.Categories) {
-                if (!this.filters.get("Categories").includes(category)) {
-                    this.filters.get("Categories").push(category);
+            
+            for (let categoryIndex = 0;
+                 categoryIndex < item.Categories.length;
+                 categoryIndex++) {
+                if (!this.filters.get("Categories").includes(item.Categories[categoryIndex])) {
+                    this.filters.get("Categories").push(item.Categories[categoryIndex]);
                 }
             }
         }

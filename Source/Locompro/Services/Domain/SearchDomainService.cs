@@ -12,7 +12,7 @@ public class SearchDomainService : DomainService<Submission, SubmissionKey>, ISe
     public SearchDomainService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) :
         base(unitOfWork, loggerFactory)
     {
-        _submissionRepository = unitOfWork.GetRepository<ISubmissionRepository>();
+        _submissionRepository = unitOfWork.GetSpecialRepository<ISubmissionRepository>();
     }
     
     public Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries) =>
