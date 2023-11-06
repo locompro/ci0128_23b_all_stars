@@ -8,7 +8,6 @@
     @Html.AntiForgeryToken()
 }
 
-
 @{
     var categories = CategoryDomainService.GetAll().Result.ToList();
 }

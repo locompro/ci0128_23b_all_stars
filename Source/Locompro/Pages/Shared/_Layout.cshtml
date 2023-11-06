@@ -1,4 +1,5 @@
 ﻿@using Locompro.Common
+@using Locompro.Models.Entities
 @using Locompro.Services.Auth
 
 @inject IUserManagerService UserManagerService
@@ -8,9 +9,14 @@
     var isLoggedIn = AuthService.IsLoggedIn();
     var userId = AuthService.GetUserId();
     var isModerator = false;
+    User user = null;
     if (isLoggedIn)
     {
-        var user = await UserManagerService.FindByIdAsync(userId);
+        user = await UserManagerService.FindByIdAsync(userId);
+        isModerator = false;
+    }
+    if (user != null)
+    {
         isModerator = await UserManagerService.IsInRoleAsync(user, RoleNames.Moderator);
     }
 }
