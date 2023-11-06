@@ -319,7 +319,9 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault(); // Prevent the default form submit
 
         // Get the submission ID from the form (assuming you set it somewhere on click before form submit)
-        const submissionId = reportForm.querySelector('input[name="ReportVm.SubmissionUserId"]').value;
+        const submissionUserId = reportForm.querySelector('input[name="ReportVm.SubmissionUserId"]').value;
+        const submissionEntryTime = reportForm.querySelector('input[name="ReportVm.SubmissionEntryTime"]').value;
+        const submissionId = submissionUserId + submissionEntryTime;
 
         // Send the form data using fetch API
         fetch(reportForm.action, {
@@ -333,7 +335,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(data => {
-                currentModal
+                // Find the button by the submission ID and disable it
+                const reportButtonToDisable = document.querySelector(`button[data-id="${submissionId}"]`);
+                if (reportButtonToDisable) {
+                    reportButtonToDisable.disabled = true;
+                }
+                
                 // Display a success message or update the UI as necessary
                 $('#descriptionModal').modal('hide');
             })
