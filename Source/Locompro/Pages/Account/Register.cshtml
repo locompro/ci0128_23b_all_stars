@@ -19,26 +19,26 @@
             <form class="col-9" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                 <div class="mb-3">
                     <label class="form-label d-xl-flex justify-content-xl-start">Correo Electrónico</label>
-                    <input class="form-control" type="email" asp-for="Input.Email" placeholder="Correo" style="padding-bottom: 13px; padding-top: 13px">
+                    <input id="EmailInput" class="form-control" type="email" asp-for="Input.Email" placeholder="Correo" style="padding-bottom: 13px; padding-top: 13px">
                     <span asp-validation-for="Input.Email" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label class="form-label d-xl-flex justify-content-xl-start">Nombre de Usuario</label>
-                    <input class="form-control" type="text" asp-for="Input.UserName" placeholder="Nombre de Usuario" style="padding-bottom: 13px; padding-top: 13px">
+                    <input id="UsernameInput" class="form-control" type="text" asp-for="Input.UserName" placeholder="Nombre de Usuario" style="padding-bottom: 13px; padding-top: 13px">
                     <span asp-validation-for="Input.UserName" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
                     <label class="form-label d-xl-flex justify-content-xl-start">Contraseña</label>
-                    <input class="form-control" type="password" asp-for="Input.Password" placeholder="Contraseña" style="padding-bottom: 13px; padding-top: 13px">
+                    <input id="PasswordInput" class="form-control" type="password" asp-for="Input.Password" placeholder="Contraseña" style="padding-bottom: 13px; padding-top: 13px">
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div class="mb-3">
-                    <input class="form-control" type="password" asp-for="Input.ConfirmPassword" placeholder="Reingresar contraseña" style="padding-bottom: 13px; padding-top: 13px">
+                    <input id="ConfirmedPasswordInput" class="form-control" type="password" asp-for="Input.ConfirmPassword" placeholder="Reingresar contraseña" style="padding-bottom: 13px; padding-top: 13px">
                     <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
 
                 </div>
                 <div class="mb-3">
-                    <input class="btn btn-primary d-block w-100" type="submit" style="margin-top: 20px;" value="Crear cuenta"/>
+                    <input id="RegisterButton" class="btn btn-primary d-block w-100" type="submit" style="margin-top: 20px;" value="Crear cuenta"/>
                 </div>
             </form>
         </div>
