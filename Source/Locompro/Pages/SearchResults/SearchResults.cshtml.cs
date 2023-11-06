@@ -1,3 +1,4 @@
+using System.Net;
 using Castle.Core.Internal;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration;
@@ -26,21 +27,22 @@ public class SearchResultsModel : SearchPageModel
     /// <summary>
     ///     Constructor
     /// </summary>
-    /// <param name="searchService"></param>
+    /// <param name="loggerFactory"></param>
+    /// <param name="httpContextAccessor"></param>
     /// <param name="advancedSearchServiceHandler"></param>
     /// <param name="pictureService"></param>
     /// <param name="configuration"></param>
+    /// <param name="searchService"></param>
     /// <param name="submissionService"></param>
-    /// <param name="loggerFactory"></param>
-    /// <param name="httpContextAccessor"></param>
-    public SearchResultsModel(
-        ILoggerFactory loggerFactory,
+    /// <param name="moderationService"></param>
+    public SearchResultsModel(ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
         AdvancedSearchInputService advancedSearchServiceHandler,
         IPictureService pictureService,
         IConfiguration configuration,
         ISearchService searchService,
-        ISubmissionService submissionService)
+        ISubmissionService submissionService,
+        IModerationService moderationService)
         : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler)
     {
         _searchService = searchService;
@@ -153,6 +155,24 @@ public class SearchResultsModel : SearchPageModel
 
         // return list of pictures serialized as json
         return Content(GetJsonFrom(formattedPictures));
+    }
+
+    public async Task<JsonResult> OnPostReportSubmissionAsync(ReportVm reportVm)
+    {
+        try
+        {
+            // Your asynchronous processing logic here
+            // await some async operation
+
+            return new JsonResult(new { success = true, message = "Report submitted successfully" });
+        }
+        catch (Exception ex)
+        {
+            // Log the exception
+
+            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            return new JsonResult(new { success = false, message = ex.Message });
+        }
     }
 
     /// <summary>
