@@ -1,14 +1,12 @@
-using Locompro.Common;
 using Locompro.Common.ErrorStore;
-using Microsoft.EntityFrameworkCore;
 using Locompro.Data;
 using Locompro.Data.Repositories;
-using Locompro.Services;
-using Locompro.Models;
 using Locompro.Models.Entities;
+using Locompro.Services;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Locompro.Services.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -62,8 +60,8 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddRazorPages();
     builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
 
-    string environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
-                             throw new InvalidOperationException("Env environment variable not found.");
+    var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
+                          throw new InvalidOperationException("Env environment variable not found.");
 
     var connectionString =
         builder.Configuration.GetValue<string>($"{environmentName}_ConnectionString__LocomproContext") ??
@@ -102,7 +100,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ICantonService, CantonService>();
     builder.Services.AddScoped<ISignInManagerService, SignInManagerService>();
     builder.Services.AddScoped<IUserManagerService, UserManagerService>();
-    builder.Services.AddScoped<IUserService, Locompro.Services.Domain.UserService>();
+    builder.Services.AddScoped<IUserService, UserService>();
 
     // Register application services
     builder.Services.AddScoped<IContributionService, ContributionService>();
@@ -117,13 +115,10 @@ void RegisterServices(WebApplicationBuilder builder)
 
 
     builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
-    
+
     // Add session support
-    builder.Services.AddSession(options =>
-    {
-        options.IdleTimeout = TimeSpan.FromMinutes(5);
-    });
-    
+    builder.Services.AddSession(options => { options.IdleTimeout = TimeSpan.FromMinutes(5); });
+
     RegisterHostedServices(builder);
 }
 
@@ -134,5 +129,4 @@ void RegisterHostedServices(WebApplicationBuilder builder)
     // Moderation tasks
     builder.Services.AddSingleton<IScheduledTask, AddPossibleModeratorsTask>();
     builder.Services.AddHostedService<TaskSchedulerService>();
-    
 }

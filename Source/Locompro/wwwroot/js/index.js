@@ -1,5 +1,3 @@
-
-
 var modalShown = false;
 
 // event listener for the advanced search button

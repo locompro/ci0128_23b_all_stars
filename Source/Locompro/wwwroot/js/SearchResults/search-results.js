@@ -1,6 +1,6 @@
 var searchResultsPage;
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     let url = `SearchResults?handler=GetSearchResults`;
 
     fetch(url)
@@ -36,7 +36,7 @@ class SearchResultsPage {
         this.resultsPerPage = pageData.ResultsPerPage;
         this.searchResults = searchResults;
         this.rawSearchResults = searchResults;
-        
+
         this.itemSelected = 0;
         this.filters = new SearchResultsFilterMenu();
         this.currentOrder = {
@@ -47,7 +47,7 @@ class SearchResultsPage {
         this.currentModal = null;
         this.resultsTable = new SearchResultsTableBody(this.resultsPerPage);
         this.pageNumberComplex = new SearchResultsPageIndexComplex();
-        
+
         this.requestSent = false;
     }
 
@@ -57,9 +57,9 @@ class SearchResultsPage {
      */
     populateTableWithResults() {
         this.pageNumberComplex.updatePageIndexComplex();
-        
+
         this.searchResults = this.filters.applyFilters(this.rawSearchResults);
-        
+
         this.totalResults = this.searchResults.length;
         this.pageNumberComplex.totalPages = Math.ceil(this.totalResults / this.resultsPerPage);
 
@@ -68,7 +68,7 @@ class SearchResultsPage {
 
         let resultsAmountDisplay = document.getElementById("resultsAmountDisplay");
         resultsAmountDisplay.innerHTML = this.totalResults + " resultados encontrados";
-        
+
         this.resultsTable.populateTableBody(this.searchResults, this.pageNumberComplex.currentPage);
     }
 
@@ -84,7 +84,7 @@ class SearchResultsPage {
             this.currentOrder.isDescending = !this.currentOrder.isDescending;
         }
         this.orderList(order);
-        
+
         this.updateTableHeaders();
 
         this.resultsTable.populateTableBody(this.searchResults, this.pageNumberComplex.currentPage);
@@ -103,7 +103,7 @@ class SearchResultsPage {
         this.currentOrder.attribute = order;
         const attribute = this.currentOrder.attribute;
         const direction = this.currentOrder.isDescending ? -1 : 1;
-        
+
         this.searchResults.sort((a, b) => {
             if (a[attribute] < b[attribute]) return -1 * direction;
             if (a[attribute] > b[attribute]) return 1 * direction;
@@ -119,15 +119,15 @@ class SearchResultsPage {
         let productNameHeader = document.getElementById("nameSortButton");
         let provinceHeader = document.getElementById("provinceSortButton");
         let cantonHeader = document.getElementById("cantonSortButton");
-        
+
         emptyClassList(productNameHeader);
         emptyClassList(provinceHeader);
         emptyClassList(cantonHeader);
-        
+
         productNameHeader.classList.add("no-underline-link");
         provinceHeader.classList.add("no-underline-link");
         cantonHeader.classList.add("no-underline-link");
-        
+
         switch (this.currentOrder.attribute) {
             case "Name":
                 productNameHeader.classList.add(this.currentOrder.isDescending ? "sort-desc" : "sort-asc");
@@ -137,7 +137,7 @@ class SearchResultsPage {
                 break;
             case "Canton":
                 cantonHeader.classList.add(this.currentOrder.isDescending ? "sort-desc" : "sort-asc");
-                break;               
+                break;
         }
     }
 
@@ -198,7 +198,7 @@ class SearchResultsPage {
  * @param change - The number indicating how many pages to move forward or backward.
  */
 function changeIndexButtonPressed(change) {
-    searchResultsPage.changeIndexButtonPressed(change);    
+    searchResultsPage.changeIndexButtonPressed(change);
 }
 
 /**
@@ -273,15 +273,15 @@ function applyFilter(filterField) {
     const filterFieldId = filterField.id;
     let filterType = filterFieldId.replace(/Filter$/, '');
     const filterValue = filterField.value === "todos" ? null : filterField.value;
-    
+
     if (filterType === "productName") {
         filterType = "Name";
     } else {
         filterType = filterType.charAt(0).toUpperCase() + filterType.slice(1);
     }
-    
+
     searchResultsPage.setFilter(filterType, filterValue);
-    filterField.value = filterValue ? filterValue: "todos";
+    filterField.value = filterValue ? filterValue : "todos";
 }
 
 window.addEventListener('beforeunload', function (e) {
@@ -290,25 +290,25 @@ window.addEventListener('beforeunload', function (e) {
         e.returnValue = '';
         return;
     }
-    
+
     let url = window.location.pathname;
     let handler = '?handler=ReturnResults';
     let location = url + handler;
-    
+
     let data = searchResultsPage.pageSearchData;
-    
+
     fetch(location, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json', 
+            'Content-Type': 'application/json',
             'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
         },
-        body: JSON.stringify(data) 
+        body: JSON.stringify(data)
     })
         .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok.');
-        }
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
         });
     e.returnValue = '';
 });

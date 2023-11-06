@@ -38,7 +38,7 @@ class SearchResultsFilterMenu {
     populateFilters() {
         const categoryFilter = document.getElementById("categoryFilter");
         categoryFilter.innerHTML = "";
-        
+
         for (let filterIndex = 0; filterIndex < this.filterFields.length; filterIndex++) {
             let filter = this.filterFields[filterIndex];
             filter.addOptions(this.currentFilters, this.filters);
@@ -60,7 +60,7 @@ class SearchResultsFilterMenu {
 
                 categoryFilter.appendChild(option);
             }
-            
+
             if (!this.filters.get("Category")) {
                 return;
             }
@@ -79,7 +79,7 @@ class SearchResultsFilterMenu {
     applyFilters(rawSearchResults) {
         // filter the results
         let searchResults = rawSearchResults.filter((item) => {
-            let passedAllFilters = true; 
+            let passedAllFilters = true;
 
             for (const [type, value] of this.currentFilters) {
                 if (type === "MinPrice") {
@@ -96,7 +96,7 @@ class SearchResultsFilterMenu {
         this.updateFilters(searchResults);
 
         this.populateFilters();
-        
+
         return searchResults;
     }
 
@@ -152,7 +152,7 @@ class SearchResultsFilterMenu {
             if (!this.filters.get("Models").includes(item.Model)) {
                 this.filters.get("Models").push(item.Model);
             }
-            
+
             for (let categoryIndex = 0;
                  categoryIndex < item.Categories.length;
                  categoryIndex++) {
@@ -188,7 +188,7 @@ class FilterField {
         this.optionKey = key.substring(0, key.length - 1);
     }
 
-   
+
     /**
      * Adds filter options to the filter field's select element based on the available and
      * currently applied filters.
@@ -200,11 +200,11 @@ class FilterField {
         // if field has filters
         if (allFilters.has(this.key)) {
             this.element.innerHTML = "";
-            
+
             const todosOption = document.createElement("option");
             todosOption.value = "todos";
             todosOption.innerHTML = "todos";
-            
+
             this.element.appendChild(todosOption);
 
             // place all the filters in the field
@@ -214,16 +214,16 @@ class FilterField {
                 option.innerHTML = value;
 
                 this.element.appendChild(option);
-                
+
                 if (currentFilters.get(this.optionKey) === value) {
                     this.element.selected = value;
                 }
             }
-            
+
             if (!currentFilters.get(this.optionKey)) {
                 return;
             }
-            
+
             this.element.value = currentFilters.get(this.optionKey);
         }
     }

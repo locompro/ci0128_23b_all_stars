@@ -38,7 +38,8 @@ public class UserDataUpdateVm
     ///     Determines whether the view model holds a valid update for the user's data.
     /// </summary>
     /// <remarks>
-    ///    A valid update is one where the user's email or address (formed by Province, Canton, and ExactAddress) is not empty.
+    ///     A valid update is one where the user's email or address (formed by Province, Canton, and ExactAddress) is not
+    ///     empty.
     /// </remarks>
     /// <returns>True if is a valid update, false otherwise.</returns>
     public bool IsUpdateValid()

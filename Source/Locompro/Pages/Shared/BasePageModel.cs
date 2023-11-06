@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
 
-
 namespace Locompro.Pages.Shared;
 
 /// <summary>
-/// Base class for page models that depend on communication with the client and caching on local sessions
+///     Base class for page models that depend on communication with the client and caching on local sessions
 /// </summary>
 public class BasePageModel : PageModel
 {
@@ -17,10 +16,10 @@ public class BasePageModel : PageModel
         Logger = loggerFactory.CreateLogger(GetType());
         HttpContextAccessor = httpContextAccessor;
     }
-    
+
     /// <summary>
-    /// Gets data sent from browser to server
-    /// Data gets sent from browser in json format, it is then here deserialized
+    ///     Gets data sent from browser to server
+    ///     Data gets sent from browser in json format, it is then here deserialized
     /// </summary>
     /// <typeparam name="T"> type of class where it is expected for the data to be stored </typeparam>
     /// <returns> Object of given type </returns>
@@ -28,7 +27,7 @@ public class BasePageModel : PageModel
     {
         try
         {
-            string json = await new StreamReader(Request.Body).ReadToEndAsync();
+            var json = await new StreamReader(Request.Body).ReadToEndAsync();
             return JsonConvert.DeserializeObject<T>(json);
         }
         catch
@@ -36,9 +35,9 @@ public class BasePageModel : PageModel
             return default;
         }
     }
-    
+
     /// <summary>
-    /// Serializes the given object to json
+    ///     Serializes the given object to json
     /// </summary>
     /// <param name="objectToSerialize"> object that will be serialized </param>
     /// <typeparam name="T"></typeparam>
@@ -50,16 +49,16 @@ public class BasePageModel : PageModel
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore
         };
-        
-        string json = JsonConvert.SerializeObject(objectToSerialize, settings);
-        
+
+        var json = JsonConvert.SerializeObject(objectToSerialize, settings);
+
         Response.ContentType = "application/json";
 
         return json;
     }
-    
+
     /// <summary>
-    /// Stores the given data in a local user session specific instance
+    ///     Stores the given data in a local user session specific instance
     /// </summary>
     /// <param name="objectToCache"> what is to be stored </param>
     /// <param name="key"> identifier to retrieve cached data </param>
@@ -67,38 +66,38 @@ public class BasePageModel : PageModel
     protected void CacheDataInSession<T>(T objectToCache, string key)
     {
         if (HttpContextAccessor.HttpContext?.Session == null)
-        {
             HttpContextAccessor.HttpContext?.RequestServices.GetService(typeof(ISession));
-        }
-        
+
         HttpContext.Session.SetString(key, JsonConvert.SerializeObject(objectToCache));
     }
-    
+
     /// <summary>
-    /// Retrieves the cached data from the local user session specific instance
+    ///     Retrieves the cached data from the local user session specific instance
     /// </summary>
     /// <param name="key"> identifier to retrieve cached data </param>
     /// <param name="deletesData"> if the data and session are to be deleted </param>
     /// <typeparam name="T"> the type of the data to be retrieved</typeparam>
-    /// <remarks> if deletesData is true, the session is removed, but one is produced
-    /// by framework, or on a caching action if not automatic </remarks>
+    /// <remarks>
+    ///     if deletesData is true, the session is removed, but one is produced
+    ///     by framework, or on a caching action if not automatic
+    /// </remarks>
     /// <returns> cached data according to key</returns>
     protected T GetCachedDataFromSession<T>(string key, bool deletesData = true)
     {
         if (key == null || HttpContext.Session.GetString(key) == null) return default;
-        
-        string cachedObjectJson = HttpContext.Session.GetString(key);
+
+        var cachedObjectJson = HttpContext.Session.GetString(key);
 
         if (cachedObjectJson == null) return default;
-        
-        T cachedObject = JsonConvert.DeserializeObject<T>(cachedObjectJson);
-        
+
+        var cachedObject = JsonConvert.DeserializeObject<T>(cachedObjectJson);
+
         if (deletesData)
         {
             HttpContext.Session.Remove(key);
             HttpContextAccessor.HttpContext?.Session.Clear();
         }
-        
+
         return cachedObject;
     }
 }

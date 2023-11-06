@@ -1,10 +1,6 @@
-﻿@using Locompro.Pages.Modals.AdvancedSearch;
-@using Locompro.Services;
+﻿@using Locompro.Models.Entities
 @using Locompro.Services.Domain
-@using Newtonsoft.Json
-@using Locompro.Models
-@using Locompro.Models.Entities
-@model AdvancedSearchModalModel;
+@model Locompro.Pages.Modals.AdvancedSearch.AdvancedSearchModalModel;
 
 
 @inject INamedEntityDomainService<Category, string> CategoryService
@@ -23,7 +19,7 @@
                                 type="submit"
                                 onchange="loadProvince(this)"
                                 style="font-family: Roboto, sans-serif;"
-                                name=province
+                                name="province"
                                 id="provinceDropdown">
                             <option>Todos</option>
                             @foreach (var provincia in Model.provinces)
@@ -36,7 +32,7 @@
                         <label class="form-label d-lg-flex justify-content-lg-start">Cantón</label>
                         <select class="form-select"
                                 style="font-family: Roboto, sans-serif;padding-right: 10px;margin-right: 0px;"
-                                name=canton
+                                name="canton"
                                 id="cantonDropdown">
                             <option>Todos</option>
                         </select>
@@ -48,20 +44,20 @@
                     <div class="col-xxl mb-3 minValue-input-container">
                         <label class="form-label d-lg-flex justify-content-xxl-center">Precio Mínimo</label>
                         <input class="form-control"
-                               min=1
+                               min="1"
                                type="number"
                                id="minValue"
                                onchange="validatePriceInput(this)"
-                               value=0>
+                               value="0">
                     </div>
                     <div class="col-xxl mb-3 maxValue-input-container">
                         <label class="form-label d-lg-flex justify-content-xxl-center">Precio máximo</label>
                         <input class="form-control"
-                               min=0
+                               min="0"
                                type="number"
                                id="maxValue"
                                onchange="validatePriceInput(this)"
-                               value=0>
+                               value="0">
                     </div>
                 </div>
                 <div class="col-xxl mb-3 category-input-container">

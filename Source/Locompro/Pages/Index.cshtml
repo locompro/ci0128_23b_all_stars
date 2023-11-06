@@ -1,10 +1,9 @@
 ﻿@page
-@using Locompro.Services.Domain
-@using Locompro.Models
 @using Locompro.Models.Entities
+@using Locompro.Services.Domain
 @model IndexModel
 @inject INamedEntityDomainService<Category, string> CategoryDomainServicep
-@using (Html.BeginForm()) 
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 }

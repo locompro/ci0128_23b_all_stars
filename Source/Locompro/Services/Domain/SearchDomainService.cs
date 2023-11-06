@@ -1,7 +1,6 @@
 using Locompro.Common.Search;
 using Locompro.Data;
 using Locompro.Data.Repositories;
-using Locompro.Models;
 using Locompro.Models.Entities;
 
 namespace Locompro.Services.Domain;
@@ -15,7 +14,9 @@ public class SearchDomainService : DomainService<Submission, SubmissionKey>, ISe
     {
         _submissionRepository = unitOfWork.GetSpecialRepository<ISubmissionRepository>();
     }
-    
-    public Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries) =>
-        _submissionRepository.GetSearchResults(searchQueries);
+
+    public Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries)
+    {
+        return _submissionRepository.GetSearchResults(searchQueries);
+    }
 }

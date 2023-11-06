@@ -1,15 +1,13 @@
-@using Locompro.Models.ViewModels
+@inject INamedEntityDomainService<Category, string> CategoryService
+@using Locompro.Models.Entities
 @using Locompro.Services.Domain
 @using Newtonsoft.Json
-@using Locompro.Models
-@using Locompro.Models.Entities
-@inject INamedEntityDomainService<Category, string> CategoryService
-@model ProductVm
+@model Locompro.Models.ViewModels.ProductVm
 
 @{
     var categories = (await CategoryService.GetAll()).ToList();
 
-    var projectedCategories = categories.Select(c => new 
+    var projectedCategories = categories.Select(c => new
     {
         c.Name
     }).ToList();
@@ -65,4 +63,4 @@
     </div>
 </div>
 
-<div id="categoriesData" data='@Html.Raw(categoriesJson)' style="display: none;"></div>
+<div id="categoriesData" data="@Html.Raw(categoriesJson)" style="display: none;"></div>

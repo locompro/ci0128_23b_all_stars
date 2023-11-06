@@ -7,18 +7,6 @@ namespace Locompro.Models.ViewModels;
 /// </summary>
 public class ProfileVm
 {
-    public string Username { get; set; }
-    
-    public string Name { get; set; }
-    
-    public string Address { get; set; }
-    
-    public float Rating { get; set; }
-    
-    public int Contributions { get; set; }
-    
-    public string Email { get; set; }
-    
     /// <summary>
     ///     Constructor of ProfileViewModel based on a User object.
     /// </summary>
@@ -32,7 +20,20 @@ public class ProfileVm
         Contributions = user.Submissions.Count;
         Email = user.Email;
     }
+
     public ProfileVm()
     {
     }
+
+    public string Username { get; set; }
+
+    public string Name { get; set; }
+
+    public string Address { get; set; }
+
+    public float Rating { get; set; }
+
+    public int Contributions { get; set; }
+
+    public string Email { get; set; }
 }

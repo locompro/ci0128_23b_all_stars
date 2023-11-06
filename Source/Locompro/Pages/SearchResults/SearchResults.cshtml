@@ -1,8 +1,6 @@
 ﻿@page
-@using Locompro.Models
-@using Locompro.Common
-@model Locompro.Pages.SearchResults.SearchResultsModel
-@using (Html.BeginForm()) 
+@model SearchResultsModel
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 }
@@ -50,7 +48,7 @@
         </div>
         <div class="container search-input-group-on-advanced-search row"
              style="margin-top: 10px; margin-left: 0px">
-            <div class="col" >
+            <div class="col">
                 <h5 style="padding-top: 5px;  padding-right: 0px">filtros</h5>
                 <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
                         id="clearFiltersButton"

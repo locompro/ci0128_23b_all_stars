@@ -26,7 +26,7 @@
 
 export function initSelect2() {
     const staticDropdowns = [$('#categoryName')];
-    
+
     staticDropdowns.forEach(function (d) {
         d.select2({
             placeholder: 'Todos',

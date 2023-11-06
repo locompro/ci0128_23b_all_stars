@@ -1,5 +1,4 @@
 using Locompro.Common.Search;
-using Locompro.Models;
 using Locompro.Models.ViewModels;
 
 namespace Locompro.Services.Domain;
