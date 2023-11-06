@@ -7,14 +7,9 @@ namespace Locompro.Tests.Services.Tasks;
 [TestFixture]
 public class ScheduledTaskBaseTest
 {
-    private Mock<IServiceProvider> _mockServiceProvider;
-    private Mock<IServiceScope> _mockServiceScope;
-    private Mock<IServiceScopeFactory> _mockServiceScopeFactory;
-    private Mock<IModerationService> _mockScopedService;
-
     /// <summary>
-    /// Sets up the mocks for the service provider, service scope, service scope factory, and the
-    /// scoped service required for testing the ScheduledTaskBase class.
+    ///     Sets up the mocks for the service provider, service scope, service scope factory, and the
+    ///     scoped service required for testing the ScheduledTaskBase class.
     /// </summary>
     /// <author>Brandon Alonso Mora Umaña - C15179</author>
     [SetUp]
@@ -43,9 +38,14 @@ public class ScheduledTaskBaseTest
             .Returns(_mockScopedService.Object);
     }
 
+    private Mock<IServiceProvider> _mockServiceProvider;
+    private Mock<IServiceScope> _mockServiceScope;
+    private Mock<IServiceScopeFactory> _mockServiceScopeFactory;
+    private Mock<IModerationService> _mockScopedService;
+
     /// <summary>
-    /// Tests that the ExecuteAsync method on an instance of a ScheduledTaskBase-derived class
-    /// correctly invokes the ExecuteScopedAsync method of the scoped service.
+    ///     Tests that the ExecuteAsync method on an instance of a ScheduledTaskBase-derived class
+    ///     correctly invokes the ExecuteScopedAsync method of the scoped service.
     /// </summary>
     /// <author>Brandon Alonso Mora Umaña - C15179</author>
     [Test]
@@ -63,7 +63,7 @@ public class ScheduledTaskBaseTest
     }
 
     /// <summary>
-    /// Provides a concrete implementation of ScheduledTaskBase for the purpose of testing the abstract class.
+    ///     Provides a concrete implementation of ScheduledTaskBase for the purpose of testing the abstract class.
     /// </summary>
     public class ConcreteScheduledTask : ScheduledTaskBase<IModerationService>
     {

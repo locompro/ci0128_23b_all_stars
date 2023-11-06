@@ -87,7 +87,7 @@ class ProductModalManager extends ModalManager {
             dropdownParent: $('#addProductModal .modal-content'),
             language: select2SpanishLanguageSettings
         });
-        
+
         $("#partialProductName").rules("add", {
             required: true,
             messages: {
@@ -98,8 +98,8 @@ class ProductModalManager extends ModalManager {
 
     addAndValidate() {
         super.addAndValidate();
-        if(!this.shouldClearFlag) {
-         $("#partialProductId").val(-1)   
+        if (!this.shouldClearFlag) {
+            $("#partialProductId").val(-1)
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿@using Locompro.Services
-@using Locompro.Services.Auth
-
+﻿@using Locompro.Services.Auth
 @inject IAuthService AuthService
 @{
     var currentPage = Context.Request.Path.Value;
@@ -11,7 +9,7 @@
 <html data-bs-theme="light" lang="en">
 
 <head>
-    @await RenderSectionAsync("Head", required: false)
+    @await RenderSectionAsync("Head", false)
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>LoCoMPro</title>
@@ -66,7 +64,7 @@
                     </div>
                 }
             </div>
-    
+
             <div class="col text-center">
                 <!-- Title, shown unless on the main menu -->
                 @if (!currentPage!.EndsWith("/"))
@@ -74,7 +72,7 @@
                     <a class="navbar-brand" asp-area="" asp-page="/Index">LoCoMPro</a>
                 }
             </div>
-    
+
             <div class="col">
                 <!-- Right side buttons -->
                 <div class="d-flex justify-content-end">
@@ -111,7 +109,7 @@
     <div class="container">
         <ul class="list-inline my-2">
             <li class="list-inline-item">
-                <a class="link-secondary" asp-page="Privacy" >Política de privacidad</a>
+                <a class="link-secondary" asp-page="Privacy">Política de privacidad</a>
             </li>
             <li class="list-inline-item">
                 <a class="link-secondary" href="#">Terminos y condiciones</a>
@@ -126,6 +124,6 @@
 
 <partial name="_ValidationScriptsPartial"/>
 
-@await RenderSectionAsync("Scripts", required: false)
+@await RenderSectionAsync("Scripts", false)
 </body>
 </html>
