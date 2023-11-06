@@ -40,9 +40,7 @@ public class AuthServiceTest
         var loggerFactoryMock = new Mock<ILoggerFactory>();
         loggerFactoryMock.Setup(lf => lf.CreateLogger(It.IsAny<string>())).Returns(_loggerMock.Object);
 
-        _service = new AuthService(
-            unitOfWorkMock.Object,
-            loggerFactoryMock.Object,
+        _service = new AuthService(loggerFactoryMock.Object,
             _signInManagerMock.Object,
             _userManagerMock.Object,
             _userStoreMock.Object,

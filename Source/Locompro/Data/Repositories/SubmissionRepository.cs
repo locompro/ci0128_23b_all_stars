@@ -29,7 +29,14 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     /// <inheritdoc />
     public override async Task<Submission> GetByIdAsync(SubmissionKey id)
     {
-        return await Set.FindAsync(id.UserId, id.EntryTime);
+        return await Set.FirstOrDefaultAsync(submission =>
+            submission.UserId == id.UserId &&
+            submission.EntryTime.Year == id.EntryTime.Year &&
+            submission.EntryTime.Month == id.EntryTime.Month &&
+            submission.EntryTime.Day == id.EntryTime.Day &&
+            submission.EntryTime.Hour == id.EntryTime.Hour &&
+            submission.EntryTime.Minute == id.EntryTime.Minute &&
+            submission.EntryTime.Second == id.EntryTime.Second);
     }
 
     /// <inheritdoc />

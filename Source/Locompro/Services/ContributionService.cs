@@ -19,10 +19,10 @@ public class ContributionService : Service, IContributionService
 
     private readonly ISubmissionService _submissionService;
 
-    public ContributionService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, ICantonService cantonService,
+    public ContributionService(ILoggerFactory loggerFactory, ICantonService cantonService,
         INamedEntityDomainService<Store, string> storeService, INamedEntityDomainService<Product, int> productService,
         INamedEntityDomainService<Category, string> categoryService, ISubmissionService submissionService)
-        : base(unitOfWork, loggerFactory)
+        : base(loggerFactory)
     {
         _cantonService = cantonService;
         _storeService = storeService;

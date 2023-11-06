@@ -139,7 +139,6 @@ function sendSearchRequest(dataToSend) {
         .catch(error => {
             // Handle errors
             console.error('Fetch error:', error);
-            alert("Request Failed, another failure...");
         });
 }
 

@@ -14,5 +14,6 @@ public enum SearchParameterTypes
     Maxvalue,
     Category,
     Model,
-    Brand
+    Brand,
+    HasNAmountReports
 }
