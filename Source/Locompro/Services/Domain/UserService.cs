@@ -5,7 +5,7 @@ using Locompro.Models.Results;
 
 namespace Locompro.Services.Domain;
 
-public class UserService : Service, IUserService
+public class UserService : DomainService<User, string>, IUserService
 {
     /// <summary>
     ///     The repository for performing user-related operations.
@@ -15,7 +15,7 @@ public class UserService : Service, IUserService
     /// <summary>
     ///     Initializes a new instance of the <see cref="UserService" /> class.
     /// </summary>
-    /// <param name="unitOfWork">The unit of work for coordinating the work of multiple repositories.</param>
+    /// <param name="unitOfWork"></param>
     /// <param name="loggerFactory">The factory used to create loggers.</param>
     public UserService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
     {

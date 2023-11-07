@@ -1,12 +1,16 @@
+using System.Net;
 using Castle.Core.Internal;
+using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration;
 using Locompro.Models;
+using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
 using Locompro.Pages.Util;
 using Locompro.Services;
+using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,30 +21,40 @@ namespace Locompro.Pages.SearchResults;
 /// </summary>
 public class SearchResultsModel : SearchPageModel
 {
+    public SearchVm SearchVm { get; set; }
+    
     private readonly IPictureService _pictureService;
 
     private readonly ISearchService _searchService;
 
     private readonly ISubmissionService _submissionService;
+    
+    private readonly IModerationService _moderationService;
+    
+    private readonly IAuthService _authService;
 
+    private IConfiguration Configuration { get; set; }
+    
     /// <summary>
     ///     Constructor
     /// </summary>
-    /// <param name="searchService"></param>
+    /// <param name="loggerFactory"></param>
+    /// <param name="httpContextAccessor"></param>
     /// <param name="advancedSearchServiceHandler"></param>
     /// <param name="pictureService"></param>
     /// <param name="configuration"></param>
+    /// <param name="searchService"></param>
     /// <param name="submissionService"></param>
-    /// <param name="loggerFactory"></param>
-    /// <param name="httpContextAccessor"></param>
-    public SearchResultsModel(
-        ILoggerFactory loggerFactory,
+    /// <param name="moderationService"></param>
+    public SearchResultsModel(ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
         AdvancedSearchInputService advancedSearchServiceHandler,
         IPictureService pictureService,
         IConfiguration configuration,
         ISearchService searchService,
-        ISubmissionService submissionService)
+        ISubmissionService submissionService,
+        IModerationService moderationService,
+        IAuthService authService)
         : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler)
     {
         _searchService = searchService;
@@ -54,10 +68,9 @@ public class SearchResultsModel : SearchPageModel
         _searchService = searchService;
         _pictureService = pictureService;
         _submissionService = submissionService;
+        _moderationService = moderationService;
+        _authService = authService;
     }
-
-    private IConfiguration Configuration { get; set; }
-    public SearchVm SearchVm { get; set; }
 
     /// <summary>
     ///     When page is first called, gets search query data from session
@@ -102,19 +115,21 @@ public class SearchResultsModel : SearchPageModel
 
         try
         {
-            searchResults = await _searchService.GetSearchResults(searchParameters);
+            ItemMapper itemMapper = new();
+            SubmissionsDto submissionsDto = await _searchService.GetSearchResults(searchParameters);
+            searchResults = itemMapper.ToVm(submissionsDto);
         }
         catch (Exception e)
         {
             Logger.LogError("Error when attempting to get search results: " + e.Message);
         }
-
-
+        
         var searchResultsJson = GetJsonFrom(
             new
             {
                 SearchResults = searchResults,
-                Data = SearchVm
+                Data = SearchVm,
+                Redirect = (searchResults is { Count: 0 }? "redirect" : null)
             });
 
         return Content(searchResultsJson);
@@ -138,8 +153,7 @@ public class SearchResultsModel : SearchPageModel
         {
             Logger.LogError("Error when attempting to get pictures for item: " + e.Message);
         }
-
-
+        
         var formattedPictures = PictureParser.Serialize(itemPictures);
 
         if (itemPictures.IsNullOrEmpty())
@@ -153,6 +167,38 @@ public class SearchResultsModel : SearchPageModel
 
         // return list of pictures serialized as json
         return Content(GetJsonFrom(formattedPictures));
+    }
+
+    
+    public async Task<JsonResult> OnPostReportSubmissionAsync(ReportVm reportVm)
+    {
+        if (!_authService.IsLoggedIn())
+        {
+            Response.StatusCode = 302; // Redirect status code
+            return new JsonResult(new { redirectUrl = "/Account/Login" });
+        }
+        
+        try
+        {
+            var reportMapper = new ReportMapper();
+
+            var reportDto = reportMapper.ToDto(reportVm);
+
+            reportDto.UserId = _authService.GetUserId();
+
+            await _moderationService.ReportSubmission(reportDto);
+            
+            Logger.LogInformation("Report submitted successfully {}", reportVm);
+
+            return new JsonResult(new { success = true, message = "Report submitted successfully" });
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to submit report {}", reportVm);
+
+            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            return new JsonResult(new { success = false, message = ex.Message });
+        }
     }
 
     /// <summary>
@@ -173,8 +219,14 @@ public class SearchResultsModel : SearchPageModel
     /// <summary>
     ///     Updates the rating of a given submission
     /// </summary>
-    public async Task OnPostUpdateSubmissionRatingAsync()
+    public async Task<JsonResult> OnPostUpdateSubmissionRatingAsync()
     {
+        if (!_authService.IsLoggedIn())
+        {
+            Response.StatusCode = 302; // Redirect status code
+            return new JsonResult(new { redirectUrl = "/Account/Login" });
+        }
+        
         var clientRatingChange = await GetDataSentByClient<RatingVm>();
 
         if (clientRatingChange == null)
@@ -188,5 +240,7 @@ public class SearchResultsModel : SearchPageModel
         {
             Logger.LogError("Error when attempting to update submission rating: " + e.Message);
         }
+
+        return new JsonResult(new { ok = true, message = "Ratings updated submitted successfully" });
     }
 }

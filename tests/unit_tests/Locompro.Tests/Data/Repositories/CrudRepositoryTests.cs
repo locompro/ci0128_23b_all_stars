@@ -104,7 +104,7 @@ public class CrudRepositoryTests
         userToUpdate.Address = "NewAddressA";
 
         // Act
-        _userRepository.UpdateAsync(userToUpdate);
+        _userRepository.UpdateAsync(userToUpdate.Id, userToUpdate);
         var updatedUser = await _userRepository.GetByIdAsync("1");
 
         // Assert

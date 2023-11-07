@@ -3,6 +3,7 @@ using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models;
 using Locompro.Models.Entities;
+using Locompro.Models.ViewModels;
 
 namespace Locompro.Services.Domain;
 
@@ -47,7 +48,7 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
 
         PlaceNewSubmissionRating(submissionToUpdate, int.Parse(ratingVm.Rating));
 
-        _submissionRepository.UpdateAsync(submissionToUpdate);
+        await _submissionRepository.UpdateAsync(submissionToUpdate.UserId, submissionToUpdate.EntryTime, submissionToUpdate);
         await UnitOfWork.SaveChangesAsync();
     }
 
@@ -119,5 +120,25 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
         if (currentRatingAmount == 0 && currentRating != 0) currentRatingAmount++;
 
         return currentRatingAmount + 1;
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteSubmissionAsync(SubmissionKey submissionKey)
+    {
+        await _submissionRepository.DeleteAsync(submissionKey);
+        
+        await UnitOfWork.SaveChangesAsync();
+    }
+    
+    /// <inheritdoc />
+    public async Task UpdateSubmissionStatusAsync(SubmissionKey submissionKey, SubmissionStatus submissionStatus)
+    {
+        Submission submission = await _submissionRepository.GetByIdAsync(submissionKey);
+
+        if (submission == null) return;
+                
+        submission.Status = SubmissionStatus.Moderated;
+        
+        await UnitOfWork.SaveChangesAsync();
     }
 }

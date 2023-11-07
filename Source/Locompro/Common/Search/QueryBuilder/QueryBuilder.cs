@@ -28,6 +28,7 @@ public class QueryBuilder : IQueryBuilder
     /// <param name="searchCriterion"></param>
     public void AddSearchCriterion(ISearchCriterion searchCriterion)
     {
+        
         if (searchCriterion == null)
             throw new ArgumentException("Invalid search criterion addition attempt\n"
                                         + "Null search criterion passed");

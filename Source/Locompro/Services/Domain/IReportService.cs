@@ -5,5 +5,5 @@ namespace Locompro.Services.Domain;
 
 public interface IReportService : IDomainService<Report, string>
 {
-    Task Add(ReportDto reportDto);
+    Task UpdateAsync(ReportDto reportDto);
 }

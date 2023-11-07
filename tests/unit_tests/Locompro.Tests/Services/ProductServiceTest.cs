@@ -15,6 +15,8 @@ namespace Locompro.Tests.Services
     [TestFixture]
     public class ProductServiceTests
     {
+        private Mock<IUnitOfWork> _mockUnitOfWork;
+        private Mock<ILoggerFactory> _mockLoggerFactory;
         private Mock<IProductRepository> _mockProductRepository;
         private ProductService _productService;
 
@@ -25,17 +27,16 @@ namespace Locompro.Tests.Services
         [SetUp]
         public void Setup()
         {
-            // Mock the product repository
+            // Create mock instances
+            _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockProductRepository = new Mock<IProductRepository>();
+            _mockLoggerFactory = new Mock<ILoggerFactory>();
 
-            // Mock unit of work (if methods we're testing used it, we would set it up)
-            var mockUnitOfWork = new Mock<IUnitOfWork>();
-
-            // Mock logger factory (we use a NullLoggerFactory as we're not testing logging here)
-            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            // Setup mock behavior
+            _mockUnitOfWork.Setup(uow => uow.GetSpecialRepository<IProductRepository>()).Returns(_mockProductRepository.Object);
 
             // Instantiate the service with the mocked dependencies
-            _productService = new ProductService(mockUnitOfWork.Object, loggerFactory, _mockProductRepository.Object);
+            _productService = new ProductService(_mockUnitOfWork.Object, _mockLoggerFactory.Object);
         }
 
         /// <summary>

@@ -7,6 +7,15 @@ public class ReportDto
     public DateTime SubmissionEntryTime { get; set; }
 
     public string UserId { get; set; }
+    
+    public string UserName { get; set; }
 
     public string Description { get; set; }
+    
+    public override string ToString()
+    {
+        return $"ReportDto: SubmissionUserId={SubmissionUserId}, " +
+               $"SubmissionEntryTime={SubmissionEntryTime}, " +
+               $"UserId={UserId}";
+    }
 }

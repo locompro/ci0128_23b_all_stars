@@ -11,6 +11,7 @@ namespace Locompro.Services.Domain;
 public class DomainService<T, TK> : Service, IDomainService<T, TK>
     where T : class
 {
+    protected readonly IUnitOfWork UnitOfWork;
     protected readonly ICrudRepository<T, TK> CrudRepository;
 
     /// <summary>
@@ -19,8 +20,9 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
     /// <param name="unitOfWork">Unit of work to handle transactions.</param>
     /// <param name="loggerFactory">Factory for service logger.</param>
     public DomainService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory)
-        : base(unitOfWork, loggerFactory)
+        : base(loggerFactory)
     {
+        UnitOfWork = unitOfWork;
         CrudRepository = UnitOfWork.GetCrudRepository<T, TK>();
     }
 
@@ -52,11 +54,11 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
     }
 
     /// <inheritdoc />
-    public async Task Update(T entity)
+    public async Task Update(TK id, T entity)
     {
         try
         {
-            CrudRepository.UpdateAsync(entity);
+            await CrudRepository.UpdateAsync(id, entity);
             await UnitOfWork.SaveChangesAsync();
         }
         catch (Exception e)

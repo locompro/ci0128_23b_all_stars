@@ -14,6 +14,11 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class UserServiceTests
 {
+    private Mock<IUnitOfWork> _mockUnitOfWork;
+    private Mock<IUserRepository> _mockUserRepository;
+    private Mock<ILoggerFactory> _mockLoggerFactory;
+    private UserService _userService;
+    
     [SetUp]
     public void SetUp()
     {
@@ -28,11 +33,6 @@ public class UserServiceTests
         // Instantiate the service with mocked dependencies
         _userService = new UserService(_mockUnitOfWork.Object, _mockLoggerFactory.Object);
     }
-
-    private Mock<IUnitOfWork> _mockUnitOfWork;
-    private Mock<IUserRepository> _mockUserRepository;
-    private Mock<ILoggerFactory> _mockLoggerFactory;
-    private UserService _userService;
 
     /// <summary>
     ///     Test to ensure GetQualifiedUserIDs returns expected user IDs.

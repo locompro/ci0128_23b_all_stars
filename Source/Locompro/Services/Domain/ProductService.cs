@@ -4,14 +4,13 @@ using Locompro.Models.Entities;
 
 namespace Locompro.Services.Domain;
 
-public class ProductService : Service, IProductService
+public class ProductService : DomainService<Product, int>, IProductService
 {
     private readonly IProductRepository _productRepository;
 
-    public ProductService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory,
-        IProductRepository productRepository) : base(unitOfWork, loggerFactory)
+    public ProductService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
     {
-        _productRepository = productRepository;
+        _productRepository = UnitOfWork.GetSpecialRepository<IProductRepository>();
     }
 
     /// <inheritdoc/>

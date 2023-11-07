@@ -13,6 +13,15 @@ var webApplicationBuilder = WebApplication.CreateBuilder(args);
 // Register repositories and services
 RegisterServices(webApplicationBuilder);
 
+// Configure logging
+webApplicationBuilder.Logging.ClearProviders(); // If you want to remove default providers
+webApplicationBuilder.Logging.AddConsole();
+webApplicationBuilder.Logging.AddDebug();
+webApplicationBuilder.Logging.AddEventSourceLogger();
+// Configure log level for Microsoft.EntityFrameworkCore.Database.Command
+webApplicationBuilder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
+webApplicationBuilder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Infrastructure", LogLevel.Warning);
+
 var app = webApplicationBuilder.Build();
 
 // Configure the HTTP request pipeline.
@@ -98,17 +107,9 @@ void RegisterServices(WebApplicationBuilder builder)
         config.LoginPath = "/Account/Login";
     });
 
-    // Register repositories
+    // Register Unit of Work
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-    builder.Services.AddScoped(typeof(ICrudRepository<,>), typeof(CrudRepository<,>));
-    builder.Services.AddScoped(typeof(INamedEntityRepository<,>), typeof(NamedEntityRepository<,>));
-    builder.Services.AddScoped<ISubmissionRepository, SubmissionRepository>();
-    builder.Services.AddScoped<ICantonRepository, CantonRepository>();
-    builder.Services.AddScoped<IPictureRepository, PictureRepository>();
-    builder.Services.AddScoped<IUserRepository, UserRepository>();
-    builder.Services.AddScoped<IProductRepository, ProductRepository>();
     
-
     // Register domain services
     builder.Services.AddScoped(typeof(INamedEntityDomainService<,>), typeof(NamedEntityDomainService<,>));
     builder.Services.AddScoped(typeof(IDomainService<,>), typeof(DomainService<,>));
@@ -117,6 +118,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ISignInManagerService, SignInManagerService>();
     builder.Services.AddScoped<IUserManagerService, UserManagerService>();
     builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IReportService, ReportService>();
     builder.Services.AddScoped<IProductService, ProductService>();
 
     // Register application services

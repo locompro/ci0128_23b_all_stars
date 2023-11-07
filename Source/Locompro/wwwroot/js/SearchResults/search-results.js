@@ -11,11 +11,13 @@ document.addEventListener("DOMContentLoaded", function () {
             return response.json();
         })
         .then(searchResultsData => {
+            if (searchResultsData.Redirect === 'redirect') {
+                location.href = '/';
+            }
             searchResultsPage = new SearchResultsPage(searchResultsData.SearchResults, searchResultsData.Data);
             searchResultsPage.populateTableWithResults();
         })
         .catch(() => {
-            console.error('Error loading pictures');
         });
 });
 
@@ -296,6 +298,10 @@ window.addEventListener('beforeunload', function (e) {
     let location = url + handler;
 
     let data = searchResultsPage.pageSearchData;
+    
+    //console.log(data);
+    //alert("data: "  +  data);
+    //e.preventDefault();
 
     fetch(location, {
         method: 'POST',
@@ -310,5 +316,53 @@ window.addEventListener('beforeunload', function (e) {
                 throw new Error('Network response was not ok.');
             }
         });
+    
     e.returnValue = '';
+});
+
+// Inside your document ready function, when setting up the form submission listener:
+document.addEventListener('DOMContentLoaded', function () {
+    const reportForm = document.getElementById('reportForm');
+    reportForm.addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the default form submit
+
+        // Get the submission ID from the form (assuming you set it somewhere on click before form submit)
+        const submissionUserId = reportForm.querySelector('input[name="ReportVm.SubmissionUserId"]').value;
+        const submissionEntryTime = reportForm.querySelector('input[name="ReportVm.SubmissionEntryTime"]').value;
+        const submissionId = submissionUserId + submissionEntryTime;
+
+        // Send the form data using fetch API
+        fetch(reportForm.action, {
+            method: 'POST',
+            body: new FormData(reportForm),
+            headers: {
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.redirectUrl) {
+                    // If a redirect URL is provided, redirect the page
+                    window.location.href = data.redirectUrl;
+                } else {
+                    // Find the button by the submission ID and disable it
+                    const reportButtonToDisable = document.querySelector(`button[data-id="${submissionId}"]`);
+                    if (reportButtonToDisable) {
+                        reportButtonToDisable.disabled = true;
+                    }
+
+                    // Display a success message or update the UI as necessary
+                    $('#descriptionModal').modal('hide');
+                }
+            })
+            .catch(error => {
+                console.error('There has been a problem with your fetch operation:', error);
+                // Handle any errors
+            });
+    });
 });
