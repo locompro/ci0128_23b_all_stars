@@ -6,10 +6,6 @@ function selectReport(index) {
 function reportAction(reportActions, userId, entryTime) {
     let url = window.location.pathname;
     url += "?handler=ActOnReport";
-    
-    console.log(reportActions);
-    
-    console.log(">>" + entryTime);
 
     let dataToSend = {
         Action: "" + reportActions,
@@ -29,6 +25,8 @@ function reportAction(reportActions, userId, entryTime) {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
+            
+            location.href = location.href;
         });
 }
 
