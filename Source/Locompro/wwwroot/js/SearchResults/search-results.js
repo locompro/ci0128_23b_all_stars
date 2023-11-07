@@ -274,7 +274,7 @@ const modal = document.getElementById('ItemModal');
 function applyFilter(filterField) {
     const filterFieldId = filterField.id;
     let filterType = filterFieldId.replace(/Filter$/, '');
-    const filterValue = filterField.value === "todos" ? null : filterField.value;
+    const filterValue = filterField.value === "Todos" ? null : filterField.value;
 
     if (filterType === "productName") {
         filterType = "Name";
@@ -283,7 +283,7 @@ function applyFilter(filterField) {
     }
 
     searchResultsPage.setFilter(filterType, filterValue);
-    filterField.value = filterValue ? filterValue : "todos";
+    filterField.value = filterValue ? filterValue : "Todos";
 }
 
 window.addEventListener('beforeunload', function (e) {

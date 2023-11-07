@@ -17,7 +17,7 @@ namespace Locompro.Services;
 /// </summary>
 public class ModerationService : Service, IModerationService
 {
-    private readonly string[] _rolesCheckedInAssignment =
+    private readonly string[] _rolesIncompatibleWithPossibleModerator =
         { RoleNames.Moderator, RoleNames.RejectedModeratorRole, RoleNames.PossibleModerator };
 
     private readonly IUserManagerService _userManagerService;
@@ -52,9 +52,101 @@ public class ModerationService : Service, IModerationService
     }
 
     /// <inheritdoc />
+    public async Task DecideOnModeratorRole(string userId, bool didAcceptRole)
+    {
+        var user = await _userManagerService.FindByIdAsync(userId);
+
+        if (user == null)
+        {
+            throw new ArgumentException($"'{userId}' is not a valid user ID", nameof(userId));
+        }
+        
+        if (!await _userManagerService.IsInRoleAsync(user, RoleNames.PossibleModerator))
+        {
+            throw new ArgumentException($"User with ID '{userId}' is not in necessary role '{RoleNames.PossibleModerator}'", nameof(userId));
+        }
+        
+        if (didAcceptRole)
+        {
+            await AddRoleAsync(user, RoleNames.Moderator);
+        }
+        else
+        {
+            await AddRoleAsync(user, RoleNames.RejectedModeratorRole);
+        }
+
+        await DeleteRoleAsync(user, RoleNames.PossibleModerator);
+    }
+    
+    /// <inheritdoc />
     public async Task ReportSubmission(ReportDto reportDto)
     {
-        await _reportService.Add(reportDto);
+        await _reportService.UpdateAsync(reportDto);
+    }
+
+    public async Task<bool> IsUserPossibleModerator(string userId)
+    {
+        var user = await _userManagerService.FindByIdAsync(userId);
+
+        if (user == null)
+        {
+            throw new ArgumentException($"'{userId}' is not a valid user ID", nameof(userId));
+        }
+
+        return await _userManagerService.IsInRoleAsync(user, RoleNames.PossibleModerator);
+    }
+
+    /// <inheritdoc />
+    public async Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm)
+    {
+        SubmissionKey submissionKey = new ()
+        {
+            UserId = moderatorActionOnReportVm.SubmissionUserId,
+            EntryTime = moderatorActionOnReportVm.SubmissionEntryTime
+        };
+        
+        switch (moderatorActionOnReportVm.Action)
+        {
+            case ModeratorActions.EraseSubmission:
+                await _submissionService.DeleteSubmissionAsync(submissionKey);
+                break;
+            case ModeratorActions.EraseReport:
+                await _submissionService.UpdateSubmissionStatusAsync(submissionKey, SubmissionStatus.Moderated);
+                break;
+            case ModeratorActions.Default:
+            default:
+                throw new ArgumentOutOfRangeException(nameof(moderatorActionOnReportVm));
+        }
+    }
+
+    private async Task AddRoleAsync(User user, string roleName)
+    {
+        if (user == null)
+        {
+            throw new ArgumentNullException(nameof(user));
+        }
+
+        var result = await _userManagerService.AddClaimAsync(user, new Claim(ClaimTypes.Role, roleName));
+
+        if (!result.Succeeded)
+            Logger.LogError("Could not assign '{}' role to user with ID '{}'", roleName, user.Id);
+        else
+            Logger.LogInformation("Assigned '{}' role to user with ID '{}'", roleName, user.Id);
+    }
+    
+    private async Task DeleteRoleAsync(User user, string roleName)
+    {
+        if (user == null)
+        {
+            throw new ArgumentNullException(nameof(user));
+        }
+        
+        var result = await _userManagerService.DeleteClaimAsync(user, new Claim(ClaimTypes.Role, roleName));
+
+        if (!result.Succeeded)
+            Logger.LogError("Could not remove '{}' role from user with ID '{}'", roleName, user.Id);
+        else
+            Logger.LogInformation("Removed '{}' role from user with ID '{}'", roleName, user.Id);
     }
 
     /// <summary>
@@ -80,7 +172,7 @@ public class ModerationService : Service, IModerationService
             return;
         }
 
-        if (await IsUserInAnyIncompatibleRoleAsync(user, _rolesCheckedInAssignment))
+        if (await IsUserInAnyIncompatibleRoleAsync(user, _rolesIncompatibleWithPossibleModerator))
         {
             Logger.LogInformation($"User with ID '{userID}' is already in an incompatible role.");
             return;
@@ -108,28 +200,5 @@ public class ModerationService : Service, IModerationService
     {
         var userRoles = await _userManagerService.GetClaimsOfTypesAsync(user, ClaimTypes.Role);
         return rolesToCheck.Any(role => userRoles.Any(userRole => userRole.Value == role));
-    }
-
-    /// <inheritdoc />
-    public async Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm)
-    {
-        SubmissionKey submissionKey = new ()
-        {
-            UserId = moderatorActionOnReportVm.SubmissionUserId,
-            EntryTime = moderatorActionOnReportVm.SubmissionEntryTime
-        };
-        
-        switch (moderatorActionOnReportVm.Action)
-        {
-            case ModeratorActions.EraseSubmission:
-                await _submissionService.DeleteSubmissionAsync(submissionKey);
-                break;
-            case ModeratorActions.EraseReport:
-                await _submissionService.UpdateSubmissionStatusAsync(submissionKey, SubmissionStatus.Moderated);
-                break;
-            case ModeratorActions.Default:
-            default:
-                throw new ArgumentOutOfRangeException(nameof(moderatorActionOnReportVm));
-        }
     }
 }

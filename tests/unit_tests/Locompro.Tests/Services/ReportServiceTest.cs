@@ -28,9 +28,9 @@ public class ReportServiceTest
         _reportService = new ReportService(_unitOfWork.Object, _loggerFactory);
     }
 
-    /// <author>Ariel Arevalo Alvarado B50562</author>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
     [Test]
-    public async Task Add_CreatesReportFromDtoAndSavesToDatabase()
+    public async Task UpdateAsync_CreatesReportFromDtoAndSavesToDatabase()
     {
         // Arrange
         var reportDto = new ReportDto
@@ -45,7 +45,7 @@ public class ReportServiceTest
         _unitOfWork.Setup(u => u.SaveChangesAsync()).Returns(Task.CompletedTask);
 
         // Act
-        await _reportService.Add(reportDto);
+        await _reportService.UpdateAsync(reportDto);
 
         // Assert
         _reportRepository.Verify(repo => repo.AddAsync(It.Is<Report>(r =>

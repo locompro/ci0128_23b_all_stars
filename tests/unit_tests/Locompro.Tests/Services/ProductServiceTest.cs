@@ -15,32 +15,34 @@ namespace Locompro.Tests.Services
     [TestFixture]
     public class ProductServiceTests
     {
+        private Mock<IUnitOfWork> _mockUnitOfWork;
+        private Mock<ILoggerFactory> _mockLoggerFactory;
         private Mock<IProductRepository> _mockProductRepository;
         private ProductService _productService;
 
         /// <summary>
         /// Setup method to initialize mocks and product service before each test.
         /// </summary>
-        /// <author>Brandon Alonso Mora Umaña</author>
+        /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
         [SetUp]
         public void Setup()
         {
-            // Mock the product repository
+            // Create mock instances
+            _mockUnitOfWork = new Mock<IUnitOfWork>();
             _mockProductRepository = new Mock<IProductRepository>();
+            _mockLoggerFactory = new Mock<ILoggerFactory>();
 
-            // Mock unit of work (if methods we're testing used it, we would set it up)
-
-            // Mock logger factory (we use a NullLoggerFactory as we're not testing logging here)
-            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            // Setup mock behavior
+            _mockUnitOfWork.Setup(uow => uow.GetSpecialRepository<IProductRepository>()).Returns(_mockProductRepository.Object);
 
             // Instantiate the service with the mocked dependencies
-            _productService = new ProductService(loggerFactory, _mockProductRepository.Object);
+            _productService = new ProductService(_mockUnitOfWork.Object, _mockLoggerFactory.Object);
         }
 
         /// <summary>
         /// Tests that GetBrandsAsync returns a list of brands when they exist.
         /// </summary>
-        /// <author>Brandon Alonso Mora Umaña</author>
+        /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
         [Test]
         public async Task GetBrandsAsync_ShouldReturnBrands_WhenBrandsExist()
         {
@@ -59,7 +61,7 @@ namespace Locompro.Tests.Services
         /// <summary>
         /// Tests that GetModelsAsync returns a list of models when they exist.
         /// </summary>
-        /// <author>Brandon Alonso Mora Umaña</author>
+        /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
         [Test]
         public async Task GetModelsAsync_ShouldReturnModels_WhenModelsExist()
         {

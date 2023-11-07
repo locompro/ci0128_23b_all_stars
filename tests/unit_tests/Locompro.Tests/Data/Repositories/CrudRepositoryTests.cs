@@ -4,7 +4,7 @@ using Locompro.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Locompro.Tests.Repositories;
+namespace Locompro.Tests.Data.Repositories;
 
 [TestFixture]
 public class CrudRepositoryTests
@@ -104,7 +104,7 @@ public class CrudRepositoryTests
         userToUpdate.Address = "NewAddressA";
 
         // Act
-        _userRepository.UpdateAsync(userToUpdate);
+        _userRepository.UpdateAsync(userToUpdate.Id, userToUpdate);
         var updatedUser = await _userRepository.GetByIdAsync("1");
 
         // Assert

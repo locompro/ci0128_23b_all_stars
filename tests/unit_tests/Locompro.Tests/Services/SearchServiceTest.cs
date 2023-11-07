@@ -645,6 +645,7 @@ public class SearchServiceTest
     /// <summary>
     ///     Checks if all items returned are within the range of price expected
     /// </summary>
+    /// <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     [Test]
     public async Task GetSubmissionsByPrice_ValidPrice_SubmissionsReturned()
     {
@@ -675,7 +676,7 @@ public class SearchServiceTest
     /// <summary>
     ///     Searches for an item with a specific category and submissions are returned
     /// </summary>
-    /// <author> Brandon Alonso Mora Umaña C15179 </author>
+    /// <author> Brandon Alonso Mora Umaña C15179 - Sprint 2</author>
     [Test]
     public async Task SearchByCategory_ValidSearch_SubmissionReturned()
     {
@@ -708,7 +709,7 @@ public class SearchServiceTest
     /// <summary>
     ///     Searches for an item with a specific category and the result is empty
     /// </summary>
-    /// <author> Brandon Alonso Mora Umaña C15179 </author>
+    /// <author> Brandon Alonso Mora Umaña C15179 - Sprint 2</author>
     [Test]
     public async Task SearchByCategory_ValidSearch_EmptyResults()
     {
@@ -738,7 +739,7 @@ public class SearchServiceTest
     /// <summary>
     ///     Searches for an item with a specific category and the search is invalid
     /// </summary>
-    /// <author> Brandon Alonso Mora Umaña C15179 </author>
+    /// <author> Brandon Alonso Mora Umaña C15179 - Sprint 2</author>
     [Test]
     public async Task SearchByCategory_InvalidSearchEmptyString_EmptyResults()
     {

@@ -1,12 +1,12 @@
 using Locompro.Common.Search.SearchMethodRegistration;
 
-namespace Locompro.Tests.Repositories.Utilities;
+namespace Locompro.Tests.Common.Search;
 
 public class SearchMethodTest
 {
     /// <summary>
     ///     Checks if a that when an invalid search type is provided, it returns null
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public void GetSearchMethodByNameReturnsNull()
@@ -23,7 +23,7 @@ public class SearchMethodTest
 
     /// <summary>
     ///     Checks if the valid search types return a non null search parameter which means it has been found
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public void GetSearchMethodByNameReturnsNotNull()
@@ -34,22 +34,22 @@ public class SearchMethodTest
         Assert.Multiple(() =>
         {
             var searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Name);
-            Assert.IsNotNull(searchParam);
+            Assert.That(searchParam, Is.Not.Null);
 
             searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Province);
-            Assert.IsNotNull(searchParam);
+            Assert.That(searchParam, Is.Not.Null);
 
             searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Canton);
-            Assert.IsNotNull(searchParam);
+            Assert.That(searchParam, Is.Not.Null);
 
             searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Model);
-            Assert.IsNotNull(searchParam);
+            Assert.That(searchParam, Is.Not.Null);
 
             searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Brand);
-            Assert.IsNotNull(searchParam);
+            Assert.That(searchParam, Is.Not.Null);
 
             searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Category);
-            Assert.IsNotNull(searchParam);
+            Assert.That(searchParam, Is.Not.Null);
         });
     }
 }

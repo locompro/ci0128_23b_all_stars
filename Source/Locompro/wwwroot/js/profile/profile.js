@@ -17,8 +17,6 @@ $(document).ready(() => {
         '#ChangePasswordErrorList',
         '#ChangePasswordModalErrors'
     );
-
-   
     
     const updateUserDataModal = new ProfileModalManager(
         '#UpdateUserDataModal',
@@ -48,4 +46,6 @@ $(document).ready(() => {
     
     // Set up an event listener for the change event on the provinces dropdown
     $(provinceHandler.provincesDropdownId).change(() => provinceHandler.handleProvinceChange());
+
+    $('#AcquireModerationRoleModal').modal('show');
 });

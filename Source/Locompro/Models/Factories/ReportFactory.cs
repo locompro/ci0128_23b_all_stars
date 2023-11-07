@@ -3,8 +3,12 @@ using Locompro.Models.Entities;
 
 namespace Locompro.Models.Factories;
 
+/// <summary>
+/// A factory for converting between <see cref="ReportDto"/> and <see cref="Report"/> objects.
+/// </summary>
 public class ReportFactory : GenericEntityFactory<ReportDto, Report>
 {
+    /// <inheritdoc />
     protected override Report BuildEntity(ReportDto dto)
     {
         return new Report
@@ -16,6 +20,7 @@ public class ReportFactory : GenericEntityFactory<ReportDto, Report>
         };
     }
 
+    /// <inheritdoc />
     protected override ReportDto BuildDto(Report entity)
     {
         return new ReportDto
