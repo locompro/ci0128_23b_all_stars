@@ -29,6 +29,7 @@ public class ProfileModelTest
         _userServiceMock.Reset();
         _authServiceMock.Reset();
         _cantonServiceMock.Reset();
+        _moderationServiceMock.Reset();
         var errorCountUserUpdateModal = 0;
         _userDataModalStoreMock.Setup(store => store.StoreError(It.IsAny<string>()))
             .Callback(() => errorCountUserUpdateModal++);
@@ -46,6 +47,7 @@ public class ProfileModelTest
     private readonly Mock<IErrorStore> _userDataModalStoreMock;
     private readonly Mock<IErrorStore> _declineModerationModalStoreMock;
     private readonly Mock<IUserManagerService> _userManagerServiceMock;
+    private readonly Mock<IModerationService> _moderationServiceMock;
 
     private readonly ProfileModel _profileModel;
 
@@ -55,6 +57,7 @@ public class ProfileModelTest
         _authServiceMock = new Mock<IAuthService>();
         _cantonServiceMock = new Mock<IDomainService<Canton, string>>();
         _userManagerServiceMock = new Mock<IUserManagerService>();
+        _moderationServiceMock = new Mock<IModerationService>();
         Mock<IErrorStoreFactory> errorStoreFactoryMock = new();
         errorStoreFactoryMock.Setup(factory => factory.Create()).Returns(new Mock<IErrorStore>().Object);
 
@@ -63,7 +66,8 @@ public class ProfileModelTest
             _authServiceMock.Object,
             _cantonServiceMock.Object,
             errorStoreFactoryMock.Object,
-            _userManagerServiceMock.Object
+            _userManagerServiceMock.Object,
+            _moderationServiceMock.Object
         );
 
         _passwordModalStoreMock = new Mock<IErrorStore>();
