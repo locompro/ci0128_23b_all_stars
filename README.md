@@ -81,9 +81,17 @@ ci0128_23b_all_stars/
 │           │       <a href="./Design/Mockups/Sprint1/Avance2/agregar_producto.png">agregar_producto.png</a>
 │           │       <a href="./Design/Mockups/Sprint1/Avance2/agregar_tienda.png">agregar_tienda.png</a>  
 │           │       <a href="./Design/Mockups/Sprint1/Avance2/resultados_registros.png">resultados_registros.png</a>  
-└───Locompro  
-    └───(Proyecto ASP.NET)
-</pre>
+|
+|
+├───<a href="./Source"> Source </a>
+|    |
+│    └───<a href="./Source/Locompro">Código Fuente de Locompro </a>
+|
+└───<a href="./tests"> tests </a>
+    |
+    └───<a href="./test/unit_test/Locompro.Tests">Unit Tests</a>
+    |
+    └───<a href="tests/functional_tests/Locompro.FunctionalTests"> Functional Tests</a>
 
 ## Manual de usuario
 
@@ -127,6 +135,8 @@ Si fuera necesario dentro de mi perfil, la persona usuaria puede modificar su co
 ![PerfilModificar](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/b0da8442-7609-4a4c-a9e5-e589d3312b9f)
 
 ![PerfilCambiarContrasena](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/efb15109-80fc-433c-a095-acc7d27edd49)
+
+Al modificar los datos la persona usuaria verá notificaciones en su pantalla de perfil indicandoles el exito de la operación o mensajes de error significativos en los formularios de que salió mal.
 
 
 ### 2. Funcionalidad de búsqueda 
@@ -184,6 +194,29 @@ Cuando el producto no existe ya en la base de datos de lo compro, la persona usu
 
 ![resultadodebusquedaVotarYModerar](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/10b499de-0ff0-408d-87c8-a955ab87b762)
 
+Al hacer click sobre un resultado de búsqueda específico se abrira un modal que permite ver todos los aportes que forman ese resultado. Allí, la persona usuaria puede votar seleccionando calificación que desea darle al aporte con las estrellas. 
+Al mismo tiempo el botón bandera permite reportar un aporte que se considera debe ser reportado a moderación. Este botón abre un formulario para describir el problema y enviar el reporte como se muestre acontinuación.
+
+![Reportar](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/ddeb91ac-2dbb-44fd-8e98-6e641f507b6c)
+
+### 5. Moderación
+
+Cuando una persona usuaria cumple con los requisitos de tener más de 10 aportes y una calificación de 4.9 en promedio sobre los aportes, esta es elegida por el sistema para ser moderadora. Esto genera una notificación en la página de mi perfil. Esta notificación es persitente, es decir, aparece cada vez que se entrá al perfil, al menos que se rechace o se acepte. Sin embargo, la persona puede dar click fuera de la notificación y ver su perfil, la notificación volverá a aparecer cuando vuelva a visitar su perfil.
+
+![PerfilPosibleModerador](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/80f69da1-aea0-4f6e-b2e8-6f937bac39db)
+
+Al aceptar la notificación, la persona tendrá esta interfaz y una nueva acción en su página de perfil para dejar el rol de moderador.
+
+![PerfilModeradores](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/b1899f66-09e3-4cb7-84b8-0b6ddf1833ec)
+
+Con el botón de moderar en la barra de navegación disponible desde cualquier parte de la aplicación las personas moderadores tiene acceso al tablero de moderación donde ver aportes reportados y donde pueden tomar acciones de aceptar el reporte, lo que borra el aporte reportado, o solo moderarlo.
+
+![ModeracionYa](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/93e09108-2ace-49fa-9918-b5ba1e2f7f8f)
+
+Al darle click a un reporte muestra las opciones de moderación.
+
+![ModeracionAporte](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/c2732ab8-c089-4655-bcf2-f62c2f8f97d3)
+
 
 ## Manual técnico
 
@@ -220,8 +253,8 @@ dotnet add package Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore --versio
 ```
 ### Preparación de la base de datos
 
-Para preparar la base de datos primero deben hacerse las migraciones. Estas ya estan prepardas dentro del proyecto en la carpeta `/Locompro/Migrations.`
-Desde la terminal y estando dentro de directorio `Source/Locompro`.
+Para preparar la base de datos primero deben hacerse las migraciones. Estas ya estan prepardas dentro del proyecto en la carpeta `Source/Locompro/Migrations.`
+Desde la terminal y estando dentro de directorio `Source/Locompro/`.
 ```
 dotnet ef database update
 ```
@@ -229,15 +262,17 @@ o desde la consola del package manager en visual studio:
 ```
 Update-Database
 ```
-Luego de haber hecho esto, el esquema de la base de datos estará listo en la base de datos especificada. Finalmente, para agregar los datos estáticos de la aplicación, se debe ejecutar el script de sql static.sql en la carpeta `/Locompro/Resources.`
+Luego de haber hecho esto, el esquema de la base de datos estará listo en la base de datos especificada. Finalmente, para agregar los datos estáticos de la aplicación, se debe ejecutar directamente sobre la base de datos el script de sql static.sql en la carpeta `Source/Locompro/Resources`. Para esto es recomendado conectarse a la base de datos de la aplicación utilizando sql server management studio y ejecutar el script allí. Luego de esto la base de datos estará lista.
 
 ### Manual de instalación o ejecución del sistema
 
-Para ejecutar el proyecto desde el IDE Visual Studio Community 2022 o Jetbrains Rider puede presionar el botón de `Run` o `Ejecutar`. También, por medio de la terminal estando dentro de directorio `Source/Locompro`, usando el siguiente comando.
+Para ejecutar el proyecto desde el IDE Visual Studio Community 2022 o Jetbrains Rider puede presionar el botón de `Run` o `Ejecutar`. También, por medio de la terminal estando dentro de directorio `Source/Locompro/`, usando el siguiente comando.
 ```
-dotnet run
+dotnet build
+dotnet run --environment <ambiente>
 ```
-Según los parametros actuales de configuración del proyecto, este se ejecutará y estará escuchando en el puerto 7249
+Según los parametros actuales de configuración del proyecto, este se ejecutará y estará escuchando en el puerto 7249. Se recomienda utilizar el ambiente "Production", pues ya esta base de datos esta preparada. Cabe resaltar que la aplicación cuando el ambiente es Production pedirá por terminal la hilera de conección a la base de datos de production. 
+En caso de usar el ambiente "Development" la aplicación se conecta al servidor sql local.  Para que la aplicación funcione tal y como se espera la base de datos debe esta preparada, con las migraciones aplicadas y con los datos y procedimientos estáticos insertados y creados.
 
 
 ### Generación de la documentación.
