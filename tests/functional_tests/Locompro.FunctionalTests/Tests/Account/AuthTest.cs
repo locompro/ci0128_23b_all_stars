@@ -1,46 +1,26 @@
 ﻿using Locompro.FunctionalTests.PageObjects.Account;
+using Locompro.FunctionalTests.PageObjects.Shared;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
 namespace Locompro.FunctionalTests.Tests.Account;
 
 public class AuthTest
 {
-    class UserData
-    {
-        public string Email { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-    }
-    
-    private readonly UserData _loginData = new()
-    {
-        Email = "Juan@juan",
-        Username = "Pruebitas",
-        Password = "Password@123"
-    };
-    
-    private readonly UserData _registerData = new()
-    {
-        Email = "Juan@juan2",
-        Username = "Juan",
-        Password = "Password@123"
-    };    
-        
-        
-    [SetUp]
-    public void Setup()
-    {
-        var driver = new ChromeDriver();
-        driver.Navigate().GoToUrl("https://localhost:7249/Account/Register");
-        var register = new Register(driver);
-        register.RegisterAs(_loginData.Email, _loginData.Username, _loginData.Password, _loginData.Password);
-    }
 
+    private readonly TestUserData _loginData = new();
+
+    private readonly TestUserData _registerData = new();
+
+    
     [Test]
     public void Login_LoginSuccessful()
     {
         // Arrange
         var driver = new ChromeDriver();
+        var register = new Register(driver);
+        register.GoTo();
+        register.RegisterAs(_loginData);
         var login = new Login(driver);
         login.GoTo();
 
@@ -52,6 +32,9 @@ public class AuthTest
 
         // Assert
         Assert.That(login.IsLoggedIn(), Is.True);
+        login.ClickLogout();
+        driver.Close();
+        driver.Quit();
     }
 
     [Test]
@@ -61,15 +44,14 @@ public class AuthTest
         var driver = new ChromeDriver();
         var register = new Register(driver);
         register.GoTo();
-
-        var email = _registerData.Email;
-        var username = _registerData.Username;
-        var password = _registerData.Password;
-
+        
         // Act
-        register.RegisterAs(email, username, password, password);
+        register.RegisterAs(_registerData);
 
         // Assert
         Assert.That(register.IsRegistered(), Is.True);
+        register.ClickLogout();
+        driver.Close();
+        driver.Quit();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Locompro.FunctionalTests.PageObjects.Shared;
+﻿using System.Security.Cryptography;
+using Locompro.FunctionalTests.PageObjects.Shared;
 using OpenQA.Selenium;
 
 namespace Locompro.FunctionalTests.PageObjects.Account;
@@ -24,6 +25,15 @@ public class Register : BasePage
         confirmPasswordInput.SendKeys(confirmPassword);
         registerButton.Click();
     }
+    
+    public void RegisterAs(TestUserData userData)
+    {
+        emailInput.SendKeys(userData.Email);
+        usernameInput.SendKeys(userData.Username);
+        passwordInput.SendKeys(userData.Password);
+        confirmPasswordInput.SendKeys(userData.Password);
+        registerButton.Click();
+    }
 
     public bool IsRegistered()
     {
@@ -34,4 +44,5 @@ public class Register : BasePage
     {
         Driver.Navigate().GoToUrl("https://localhost:7249/Account/Register");
     }
+    
 }

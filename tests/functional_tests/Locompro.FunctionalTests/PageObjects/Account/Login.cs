@@ -10,7 +10,7 @@ public class Login : BasePage
     private By _passwordBy => By.Id("passwordInput");
     private By _signInBy => By.Id("signInSubmit");
 
-    public Login(WebDriver driver) : base(driver)
+    public Login(IWebDriver driver) : base(driver)
     {
     }
 
@@ -21,9 +21,13 @@ public class Login : BasePage
         Driver.FindElement(_signInBy).Click();
     }
     
+    public void LoginAs(TestUserData userData)
+    {
+        LoginAs(userData.Username, userData.Password);
+    }
     public bool IsLoggedIn()
     {
-        return base.IsLogoutDisplayed();
+        return IsLogoutDisplayed();
     }
     
     public void GoTo()

@@ -2,7 +2,7 @@ using Locompro.Common.Search;
 using Locompro.Common.Search.QueryBuilder;
 using Locompro.Common.Search.SearchMethodRegistration;
 
-namespace Locompro.Tests.Repositories.Utilities;
+namespace Locompro.Tests.Common.Search;
 
 [TestFixture]
 public class QueryBuilderTest

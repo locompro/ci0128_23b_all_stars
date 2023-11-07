@@ -1,51 +1,92 @@
 ﻿using Locompro.FunctionalTests.PageObjects.Account;
-using Locompro.Models.Entities;
+using Locompro.FunctionalTests.PageObjects.Shared;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 
 namespace Locompro.FunctionalTests.Tests.Account;
 
 public class ProfileTest
 {
-    class UserData
-    {
-        public string Email { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-    }
-
-    private readonly Register _register = new(new ChromeDriver());
-    private readonly Login _login = new(new ChromeDriver());
-    private readonly Profile _profile = new(new ChromeDriver());
-
-    private readonly UserData _userData = new()
-    {
-        Email = "Juan3@juan3",
-        Username = "Juan3",
-        Password = "Password@123"
-    };
-
-
-    [SetUp]
-    public void Setup()
-    {
-        _register.Driver.Navigate().GoToUrl("https://localhost:7249/Account/Register");
-        _register.RegisterAs(_userData.Email, _userData.Username, _userData.Password, _userData.Password);
-        _login.Driver.Navigate().GoToUrl("https://localhost:7249/Account/Login");
-        _login.LoginAs(_userData.Username, _userData.Password);
-    }
-
+    private Login _login = null!;
+    private Profile _profile = null!;
+    private Register _register = null!;
+    private TestUserData _loginData = new();
+    
+    
     [Test]
     public void UserDataIsCorrect()
     {
+        // arrange
+        var driver = new ChromeDriver();
+        _register = new Register(driver);
+        var userData = new TestUserData();
+        _register.GoTo();
+        _register.RegisterAs(userData);
+        _profile = new Profile(driver);
+
+        // act
         _profile.GoTo();
 
+        // assert
         Assert.Multiple(() =>
         {
-            Assert.That(_profile.GetUserName(), Is.EqualTo(_userData.Username));
-            Assert.That(_profile.GetEmail(), Is.EqualTo(_userData.Email));
+            Assert.That(_profile.GetUserName(), Is.EqualTo(userData.Username));
+            Assert.That(_profile.GetEmail(), Is.EqualTo(userData.Email));
             Assert.That(_profile.GetAddress(), Is.Empty.Or.Null);
             Assert.That(_profile.GetContributions(), Is.EqualTo(0));
             Assert.That(_profile.GetRating(), Is.EqualTo(0));
         });
+        _register.ClickLogout();
+        driver.Close();
+        _loginData = userData;
+        driver.Quit();
     }
-}  
+
+    [Test]
+    public void UserDataIsUpdated()
+    {
+        // arrange
+        var driver = new ChromeDriver();
+        _login = new Login(driver);
+        _login.GoTo();
+        _login.LoginAs(_loginData);
+        _profile = new Profile(driver);
+
+        const string email = "ak7@gg.lol";
+        const string address = "Alajuela, Alajuela, Parque de los mangos";
+        // act
+        _profile.GoTo();
+        // wait for page to load
+
+        _profile.OpenUpdateUserDataModal();
+        _profile.UpdateUserData(email, "Alajuela", "Alajuela", "Parque de los mangos");
+
+        // assert
+        Assert.That(_profile.GetEmail(), Is.EqualTo(email));
+        _profile.ClickLogout();
+        driver.Close();
+        driver.Quit();
+        
+    }
+
+    [Test]
+    public void ChangePassword()
+    {
+        // arrange
+        var driver = new ChromeDriver();
+        _login = new Login(driver);
+        _login.GoTo();
+        _login.LoginAs(_loginData);
+        _profile = new Profile(driver);
+        
+        // act
+        _profile.GoTo();
+        _profile.OpenChangePasswordModal();
+        
+        // assert
+        Assert.That(_profile.ChechPasswordModalIsAsExpected(), Is.True);
+        _profile.ClickLogout();
+        driver.Close();
+        driver.Quit();
+    }
+}

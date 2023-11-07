@@ -4,7 +4,7 @@ using Locompro.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Locompro.Tests.Repositories;
+namespace Locompro.Tests.Data.Repositories;
 
 [TestFixture]
 public class CrudRepositoryTests
