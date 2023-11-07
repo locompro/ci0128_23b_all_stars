@@ -13,7 +13,10 @@ public class ProfileTest
     private Register _register = null!;
     private TestUserData _loginData = new();
     
-    
+    /// <summary>
+    /// Checks if the user data is correct when the user registers.
+    /// </summary>
+    /// <author> Joseph Valderde Kong - C18100 </author>
     [Test, Order(1)]
     public void UserDataIsCorrect()
     {
@@ -41,6 +44,10 @@ public class ProfileTest
         driver.Quit();
     }
 
+    /// <summary>
+    /// Checks if the user data is updated when the user updates it.
+    /// </summary>
+    /// <author> Ariel Arévalo Alvarado - B50562 </author>
     [Test]
     public void UserDataIsUpdated()
     {
@@ -68,7 +75,11 @@ public class ProfileTest
         driver.Quit();
         
     }
-
+    
+    /// <summary>
+    /// Check if the password modal is displayed when the user clicks on the change password button.
+    /// </summary>
+    /// <author> A. Badilla Olivas - B80874 </author>
     [Test]
     public void ChangePassword()
     {

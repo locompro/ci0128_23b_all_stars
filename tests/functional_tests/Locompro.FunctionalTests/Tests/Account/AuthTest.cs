@@ -7,12 +7,14 @@ namespace Locompro.FunctionalTests.Tests.Account;
 
 public class AuthTest
 {
-
     private readonly TestUserData _loginData = new();
 
     private readonly TestUserData _registerData = new();
 
-    
+    /// <summary>
+    /// Checks if login is successful.
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli - C14826</author>
     [Test]
     public void Login_LoginSuccessful()
     {
@@ -26,7 +28,7 @@ public class AuthTest
 
         var username = _loginData.Username;
         var password = _loginData.Password;
-        
+
         // Act
         login.LoginAs(username, password);
 
@@ -37,6 +39,10 @@ public class AuthTest
         driver.Quit();
     }
 
+    /// <summary>
+    /// Checks if the app registers an user successfully.
+    /// </summary>
+    /// <author> Brandon Alonso Mora Umaña - C15179 </author>
     [Test]
     public void Register_RegisterSuccessful()
     {
@@ -44,7 +50,7 @@ public class AuthTest
         var driver = new ChromeDriver();
         var register = new Register(driver);
         register.GoTo();
-        
+
         // Act
         register.RegisterAs(_registerData);
 
