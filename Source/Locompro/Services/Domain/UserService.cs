@@ -1,24 +1,32 @@
 ﻿using Locompro.Data;
-using Locompro.Models;
-using Locompro.Repositories;
+using Locompro.Data.Repositories;
+using Locompro.Models.Entities;
+using Locompro.Models.Results;
 
-namespace Locompro.Services.Domain
+namespace Locompro.Services.Domain;
+
+public class UserService : Service, IUserService
 {
     /// <summary>
-    /// Domain service for User entities.
+    ///     The repository for performing user-related operations.
     /// </summary>
-    public class UserService : AbstractDomainService<User, string, UserRepository>
+    private readonly IUserRepository _userRepository;
+
+    /// <summary>
+    ///     Initializes a new instance of the <see cref="UserService" /> class.
+    /// </summary>
+    /// <param name="loggerFactory">The factory used to create loggers.</param>
+    /// <param name="userRepository"></param>
+    public UserService(ILoggerFactory loggerFactory, IUserRepository userRepository) : base(loggerFactory)
     {
-        /// <summary>
-        /// Constructs a User service for a given repository.
-        /// </summary>
-        /// <param name="unitOfWork">Unit of work to handle transactions.</param>
-        /// <param name="repository">Repository to base the service on.</param>
-        /// <param name="loggerFactory">Factory for service logger.</param>
-        public UserService(UnitOfWork unitOfWork, UserRepository repository, ILoggerFactory loggerFactory) 
-            : base(unitOfWork, repository, loggerFactory)
-        {
-        }
-        
+        // Retrieves the user repository from the unit of work
+        _userRepository = userRepository;
+    }
+
+    /// <inheritdoc/>
+    public List<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
+    {
+        // Delegates the call to the user repository
+        return _userRepository.GetQualifiedUserIDs();
     }
 }

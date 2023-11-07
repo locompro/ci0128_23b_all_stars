@@ -1,114 +1,91 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+﻿using System.Collections.Concurrent;
+using Locompro.Data.Repositories;
+using Microsoft.EntityFrameworkCore;
 
-namespace Locompro.Data
+namespace Locompro.Data;
+
+/// <summary>
+///     DB transaction handler.
+/// </summary>
+public class UnitOfWork : IUnitOfWork
 {
+    private readonly DbContext _context;
+    private readonly ILogger _logger;
+
+    private readonly ILoggerFactory _loggerFactory;
+    private readonly ConcurrentDictionary<Type, IRepository> _repositories;
+    private readonly Dictionary<Type, Func<IRepository>> _specialRepositoryFactories;
+
     /// <summary>
-    /// DB transaction handler.
+    ///     Constructs a unit of work for a given context.
     /// </summary>
-    public class UnitOfWork
+    /// <param name="loggerFactory">Logger for unit of work.</param>
+    /// <param name="context"></param>
+    public UnitOfWork(ILoggerFactory loggerFactory, DbContext context)
     {
-        private readonly bool _isTesting;
-        private readonly ILogger<UnitOfWork> _logger;
-        private readonly LocomproContext _dbContext;
-        private IDbContextTransaction _transaction;
+        _logger = loggerFactory.CreateLogger(GetType());
+        _context = context;
 
-        /// <summary>
-        /// Constructs a unit of work for a given context.
-        /// </summary>
-        /// <param name="logger">Logger for unit of work.</param>
-        /// <param name="dbContext">Context to base unit of work on.</param>
-        public UnitOfWork(ILogger<UnitOfWork> logger, LocomproContext dbContext)
+        _loggerFactory = loggerFactory;
+        _repositories = new ConcurrentDictionary<Type, IRepository>();
+        _specialRepositoryFactories = new Dictionary<Type, Func<IRepository>>
         {
-            _logger = logger;
-            _dbContext = dbContext;
-            _isTesting = _dbContext.Database.ProviderName.EndsWith("InMemory") ||
-                         _dbContext.Database.ProviderName.EndsWith("InMemoryDatabaseProvider");
+            { typeof(ICantonRepository), () => new CantonRepository(_context, _loggerFactory) },
+            { typeof(ISubmissionRepository), () => new SubmissionRepository(_context, _loggerFactory) },
+            { typeof(IPictureRepository), () => new PictureRepository(_context, _loggerFactory) },
+            { typeof(IUserRepository), () => new UserRepository(_context, _loggerFactory) }
+        };
+    }
+
+    public async Task SaveChangesAsync()
+    {
+        try
+        {
+            await _context.SaveChangesAsync();
+            _logger.LogInformation("Changes saved successfully");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Failed to save changes");
+            throw;
+        }
+    }
+
+    public void RegisterRepository<TR>(TR repository) where TR : class, IRepository
+    {
+        var type = typeof(TR);
+        _repositories[type] = repository;
+    }
+
+    public ICrudRepository<T, TK> GetCrudRepository<T, TK>() where T : class
+    {
+        var type = typeof(ICrudRepository<T, TK>);
+        if (_repositories.TryGetValue(type, out var repository)) return (ICrudRepository<T, TK>)repository;
+        repository = new CrudRepository<T, TK>(_context, _loggerFactory);
+        _repositories[type] = repository;
+        return (ICrudRepository<T, TK>)repository;
+    }
+
+    public INamedEntityRepository<T, TK> GetNamedEntityRepository<T, TK>() where T : class
+    {
+        var type = typeof(INamedEntityRepository<T, TK>);
+        if (_repositories.TryGetValue(type, out var repository)) return (INamedEntityRepository<T, TK>)repository;
+        repository = new NamedEntityRepository<T, TK>(_context, _loggerFactory);
+        _repositories[type] = repository;
+        return (INamedEntityRepository<T, TK>)repository;
+    }
+
+    public TR GetSpecialRepository<TR>() where TR : class, IRepository
+    {
+        var type = typeof(TR);
+        if (_repositories.TryGetValue(type, out var repository)) return (TR)repository;
+        if (_specialRepositoryFactories.TryGetValue(typeof(TR), out var factory))
+        {
+            repository = factory();
+            _repositories[type] = repository;
+            return (TR)repository;
         }
 
-        /// <summary>
-        /// Opens a DB transaction.
-        /// </summary>
-        public async Task BeginTransaction()
-        {
-            if (_isTesting) return;
-            
-            _transaction = await _dbContext.Database.BeginTransactionAsync();
-            _logger.Log(LogLevel.Information, "Beginning transaction {}", _transaction.TransactionId);
-        }
-
-        /// <summary>
-        /// Commits a DB transaction.
-        ///
-        /// Rolls back transaction in the event of an exception.
-        /// </summary>
-        public async Task Commit()
-        {
-            if (_isTesting) return;
-            
-            try
-            {
-                await _dbContext.SaveChangesAsync();
-                await _transaction.CommitAsync();
-            }
-            catch(Exception e)
-            {
-                _logger.Log(LogLevel.Error, e, "Commit failed for transaction {}", _transaction.TransactionId);
-                await Rollback();
-                throw;
-            }
-            finally
-            {
-                if (_transaction != null)
-                {
-                    await _transaction.DisposeAsync();
-                    _transaction = null;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Rolls back a DB transaction.
-        /// </summary>
-        public async Task Rollback()
-        {
-            if (_isTesting) return;
-            
-            try
-            {
-                await _transaction.RollbackAsync();
-            }
-            finally
-            {
-                if (_transaction != null)
-                {
-                    await _transaction.DisposeAsync();
-                    _transaction = null;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Disposes of an unused DB transaction.
-        /// </summary>
-        public void Dispose()
-        {
-            if (_isTesting) return;
-            
-            DisposeAsync().AsTask().Wait();
-        }
-
-        /// <summary>
-        /// Disposes of an unused DB transaction asynchronously.
-        /// </summary>
-        private async ValueTask DisposeAsync()
-        {
-            if (_transaction != null)
-            {
-                await _transaction.DisposeAsync();
-                _transaction = null;
-            }
-
-            await _dbContext.DisposeAsync();
-        }
+        throw new ArgumentException($"{type} is not a valid repository type.");
     }
 }

@@ -1,11 +1,34 @@
-.seach-results-page-container {
+.search-results-page-container {
     margin-bottom: 3px;
     margin-top: -52px;
 }
 
 .search-input-group {
     margin: 0 auto;
-    margin-right: 10px;
+    margin-right: 0px;
+}
+
+.search-input-group-on-advanced-search {
+    .card
+;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-color: #b9deff;
+    border-width: 2px;
+    border-radius: 30px;
+    background-color: #b9deff;
+}
+
+.search-bar-group-default {
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.search-bar-group-on-advanced-search {
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
 .search-results-button-rounded-top {
@@ -61,12 +84,19 @@
 
 .advanced-search-results-base {
     margin-bottom: 0px;
-    
+}
+
+.advanced-search-button-on-modal-shown {
+    .col-1
+;
+    width: 30px;
+    background-color: #b9deff;
+    border-color: #b9deff;
 }
 
 .search-results-card {
-    margin-top: 15px;
-    padding-top: 15px;
+    margin-top: 10px;
+    padding-top: 25px;
     padding-bottom: 0px;
     padding-left: 25px;
     padding-right: 25px;
@@ -74,12 +104,11 @@
 }
 
 .table-encapsulate-for-results {
-    margin-top: 15px;
-    overflow-y:auto;
+    overflow-y: auto;
 }
 
 .search-results-table {
-    cursor:pointer
+    cursor: pointer
 }
 
 .previous-next-button-area {
@@ -101,5 +130,58 @@
 
 .page-amount-text {
     margin-left: 10px;
-    margin-bottom:0px;
+    margin-bottom: 0px;
+}
+
+.sort-asc::after {
+    content: '▲';
+    color: #007BFF; /* match the bootstrap primary color, change if needed */
+}
+
+.sort-desc::after {
+    content: '▼';
+    color: #007BFF; /* match the bootstrap primary color, change if needed */
+}
+
+.sort-none::after {
+    content: '';
+}
+
+.no-underline-link {
+    text-decoration: none;
+}
+
+.close-modal-button-hidden {
+    border: 2px solid #b9deff;
+    background-color: #b9deff;
+    width: 95%;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    height: 10px;
+    color: white;
+    display: none;
+}
+
+.close-modal-button-shown {
+    border: 2px solid #b9deff;
+    background-color: #b9deff;
+    width: 95%;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    height: 5px;
+    color: white;
+    display: block;
+    margin: 0 auto;
+}
+
+.prices-cell {
+    text-align: right;
+    padding-left: 0px;
+' !important;
+}
+
+.store-cell {
+    padding-left: 30px !important;
 }

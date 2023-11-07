@@ -1,23 +1,36 @@
-﻿@using Microsoft.AspNetCore.Identity
-@using Locompro.Data
-@using Locompro.Models
-@using Locompro.Services
+﻿@using Locompro.Common
+@using Locompro.Models.Entities
+@using Locompro.Services.Auth
 
-@inject AuthService AuthService
+@inject IUserManagerService UserManagerService
+@inject IAuthService AuthService
 @{
     var currentPage = Context.Request.Path.Value;
     var isLoggedIn = AuthService.IsLoggedIn();
+    var userId = AuthService.GetUserId();
+    var isModerator = false;
+    User user = null;
+    if (isLoggedIn)
+    {
+        user = await UserManagerService.FindByIdAsync(userId);
+        isModerator = false;
+    }
+    if (user != null)
+    {
+        isModerator = await UserManagerService.IsInRoleAsync(user, RoleNames.Moderator);
+    }
 }
 
 <!DOCTYPE html>
 <html data-bs-theme="light" lang="en">
+
 <head>
+    @await RenderSectionAsync("Head", false)
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
     <title>LoCoMPro</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/Locompro.styles.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
     <link rel="stylesheet" href="~/assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="~/assets/fonts/material-icons.min.css">
@@ -40,70 +53,77 @@
     <link rel="stylesheet" href="~/assets/css/Stats-icons.css">
     <link rel="stylesheet" href="~/assets/css/Table-With-Search-search-table.css">
     <link rel="stylesheet" href="~/assets/css/Table-With-Search.css">
-    <!-- for the plus sign  -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div id="isLoggedIn" data="@Html.Raw(isLoggedIn)" style="display: none;"></div>
 </head>
+
 <body>
 <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-        <div class="container">
-
-            <!-- if the current site is not the main menu  -->
-            @if (!currentPage.EndsWith("/"))
-            {
-                // show the title
-                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-page="/Index">LoCoMPro</a>
-            }
-
-            <!-- if logged in  -->
-            @if (isLoggedIn)
-            {
-                <div class="collapse navbar-collapse flex-grow-0 order-md-first" id="navcol-4">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Submissions/Create">
-                                <i class="fa fa-plus" style="margin-right: 8px;">
-                                </i>
-                                Aportar
-                            </a>
-                        </li>
-                        <li class="nav-item"></li>
-                    </ul>
-                    <div class="d-md-none my-2">
-                        <button class="btn btn-light me-2" type="button">Button</button>
-                        <button class="btn btn-primary" type="button">Button</button>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 justify-content-center">
+        <div class="container d-flex w-100">
+            <div class="col">
+                <!-- Left side buttons for logged in users -->
+                @if (isLoggedIn)
+                {
+                    <div class="d-flex">
+                        <ul class="navbar-nav">
+                            <li class="nav-item me-2">
+                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Submissions/Create">
+                                    <i class="fa fa-plus" style="margin-right: 8px;"></i>Aportar
+                                </a>
+                            </li>
+                            @if (isModerator)
+                            {
+                                <li class="nav-item">
+                                    <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Moderation/Moderator">
+                                       <i class="fa fa-gavel"></i> Moderar
+                                    </a>
+                                </li>
+                            }
+                        </ul>
                     </div>
-                </div>
-                <div class="d-none d-md-block">
-                    <form asp-page="/Account/Logout" method="post" class="d-inline-block">
-                        <button type="submit" class="btn btn-primary">Cerrar sesión</button>
-                    </form>
-                </div>
-            }
-            else
-            {
-                <button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-3">
-                    <span class="visually-hidden">Toggle navigation</span>
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navcol-3">
-                    <ul class="navbar-nav mx-auto">
-                        <li class="nav-item"></li>
-                        <li class="nav-item"></li>
-                        <li class="nav-item"></li>
-                    </ul>
-                    @if (currentPage != "/Account/Login")
-                    {
-                        <a class="btn btn-primary" role="button" asp-page="/Account/Login">Iniciar sesión</a>
-                    }
-                </div>
-            }
+                }
+            </div>
 
+            <div class="col text-center">
+                <!-- Title, shown unless on the main menu -->
+                @if (!currentPage!.EndsWith("/"))
+                {
+                    <a class="navbar-brand" asp-area="" asp-page="/Index">LoCoMPro</a>
+                }
+            </div>
+    
+            <div class="col">
+                <!-- Right side buttons -->
+                <div class="d-flex justify-content-end">
+                    <ul class="navbar-nav">
+                        @if (isLoggedIn)
+                        {
+                            <li class="nav-item" style="margin-right: 10px">
+                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Account/Profile">
+                                    <i class="fa fa-user" style="margin-left: 8px;"></i>  Perfil
+                                </a>
+                            </li>
+                            <form asp-page="/Account/Logout" method="post" class="d-inline-block">
+                                <button type="submit" class="btn btn-primary ps-4 pe-4 rounded-pill">Cerrar sesión</button>
+                            </form>
+                        }
+                        else
+                        {
+                            @if (currentPage != "/Account/Login")
+                            {
+                                <a class="btn btn-primary" role="button" asp-page="/Account/Login">Iniciar sesión</a>
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
         </div>
     </nav>
+
 </header>
-<div class="container" style="margin-bottom: 200px;padding-right:0px; padding-left:0px">
-    <main role="main" class="pb-3" style="min-height: calc(100vh-100px)">
+<div class="container" style="margin-bottom: 200px;padding-right:0; padding-left:0">
+    <main>
         @RenderBody()
     </main>
 </div>
@@ -116,7 +136,7 @@
     <div class="container">
         <ul class="list-inline my-2">
             <li class="list-inline-item">
-                <a class="link-secondary" href="/Privacy">Política de privacidad</a>
+                <a class="link-secondary" asp-page="Privacy">Política de privacidad</a>
             </li>
             <li class="list-inline-item">
                 <a class="link-secondary" href="#">Terminos y condiciones</a>
@@ -131,6 +151,6 @@
 
 <partial name="_ValidationScriptsPartial"/>
 
-@await RenderSectionAsync("Scripts", required: false)
+@await RenderSectionAsync("Scripts", false)
 </body>
 </html>

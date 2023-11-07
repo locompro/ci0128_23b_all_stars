@@ -242,4 +242,16 @@ Usar el `Doxyfile` que se encuentra en  `Source/Locompro`, abrirlo con doxygenwi
    - NUnit.Analyzers: Versión 3.6.1
    - coverlet.collector: Versión 3.2.0
    - Microsoft.EntityFrameworkCore.InMemory: Versión 6.0.22
+   - NUnit3TestAdapter --version 4.2.0
+
+   Para correr las pruebas y generar un reporte, desde la raiz del repositorio puede utilizar los siguientes comando en terminal
+   ```
+   dotnet tool install --global JetBrains.dotCover.GlobalTool
+   ```
+   Luego
+   ```
+   dotnet dotcover test --dcReportType=HTML
+   ```
+   Esto generará en la raiz de la carpeta un archivo "dotCover.Output.html" que muestra la cobertura de las pruebas.
+   
 
