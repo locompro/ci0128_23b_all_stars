@@ -171,6 +171,12 @@ public class SearchResultsModel : SearchPageModel
     
     public async Task<JsonResult> OnPostReportSubmissionAsync(ReportVm reportVm)
     {
+        if (!_authService.IsLoggedIn())
+        {
+            Response.StatusCode = 302; // Redirect status code
+            return new JsonResult(new { redirectUrl = "/Account/Login" });
+        }
+        
         try
         {
             var reportMapper = new ReportMapper();
@@ -216,6 +222,7 @@ public class SearchResultsModel : SearchPageModel
     {
         if (!_authService.IsLoggedIn())
         {
+            Response.StatusCode = 302; // Redirect status code
             return new JsonResult(new { redirectUrl = "/Account/Login" });
         }
         

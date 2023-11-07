@@ -339,14 +339,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(data => {
-                // Find the button by the submission ID and disable it
-                const reportButtonToDisable = document.querySelector(`button[data-id="${submissionId}"]`);
-                if (reportButtonToDisable) {
-                    reportButtonToDisable.disabled = true;
+                if (data.redirectUrl) {
+                    // If a redirect URL is provided, redirect the page
+                    window.location.href = data.redirectUrl;
+                } else {
+                    // Find the button by the submission ID and disable it
+                    const reportButtonToDisable = document.querySelector(`button[data-id="${submissionId}"]`);
+                    if (reportButtonToDisable) {
+                        reportButtonToDisable.disabled = true;
+                    }
+
+                    // Display a success message or update the UI as necessary
+                    $('#descriptionModal').modal('hide');
                 }
-                
-                // Display a success message or update the UI as necessary
-                $('#descriptionModal').modal('hide');
             })
             .catch(error => {
                 console.error('There has been a problem with your fetch operation:', error);

@@ -55,9 +55,6 @@ class SearchResultsModal {
 
         // Building the picture container with the product images
         this.pictureContainer.buildPictureContainer();
-
-        const isLoggedInElement = document.getElementById('isLoggedIn');
-        const isLoggedIn = isLoggedInElement.getAttribute('data') === 'True';
         
         // Populating the submissions table with entries
         for (const submission of this.searchResults[this.itemSelected].Submissions) {
@@ -102,6 +99,9 @@ class SearchResultsModal {
                 reportButton.setAttribute('data-bs-target', '#descriptionModal');
 
                 reportButton.addEventListener('click', () => {
+                    const isLoggedInElement = document.getElementById('isLoggedIn');
+                    const isLoggedIn = isLoggedInElement.getAttribute('data') === 'True';
+                    
                     if (!isLoggedIn) {
                         window.location.href = '/Account/Login'; // Redirect to the login page if not logged in
                         return; // Exit the function to prevent the rest of the code from running
