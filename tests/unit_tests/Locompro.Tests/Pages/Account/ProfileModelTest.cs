@@ -236,9 +236,9 @@ public class ProfileModelTest
 
         // Assert
         Assert.That(result, Is.InstanceOf<RedirectToPageResult>());
-        _userServiceMock.Verify(us => us.Update(It.Is<User>(u => u.Id == user.Id)), Times.Once);
-        _userServiceMock.Verify(us => us.Update(It.Is<User>(u => u.Email == userDataUpdate.Email)), Times.Once);
-        _userServiceMock.Verify(us => us.Update(It.Is<User>(u => u.Address == userDataUpdate.GetAddress())),
+        _userServiceMock.Verify(us => us.Update(It.IsAny<string>(), It.Is<User>(u => u.Id == user.Id)), Times.Once);
+        _userServiceMock.Verify(us => us.Update(It.IsAny<string>(), It.Is<User>(u => u.Email == userDataUpdate.Email)), Times.Once);
+        _userServiceMock.Verify(us => us.Update(It.IsAny<string>(), It.Is<User>(u => u.Address == userDataUpdate.GetAddress())),
             Times.Once);
         Assert.Multiple(() =>
         {
@@ -272,7 +272,7 @@ public class ProfileModelTest
             Assert.That(_profileModel.TempData["IsUserDataUpdated"], Is.Null.Or.EqualTo(false));
             Assert.That(_userDataModalStoreMock.Object.HasErrors, Is.EqualTo(true));
         });
-        _userServiceMock.Verify(us => us.Update(It.IsAny<User>()), Times.Never);
+        _userServiceMock.Verify(us => us.Update(It.IsAny<string>(), It.IsAny<User>()), Times.Never);
         _userDataModalStoreMock.Verify(store => store.StoreError(It.IsAny<string>()), Times.AtLeastOnce);
     }
 

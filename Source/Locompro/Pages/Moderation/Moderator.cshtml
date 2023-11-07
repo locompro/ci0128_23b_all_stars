@@ -1,7 +1,32 @@
 @page
 @using Locompro.Common
+@using Locompro.Models.Entities
 @using Locompro.Models.ViewModels
+@using Locompro.Services.Auth
 @model ModeratorPageModel
+
+@inject IUserManagerService UserManagerService
+@inject IAuthService AuthService
+@{
+    var isLoggedIn = AuthService.IsLoggedIn();
+    var userId = AuthService.GetUserId();
+    var isModerator = false;
+    User user = null;
+    if (isLoggedIn)
+    {
+        user = await UserManagerService.FindByIdAsync(userId);
+        isModerator = false;
+    }
+    if (user != null)
+    {
+        isModerator = await UserManagerService.IsInRoleAsync(user, RoleNames.Moderator);
+    }
+
+    if (!isModerator)
+    {
+        Response.Redirect("/Index");
+    }
+}
 
 <div>
     <h1>Moderación</h1>

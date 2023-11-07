@@ -1,4 +1,5 @@
 ﻿@using Locompro.Common
+@using Locompro.Models.Entities
 @using Locompro.Services.Auth
 
 @inject IUserManagerService UserManagerService
@@ -8,9 +9,14 @@
     var isLoggedIn = AuthService.IsLoggedIn();
     var userId = AuthService.GetUserId();
     var isModerator = false;
+    User user = null;
     if (isLoggedIn)
     {
-        var user = await UserManagerService.FindByIdAsync(userId);
+        user = await UserManagerService.FindByIdAsync(userId);
+        isModerator = false;
+    }
+    if (user != null)
+    {
         isModerator = await UserManagerService.IsInRoleAsync(user, RoleNames.Moderator);
     }
 }
@@ -48,6 +54,7 @@
     <link rel="stylesheet" href="~/assets/css/Table-With-Search-search-table.css">
     <link rel="stylesheet" href="~/assets/css/Table-With-Search.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div id="isLoggedIn" data="@Html.Raw(isLoggedIn)" style="display: none;"></div>
 </head>
 
 <body>
@@ -61,19 +68,19 @@
                     <div class="d-flex">
                         <ul class="navbar-nav">
                             <li class="nav-item me-2">
-                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Submissions/Create">
+                                <a id="CreateSubmissionButton" class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Submissions/Create">
                                     <i class="fa fa-plus" style="margin-right: 8px;"></i>Aportar
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/SearchResults/Contributions" asp-route-query="@userId">
+                                 <a class="btn btn-primary ps-4 pe-4 rounded-pill style="margin-right: 8px;" role="button" asp-page="/SearchResults/Contributions" asp-route-query="@userId">
                                     Mis Contribuciones
                                 </a>
                             </li>
                             @if (isModerator)
                             {
                                 <li class="nav-item">
-                                    <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Moderation/Moderator">
+                                    <a id="ProfileButton" class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Moderation/Moderator">
                                        <i class="fa fa-gavel"></i> Moderar
                                     </a>
                                 </li>
@@ -87,7 +94,7 @@
                 <!-- Title, shown unless on the main menu -->
                 @if (!currentPage!.EndsWith("/"))
                 {
-                    <a class="navbar-brand" asp-area="" asp-page="/Index">LoCoMPro</a>
+                    <a id="IndexButton" class="navbar-brand" asp-area="" asp-page="/Index">LoCoMPro</a>
                 }
             </div>
     
@@ -103,14 +110,14 @@
                                 </a>
                             </li>
                             <form asp-page="/Account/Logout" method="post" class="d-inline-block">
-                                <button type="submit" class="btn btn-primary ps-4 pe-4 rounded-pill">Cerrar sesión</button>
+                                <button id="LogoutButton" type="submit" class="btn btn-primary ps-4 pe-4 rounded-pill">Cerrar sesión</button>
                             </form>
                         }
                         else
                         {
                             @if (currentPage != "/Account/Login")
                             {
-                                <a class="btn btn-primary" role="button" asp-page="/Account/Login">Iniciar sesión</a>
+                                <a id="LoginButton" class="btn btn-primary" role="button" asp-page="/Account/Login">Iniciar sesión</a>
                             }
                         }
                     </ul>

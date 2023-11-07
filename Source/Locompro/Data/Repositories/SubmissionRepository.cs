@@ -46,6 +46,27 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
         if (entity != null) Set.Remove(entity);
     }
 
+    public async Task<Submission> GetByIdAsync(string userId, DateTime entryTime)
+    {
+        return await Set.FindAsync(userId, entryTime);
+    }
+
+    public async Task UpdateAsync(string userId, DateTime entryTime, Submission entity)
+    {
+        if (entity == null) throw new ArgumentNullException(nameof(entity));
+        
+        var existingEntity = await GetByIdAsync(userId, entryTime);
+        if (existingEntity != null)
+        {
+            Context.Entry(existingEntity).CurrentValues.SetValues(entity);
+            await Context.SaveChangesAsync();
+        }
+        else
+        {
+            await AddAsync(entity);
+        }
+    }
+
     /// <inheritdoc />
     public async Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries)
     {

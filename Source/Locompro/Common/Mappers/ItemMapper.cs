@@ -4,44 +4,52 @@ using Locompro.Models.ViewModels;
 
 namespace Locompro.Common.Mappers;
 
-public class ItemMapper : GenericMapper<SubmissionDto, List<ItemVm>>
+/// <summary>
+/// Maps a Submission DTO to a list of ItemViewModels
+/// </summary>
+public class ItemMapper : GenericMapper<SubmissionsDto, List<ItemVm>>
 {
-    protected override List<ItemVm> BuildVm(SubmissionDto dto)
+    protected override List<ItemVm> BuildVm(SubmissionsDto dto)
     {
+        if (dto == null || dto.Submissions == null || !dto.Submissions.Any() || dto.BestSubmissionQualifier == null)
+        {
+            return new List<ItemVm>();
+        }
+        
         return GetItems(dto).ToList();
     }
     
-    protected override SubmissionDto BuildDto(List<ItemVm> vm)
+    protected override SubmissionsDto BuildDto(List<ItemVm> vm)
     {
-        return new SubmissionDto(null, null);
+        return new SubmissionsDto(null, null);
     }
     
     /// <summary>
     ///     Gets all the items to be displayed in the search results
-    ///     from a list of submissions
+    ///     from a list of submissionses
     /// </summary>
-    /// <param name="submissions"></param>
+    /// <param name="submissionses"></param>
     /// <returns></returns>
-    private static IEnumerable<ItemVm> GetItems(SubmissionDto submissions)
+    private static IEnumerable<ItemVm> GetItems(SubmissionsDto submissionses)
     {
         var items = new List<ItemVm>();
         
-        if (submissions == null || submissions.Submissions == null) return items;
+        if (submissionses == null || submissionses.Submissions == null) return items;
         
-        // Group submissions by store
-        var submissionsByStore = submissions.Submissions.GroupBy(s => s.Store);
+        // Group submissionses by store
+        var submissionsByStore = submissionses.Submissions.GroupBy(s => s.Store);
 
         foreach (var store in submissionsByStore)
         {
             var submissionsByProduct = store.GroupBy(s => s.Product);
-            foreach (var product in submissionsByProduct) items.Add(GetItem(product, submissions.BestSubmissionQualifier));
+            foreach (var product in submissionsByProduct) items.Add(GetItem(product, submissionses.BestSubmissionQualifier));
         }
 
         return items;
     }
 
     /// <summary>
-    ///     Produces an item from a group of submissions
+    ///     Produces an item from a group of submissionses
     ///     Gets the best submission from the group of items
     ///     uses its information for the item to be shown
     /// </summary>
@@ -76,10 +84,10 @@ public class ItemMapper : GenericMapper<SubmissionDto, List<ItemVm>>
     }
 
     /// <summary>
-    ///     Constructs a list of display submissions from a list of submissions
-    ///     Reduces the amount of memory necesary to display submissions
+    ///     Constructs a list of display submissionses from a list of submissionses
+    ///     Reduces the amount of memory necesary to display submissionses
     /// </summary>
-    /// <param name="submissions"> submissions to be turned into display submissions</param>
+    /// <param name="submissions"> submissionses to be turned into display submissionses</param>
     /// <returns></returns>
     private static List<SubmissionVm> GetDisplaySubmissions(List<Submission> submissions)
     {

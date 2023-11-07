@@ -48,7 +48,7 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
 
         PlaceNewSubmissionRating(submissionToUpdate, int.Parse(ratingVm.Rating));
 
-        _submissionRepository.UpdateAsync(submissionToUpdate);
+        await _submissionRepository.UpdateAsync(submissionToUpdate.UserId, submissionToUpdate.EntryTime, submissionToUpdate);
         await UnitOfWork.SaveChangesAsync();
     }
 
@@ -123,36 +123,22 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
     }
 
     /// <inheritdoc />
-    public async Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm)
+    public async Task DeleteSubmissionAsync(SubmissionKey submissionKey)
     {
-        SubmissionKey submissionKey = new ()
-        {
-            UserId = moderatorActionOnReportVm.SubmissionUserId,
-            EntryTime = moderatorActionOnReportVm.SubmissionEntryTime
-        };
+        await _submissionRepository.DeleteAsync(submissionKey);
         
-        Console.WriteLine("\n\n\n\n\nActing on report: " + moderatorActionOnReportVm.Action);
-        Console.WriteLine("Submission key: " + submissionKey.UserId + " " + submissionKey.EntryTime + "\n\n\n");
-        
-        switch (moderatorActionOnReportVm.Action)
-        {
-            case ModeratorActions.EraseSubmission:
-                //await _submissionRepository.DeleteAsync(submissionKey);
-                break;
-            case ModeratorActions.EraseReport:
-                Submission submission = await _submissionRepository.GetByIdAsync(submissionKey);
+        await UnitOfWork.SaveChangesAsync();
+    }
+    
+    /// <inheritdoc />
+    public async Task UpdateSubmissionStatusAsync(SubmissionKey submissionKey, SubmissionStatus submissionStatus)
+    {
+        Submission submission = await _submissionRepository.GetByIdAsync(submissionKey);
 
-                if (submission == null)
-                {
-                    Console.WriteLine("Submission was null");
-                }
+        if (submission == null) return;
                 
-                submission.Status = SubmissionStatus.Moderated;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(moderatorActionOnReportVm));
-        }
-
+        submission.Status = SubmissionStatus.Moderated;
+        
         await UnitOfWork.SaveChangesAsync();
     }
 }

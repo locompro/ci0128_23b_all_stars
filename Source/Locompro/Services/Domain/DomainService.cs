@@ -54,11 +54,11 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
     }
 
     /// <inheritdoc />
-    public async Task Update(T entity)
+    public async Task Update(TK id, T entity)
     {
         try
         {
-            CrudRepository.UpdateAsync(entity);
+            await CrudRepository.UpdateAsync(id, entity);
             await UnitOfWork.SaveChangesAsync();
         }
         catch (Exception e)
