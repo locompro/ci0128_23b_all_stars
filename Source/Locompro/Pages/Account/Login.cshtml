@@ -23,13 +23,13 @@
             <form class="text-center col-7" method="post">
                 <div class="mb-3">
                     <label class="form-label d-xl-flex justify-content-xl-start">Nombre de usuario</label>
-                    <input asp-for="Input.UserName" class="form-control" autocomplete="username" aria-required="true" style="padding-bottom: 13px; padding-top: 13px"/>
+                    <input asp-for="Input.UserName" id="usernameInput" class="form-control" autocomplete="username" aria-required="true" style="padding-bottom: 13px; padding-top: 13px"/>
                     <span asp-validation-for="Input.UserName" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label d-xl-flex justify-content-xl-start">Contraseña</label>
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" style="padding-bottom: 13px; padding-top: 13px"/>
+                    <input asp-for="Input.Password" id="passwordInput" class="form-control" autocomplete="current-password" aria-required="true" style="padding-bottom: 13px; padding-top: 13px"/>
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 <div asp-validation-summary="ModelOnly" class="text-danger"> </div>
@@ -42,7 +42,7 @@
                             </label>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary d-block w-100">Iniciar sesión</button>
+                    <button type="submit" class="btn btn-primary d-block w-100" id="signInSubmit">Iniciar sesión</button>
 
                 </div>
                 <div>

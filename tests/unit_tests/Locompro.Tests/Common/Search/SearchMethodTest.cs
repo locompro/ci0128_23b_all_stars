@@ -1,6 +1,6 @@
 using Locompro.Common.Search.SearchMethodRegistration;
 
-namespace Locompro.Tests.Repositories.Utilities;
+namespace Locompro.Tests.Common.Search;
 
 public class SearchMethodTest
 {
@@ -34,22 +34,22 @@ public class SearchMethodTest
         Assert.Multiple(() =>
         {
             var searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Name);
-            Assert.IsNotNull(searchParam);
+            Assert.That(searchParam, Is.Not.Null);
 
             searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Province);
-            Assert.IsNotNull(searchParam);
+            Assert.That(searchParam, Is.Not.Null);
 
             searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Canton);
-            Assert.IsNotNull(searchParam);
+            Assert.That(searchParam, Is.Not.Null);
 
             searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Model);
-            Assert.IsNotNull(searchParam);
+            Assert.That(searchParam, Is.Not.Null);
 
             searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Brand);
-            Assert.IsNotNull(searchParam);
+            Assert.That(searchParam, Is.Not.Null);
 
             searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Category);
-            Assert.IsNotNull(searchParam);
+            Assert.That(searchParam, Is.Not.Null);
         });
     }
 }

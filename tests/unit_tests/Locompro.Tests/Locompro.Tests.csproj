@@ -22,5 +22,9 @@
         <ProjectReference Include="..\..\..\Source\Locompro\Locompro.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Data\" />
+    </ItemGroup>
+
 
 </Project>
