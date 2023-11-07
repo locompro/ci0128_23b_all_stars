@@ -44,7 +44,7 @@ public class ErrorStoreTest
     ///     Tests the StoreErrors method by adding multiple errors to the store and verifying the error count and HasErrors
     ///     property.
     /// </summary>
-    /// <author> A. Badilla-Olivas b80874 </author>
+    /// <author> A. Badilla-Olivas b80874 - Sprint 2</author>
     [Test]
     public void StoreErrors_StoresMultipleErrors()
     {
@@ -63,7 +63,7 @@ public class ErrorStoreTest
     ///     Tests the ClearStore method by adding an error to the store, clearing the store, and verifying the error count and
     ///     HasErrors property.
     /// </summary>
-    /// <author> A. Badilla-Olivas b80874 </author>
+    /// <author> A. Badilla-Olivas b80874 - Sprint 2</author>
     [Test]
     public void ClearStore_ClearsAllStoredErrors()
     {
@@ -82,7 +82,7 @@ public class ErrorStoreTest
     ///     Tests the GetErrors method by adding multiple errors to the store, retrieving the errors, and verifying the
     ///     retrieved errors match the stored errors.
     /// </summary>
-    /// <author> A. Badilla-Olivas b80874 </author>
+    /// <author> A. Badilla-Olivas b80874 - Sprint 2</author>
     [Test]
     public void GetErrors_RetrievesStoredErrors()
     {

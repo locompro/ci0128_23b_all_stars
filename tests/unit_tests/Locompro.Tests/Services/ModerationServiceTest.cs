@@ -84,7 +84,7 @@ public class ModerationServiceTests
     ///     Tests that the AssignPossibleModeratorsAsync method successfully assigns the 'PossibleModerator' role
     ///     to all qualified users.
     /// </summary>
-    /// <author>Brandon Alonso Mora Umaña - C15179</author>
+    /// <author>Brandon Alonso Mora Umaña - C15179- Sprint 2</author>
     [Test]
     public async Task AssignPossibleModeratorsAsync_AssignsRolesToQualifiedUsers()
     {
@@ -127,7 +127,7 @@ public class ModerationServiceTests
     /// <summary>
     ///     Tests that the AssignPossibleModeratorsAsync method logs an error when a user cannot be found.
     /// </summary>
-    /// <author>Brandon Alonso Mora Umaña - C15179</author>
+    /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
     [Test]
     public async Task AssignPossibleModeratorsAsync_LogsErrorIfUserNotFound()
     {
@@ -158,7 +158,7 @@ public class ModerationServiceTests
     /// <summary>
     ///     Tests that the AssignPossibleModeratorsAsync method logs an error if the role cannot be assigned to the user.
     /// </summary>
-    /// <author>Brandon Alonso Mora Umaña - C15179</author>
+    /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
     [Test]
     public async Task AssignPossibleModeratorsAsync_LogsErrorIfRoleCannotBeAssigned()
     {
@@ -203,7 +203,7 @@ public class ModerationServiceTests
     ///     Tests that the AssignPossibleModeratorsAsync method logs an informational message if the user is already a
     ///     moderator.
     /// </summary>
-    /// <author>Brandon Alonso Mora Umaña - C15179</author>
+    /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
     [Test]
     public async Task AssignPossibleModeratorsAsync_LogsInformationIfUserIsAlreadyModerator()
     {
@@ -244,7 +244,7 @@ public class ModerationServiceTests
 
     /// <summary>
     ///     If moderator sends action to erase a submission, it is erased
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public async Task ReportActionToEraseSubmissionErasesSubmission()
@@ -270,7 +270,7 @@ public class ModerationServiceTests
     
     /// <summary>
     ///     If a moderator acts to remove a report, the report is removed
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public async Task ReportActionToEraseReportErasesReport()
@@ -305,7 +305,7 @@ public class ModerationServiceTests
 
     /// <summary>
     ///     If an invalid action is sent, then it is caught
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public void ReportActionInvalidOrDefaultThrowException()

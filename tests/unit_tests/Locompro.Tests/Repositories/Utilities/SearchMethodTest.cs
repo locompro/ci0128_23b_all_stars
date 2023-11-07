@@ -6,7 +6,7 @@ public class SearchMethodTest
 {
     /// <summary>
     ///     Checks if a that when an invalid search type is provided, it returns null
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public void GetSearchMethodByNameReturnsNull()
@@ -23,7 +23,7 @@ public class SearchMethodTest
 
     /// <summary>
     ///     Checks if the valid search types return a non null search parameter which means it has been found
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public void GetSearchMethodByNameReturnsNotNull()
