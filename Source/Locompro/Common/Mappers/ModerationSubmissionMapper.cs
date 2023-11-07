@@ -23,7 +23,7 @@ public class ModerationSubmissionMapper : GenericMapper<SubmissionDto, List<Mode
             {
                 UserId = submission.UserId,
                 EntryTime = submission.EntryTime,
-                Author = submission.User.Name,
+                Author = submission.User.UserName,
                 Product = submission.Product.Name,
                 Price = submission.Price,
                 Store = submission.Store.Name,
@@ -45,7 +45,7 @@ public class ModerationSubmissionMapper : GenericMapper<SubmissionDto, List<Mode
         return null;
     }
     
-    private List<ReportVm> GetReportVmFromReports(List<Report> reports)
+    private static List<ReportVm> GetReportVmFromReports(List<Report> reports)
     {
         if (reports == null || !reports.Any())
         {
@@ -57,7 +57,7 @@ public class ModerationSubmissionMapper : GenericMapper<SubmissionDto, List<Mode
                 SubmissionUserId = report.SubmissionUserId,
                 SubmissionEntryTime = report.SubmissionEntryTime,
                 UserId = report.UserId,
-                UserName = report.User.Name,
+                UserName = report.User.UserName,
                 Description = report.Description
             })
             .ToList();

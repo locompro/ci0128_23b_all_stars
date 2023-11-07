@@ -1,4 +1,5 @@
 ﻿@using Locompro.Common
+@using Locompro.Models.Entities
 @using Locompro.Services.Auth
 
 @inject IUserManagerService UserManagerService
@@ -7,8 +8,17 @@
     var currentPage = Context.Request.Path.Value;
     var isLoggedIn = AuthService.IsLoggedIn();
     var userId = AuthService.GetUserId();
-    var user = await UserManagerService.FindByIdAsync(userId);
-    var isModerator = UserManagerService.IsInRoleAsync(user, RoleNames.Moderator);
+    var isModerator = false;
+    User user = null;
+    if (isLoggedIn)
+    {
+        user = await UserManagerService.FindByIdAsync(userId);
+        isModerator = false;
+    }
+    if (user != null)
+    {
+        isModerator = await UserManagerService.IsInRoleAsync(user, RoleNames.Moderator);
+    }
 }
 
 <!DOCTYPE html>
@@ -62,11 +72,14 @@
                                     <i class="fa fa-plus" style="margin-right: 8px;"></i>Aportar
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Moderation/Moderator">
-                                    Moderar
-                                </a>
-                            </li>
+                            @if (isModerator)
+                            {
+                                <li class="nav-item">
+                                    <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Moderation/Moderator">
+                                       <i class="fa fa-gavel"></i> Moderar
+                                    </a>
+                                </li>
+                            }
                         </ul>
                     </div>
                 }
@@ -88,7 +101,7 @@
                         {
                             <li class="nav-item" style="margin-right: 10px">
                                 <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Account/Profile">
-                                    <i class="fa fa-user" style="margin-left: 8px;"></i>Profile
+                                    <i class="fa fa-user" style="margin-left: 8px;"></i>  Perfil
                                 </a>
                             </li>
                             <form asp-page="/Account/Logout" method="post" class="d-inline-block">

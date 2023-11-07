@@ -1,7 +1,32 @@
 @page
 @using Locompro.Common
+@using Locompro.Models.Entities
 @using Locompro.Models.ViewModels
+@using Locompro.Services.Auth
 @model ModeratorPageModel
+
+@inject IUserManagerService UserManagerService
+@inject IAuthService AuthService
+@{
+    var isLoggedIn = AuthService.IsLoggedIn();
+    var userId = AuthService.GetUserId();
+    var isModerator = false;
+    User user = null;
+    if (isLoggedIn)
+    {
+        user = await UserManagerService.FindByIdAsync(userId);
+        isModerator = false;
+    }
+    if (user != null)
+    {
+        isModerator = await UserManagerService.IsInRoleAsync(user, RoleNames.Moderator);
+    }
+
+    if (!isModerator)
+    {
+        Response.Redirect("/Index");
+    }
+}
 
 <div>
     <h1>Moderación</h1>
@@ -35,7 +60,7 @@
                                 var index = 0;
                                 foreach (ModerationSubmissionVm item in Model.DisplayItems)
                                 {
-                                    <tr onclick="selectReport(@index)" data-bs-toggle="modal" data-bs-target="reportModal">
+                                    <tr onclick="selectReport(@index)">
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Author)
                                         </td>
@@ -85,11 +110,12 @@
     
                     @{
                         var prevDisabled = !Model.DisplayItems.HasPreviousPage ? "disabled" : "";
-                        var nextDisabled = !Model.DisplayItems.HasNextPage ? "disabled" : "";
+                        var nextDisabled = !(Model.DisplayItems.HasPreviousPage) ? "disabled" : "";
                     }
     
                     <div class="previous-next-button-area">
                         <a asp-page=""
+                           asp-route-pageIndex="@(Model.DisplayItems.PageIndex - 1)"
                            class="btn btn-primary @prevDisabled">
                             Previo
                         </a>
@@ -99,8 +125,9 @@
                                min=1
                                max="@Model.DisplayItems.TotalPages"
                                value="@(Model.DisplayItems.PageIndex + 1)"
-                               onchange="changeIndexPage(this)">
+                               onchange="changeModeratorPage(this)">
                         <a asp-page=""
+                           asp-route-pageIndex="@(Model.DisplayItems.PageIndex + 1)"
                            class="btn btn-primary @nextDisabled">
                             Siguiente
                         </a>

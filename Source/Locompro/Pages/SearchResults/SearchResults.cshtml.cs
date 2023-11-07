@@ -21,6 +21,8 @@ namespace Locompro.Pages.SearchResults;
 /// </summary>
 public class SearchResultsModel : SearchPageModel
 {
+    public SearchVm SearchVm { get; set; }
+    
     private readonly IPictureService _pictureService;
 
     private readonly ISearchService _searchService;
@@ -31,6 +33,8 @@ public class SearchResultsModel : SearchPageModel
     
     private readonly IAuthService _authService;
 
+    private IConfiguration Configuration { get; set; }
+    
     /// <summary>
     ///     Constructor
     /// </summary>
@@ -42,7 +46,6 @@ public class SearchResultsModel : SearchPageModel
     /// <param name="searchService"></param>
     /// <param name="submissionService"></param>
     /// <param name="moderationService"></param>
-    /// <param name="authService"></param>
     public SearchResultsModel(ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
         AdvancedSearchInputService advancedSearchServiceHandler,
@@ -68,9 +71,6 @@ public class SearchResultsModel : SearchPageModel
         _moderationService = moderationService;
         _authService = authService;
     }
-
-    private IConfiguration Configuration { get; set; }
-    public SearchVm SearchVm { get; set; }
 
     /// <summary>
     ///     When page is first called, gets search query data from session
@@ -128,7 +128,8 @@ public class SearchResultsModel : SearchPageModel
             new
             {
                 SearchResults = searchResults,
-                Data = SearchVm
+                Data = SearchVm,
+                Redirect = (searchResults is { Count: 0 }? "redirect" : null)
             });
 
         return Content(searchResultsJson);
@@ -240,6 +241,6 @@ public class SearchResultsModel : SearchPageModel
             Logger.LogError("Error when attempting to update submission rating: " + e.Message);
         }
 
-        return new JsonResult(new { success = true, message = "Ratings updated submitted successfully" });
+        return new JsonResult(new { ok = true, message = "Ratings updated submitted successfully" });
     }
 }

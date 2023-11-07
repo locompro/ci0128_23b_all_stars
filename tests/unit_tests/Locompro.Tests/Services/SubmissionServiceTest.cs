@@ -103,9 +103,9 @@ public class SubmissionServiceTest
     }
 
     /// <summary>
-    ///     Tests that the search by store name returns the expected results when
-    ///     the store name is mentioned in the submissions
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// Tests that the search by store name returns the expected results when
+    /// the store name is mentioned in the submissions
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public async Task AddingFirstRatingToSubmissionResultsInNewSubmissionRatingBeingSame()
@@ -130,8 +130,8 @@ public class SubmissionServiceTest
     }
 
     /// <summary>
-    ///     Tests that the average of the ratings is calculated correctly
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// Tests that the average of the ratings is calculated correctly
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public async Task AddingSecondRatingToSubmissionResultsInNewSubmissionRatingBeingAverage()
@@ -159,8 +159,8 @@ public class SubmissionServiceTest
     }
 
     /// <summary>
-    ///     Tests that an exception is thrown when the rating view model is null or
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// Tests that an exception is thrown when the rating view model is null or
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public async Task AddingRatingOnNonExistentSubmissionThrowsException()
@@ -181,8 +181,8 @@ public class SubmissionServiceTest
     }
 
     /// <summary>
-    ///     Tests that an exception is thrown when the rating view model is null or
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// Tests that an exception is thrown when the rating view model is null or
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public async Task AddingNullRatingComponentThrowsException()
@@ -200,11 +200,11 @@ public class SubmissionServiceTest
         newRating.Rating = null;
         Assert.ThrowsAsync<ArgumentException>(async () => await _submissionService.UpdateSubmissionRating(newRating));
     }
-
+    
     /// <summary>
-    ///     Tests that an exception is thrown when the rating view model is null or
-    ///     the rating string is not a number between 1 and 5
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// Tests that an exception is thrown when the rating view model is null or
+    /// the rating string is not a number between 1 and 5
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public async Task AddingRatingComponentWithInvalidRatingThrowsException()
@@ -232,8 +232,8 @@ public class SubmissionServiceTest
     }
 
     /// <summary>
-    ///     Tests that an exception is thrown when the rating view model is null or the rating string
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// Tests that an exception is thrown when the rating view model is null or the rating string
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public void AddingRatingWithInvalidParametersThrowsException()
@@ -263,9 +263,9 @@ public class SubmissionServiceTest
     }
 
     /// <summary>
-    ///     For a corner case where there is a rating and somehow the amount of ratings is 0
-    ///     Would usually happen only for seeded data
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// For a corner case where there is a rating and somehow the amount of ratings is 0
+    /// Would usually happen only for seeded data
+    /// <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public async Task AddRatingOnSubmissionWithRatingButZeroRatingsAmountResultsInValidAverage()
@@ -289,6 +289,70 @@ public class SubmissionServiceTest
 
         Assert.That(changedSubmission.Rating, Is.EqualTo(3.6500001f));
     }
+
+    /// <summary>
+    ///     
+    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
+    [Test]
+    public async Task DeleteSubmissionDeletesSubmission()
+    {
+        MockDataSetup();
+        
+        var submissionKey = new SubmissionKey
+        {
+            UserId = "User1",
+            EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
+        };
+        
+        await _submissionService.DeleteSubmissionAsync(submissionKey);
+        _submissionCrudRepositoryMock.Verify(repo => repo.DeleteAsync(submissionKey), Times.Once);
+        
+        Assert.That(await _submissionCrudRepositoryMock.Object.GetByIdAsync(submissionKey), Is.Null);
+    }
+    
+    /// <summary>
+    ///     
+    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
+    [Test]
+    public async Task UpdateSubmissionStatusUpdatesSubmissionStatus()
+    {
+        MockDataSetup();
+        
+        var submissionKey = new SubmissionKey
+        {
+            UserId = "User1",
+            EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
+        };
+        
+        await _submissionService.UpdateSubmissionStatusAsync(submissionKey, SubmissionStatus.Moderated);
+        
+        Submission submissionToCheck = await _submissionCrudRepositoryMock.Object.GetByIdAsync(submissionKey);
+        
+        Assert.That(submissionToCheck.Status, Is.EqualTo(SubmissionStatus.Moderated));
+    }
+    
+    /// <summary>
+    ///     
+    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    /// </summary>
+    [Test]
+    public async Task GetItemSubmissionsReturnsSubmissions()
+    {
+        MockDataSetup();
+        
+        var storeName = "Store1";
+        var productId = 1;
+        var productName = "Product1";
+        
+        var submission = await _submissionService.GetItemSubmissions(storeName, productName);
+
+        var submissions = submission as Submission[] ?? submission.ToArray();
+        Assert.That(submissions, Is.Not.Null);
+        Assert.That(submissions.Length, Is.EqualTo(2));
+    }
+
 
     /// <summary>
     ///     Sets up the mock for the submission repository so that it behaves as expected for the tests
@@ -695,6 +759,34 @@ public class SubmissionServiceTest
             {
                 return submissions.SingleOrDefault(submission => submission.UserId == submissionKey.UserId &&
                                                                  submission.EntryTime == submissionKey.EntryTime);
+            });
+
+        _submissionCrudRepositoryMock
+            .Setup(repository => repository.DeleteAsync(It.IsAny<SubmissionKey>()))
+            .Returns((SubmissionKey submissionKey) =>
+            {
+                var submission = submissions.SingleOrDefault(submission => submission.UserId == submissionKey.UserId &&
+                                                                           submission.EntryTime ==
+                                                                           submissionKey.EntryTime);
+                if (submission != null) submissions.Remove(submission);
+                
+                return Task.CompletedTask;
+            });
+
+        _submissionCrudRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(It.IsAny<SubmissionKey>()))
+            .ReturnsAsync((SubmissionKey submissionKey) =>
+            {
+                return submissions.SingleOrDefault(submission => submission.UserId == submissionKey.UserId &&
+                                                                 submission.EntryTime == submissionKey.EntryTime);
+            });
+        
+        
+        _submissionCrudRepositoryMock
+            .Setup(repository => repository.GetItemSubmissions(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync((string storeName, string productName) =>
+            {
+                return submissions.Where(submission => submission.Store.Name == storeName && submission.Product.Name == productName);
             });
     }
 }

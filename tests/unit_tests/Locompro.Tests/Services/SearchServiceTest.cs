@@ -7,6 +7,7 @@ using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services;
 using Locompro.Services.Domain;
+using Locompro.Common.Mappers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -55,8 +56,12 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
 
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+        
         // Assert
         Assert.That(searchResults.Exists(i => i.Name == productSearchName), Is.True);
 
@@ -65,7 +70,9 @@ public class SearchServiceTest
         searchCriteria.Clear();
         searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
 
-        searchResults = await _searchService.GetSearchResults(searchCriteria);
+        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        
+        searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(searchResults.Exists(i => i.Name == productSearchName), Is.True);
@@ -75,7 +82,9 @@ public class SearchServiceTest
         searchCriteria.Clear();
         searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
 
-        searchResults = await _searchService.GetSearchResults(searchCriteria);
+        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        
+        searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(searchResults.Exists(i => i.Name == productSearchName), Is.True);
@@ -84,7 +93,9 @@ public class SearchServiceTest
         searchCriteria.Clear();
         searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
 
-        searchResults = await _searchService.GetSearchResults(searchCriteria);
+        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        
+        searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(searchResults.Exists(i => i.Name == productSearchName), Is.True);
@@ -93,7 +104,9 @@ public class SearchServiceTest
         searchCriteria.Clear();
         searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
 
-        searchResults = await _searchService.GetSearchResults(searchCriteria);
+        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        
+        searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(searchResults.Exists(i => i.Name == productSearchName), Is.True);
@@ -102,7 +115,9 @@ public class SearchServiceTest
         searchCriteria.Clear();
         searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
 
-        searchResults = await _searchService.GetSearchResults(searchCriteria);
+        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        
+        searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(searchResults.Exists(i => i.Name == productSearchName), Is.True);
@@ -111,7 +126,9 @@ public class SearchServiceTest
         searchCriteria.Clear();
         searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
 
-        searchResults = await _searchService.GetSearchResults(searchCriteria);
+        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        
+        searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(searchResults.Exists(i => i.Name == productSearchName), Is.True);
@@ -136,7 +153,11 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.Multiple(() =>
@@ -165,7 +186,11 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.Multiple(() =>
@@ -197,7 +222,11 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService?.GetSearchResults(searchCriteria)!;
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
 
         var dateTimeExpected = new DateTime(2023, 10, 6, 0, 0, 0, DateTimeKind.Utc);
         var dateTimeReceived = DateTime.Parse(searchResults[0].LastSubmissionDate, new CultureInfo("en-US"));
@@ -223,7 +252,11 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService?.GetSearchResults(searchCriteria)!;
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(searchResults, Is.Not.Null);
@@ -248,7 +281,11 @@ public class SearchServiceTest
         };
 
         // Act
-        List<ItemVm> searchResults = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(searchResults, Is.Not.Null);
@@ -292,7 +329,11 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(searchResults, Is.Not.Null);
@@ -323,8 +364,12 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
 
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+        
         // Assert
         Assert.That(searchResults, Is.Not.Null);
         Assert.That(searchResults, Is.Not.Empty);
@@ -358,7 +403,11 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(searchResults, Is.Not.Null);
@@ -383,7 +432,11 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(searchResults, Is.Not.Null);
@@ -411,7 +464,11 @@ public class SearchServiceTest
         };
 
         // Act
-        var results = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var results = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(results, Is.Not.Null);
@@ -446,7 +503,11 @@ public class SearchServiceTest
         };
 
         // Act
-        var results = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var results = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(results, Is.Not.Null);
@@ -468,7 +529,11 @@ public class SearchServiceTest
             { new SearchCriterion<string>(SearchParameterTypes.Brand, brand) };
 
         // Act
-        var results = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var results = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(results, Is.Not.Null);
@@ -491,7 +556,11 @@ public class SearchServiceTest
             { new SearchCriterion<string>(SearchParameterTypes.Brand, brand) };
 
         // Act
-        var searchResults = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(searchResults, Is.Not.Null);
@@ -535,7 +604,11 @@ public class SearchServiceTest
             { new SearchCriterion<string>(SearchParameterTypes.Brand, brand) };
 
         // Act
-        var results = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var results = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(results, Is.Not.Null);
@@ -558,7 +631,11 @@ public class SearchServiceTest
             { new SearchCriterion<string>(SearchParameterTypes.Brand, brand) };
 
         // Act
-        var results = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var results = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(results, Is.Not.Null);
@@ -569,7 +646,7 @@ public class SearchServiceTest
     ///     Checks if all items returned are within the range of price expected
     /// </summary>
     [Test]
-    public void GetSubmissionsByPrice_ValidPrice_SubmissionsReturned()
+    public async Task GetSubmissionsByPrice_ValidPrice_SubmissionsReturned()
     {
         // Arrange
         const long minPrice = 60;
@@ -583,7 +660,11 @@ public class SearchServiceTest
         };
 
         // Act
-        List<ItemVm> results = _searchService!.GetSearchResults(searchCriteria).Result.ToList();
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var results = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.That(results, Is.Not.Null);
@@ -610,7 +691,11 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.IsNotNull(searchResults);
@@ -639,7 +724,11 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.IsNotNull(searchResults);
@@ -665,7 +754,11 @@ public class SearchServiceTest
         };
 
         // Act
-        var searchResults = await _searchService.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new ();
+        
+        var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
         Assert.IsNotNull(searchResults);

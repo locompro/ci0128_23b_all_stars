@@ -106,6 +106,8 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<ICantonRepository, CantonRepository>();
     builder.Services.AddScoped<IPictureRepository, PictureRepository>();
     builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IProductRepository, ProductRepository>();
+    
 
     // Register domain services
     builder.Services.AddScoped(typeof(INamedEntityDomainService<,>), typeof(NamedEntityDomainService<,>));
@@ -116,6 +118,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<IUserManagerService, UserManagerService>();
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IReportService, ReportService>();
+    builder.Services.AddScoped<IProductService, ProductService>();
 
     // Register application services
     builder.Services.AddScoped<IContributionService, ContributionService>();

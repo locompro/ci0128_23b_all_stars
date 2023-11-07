@@ -4,13 +4,13 @@ using Locompro.Models.ViewModels;
 
 namespace Locompro.Common.Mappers;
 
-internal class ItemMapper : GenericMapper<SubmissionDto, List<ItemVm>>
+public class ItemMapper : GenericMapper<SubmissionDto, List<ItemVm>>
 {
     protected override List<ItemVm> BuildVm(SubmissionDto dto)
     {
         return GetItems(dto).ToList();
     }
-
+    
     protected override SubmissionDto BuildDto(List<ItemVm> vm)
     {
         return new SubmissionDto(null, null);
@@ -25,7 +25,9 @@ internal class ItemMapper : GenericMapper<SubmissionDto, List<ItemVm>>
     private static IEnumerable<ItemVm> GetItems(SubmissionDto submissions)
     {
         var items = new List<ItemVm>();
-
+        
+        if (submissions == null || submissions.Submissions == null) return items;
+        
         // Group submissions by store
         var submissionsByStore = submissions.Submissions.GroupBy(s => s.Store);
 

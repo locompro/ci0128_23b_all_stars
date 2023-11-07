@@ -18,6 +18,8 @@ $(document).ready(() => {
         '#ChangePasswordModalErrors'
     );
 
+   
+    
     const updateUserDataModal = new ProfileModalManager(
         '#UpdateUserDataModal',
         '#UpdateUserModalErrorsList',
@@ -29,11 +31,21 @@ $(document).ready(() => {
         '#UserDataUpdate_Canton',
         '?handler=Cantons'
     );
+    // Only instantiate DeclineModeratorModal if the modal for declining a moderator role exists
+    if ($('#DeclineModerationRoleModal').length && $('#DeclineModerationErrorList').length && $('#DeclineModalErrors').length) {
+        const declineModeratorModal = new ProfileModalManager(
+            '#DeclineModerationRoleModal',
+            '#DeclineModerationErrorList',
+            '#DeclineModalErrors'
+        );
+        // Show modal and clear any existing errors when modal is closed
+        declineModeratorModal.showModal().clearErrors();
+    }
 
     // Show modals and clear any existing errors when modal is closed
     changePasswordModal.showModal().clearErrors();
     updateUserDataModal.showModal().clearErrors();
-
+    
     // Set up an event listener for the change event on the provinces dropdown
     $(provinceHandler.provincesDropdownId).change(() => provinceHandler.handleProvinceChange());
 });

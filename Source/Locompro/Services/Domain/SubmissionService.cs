@@ -121,33 +121,24 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
 
         return currentRatingAmount + 1;
     }
+
+    /// <inheritdoc />
+    public async Task DeleteSubmissionAsync(SubmissionKey submissionKey)
+    {
+        await _submissionRepository.DeleteAsync(submissionKey);
+        
+        await UnitOfWork.SaveChangesAsync();
+    }
     
     /// <inheritdoc />
-    public async Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm)
+    public async Task UpdateSubmissionStatusAsync(SubmissionKey submissionKey, SubmissionStatus submissionStatus)
     {
-        ModeratorActions action = moderatorActionOnReportVm.Action;
-        string submissionUserId = moderatorActionOnReportVm.SubmissionUserId;
-        DateTime submissionEntryTime = moderatorActionOnReportVm.SubmissionEntryTime;
-        
-        var submissionKey = new SubmissionKey
-        {
-            UserId = submissionUserId,
-            EntryTime = submissionEntryTime
-        };
-        
-        switch (action)
-        {
-            case ModeratorActions.EraseSubmission:
-                await _submissionRepository.DeleteAsync(submissionKey);
-                break;
-            case ModeratorActions.EraseReport:
-                Submission submission = await _submissionRepository.GetByIdAsync(submissionKey);
-                submission.Status = SubmissionStatus.Moderated;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(moderatorActionOnReportVm));
-        }
+        Submission submission = await _submissionRepository.GetByIdAsync(submissionKey);
 
+        if (submission == null) return;
+                
+        submission.Status = SubmissionStatus.Moderated;
+        
         await UnitOfWork.SaveChangesAsync();
     }
 }

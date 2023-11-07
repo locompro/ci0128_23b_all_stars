@@ -154,7 +154,6 @@ class SearchResultsFilterMenu {
             if (!this.filters.get("Models").includes(item.Model)) {
                 this.filters.get("Models").push(item.Model);
             }
-
             for (let categoryIndex = 0;
                  categoryIndex < item.Categories.length;
                  categoryIndex++) {
