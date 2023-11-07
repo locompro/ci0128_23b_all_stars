@@ -224,10 +224,6 @@ dotnet run
 ```
 Según los parametros actuales de configuración del proyecto, este se ejecutará y estará escuchando en el puerto 7249
 
-### Manual de ejecución de pruebas 
-
-El proyecto de pruebas está en la solución principal. Se debe ingresar en el menú superior a Test > Run All Tests. También, por medio de la terminal estando dentro de directorio `Source/Locompro.Tests`
-
 
 ### Generación de la documentación.
 
@@ -235,23 +231,71 @@ Usar el `Doxyfile` que se encuentra en  `Source/Locompro`, abrirlo con doxygenwi
 
 ### Manual de ejecución de los casos de prueba
 1. **Paquetes o Bibliotecas Necesarias para Pruebas:**  
-   - Microsoft.NET.Test.Sdk: Versión 17.7.2
-   - MockDbSetExtensions: Versión 1.1.0
-   - Moq: Versión 4.20.69
-   - NUnit: Versión 3.13.3
-   - NUnit.Analyzers: Versión 3.6.1
-   - coverlet.collector: Versión 3.2.0
-   - Microsoft.EntityFrameworkCore.InMemory: Versión 6.0.22
-   - NUnit3TestAdapter --version 4.2.0
+- Microsoft.NET.Test.Sdk: Versión 17.7.1
+- NUnit: Versión 3.13.3
+- NUnit3TestAdapter: Versión 4.4.2
+- NUnit.Analyzers: Versión 3.6.1
+- coverlet.collector: Versión 3.2.0
+- Selenium.Support: Versión 4.15.0
+- Selenium.WebDriver: Versión 4.15.0
+- MockDbSetExtensions: Versión 1.1.0
+- Moq: Versión 4.20.69
+- Microsoft.EntityFrameworkCore.InMemory: Versión 6.0.22
+- NUnit3TestAdapter: Versión 4.2.0
 
-   Para correr las pruebas y generar un reporte, desde la raiz del repositorio puede utilizar los siguientes comando en terminal
+
+Además, necesita instalar la herramienta dotcover para generar los reportes. Para instalar la herramienta, desde la raiz del repositorio, en la terminal.
+     ```
+     dotnet tool install --global JetBrains.dotCover.GlobalTool
+     ```
+  
+#### Ejecutar pruebas unitarias
+
+Para correr las pruebas unitarias y generar un reporte, desde la raiz del repositorio, puede utilizar el siguiente comando en terminal:
    ```
-   dotnet tool install --global JetBrains.dotCover.GlobalTool
+   dotnet dotcover test .\tests\unit_tests\Locompro.Tests\Locompro.Tests.csproj --dcReportType=HTML
    ```
-   Luego
-   ```
-   dotnet dotcover test --dcReportType=HTML
-   ```
-   Esto generará en la raiz de la carpeta un archivo "dotCover.Output.html" que muestra la cobertura de las pruebas.
+Esto contruye la solución de test unitarios, ejecuta estas pruebas y genera en la raiz de la carpeta un archivo "dotCover.Output.html" que muestra la cobertura de las pruebas. Este reporte muestra con la cobertura de pruebas sobre le proyecto.
+
+También puede ejecutar las pruebas funcionales sin generar el documento de reporte usando el comando en terminal:
+
+ ```
+ dotnet test .\tests\unit_tests\Locompro.Tests\Locompro.Tests.csproj
+ ```
+
+Esto contruye la solución de test funcionales, ejecuta estas pruebas y muestra los resultados en terminal de cuantas pruebas fallaron, fueron exitosas o fueron ignoradas.
+
+#### Ejecutar pruebas funcionales
+
+Antes que nada el ambiente de aplicación debe **esta lista**, eso requiere que los datos estáticos esten listos dentro de la base de datos. Ver la sección de **Manual Tecnico** para tener más información. Estando el ambiente listo, primero debe ejecutar la aplicación. Para ejecutar la aplicación puede ejecutar el siguiente comando en terminal:
+
+```
+dotnet build
+dotnet run --environment <ambiente>
+```
+
+Ejemplo:
+
+```
+dotnet build
+dotnet run --environment "Development"
+```
+
+Luego, desde la raiz del repositorio, se puede utilizar el siguiente comando en la terminal para ejecutar las pruebas:
+
+```
+dotnet dotcover test .\tests\unit_tests\Locompro.Tests\Locompro.Tests.csproj --dcReportType=HTML
+```
+    
+Esto generará en la raiz de la carpeta un archivo "dotCover.Output.html" que muestra la cobertura de las pruebas. Este reporte muestra las pruebas realizadas.
+
+También puede ejecutar las pruebas funcionales sin generar el documento de reporte usando el comando en terminal:
+ ```
+ dotnet test .\tests\unit_tests\Locompro.Tests\Locompro.Tests.csproj
+ ```
+Esto contruye la solución de test funcionales, ejecuta estas pruebas y muestra los resultados en terminal de cuantas pruebas fallaron, fueron exitosas o fueron ignoradas.
+
+
+
    
 
