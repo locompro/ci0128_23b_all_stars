@@ -39,7 +39,7 @@ public class ContributionServiceTests
     private Mock<INamedEntityDomainService<Category, string>> _categoryService;
     private Mock<ISubmissionService> _submissionService;
 
-    /// <author>Ariel Arevalo Alvarado B50562</author>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
     [Test]
     public async Task AddSubmission_CreatesNewSubmission()
     {
@@ -74,7 +74,7 @@ public class ContributionServiceTests
         )), Times.Once);
     }
 
-    /// <author>Ariel Arevalo Alvarado B50562</author>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
     [Test]
     public async Task AddSubmission_AddsPictures()
     {
