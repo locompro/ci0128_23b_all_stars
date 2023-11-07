@@ -2,6 +2,7 @@
 using Locompro.FunctionalTests.PageObjects.Shared;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 
 namespace Locompro.FunctionalTests.Tests.Account;
 
@@ -13,15 +14,14 @@ public class ProfileTest
     private TestUserData _loginData = new();
     
     
-    [Test]
+    [Test, Order(1)]
     public void UserDataIsCorrect()
     {
         // arrange
         var driver = new ChromeDriver();
         _register = new Register(driver);
-        var userData = new TestUserData();
         _register.GoTo();
-        _register.RegisterAs(userData);
+        _register.RegisterAs(_loginData);
         _profile = new Profile(driver);
 
         // act
@@ -30,15 +30,14 @@ public class ProfileTest
         // assert
         Assert.Multiple(() =>
         {
-            Assert.That(_profile.GetUserName(), Is.EqualTo(userData.Username));
-            Assert.That(_profile.GetEmail(), Is.EqualTo(userData.Email));
+            Assert.That(_profile.GetUserName(), Is.EqualTo(_loginData.Username));
+            Assert.That(_profile.GetEmail(), Is.EqualTo(_loginData.Email));
             Assert.That(_profile.GetAddress(), Is.Empty.Or.Null);
             Assert.That(_profile.GetContributions(), Is.EqualTo(0));
             Assert.That(_profile.GetRating(), Is.EqualTo(0));
         });
         _register.ClickLogout();
         driver.Close();
-        _loginData = userData;
         driver.Quit();
     }
 
@@ -50,6 +49,7 @@ public class ProfileTest
         _login = new Login(driver);
         _login.GoTo();
         _login.LoginAs(_loginData);
+        WaitUntilUserIsLoggedIn(driver);
         _profile = new Profile(driver);
 
         const string email = "ak7@gg.lol";
@@ -77,6 +77,7 @@ public class ProfileTest
         _login = new Login(driver);
         _login.GoTo();
         _login.LoginAs(_loginData);
+        WaitUntilUserIsLoggedIn(driver);
         _profile = new Profile(driver);
         
         // act
@@ -85,8 +86,13 @@ public class ProfileTest
         
         // assert
         Assert.That(_profile.ChechPasswordModalIsAsExpected(), Is.True);
-        _profile.ClickLogout();
         driver.Close();
         driver.Quit();
+    }
+
+    public void WaitUntilUserIsLoggedIn(IWebDriver driver)
+    {
+        var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));
+        wait.Until(d => _login.IsLoggedIn());
     }
 }
