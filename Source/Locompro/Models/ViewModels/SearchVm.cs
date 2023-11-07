@@ -11,4 +11,13 @@ public class SearchVm
     public string BrandSelected { get; set; }
     public string CategorySelected { get; set; }
     public int ResultsPerPage { get; set; }
+
+    public bool IsEmpty() =>
+            string.IsNullOrEmpty(ProductName) &&
+            string.IsNullOrEmpty(ProvinceSelected) &&
+            string.IsNullOrEmpty(CantonSelected) &&
+            string.IsNullOrEmpty(ModelSelected) &&
+            string.IsNullOrEmpty(BrandSelected) &&
+            string.IsNullOrEmpty(CategorySelected) &&
+            MinPrice == 0 && MaxPrice == 0;
 }

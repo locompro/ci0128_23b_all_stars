@@ -224,7 +224,7 @@ public class AuthServiceTest
     /// <summary>
     ///     Test if the user login fails.
     /// </summary>
-    /// <author>A. Badilla Olivas B80874</author>
+    /// <author>A. Badilla Olivas B80874 </author>
     [Test]
     public async Task Login_FailedLogin()
     {
@@ -253,7 +253,7 @@ public class AuthServiceTest
     /// <summary>
     ///     Test to ensure the GetUserId method returns the correct user ID.
     /// </summary>
-    /// <author>A. Badilla Olivas B80874</author>
+    /// <author>A. Badilla Olivas B80874 - Sprint 2</author>
     [Test]
     public void GetUserId_ReturnsUserId()
     {
@@ -273,7 +273,7 @@ public class AuthServiceTest
     /// <summary>
     ///     Test to verify that the IsCurrentPasswordCorrect method returns true when the password is correct.
     /// </summary>
-    /// <author>A. Badilla Olivas B80874</author>
+    /// <author>A. Badilla Olivas B80874 - Sprint 2</author>
     [Test]
     public async Task IsCurrentPasswordCorrect_ReturnsTrue_WhenPasswordIsCorrect()
     {
@@ -294,7 +294,7 @@ public class AuthServiceTest
     /// <summary>
     ///     Test to ensure the ChangePassword method returns the correct IdentityResult.
     /// </summary>
-    /// <author>A. Badilla Olivas B80874</author>
+    /// <author>A. Badilla Olivas B80874 - Sprint 2</author>
     [Test]
     public async Task ChangePassword_ReturnsIdentityResult()
     {
@@ -318,7 +318,7 @@ public class AuthServiceTest
     /// <summary>
     ///     Test to ensure that the RefreshUserLogin method refreshes the login as expected.
     /// </summary>
-    /// <author>A. Badilla Olivas B80874</author>
+    /// <author>A. Badilla Olivas B80874 - Sprint 2</author>
     [Test]
     public async Task RefreshUserLogin_RefreshesLogin()
     {
