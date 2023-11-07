@@ -1,23 +1,17 @@
-﻿using Locompro.Services;
-using MessagePack;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
-using Locompro.Models;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using Locompro.Pages.Shared;
+﻿using Locompro.Pages.Shared;
+using Locompro.Services;
 
-namespace Locompro.Pages
+namespace Locompro.Pages;
+
+/// <summary>
+///     Index page model
+/// </summary>
+public class IndexModel : SearchPageModel
 {
-    /// <summary>
-    /// Index page model
-    /// </summary>
-    public class IndexModel : SearchPageModel
+    public IndexModel(ILoggerFactory loggerFactory,
+        IHttpContextAccessor httpContextAccessor,
+        AdvancedSearchInputService advancedSearchServiceHandler)
+        : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler)
     {
-        public IndexModel(AdvancedSearchInputService advancedSearchServiceHandler) : base(advancedSearchServiceHandler)
-        {
-        }
     }
 }

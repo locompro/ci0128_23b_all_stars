@@ -40,7 +40,11 @@ export class ModalManager {
         this.modal.find("input, select, textarea").each((index, element) => {
             const $element = $(element);
             if ($element.is("select")) {
-                $element.prop("selectedIndex", 0);
+                if ($element.data('select2')) {  // Check if select2 is initialized
+                    $element.val(null).trigger('change');
+                } else {
+                    $element.prop("selectedIndex", 0);
+                }
             } else {
                 $element.val('');
             }

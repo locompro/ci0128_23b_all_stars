@@ -1,28 +1,40 @@
 using Locompro.Data;
-using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
 
 namespace Locompro.Services;
 
+/// <summary>
+/// Provides services for handling user contributions, such as adding new submissions.
+/// </summary>
 public class ContributionService : Service, IContributionService
 {
     private const string OnlyCountry = "Costa Rica";
 
     private readonly ICantonService _cantonService;
 
-    private readonly INamedEntityDomainService<Store, string> _storeService;
+    private readonly INamedEntityDomainService<Category, string> _categoryService;
 
     private readonly INamedEntityDomainService<Product, int> _productService;
 
-    private readonly INamedEntityDomainService<Category, string> _categoryService;
+    private readonly INamedEntityDomainService<Store, string> _storeService;
 
     private readonly ISubmissionService _submissionService;
 
-    public ContributionService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory, ICantonService cantonService,
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ContributionService"/> class.
+    /// </summary>
+    /// <param name="loggerFactory">The factory used for creating loggers.</param>
+    /// <param name="cantonService">The service for canton-related operations.</param>
+    /// <param name="storeService">The service for store-related operations.</param>
+    /// <param name="productService">The service for product-related operations.</param>
+    /// <param name="categoryService">The service for category-related operations.</param>
+    /// <param name="submissionService">The service for submission-related operations.</param>
+    public ContributionService(ILoggerFactory loggerFactory, ICantonService cantonService,
         INamedEntityDomainService<Store, string> storeService, INamedEntityDomainService<Product, int> productService,
         INamedEntityDomainService<Category, string> categoryService, ISubmissionService submissionService)
-        : base(unitOfWork, loggerFactory)
+        : base(loggerFactory)
     {
         _cantonService = cantonService;
         _storeService = storeService;
@@ -31,68 +43,96 @@ public class ContributionService : Service, IContributionService
         _submissionService = submissionService;
     }
 
-    public async Task AddSubmission(StoreViewModel storeViewModel, ProductViewModel productViewModel,
-        string description, int price, string userId)
+    /// <inheritdoc />
+    /// <summary>
+    /// Adds a new submission to the system based on the provided view models.
+    /// </summary>
+    /// <param name="storeVm">The view model containing the store data.</param>
+    /// <param name="productVm">The view model containing the product data.</param>
+    /// <param name="submissionVm">The view model containing the submission data.</param>
+    /// <param name="picturesVMs">The list of view models for the pictures associated with the submission.</param>
+    /// <returns>A task representing the asynchronous operation of adding a submission.</returns>
+    public async Task AddSubmission(StoreVm storeVm, ProductVm productVm,
+        SubmissionVm submissionVm, List<PictureVm> picturesVMs)
     {
-        Store store = await BuildStore(storeViewModel);
+        var store = await BuildStore(storeVm);
 
-        Product product = await BuildProduct(productViewModel);
+        var product = await BuildProduct(productVm);
 
-        Submission submission = new Submission()
+        var entryTime = DateTime.Now;
+
+        var pictures = BuildPictures(picturesVMs, entryTime, submissionVm.UserId);
+
+        var submission = new Submission
         {
-            UserId = userId,
-            EntryTime = DateTime.Now,
-            Price = price,
-            Description = description,
+            UserId = submissionVm.UserId,
+            EntryTime = entryTime,
+            Price = submissionVm.Price,
+            Description = submissionVm.Description,
             Store = store,
-            Product = product
+            Product = product,
+            Pictures = pictures
         };
 
         await _submissionService.Add(submission);
     }
 
-    private async Task<Store> BuildStore(StoreViewModel storeViewModel)
+    private async Task<Store> BuildStore(StoreVm storeVm)
     {
-        if (storeViewModel.IsExistingStore())
-        {
-            return await _storeService.Get(storeViewModel.SName);
-        }
+        if (storeVm.IsExistingStore()) return await _storeService.Get(storeVm.SName);
 
-        Canton canton = await _cantonService.Get(OnlyCountry, storeViewModel.Province, storeViewModel.Canton);
+        var canton = await _cantonService.Get(OnlyCountry, storeVm.Province, storeVm.Canton);
 
-        Store store = new Store
+        var store = new Store
         {
-            Name = storeViewModel.SName,
+            Name = storeVm.SName,
             Canton = canton,
-            Address = storeViewModel.Address,
-            Telephone = storeViewModel.Telephone
+            Address = storeVm.Address,
+            Telephone = storeVm.Telephone
         };
 
         return store;
     }
 
-    private async Task<Product> BuildProduct(ProductViewModel productViewModel)
+    private async Task<Product> BuildProduct(ProductVm productVm)
     {
-        if (productViewModel.IsExistingProduct())
-        {
-            return await _productService.Get(productViewModel.Id);
-        }
-        
-        Category category = await _categoryService.Get(productViewModel.Category);
+        if (productVm.IsExistingProduct()) return await _productService.Get(productVm.Id);
 
-        Product product = new Product()
+        var category = await _categoryService.Get(productVm.Category);
+
+        var product = new Product
         {
-            Name = productViewModel.PName,
-            Model = productViewModel.Model,
-            Brand = productViewModel.Brand,
+            Name = productVm.PName,
+            Model = productVm.Model,
+            Brand = productVm.Brand,
             Categories = new List<Category>()
         };
 
-        if (category != null)
-        {
-            product.Categories.Add(category);
-        }
+        if (category != null) product.Categories.Add(category);
 
         return product;
+    }
+
+    private static List<Picture> BuildPictures(List<PictureVm> pictureVms, DateTime entryTime, string userId)
+    {
+        var pictures = new List<Picture>();
+        var pictureIndex = 0;
+
+        foreach (var pictureVm in pictureVms)
+        {
+            pictures.Add(
+                new Picture
+                {
+                    Index = pictureIndex,
+                    SubmissionUserId = userId,
+                    SubmissionEntryTime = entryTime,
+                    PictureTitle = pictureVm.Name,
+                    PictureData = pictureVm.PictureData
+                });
+
+            pictureIndex++;
+        }
+
+        return pictures;
     }
 }

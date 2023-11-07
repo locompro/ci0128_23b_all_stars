@@ -1,0 +1,11 @@
+﻿.btn-primary.critical-button {
+    background-color: #EE4B2B;
+    border-color: #D54626;
+}
+
+.btn-primary.critical-button:hover,
+.btn-primary.critical-button:focus,
+.btn-primary.critical-button:active {
+    background-color: #D64326;
+    border-color: #B53820;
+}

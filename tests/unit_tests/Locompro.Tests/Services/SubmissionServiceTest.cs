@@ -1,7 +1,11 @@
+using System.Linq.Expressions;
+using Locompro.Common.Search;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Services.Domain;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -10,68 +14,87 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class SubmissionServiceTest
 {
-    private Mock<IUnitOfWork> _unitOfWorkMock;
-    private Mock<ISubmissionRepository> _submissionCrudRepositoryMock;
-    private SubmissionService _submissionService;
-    
     [SetUp]
     public void Setup()
     {
         var loggerFactoryMock = new Mock<ILoggerFactory>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _submissionCrudRepositoryMock = new Mock<ISubmissionRepository>();
-        
+
         _unitOfWorkMock
-            .Setup(unit => unit.GetRepository<ISubmissionRepository>())
+            .Setup(unit => unit.GetSpecialRepository<ISubmissionRepository>())
             .Returns(_submissionCrudRepositoryMock.Object);
-        
+
         _submissionService = new SubmissionService(_unitOfWorkMock.Object, loggerFactoryMock.Object);
     }
-    
+
+    private Mock<IUnitOfWork> _unitOfWorkMock = null!;
+    private Mock<ISubmissionRepository> _submissionCrudRepositoryMock = null!;
+    private SubmissionService _submissionService = null!;
+
     /// <summary>
-    ///   tests that the search by canton and province returns the expected results when the canton and province are mentioned in the submissions
-    /// <author> A. Badilla Olivas B80874 </author>
+    ///     tests that the search by canton and province returns the expected results when the canton and province are
+    ///     mentioned in the submissions
+    ///     <author> A. Badilla Olivas B80874 </author>
     /// </summary>
     [Test]
     public async Task GetSubmissionsByCantonAndProvince_ValidCantonAndProvince_SubmissionsReturned()
     {
         // Arrange
-        string canton = "Canton1";
-        string province = "Province1";
+        var canton = "Canton1";
+        var province = "Province1";
         MockDataSetup();
+
+        var searchQueries = new SearchQueries
+        {
+            SearchQueryFunctions = new List<Expression<Func<Submission, bool>>>
+            {
+                submission => submission.Store.Canton.Name == canton,
+                submission => submission.Store.Canton.ProvinceName == province
+            }
+        };
+
         // Act
-        var results = await _submissionService.GetByCantonAndProvince(canton, province);
+        var results = await _submissionService.GetSearchResults(searchQueries);
 
         // Assert
         var submissions = results as Submission[] ?? results.ToArray();
         Assert.That(submissions, Is.Not.Null);
         Assert.That(submissions.Count(), Is.GreaterThan(0));
-        bool all = true;
+        var all = true;
         foreach (var sub in submissions)
-        {
             if (sub.Store.Canton.Name != canton || sub.Store.Canton.ProvinceName != province)
             {
                 all = false;
                 break;
             }
-        }
 
         Assert.That(all, Is.True);
     }
 
     /// <summary>
-    /// Tests that an empty list is returned when the canton and province are not mentioned in any submission
-    /// <author> A. Badilla Olivas B80874 </author>
+    ///     Tests that an empty list is returned when the canton and province are not mentioned in any submission
+    ///     <author> A. Badilla Olivas B80874 </author>
     /// </summary>
     [Test]
     public async Task GetSubmissionsByCantonAndProvince_InvalidCantonAndProvince_EmptyListReturned()
     {
         // Arrange
-        string canton = "InvalidCanton";
-        string province = "InvalidProvince";
+        var canton = "InvalidCanton";
+        var province = "InvalidProvince";
         MockDataSetup();
+
         // Act
-        var results = await _submissionService.GetByCantonAndProvince(canton, province);
+        var searchQueries = new SearchQueries
+        {
+            SearchQueryFunctions = new List<Expression<Func<Submission, bool>>>
+            {
+                submission => submission.Store.Canton.Name == canton,
+                submission => submission.Store.Canton.ProvinceName == province
+            }
+        };
+
+        var results = await _submissionService.GetSearchResults(searchQueries);
 
         // Assert
         var submissions = results as Submission[] ?? results.ToArray();
@@ -80,114 +103,366 @@ public class SubmissionServiceTest
     }
 
     /// <summary>
-    /// Sets up the mock for the submission repository so that it behaves as expected for the tests
+    /// Tests that the search by store name returns the expected results when
+    /// the store name is mentioned in the submissions
+    /// <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
-    void MockDataSetup()
+    [Test]
+    public async Task AddingFirstRatingToSubmissionResultsInNewSubmissionRatingBeingSame()
     {
-        Country country = new Country { Name = "Country" };
+        MockDataSetup();
+        var newRating = new RatingVm
+        {
+            SubmissionUserId = "User1",
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "5"
+        };
 
-        Province province1 = new Province { Name = "Province1", CountryName = "Country", Country = country };
-        Province province2 = new Province { Name = "Province2", CountryName = "Country", Country = country };
+        await _submissionService.UpdateSubmissionRating(newRating);
 
-        Canton canton1 = new Canton { Name = "Canton1", ProvinceName = "Province1", Province = province1 };
-        Canton canton2 = new Canton { Name = "Canton2", ProvinceName = "Province2", Province = province2 };
+        var changedSubmission = await _submissionCrudRepositoryMock.Object.GetByIdAsync(new SubmissionKey
+        {
+            UserId = "User1",
+            EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
+        });
+
+        Assert.That(changedSubmission.Rating, Is.EqualTo(5));
+    }
+
+    /// <summary>
+    /// Tests that the average of the ratings is calculated correctly
+    /// <author>Joseph Stuart Valverde Kong C18100- Sprint 2</author>
+    /// </summary>
+    [Test]
+    public async Task AddingSecondRatingToSubmissionResultsInNewSubmissionRatingBeingAverage()
+    {
+        MockDataSetup();
+        var newRating = new RatingVm
+        {
+            SubmissionUserId = "User1",
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "5"
+        };
+
+        await _submissionService.UpdateSubmissionRating(newRating);
+
+        newRating.Rating = "3";
+        await _submissionService.UpdateSubmissionRating(newRating);
+
+        var changedSubmission = await _submissionCrudRepositoryMock.Object.GetByIdAsync(new SubmissionKey
+        {
+            UserId = "User1",
+            EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
+        });
+
+        Assert.That(changedSubmission.Rating, Is.EqualTo(4));
+    }
+
+    /// <summary>
+    /// Tests that an exception is thrown when the rating view model is null or
+    /// <author>Joseph Stuart Valverde Kong C18100- Sprint 2</author>
+    /// </summary>
+    [Test]
+    public async Task AddingRatingOnNonExistentSubmissionThrowsException()
+    {
+        MockDataSetup();
+        var newRating = new RatingVm
+        {
+            SubmissionUserId = "User1",
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "5"
+        };
+
+        await _submissionService.UpdateSubmissionRating(newRating);
+
+        newRating.SubmissionUserId = "User2";
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
+            await _submissionService.UpdateSubmissionRating(newRating));
+    }
+
+    /// <summary>
+    /// Tests that an exception is thrown when the rating view model is null or
+    /// <author>Joseph Stuart Valverde Kong C18100- Sprint 2</author>
+    /// </summary>
+    [Test]
+    public async Task AddingNullRatingComponentThrowsException()
+    {
+        MockDataSetup();
+        var newRating = new RatingVm
+        {
+            SubmissionUserId = "User1",
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "5"
+        };
+
+        await _submissionService.UpdateSubmissionRating(newRating);
+
+        newRating.Rating = null;
+        Assert.ThrowsAsync<ArgumentException>(async () => await _submissionService.UpdateSubmissionRating(newRating));
+    }
+    
+    /// <summary>
+    /// Tests that an exception is thrown when the rating view model is null or
+    /// the rating string is not a number between 1 and 5
+    /// <author>Joseph Stuart Valverde Kong C18100- Sprint 2</author>
+    /// </summary>
+    [Test]
+    public async Task AddingRatingComponentWithInvalidRatingThrowsException()
+    {
+        MockDataSetup();
+        var newRating = new RatingVm
+        {
+            SubmissionUserId = "User1",
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "5"
+        };
+
+        await _submissionService.UpdateSubmissionRating(newRating);
+
+
+        Assert.Multiple(() =>
+        {
+            newRating.Rating = "6";
+            Assert.ThrowsAsync<ArgumentException>(
+                async () => await _submissionService.UpdateSubmissionRating(newRating));
+            newRating.Rating = "0";
+            Assert.ThrowsAsync<ArgumentException>(
+                async () => await _submissionService.UpdateSubmissionRating(newRating));
+        });
+    }
+
+    /// <summary>
+    /// Tests that an exception is thrown when the rating view model is null or the rating string
+    /// <author>Joseph Stuart Valverde Kong C18100- Sprint 2</author>
+    /// </summary>
+    [Test]
+    public void AddingRatingWithInvalidParametersThrowsException()
+    {
+        MockDataSetup();
+        var newRating = new RatingVm
+        {
+            SubmissionUserId = null,
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "5"
+        };
+
+        var newRating1 = new RatingVm
+        {
+            SubmissionUserId = "User1",
+            SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+            Rating = null
+        };
+
+        Assert.Multiple(() =>
+        {
+            Assert.ThrowsAsync<ArgumentException>(
+                async () => await _submissionService.UpdateSubmissionRating(newRating));
+            Assert.ThrowsAsync<ArgumentException>(async () =>
+                await _submissionService.UpdateSubmissionRating(newRating1));
+        });
+    }
+
+    /// <summary>
+    /// For a corner case where there is a rating and somehow the amount of ratings is 0
+    /// Would usually happen only for seeded data
+    /// <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
+    /// </summary>
+    [Test]
+    public async Task AddRatingOnSubmissionWithRatingButZeroRatingsAmountResultsInValidAverage()
+    {
+        MockDataSetup();
+
+        var newRating = new RatingVm
+        {
+            SubmissionUserId = "User8",
+            SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
+            Rating = "3"
+        };
+
+        await _submissionService.UpdateSubmissionRating(newRating);
+
+        var changedSubmission = await _submissionCrudRepositoryMock.Object.GetByIdAsync(new SubmissionKey
+        {
+            UserId = "User8",
+            EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc)
+        });
+
+        Assert.That(changedSubmission.Rating, Is.EqualTo(3.6500001f));
+    }
+
+    /// <summary>
+    ///     
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
+    /// </summary>
+    [Test]
+    public async Task DeleteSubmissionDeletesSubmission()
+    {
+        MockDataSetup();
+        
+        var submissionKey = new SubmissionKey
+        {
+            UserId = "User1",
+            EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
+        };
+        
+        await _submissionService.DeleteSubmissionAsync(submissionKey);
+        _submissionCrudRepositoryMock.Verify(repo => repo.DeleteAsync(submissionKey), Times.Once);
+        
+        Assert.That(await _submissionCrudRepositoryMock.Object.GetByIdAsync(submissionKey), Is.Null);
+    }
+    
+    /// <summary>
+    ///     
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
+    /// </summary>
+    [Test]
+    public async Task UpdateSubmissionStatusUpdatesSubmissionStatus()
+    {
+        MockDataSetup();
+        
+        var submissionKey = new SubmissionKey
+        {
+            UserId = "User1",
+            EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
+        };
+        
+        await _submissionService.UpdateSubmissionStatusAsync(submissionKey, SubmissionStatus.Moderated);
+        
+        Submission submissionToCheck = await _submissionCrudRepositoryMock.Object.GetByIdAsync(submissionKey);
+        
+        Assert.That(submissionToCheck.Status, Is.EqualTo(SubmissionStatus.Moderated));
+    }
+    
+    /// <summary>
+    ///     
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
+    /// </summary>
+    [Test]
+    public async Task GetItemSubmissionsReturnsSubmissions()
+    {
+        MockDataSetup();
+        
+        var storeName = "Store1";
+        var productId = 1;
+        var productName = "Product1";
+        
+        var submission = await _submissionService.GetItemSubmissions(storeName, productName);
+
+        var submissions = submission as Submission[] ?? submission.ToArray();
+        Assert.That(submissions, Is.Not.Null);
+        Assert.That(submissions.Length, Is.EqualTo(2));
+    }
+
+
+    /// <summary>
+    ///     Sets up the mock for the submission repository so that it behaves as expected for the tests
+    /// </summary>
+    private void MockDataSetup()
+    {
+        var country = new Country { Name = "Country" };
+
+        var province1 = new Province { Name = "Province1", CountryName = "Country", Country = country };
+        var province2 = new Province { Name = "Province2", CountryName = "Country", Country = country };
+
+        var canton1 = new Canton { Name = "Canton1", ProvinceName = "Province1", Province = province1 };
+        var canton2 = new Canton { Name = "Canton2", ProvinceName = "Province2", Province = province2 };
 
         // Add users
-        List<User> users = new List<User>
+        var users = new List<User>
         {
-            new User
+            new()
             {
                 Name = "User1"
             },
-            new User
+            new()
             {
                 Name = "User2"
             },
-            new User
+            new()
             {
                 Name = "User3"
             }
         };
 
         // Add stores
-        List<Store> stores = new List<Store>
+        var stores = new List<Store>
         {
-            new Store
+            new()
             {
                 Name = "Store1",
                 Canton = canton1,
                 Address = "Address1",
-                Telephone = "Telephone1",
+                Telephone = "Telephone1"
             },
-            new Store
+            new()
             {
                 Name = "Store2",
                 Canton = canton1,
                 Address = "Address2",
-                Telephone = "Telephone2",
+                Telephone = "Telephone2"
             },
-            new Store
+            new()
             {
                 Name = "Store3",
                 Canton = canton2,
                 Address = "Address3",
-                Telephone = "Telephone3",
+                Telephone = "Telephone3"
             },
-            new Store
+            new()
             {
                 Name = "Store4",
                 Canton = canton2,
                 Address = "Address4",
-                Telephone = "Telephone4",
+                Telephone = "Telephone4"
             }
         };
 
         // Add products
-        List<Product> products = new List<Product>
+        var products = new List<Product>
         {
-            new Product
+            new()
             {
                 Id = 1,
                 Name = "Product1",
                 Model = "Model1",
                 Brand = "Brand1"
             },
-            new Product
+            new()
             {
                 Id = 2,
                 Name = "Product2",
                 Model = "Model2",
                 Brand = "Brand2"
             },
-            new Product
+            new()
             {
                 Id = 3,
                 Name = "Product3",
                 Model = "Model3",
                 Brand = "Brand3"
             },
-            new Product
+            new()
             {
                 Id = 4,
                 Name = "Product4",
                 Model = "Model4",
                 Brand = "Brand4"
             },
-            new Product
+            new()
             {
                 Id = 5,
                 Name = "Product5",
                 Model = "Model5",
                 Brand = "Brand5"
             },
-            new Product
+            new()
             {
                 Id = 6,
                 Name = "Product6",
                 Model = "Model6",
                 Brand = "Brand6"
             },
-            new Product
+            new()
             {
                 Id = 7,
                 Name = "Product7",
@@ -197,14 +472,14 @@ public class SubmissionServiceTest
         };
 
         // Add submissions
-        List<Submission> submissions = new List<Submission>
+        var submissions = new List<Submission>
         {
-            new Submission
+            new()
             {
                 UserId = "User1",
                 EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
                 Price = 100,
-                Rating = 4.5f,
+                Rating = 0f,
                 Description = "Description for Submission 1",
                 StoreName = "Store1",
                 ProductId = 1,
@@ -212,7 +487,7 @@ public class SubmissionServiceTest
                 Store = stores[0],
                 Product = products[0]
             },
-            new Submission
+            new()
             {
                 UserId = "User2",
                 EntryTime = DateTime.Now.AddDays(-1),
@@ -225,7 +500,7 @@ public class SubmissionServiceTest
                 Store = stores[1],
                 Product = products[1]
             },
-            new Submission
+            new()
             {
                 UserId = "User3",
                 EntryTime = DateTime.Now.AddDays(-3),
@@ -238,7 +513,7 @@ public class SubmissionServiceTest
                 Store = stores[2],
                 Product = products[2]
             },
-            new Submission
+            new()
             {
                 UserId = "User4",
                 EntryTime = DateTime.Now.AddDays(-4),
@@ -251,7 +526,7 @@ public class SubmissionServiceTest
                 Store = stores[0],
                 Product = products[3]
             },
-            new Submission
+            new()
             {
                 UserId = "User5",
                 EntryTime = DateTime.Now.AddDays(-5),
@@ -264,7 +539,7 @@ public class SubmissionServiceTest
                 Store = stores[1],
                 Product = products[4]
             },
-            new Submission
+            new()
             {
                 UserId = "User6",
                 EntryTime = DateTime.Now.AddDays(-6),
@@ -277,7 +552,7 @@ public class SubmissionServiceTest
                 Store = stores[2],
                 Product = products[5]
             },
-            new Submission
+            new()
             {
                 UserId = "User7",
                 EntryTime = DateTime.Now.AddDays(-7),
@@ -290,7 +565,7 @@ public class SubmissionServiceTest
                 Store = stores[0],
                 Product = products[6]
             },
-            new Submission
+            new()
             {
                 UserId = "User8",
                 EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
@@ -303,7 +578,7 @@ public class SubmissionServiceTest
                 Store = stores[0],
                 Product = products[0]
             },
-            new Submission
+            new()
             {
                 UserId = "User9",
                 EntryTime = DateTime.Now.AddDays(-9),
@@ -316,7 +591,7 @@ public class SubmissionServiceTest
                 Store = stores[2],
                 Product = products[1]
             },
-            new Submission
+            new()
             {
                 UserId = "User10",
                 EntryTime = DateTime.Now.AddDays(-10),
@@ -329,7 +604,7 @@ public class SubmissionServiceTest
                 Store = stores[0],
                 Product = products[2]
             },
-            new Submission
+            new()
             {
                 UserId = "User11",
                 EntryTime = DateTime.Now.AddDays(-11),
@@ -342,7 +617,7 @@ public class SubmissionServiceTest
                 Store = stores[1],
                 Product = products[3]
             },
-            new Submission
+            new()
             {
                 UserId = "User12",
                 EntryTime = DateTime.Now.AddDays(-12),
@@ -355,7 +630,7 @@ public class SubmissionServiceTest
                 Store = stores[2],
                 Product = products[4]
             },
-            new Submission
+            new()
             {
                 UserId = "User13",
                 EntryTime = DateTime.Now.AddDays(-13),
@@ -368,7 +643,7 @@ public class SubmissionServiceTest
                 Store = stores[0],
                 Product = products[5]
             },
-            new Submission
+            new()
             {
                 UserId = "User14",
                 EntryTime = DateTime.Now.AddDays(-14),
@@ -381,7 +656,7 @@ public class SubmissionServiceTest
                 Store = stores[1],
                 Product = products[6]
             },
-            new Submission
+            new()
             {
                 UserId = "User15",
                 EntryTime = DateTime.Now.AddDays(-15),
@@ -394,7 +669,7 @@ public class SubmissionServiceTest
                 Store = stores[2],
                 Product = products[0]
             },
-            new Submission
+            new()
             {
                 UserId = "User16",
                 EntryTime = DateTime.Now.AddDays(-16),
@@ -407,7 +682,7 @@ public class SubmissionServiceTest
                 Store = stores[0],
                 Product = products[1]
             },
-            new Submission
+            new()
             {
                 UserId = "User17",
                 EntryTime = DateTime.Now.AddDays(-17),
@@ -420,7 +695,7 @@ public class SubmissionServiceTest
                 Store = stores[1],
                 Product = products[2]
             },
-            new Submission
+            new()
             {
                 UserId = "User18",
                 EntryTime = DateTime.Now.AddDays(-18),
@@ -433,7 +708,7 @@ public class SubmissionServiceTest
                 Store = stores[2],
                 Product = products[3]
             },
-            new Submission
+            new()
             {
                 UserId = "User19",
                 EntryTime = DateTime.Now.AddDays(-19),
@@ -446,7 +721,7 @@ public class SubmissionServiceTest
                 Store = stores[0],
                 Product = products[4]
             },
-            new Submission
+            new()
             {
                 UserId = "User20",
                 EntryTime = DateTime.Now.AddDays(-20),
@@ -460,24 +735,58 @@ public class SubmissionServiceTest
                 Product = products[5]
             }
         };
+
+        _submissionCrudRepositoryMock
+            .Setup(repository => repository.GetSearchResults(It.IsAny<SearchQueries>()))
+            .ReturnsAsync((SearchQueries searchQueries) =>
+            {
+                // initiate the query
+                IQueryable<Submission> submissionsResults = submissions.AsQueryable()
+                    .Include(submission => submission.Product);
+
+                // append the search queries to the query
+                submissionsResults =
+                    searchQueries.SearchQueryFunctions.Aggregate(submissionsResults,
+                        (current, query) => current.Where(query));
+
+                // get and return the results
+                return submissionsResults;
+            });
+
+        _submissionCrudRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(It.IsAny<SubmissionKey>()))
+            .ReturnsAsync((SubmissionKey submissionKey) =>
+            {
+                return submissions.SingleOrDefault(submission => submission.UserId == submissionKey.UserId &&
+                                                                 submission.EntryTime == submissionKey.EntryTime);
+            });
+
+        _submissionCrudRepositoryMock
+            .Setup(repository => repository.DeleteAsync(It.IsAny<SubmissionKey>()))
+            .Returns((SubmissionKey submissionKey) =>
+            {
+                var submission = submissions.SingleOrDefault(submission => submission.UserId == submissionKey.UserId &&
+                                                                           submission.EntryTime ==
+                                                                           submissionKey.EntryTime);
+                if (submission != null) submissions.Remove(submission);
+                
+                return Task.CompletedTask;
+            });
+
+        _submissionCrudRepositoryMock
+            .Setup(repository => repository.GetByIdAsync(It.IsAny<SubmissionKey>()))
+            .ReturnsAsync((SubmissionKey submissionKey) =>
+            {
+                return submissions.SingleOrDefault(submission => submission.UserId == submissionKey.UserId &&
+                                                                 submission.EntryTime == submissionKey.EntryTime);
+            });
+        
         
         _submissionCrudRepositoryMock
-            .Setup(repo => repo.GetByCantonAsync(It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync((string canton, string province) =>
+            .Setup(repository => repository.GetItemSubmissions(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync((string storeName, string productName) =>
             {
-                return submissions
-                    .Where(s => s.Store.Canton.Name == canton && s.Store.Canton.ProvinceName == province).ToList();
+                return submissions.Where(submission => submission.Store.Name == storeName && submission.Product.Name == productName);
             });
-
-        _submissionCrudRepositoryMock.Setup(repo => repo.GetByProductModelAsync(It.IsAny<string>()))
-            .ReturnsAsync((string model) => { return submissions.Where(s => s.Product.Model == model).ToList(); });
-
-        _submissionCrudRepositoryMock.Setup(repo => repo.GetByProductNameAsync(It.IsAny<string>()))
-            .ReturnsAsync((string productName) =>
-            {
-                return submissions.Where(s => s.Product.Name == productName).ToList();
-            });
-        _submissionCrudRepositoryMock.Setup(repo => repo.GetByBrandAsync(It.IsAny<string>()))
-            .ReturnsAsync((string brand) => { return submissions.Where(s => s.Product.Brand == brand).ToList(); });
     }
 }

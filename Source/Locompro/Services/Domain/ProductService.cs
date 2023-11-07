@@ -1,29 +1,27 @@
 ﻿using Locompro.Data;
-using Locompro.Models;
 using Locompro.Data.Repositories;
+using Locompro.Models.Entities;
 
-namespace Locompro.Services.Domain
+namespace Locompro.Services.Domain;
+
+public class ProductService : DomainService<Product, int>, IProductService
 {
-    /// <summary>
-    /// Domain service for Product entities.
-    /// </summary>
-    public class ProductService : NamedEntityDomainService<Product, int>, INamedEntityDomainService<Product, int>
+    private readonly IProductRepository _productRepository;
+
+    public ProductService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
     {
-        private readonly INamedEntityRepository<Product, int> _namedEntityRepository;
+        _productRepository = UnitOfWork.GetSpecialRepository<IProductRepository>();
+    }
 
-        /// <summary>
-        /// Constructs a Product service for a given repository.
-        /// </summary>
-        /// <param name="unitOfWork">Unit of work to handle transactions.</param>
-        /// <param name="loggerFactory">Factory for service logger.</param>
-        public ProductService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
-        {
-            _namedEntityRepository = UnitOfWork.GetRepository<INamedEntityRepository<Product, int>>();
-        }
+    /// <inheritdoc/>
+    public async Task<List<string>> GetBrandsAsync()
+    {
+        return await _productRepository.GetBrandsAsync();
+    }
 
-        public async Task<IEnumerable<Product>> GetByPartialName(string partialName)
-        {
-            return await _namedEntityRepository.GetByPartialNameAsync(partialName);
-        }
+    /// <inheritdoc/>
+    public async Task<List<string>> GetModelsAsync()
+    {
+        return await _productRepository.GetModelsAsync();
     }
 }

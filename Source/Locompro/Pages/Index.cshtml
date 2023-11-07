@@ -1,8 +1,22 @@
 ﻿@page
+@using Locompro.Models.Entities
+@using Locompro.Services.Domain
 @model IndexModel
+@inject INamedEntityDomainService<Category, string> CategoryDomainService
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+}
+
+@{
+    var categories = CategoryDomainService.GetAll().Result.ToList();
+}
 
 <!-- get the css file with main menu formats -->
 <link rel="stylesheet" href="~/css/MainMenu.css" asp-append-version="true"/>
+<link rel="stylesheet" href="~/assets/css/select2.min.css"/>
+<link rel="stylesheet" href="~/assets/css/select2-bootstrap.min.css"/>
+<link rel="stylesheet" href="~/css/custom-select2-styles.css"/>
 
 <h1 class="d-flex justify-content-center" style="padding-top: 0px;margin-top: 180px;margin-bottom: 55px;font-size: 75px;">LoCoMPro</h1>
 
@@ -12,8 +26,7 @@
         <div id="mainPageSearchGroup">
             <div>
                 <div id="searchBar" class="justify-content-center form-actions input-group search-bar-default">
-                    <div class="search-box form-control pe-4 rounded-pill input-group"
-                         style="">
+                    <div class="search-box form-control pe-4 rounded-pill input-group">
                         <div style="width: 100%; padding-right: 20px">
                             <input type="text"
                                    class="form-control rounded-pill"
@@ -28,7 +41,7 @@
                             <button class="btn btn-primary ps-2 pe-2 rounded-pill"
                                     role="button"
                                     type="submit"
-                                    onclick="performSearchButton()"
+                                    onclick="performIndexSearchButton()"
                                     style="height: 30px; font-size: 12px;"
                                     id="searchButton">
                                 <i class="fa fa-search"></i>
@@ -40,7 +53,7 @@
             <div id="modalContainer"
                  style="margin-left: auto; margin-right: auto;">
             </div>
-            <div id="advancedSearchButtonContainer" class ="advanced-search-button">
+            <div id="advancedSearchButtonContainer" class="advanced-search-button">
                 <button class="index-advanced-search-button-initial"
                         id="advancedSearchButton">
                     Búsqueda avanzada
@@ -52,5 +65,5 @@
 
 @section Scripts{
     <script src="~/js/search.js"></script>
-    <script src="~/js/Index.js"></script>
+    <script src="~/js/index.js"></script>
 }

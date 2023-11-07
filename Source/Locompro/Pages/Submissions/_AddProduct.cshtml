@@ -1,19 +1,23 @@
-@using Locompro.Models.ViewModels
+@inject INamedEntityDomainService<Category, string> CategoryService
+@using Locompro.Models.Entities
 @using Locompro.Services.Domain
 @using Newtonsoft.Json
-@using Locompro.Models
-@inject INamedEntityDomainService<Category, string> CategoryService
-@model ProductViewModel
+@model Locompro.Models.ViewModels.ProductVm
 
 @{
-    var categories = await CategoryService.GetAll();
+    var categories = (await CategoryService.GetAll()).ToList();
+
+    var projectedCategories = categories.Select(c => new
+    {
+        c.Name
+    }).ToList();
 
     var settings = new JsonSerializerSettings
     {
         ReferenceLoopHandling = ReferenceLoopHandling.Ignore
     };
 
-    var categoriesJson = JsonConvert.SerializeObject(categories, settings);
+    var categoriesJson = JsonConvert.SerializeObject(projectedCategories, settings);
 }
 
 <div class="row d-flex justify-content-center modal-select2">

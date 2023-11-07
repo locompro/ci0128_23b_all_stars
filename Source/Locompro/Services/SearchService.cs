@@ -1,140 +1,71 @@
-using System.Globalization;
-using Locompro.Models;
-using System.Text.RegularExpressions;
+using Locompro.Common;
+using Locompro.Common.Search;
+using Locompro.Common.Search.QueryBuilder;
 using Locompro.Data;
-using Locompro.Data.Repositories;
-using Locompro.Repositories.Utilities;
+using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
+using Locompro.Models.ViewModels;
+using Locompro.Services.Domain;
 
 namespace Locompro.Services;
 
-public class SearchService : Service
+public class SearchService : Service, ISearchService
 {
-    private readonly ISubmissionRepository _submissionRepository;
-    private readonly QueryBuilder _queryBuilder;
+    public const int ImageAmountPerItem = 5;
+
+    private readonly IQueryBuilder _queryBuilder;
+    private readonly ISearchDomainService _searchDomainService;
 
     /// <summary>
-    /// Constructor for the search service
+    ///     Constructor for the search service
     /// </summary>
-    /// <param name="unitOfWork"> generic unit of work</param>
     /// <param name="loggerFactory"> logger </param>
-    public SearchService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) :
-        base(unitOfWork, loggerFactory)
+    /// <param name="searchDomainService"></param>
+    /// <param name="pictureService"></param>
+    public SearchService(ILoggerFactory loggerFactory, ISearchDomainService searchDomainService,
+        IPictureService pictureService) :
+        base(loggerFactory)
     {
-        _submissionRepository = UnitOfWork.GetRepository<ISubmissionRepository>();
+        _searchDomainService = searchDomainService;
         _queryBuilder = new QueryBuilder();
     }
 
     /// <summary>
-    /// Searches for items based on the criteria provided in the search view model.
-    /// This method aggregates results from multiple queries such as by product name, by product model, and by canton/province.
-    /// It then returns a list of items that match all the criteria.
+    ///     Searches for items based on the criteria provided in the search view model.
+    ///     This method aggregates results from multiple queries such as by product name, by product model, and by
+    ///     canton/province.
+    ///     It then returns a list of items that match all the criteria.
     /// </summary>
-    public async Task<List<Item>> GetSearchResults(List<SearchCriterion> unfilteredSearchCriteria)
+    public async Task<SubmissionsDto> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria)
     {
         // add the list of unfiltered search criteria to the query builder
-        foreach (SearchCriterion searchCriterion in unfilteredSearchCriteria)
-        {
+        foreach (var searchCriterion in unfilteredSearchCriteria)
             try
             {
-                this._queryBuilder.AddSearchCriterion(searchCriterion);
-            } catch (ArgumentException exception)
+                _queryBuilder.AddSearchCriterion(searchCriterion);
+            }
+            catch (ArgumentException exception)
             {
                 // if the search criterion is invalid, report on it but continue execution
-                this.Logger.LogWarning(exception.ToString());
+                Logger.LogWarning(exception.ToString());
             }
-        }
 
         // compose the list of search functions
-        SearchQueries searchQueries = this._queryBuilder.GetSearchFunction();
-        
+        var searchQueries = _queryBuilder.GetSearchFunction();
+
+        if (searchQueries.IsEmpty) return new SubmissionsDto(null, null);
+
         // get the submissions that match the search functions
-        IEnumerable<Submission> submissions = 
-            searchQueries.IsEmpty?
-                Enumerable.Empty<Submission>() :
-                await this._submissionRepository.GetSearchResults(searchQueries);
-        
-        this._queryBuilder.Reset();
-        
-        return GetItems(submissions).Result.ToList();
-    }
-    
-    /// <summary>
-    /// Gets all the items to be displayed in the search results
-    /// from a list of submissions
-    /// </summary>
-    /// <param name="submissions"></param>
-    /// <returns></returns>
-    private static async Task<IEnumerable<Item>> GetItems(IEnumerable<Submission> submissions)
-    {
-        var items = new List<Item>();
+        var submissions = await _searchDomainService.GetSearchResults(searchQueries);
 
-        // Group submissions by store
-        var submissionsByStore = submissions.GroupBy(s => s.Store);
+        _queryBuilder.Reset();
 
-        foreach (var store in submissionsByStore)
-        {
-            var submissionsByProduct = store.GroupBy(s => s.Product);
-            foreach (var product in submissionsByProduct)
-            {
-                items.Add(await GetItem(product));
-            }
-        }
-
-        return items;
+        return new SubmissionsDto(submissions, GetBestSubmission);
     }
 
     /// <summary>
-    /// Produces an item from a group of submissions
-    /// Gets the best submission from the group of items
-    /// uses its information for the item to be shown
-    /// </summary>
-    /// <param name="itemGrouping"></param>
-    /// <returns></returns>
-    private static async Task<Item> GetItem(IGrouping<Product, Submission> itemGrouping)
-    {
-        // Get best submission for its information
-        var bestSubmission = GetBestSubmission(itemGrouping);
-
-        var item = new Item(
-            GetFormattedDate(bestSubmission),
-            bestSubmission.Product.Name,
-            bestSubmission.Price,
-            bestSubmission.Store.Name,
-            bestSubmission.Store.Canton.Name,
-            bestSubmission.Store.Canton.Province.Name,
-            bestSubmission.Description,
-            bestSubmission.Product.Model
-        )
-        {
-            Submissions = itemGrouping.ToList(),
-            Model = bestSubmission.Product.Model,
-            Brand = bestSubmission.Product.Brand
-        };
-
-        return await Task.FromResult(item);
-    }
-
-    /// <summary>
-    /// Extracts from entry time, the date in the format yyyy-mm-dd
-    /// to be shown in the results page
-    /// </summary>
-    /// <param name="submission"></param>
-    /// <returns></returns>
-    private static string GetFormattedDate(Submission submission)
-    {
-        Match regexMatch = Regex.Match(submission.EntryTime.ToString(CultureInfo.InvariantCulture),
-            @"[0-9]*/[0-9.]*/[0-9]*");
-
-        string date = regexMatch.Success
-            ? regexMatch.Groups[0].Value
-            : submission.EntryTime.ToString(CultureInfo.InvariantCulture);
-
-        return date;
-    }
-
-    /// <summary>
-    /// According to established heuristics determines best best submission
-    /// from among a list of submissions
+    ///     According to established heuristics determines best best submission
+    ///     from among a list of submissions
     /// </summary>
     /// <param name="submissions"></param>
     /// <returns></returns>

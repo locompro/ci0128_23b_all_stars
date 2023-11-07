@@ -1,44 +1,26 @@
-using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
-using Locompro.Models;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
+using Locompro.Pages.Util;
 using Locompro.Services;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Newtonsoft.Json;
 
 namespace Locompro.Pages.Submissions;
 
 /// <summary>
-/// Page model for the submission creation page.
+///     Page model for the submission creation page.
 /// </summary>
 [Authorize]
 public class CreateModel : PageModel
 {
-    [BindProperty]
-    public StoreViewModel StoreVm { get; set; }
-    
-    [BindProperty]
-    public ProductViewModel ProductVm { get; set; }
-    
-    [BindProperty]
-    [StringLength(120)]
-    public string Description { get; set; }
-    
-    [BindProperty]
-    [Required(ErrorMessage = "Ingresar el precio del producto.")]
-    [Range(100, 10000000, ErrorMessage = "El precio debe estar entre ₡100 y ₡10.000.000.")]
-    [RegularExpression(@"^\d+$", ErrorMessage = "El precio debe contener solamente números enteros.")]
-    public int Price { get; set; }
-
-    private readonly INamedEntityDomainService<Store, string> _storeService;
+    private readonly IContributionService _contributionService;
 
     private readonly INamedEntityDomainService<Product, int> _productService;
-    
-    private readonly IContributionService _contributionService;
+
+    private readonly INamedEntityDomainService<Store, string> _storeService;
 
     public CreateModel(INamedEntityDomainService<Store, string> storeService,
         INamedEntityDomainService<Product, int> productService, IContributionService contributionService)
@@ -48,36 +30,42 @@ public class CreateModel : PageModel
         _contributionService = contributionService;
     }
 
+    [BindProperty] public StoreVm StoreVm { get; set; }
+
+    [BindProperty] public ProductVm ProductVm { get; set; }
+
+    [BindProperty] public SubmissionVm SubmissionVm { get; set; }
+
     public async Task<IActionResult> OnGetFetchStores(string partialName)
     {
         var stores = await _storeService.GetByPartialName(partialName);
-        
-        var result = stores.Select(s => new 
+
+        var result = stores.Select(s => new
         {
-            id = s.Name, 
+            id = s.Name,
             text = $"{s.Name} ({s.Canton.Province.Name}, {s.Canton.Name})"
         }).ToList();
-        
+
         return new JsonResult(result);
     }
-    
+
     public async Task<IActionResult> OnGetFetchProducts(string partialName, string store)
     {
         // TODO: Go through submissions first to limit products by store
-        
+
         // TODO: Discern active vs. inactive
-        
+
         var products = await _productService.GetByPartialName(partialName);
-        
-        var result = products.Select(p => new 
+
+        var result = products.Select(p => new
         {
-            id = p.Id, 
+            id = p.Id,
             text = $"{p.Name} ({p.Brand}, {p.Model})"
         }).ToList();
-        
+
         return new JsonResult(result);
     }
-    
+
     public async Task<IActionResult> OnPostAsync()
     {
         // Remove ModelState errors for StoreVm if it's an existing store
@@ -88,15 +76,16 @@ public class CreateModel : PageModel
             ModelState.Remove("StoreVm.Province");
             ModelState.Remove("StoreVm.Canton");
         }
+
+        if (!ModelState.IsValid) return Page();
+
+        SubmissionVm.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         
-        if (!ModelState.IsValid)
-        {
-            return Page();
-        }
+        var formFiles = Request.Form.Files;
+        
+        var pictureVMs = PictureParser.Parse(formFiles);
 
-        string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        await _contributionService.AddSubmission(StoreVm, ProductVm, Description, Price, userId);
+        await _contributionService.AddSubmission(StoreVm, ProductVm, SubmissionVm, pictureVMs);
 
         return RedirectToPage("/Index");
     }

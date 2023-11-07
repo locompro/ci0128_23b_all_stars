@@ -47,6 +47,7 @@ class StoreModalManager extends ModalManager {
         });
 
         $("#partialStoreName").rules("add", {
+            required: true,
             messages: {
                 required: "Ingresar el nombre de la tienda."
             }
@@ -86,8 +87,9 @@ class ProductModalManager extends ModalManager {
             dropdownParent: $('#addProductModal .modal-content'),
             language: select2SpanishLanguageSettings
         });
-        
+
         $("#partialProductName").rules("add", {
+            required: true,
             messages: {
                 required: "Ingresar el nombre del producto."
             }
@@ -96,8 +98,8 @@ class ProductModalManager extends ModalManager {
 
     addAndValidate() {
         super.addAndValidate();
-        if(!this.shouldClearFlag) {
-         $("#partialProductId").val(-1)   
+        if (!this.shouldClearFlag) {
+            $("#partialProductId").val(-1)
         }
     }
 }
@@ -187,4 +189,7 @@ $(document).ready(function () {
             }
         });
     });
+
+    $("#mainForm").validate();
 });
+

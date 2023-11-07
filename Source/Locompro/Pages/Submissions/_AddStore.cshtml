@@ -1,9 +1,8 @@
-@using Locompro.Models.ViewModels
+@inject INamedEntityDomainService<Country, string> CountryService
+@using Locompro.Models.Entities
 @using Locompro.Services.Domain
 @using Newtonsoft.Json
-@using Locompro.Models
-@inject INamedEntityDomainService<Country, string> CountryService
-@model StoreViewModel
+@model Locompro.Models.ViewModels.StoreVm
 
 @{
     var country = await CountryService.Get("Costa Rica");
@@ -47,7 +46,7 @@
         <div class="mb-2">
             <label asp-for="Canton" class="form-label d-lg-flex justify-content-lg-start"></label>
             <select asp-for="Canton" id="partialStoreCanton"
-                    class="form-select"  style="font-family:Roboto, sans-serif; min-width: 210px;">
+                    class="form-select" style="font-family:Roboto, sans-serif; min-width: 210px;">
                 <option value="" disabled selected hidden>Seleccionar</option>
                 <!-- Options will be dynamically populated here -->
             </select>
