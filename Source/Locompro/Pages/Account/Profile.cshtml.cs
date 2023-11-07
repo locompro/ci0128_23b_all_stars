@@ -136,7 +136,7 @@ public class ProfileModel : PageModel
         }
 
         PrepareUserDataUpdate(user);
-        await _userService.Update(user);
+        await _userService.Update(user.Id, user);
 
         StoreTemporaryFlag("IsUserDataUpdated", true);
         return RedirectToPage();
