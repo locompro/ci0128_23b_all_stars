@@ -91,7 +91,7 @@ class SearchResultsModal {
             // Append the icon to the button
             reportButton.appendChild(icon);
 
-            if(submission.Status !== 'Moderated') {
+            if(submission.Status !== 1) {
                 const submissionId = submission.UserId + submission.NonFormatedEntryTime;
                 
                 reportButton.setAttribute('data-id', submissionId);
