@@ -1,4 +1,6 @@
-﻿using Locompro.Models.Dtos;
+﻿using Locompro.Models.ViewModels;
+
+using Locompro.Models.Dtos;
 using Locompro.Models.ViewModels;
 
 /// <summary>
@@ -11,6 +13,13 @@ public interface IModerationService
     /// </summary>
     /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
     Task AssignPossibleModeratorsAsync();
+
+    /// <summary>
+    /// Acts on a report
+    /// </summary>
+    /// <param name="moderatorActionOnReportVm"> Report action information</param>
+    /// <returns></returns>
+    Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm);
 
     /// <summary>
     ///     Adds a report for a given submission

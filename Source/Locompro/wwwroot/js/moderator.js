@@ -36,7 +36,7 @@ function changeModeratorPage(element) {
     let page = element.getValue();
     
     let url = window.location.pathname;
-    url + "?pageIndex=" + page;
+    url += "?pageIndex=" + page;
     
     window.location.href = url;
 }

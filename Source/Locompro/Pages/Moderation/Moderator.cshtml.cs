@@ -23,7 +23,7 @@ public class ModeratorPageModel : BasePageModel
 
     private readonly ISearchService _searchService;
     
-    private readonly ISubmissionService _submissionService;
+    private readonly IModerationService _moderationService;
     
     private readonly IConfiguration _configuration;
     
@@ -31,12 +31,12 @@ public class ModeratorPageModel : BasePageModel
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
         ISearchService service,
-        ISubmissionService submissionService,
+        IModerationService moderationService,
         IConfiguration configuration) : base(loggerFactory, httpContextAccessor)
     {
         _searchService = service;
         _configuration = configuration;
-        _submissionService = submissionService;
+        _moderationService = moderationService;
     }
     
     /// <summary>
@@ -54,8 +54,15 @@ public class ModeratorPageModel : BasePageModel
     public async Task OnPostActOnReport()
     {
         ModeratorActionOnReportVm moderatorActionOnReportVm = await GetDataSentByClient<ModeratorActionOnReportVm>();
-
-        await _submissionService.ActOnReport(moderatorActionOnReportVm);
+        
+        try
+        {
+            await _moderationService.ActOnReport(moderatorActionOnReportVm);
+        } catch (Exception e)
+        {
+            Logger.LogError(e, "Error while acting on report");
+        }
+        
         
         await PopulatePageData(0);
     }
@@ -71,11 +78,18 @@ public class ModeratorPageModel : BasePageModel
             new SearchCriterion<int>(SearchParameterTypes.HasNAmountReports, 1)
         };
 
-        SubmissionDto submissionDto = await _searchService.GetSearchResults(searchCriteria);
+        SubmissionsDto submissionsDto = null;
         
-        ModerationSubmissionMapper mapper = new ();
+        try
+        {
+            submissionsDto = await _searchService.GetSearchResults(searchCriteria);
+        } catch (Exception e)
+        {
+            Logger.LogError(e, "Error while getting search results");
+        }
         
-        List<ModerationSubmissionVm> reports = mapper.ToVm(submissionDto);
+        ModerationSubmissionsMapper mapper = new ();
+        List<ModerationSubmissionVm> reports = mapper.ToVm(submissionsDto);
         
         ItemsAmount = reports.Count;
         
