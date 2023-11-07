@@ -128,7 +128,8 @@ public class SearchResultsModel : SearchPageModel
             new
             {
                 SearchResults = searchResults,
-                Data = SearchVm
+                Data = SearchVm,
+                Redirect = (searchResults is { Count: 0 }? "redirect" : null)
             });
 
         return Content(searchResultsJson);
@@ -169,14 +170,12 @@ public class SearchResultsModel : SearchPageModel
     }
 
     
-    public async Task<IActionResult> OnPostReportSubmissionAsync(ReportVm reportVm)
+    public async Task<JsonResult> OnPostReportSubmissionAsync(ReportVm reportVm)
     {
-        
-        // TODO: Set up client side handler to accept redirect
-        
         if (!_authService.IsLoggedIn())
         {
-            return RedirectToRoute("Account/Login");
+            Response.StatusCode = 302; // Redirect status code
+            return new JsonResult(new { redirectUrl = "/Account/Login" });
         }
         
         try
@@ -220,13 +219,12 @@ public class SearchResultsModel : SearchPageModel
     /// <summary>
     ///     Updates the rating of a given submission
     /// </summary>
-    public async Task<IActionResult> OnPostUpdateSubmissionRatingAsync()
+    public async Task<JsonResult> OnPostUpdateSubmissionRatingAsync()
     {
-        // TODO: Set up client side handler to accept redirect
-        
         if (!_authService.IsLoggedIn())
         {
-            return RedirectToRoute("Account/Login");
+            Response.StatusCode = 302; // Redirect status code
+            return new JsonResult(new { redirectUrl = "/Account/Login" });
         }
         
         var clientRatingChange = await GetDataSentByClient<RatingVm>();
@@ -243,6 +241,6 @@ public class SearchResultsModel : SearchPageModel
             Logger.LogError("Error when attempting to update submission rating: " + e.Message);
         }
 
-        return new JsonResult(new { success = true, message = "Ratings updated submitted successfully" });
+        return new JsonResult(new { ok = true, message = "Ratings updated submitted successfully" });
     }
 }

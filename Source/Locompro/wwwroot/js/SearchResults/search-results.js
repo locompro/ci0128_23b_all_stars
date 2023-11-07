@@ -11,6 +11,9 @@ document.addEventListener("DOMContentLoaded", function () {
             return response.json();
         })
         .then(searchResultsData => {
+            if (searchResultsData.Redirect === 'redirect') {
+                location.href = '/';
+            }
             searchResultsPage = new SearchResultsPage(searchResultsData.SearchResults, searchResultsData.Data);
             searchResultsPage.populateTableWithResults();
         })
@@ -295,6 +298,10 @@ window.addEventListener('beforeunload', function (e) {
     let location = url + handler;
 
     let data = searchResultsPage.pageSearchData;
+    
+    //console.log(data);
+    //alert("data: "  +  data);
+    //e.preventDefault();
 
     fetch(location, {
         method: 'POST',
@@ -309,6 +316,7 @@ window.addEventListener('beforeunload', function (e) {
                 throw new Error('Network response was not ok.');
             }
         });
+    
     e.returnValue = '';
 });
 
@@ -326,7 +334,10 @@ document.addEventListener('DOMContentLoaded', function () {
         // Send the form data using fetch API
         fetch(reportForm.action, {
             method: 'POST',
-            body: new FormData(reportForm)
+            body: new FormData(reportForm),
+            headers: {
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            }
         })
             .then(response => {
                 if (!response.ok) {
@@ -335,14 +346,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 return response.json();
             })
             .then(data => {
-                // Find the button by the submission ID and disable it
-                const reportButtonToDisable = document.querySelector(`button[data-id="${submissionId}"]`);
-                if (reportButtonToDisable) {
-                    reportButtonToDisable.disabled = true;
+                if (data.redirectUrl) {
+                    // If a redirect URL is provided, redirect the page
+                    window.location.href = data.redirectUrl;
+                } else {
+                    // Find the button by the submission ID and disable it
+                    const reportButtonToDisable = document.querySelector(`button[data-id="${submissionId}"]`);
+                    if (reportButtonToDisable) {
+                        reportButtonToDisable.disabled = true;
+                    }
+
+                    // Display a success message or update the UI as necessary
+                    $('#descriptionModal').modal('hide');
                 }
-                
-                // Display a success message or update the UI as necessary
-                $('#descriptionModal').modal('hide');
             })
             .catch(error => {
                 console.error('There has been a problem with your fetch operation:', error);
