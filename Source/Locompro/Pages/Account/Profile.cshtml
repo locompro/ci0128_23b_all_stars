@@ -218,7 +218,7 @@
 
                     <div class="modal-footer">
                         <button class="btn btn-light" type="reset" data-bs-dismiss="modal">Cancelar</button>
-                        <button class="btn btn-primary" type="submit">Cambiar</button>
+                        <button class="btn btn-primary" id ="PostChangePasswordButton" type="submit">Cambiar</button>
                     </div>
                 </form>
             </div>
@@ -243,7 +243,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" asp-page-handler="UpdateUserData">
+                <form method="post" asp-page-handler="UpdateUserData" id="UpdateUserDataForm">
                     <div class="text-danger" id="UpdateUserModalErrorsList">
                         @{
                             var errorMessagesUpdateData = Model.UpdateUserDataModalErrors.GetErrors();
