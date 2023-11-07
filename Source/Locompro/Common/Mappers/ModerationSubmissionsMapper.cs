@@ -4,9 +4,13 @@ using Locompro.Models.ViewModels;
 
 namespace Locompro.Common.Mappers;
 
-public class ModerationSubmissionMapper : GenericMapper<SubmissionDto, List<ModerationSubmissionVm>>
+/// <summary>
+/// Mapper than takes a Submission DTO and maps it to a list of ModerationSubmissionViewModels
+/// Each submission has a number of reports, which are mapped to a list of ReportViewModels
+/// </summary>
+public class ModerationSubmissionsMapper : GenericMapper<SubmissionsDto, List<ModerationSubmissionVm>>
 {
-    protected override List<ModerationSubmissionVm> BuildVm(SubmissionDto dto)
+    protected override List<ModerationSubmissionVm> BuildVm(SubmissionsDto dto)
     {
         List<ModerationSubmissionVm> moderationSubmissionViewModels = new ();
 
@@ -39,12 +43,18 @@ public class ModerationSubmissionMapper : GenericMapper<SubmissionDto, List<Mode
 
         return moderationSubmissionViewModels;
     }
-
-    protected override SubmissionDto BuildDto(List<ModerationSubmissionVm> vm)
+    
+    
+    protected override SubmissionsDto BuildDto(List<ModerationSubmissionVm> vm)
     {
         return null;
     }
     
+    /// <summary>
+    /// Gets reportVMs mapped for this use case from a list of reports
+    /// </summary>
+    /// <param name="reports"> reports to be mapped </param>
+    /// <returns> mapped report VMS </returns>
     private static List<ReportVm> GetReportVmFromReports(List<Report> reports)
     {
         if (reports == null || !reports.Any())
