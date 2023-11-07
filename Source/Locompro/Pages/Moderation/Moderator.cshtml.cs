@@ -7,6 +7,7 @@ using Locompro.Models.Dtos;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
 using Locompro.Services.Domain;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Locompro.Pages.Moderation;
@@ -51,7 +52,7 @@ public class ModeratorPageModel : BasePageModel
     /// <summary>
     /// On post receives the moderator action on a report
     /// </summary>
-    public async Task OnPostActOnReport()
+    public async Task<IActionResult> OnPostActOnReport()
     {
         ModeratorActionOnReportVm moderatorActionOnReportVm = await GetDataSentByClient<ModeratorActionOnReportVm>();
         
@@ -62,9 +63,9 @@ public class ModeratorPageModel : BasePageModel
         {
             Logger.LogError(e, "Error while acting on report");
         }
-        
-        
-        await PopulatePageData(0);
+
+
+        return RedirectToPage();
     }
     
     /// <summary>
