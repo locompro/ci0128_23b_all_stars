@@ -30,7 +30,7 @@ public class ReportServiceTest
 
     /// <author>Ariel Arevalo Alvarado B50562</author>
     [Test]
-    public async Task Add_CreatesReportFromDtoAndSavesToDatabase()
+    public async Task UpdateAsync_CreatesReportFromDtoAndSavesToDatabase()
     {
         // Arrange
         var reportDto = new ReportDto
@@ -45,7 +45,7 @@ public class ReportServiceTest
         _unitOfWork.Setup(u => u.SaveChangesAsync()).Returns(Task.CompletedTask);
 
         // Act
-        await _reportService.Add(reportDto);
+        await _reportService.UpdateAsync(reportDto);
 
         // Assert
         _reportRepository.Verify(repo => repo.AddAsync(It.Is<Report>(r =>

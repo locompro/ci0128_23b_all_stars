@@ -78,18 +78,18 @@ public class ModeratorPageModel : BasePageModel
             new SearchCriterion<int>(SearchParameterTypes.HasNAmountReports, 1)
         };
 
-        SubmissionDto submissionDto = null;
+        SubmissionsDto submissionsDto = null;
         
         try
         {
-            submissionDto = await _searchService.GetSearchResults(searchCriteria);
+            submissionsDto = await _searchService.GetSearchResults(searchCriteria);
         } catch (Exception e)
         {
             Logger.LogError(e, "Error while getting search results");
         }
         
-        ModerationSubmissionMapper mapper = new ();
-        List<ModerationSubmissionVm> reports = mapper.ToVm(submissionDto);
+        ModerationSubmissionsMapper mapper = new ();
+        List<ModerationSubmissionVm> reports = mapper.ToVm(submissionsDto);
         
         ItemsAmount = reports.Count;
         

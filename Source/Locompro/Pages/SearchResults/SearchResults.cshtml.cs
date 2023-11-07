@@ -116,8 +116,8 @@ public class SearchResultsModel : SearchPageModel
         try
         {
             ItemMapper itemMapper = new();
-            SubmissionDto submissionDto = await _searchService.GetSearchResults(searchParameters);
-            searchResults = itemMapper.ToVm(submissionDto);
+            SubmissionsDto submissionsDto = await _searchService.GetSearchResults(searchParameters);
+            searchResults = itemMapper.ToVm(submissionsDto);
         }
         catch (Exception e)
         {

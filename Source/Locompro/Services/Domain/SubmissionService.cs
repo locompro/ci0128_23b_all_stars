@@ -48,7 +48,7 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
 
         PlaceNewSubmissionRating(submissionToUpdate, int.Parse(ratingVm.Rating));
 
-        _submissionRepository.UpdateAsync(submissionToUpdate);
+        await _submissionRepository.UpdateAsync(submissionToUpdate.UserId, submissionToUpdate.EntryTime, submissionToUpdate);
         await UnitOfWork.SaveChangesAsync();
     }
 

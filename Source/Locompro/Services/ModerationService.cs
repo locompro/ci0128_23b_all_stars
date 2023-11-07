@@ -54,7 +54,7 @@ public class ModerationService : Service, IModerationService
     /// <inheritdoc />
     public async Task ReportSubmission(ReportDto reportDto)
     {
-        await _reportService.Add(reportDto);
+        await _reportService.UpdateAsync(reportDto);
     }
 
     /// <summary>
