@@ -36,7 +36,7 @@ public class SearchService : Service, ISearchService
     ///     canton/province.
     ///     It then returns a list of items that match all the criteria.
     /// </summary>
-    public async Task<SubmissionDto> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria)
+    public async Task<SubmissionsDto> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria)
     {
         // add the list of unfiltered search criteria to the query builder
         foreach (var searchCriterion in unfilteredSearchCriteria)
@@ -53,14 +53,14 @@ public class SearchService : Service, ISearchService
         // compose the list of search functions
         var searchQueries = _queryBuilder.GetSearchFunction();
 
-        if (searchQueries.IsEmpty) return new SubmissionDto(null, null);
+        if (searchQueries.IsEmpty) return new SubmissionsDto(null, null);
 
         // get the submissions that match the search functions
         var submissions = await _searchDomainService.GetSearchResults(searchQueries);
 
         _queryBuilder.Reset();
 
-        return new SubmissionDto(submissions, GetBestSubmission);
+        return new SubmissionsDto(submissions, GetBestSubmission);
     }
 
     /// <summary>
