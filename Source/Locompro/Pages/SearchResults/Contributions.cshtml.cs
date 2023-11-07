@@ -35,6 +35,7 @@ namespace Locompro.Pages.SearchResults
             _pageSize = _configuration.GetValue("PageSize", 4);
         }
 
+        // Reacts to the current user and gives all the submissions done by them
         public async Task OnGetAsync(int? pageIndex, string query)
         {
             CurrentUserId = query;
@@ -46,14 +47,17 @@ namespace Locompro.Pages.SearchResults
             try
             {
                 ItemMapper itemMapper = new();
-                SubmissionDto submissionDto = await _searchService.GetSearchResults(searchParameters);
+                SubmissionsDto submissionDto = await _searchService.GetSearchResults(searchParameters);
                 searchResults = itemMapper.ToVm(submissionDto);
             }
             catch (Exception e)
             {
                 Logger.LogError("Error when attempting to get search results: " + e.Message);
             }
-            DisplayAmount = searchResults.Count;
+            foreach (var itemVm in searchResults)
+            {
+                DisplayAmount += itemVm.Submissions.Count;
+            }
             DisplaySubmissions = PaginatedList<ItemVm>.Create(searchResults, pageIndex ?? 1, _pageSize);
         }
     }

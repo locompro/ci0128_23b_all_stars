@@ -27,10 +27,11 @@ public interface IDomainService<T, TK> where T : class
     Task Add(T entity);
 
     /// <summary>
-    ///     Updates an entity through this service.
+    ///     Updates an entity through this service. If it does not exist, adds it.
     /// </summary>
+    /// <param name="id"></param>
     /// <param name="entity">Entity to update.</param>
-    Task Update(T entity);
+    Task Update(TK id, T entity);
 
     /// <summary>
     ///     Deletes an entity through this service based on its ID.

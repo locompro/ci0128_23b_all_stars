@@ -1,5 +1,7 @@
 ﻿using System.Security.Claims;
 using Locompro.Common;
+using Locompro.Data;
+using Locompro.Data.Repositories;
 using Locompro.Common.Mappers;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
@@ -20,13 +22,18 @@ public class ModerationService : Service, IModerationService
 
     private readonly IUserManagerService _userManagerService;
     private readonly IUserService _userService;
+    private readonly ISubmissionService _submissionService;
     private readonly IReportService _reportService; 
 
-    public ModerationService(ILoggerFactory loggerFactory, IUserService userService,
-        IUserManagerService userManagerService, IReportService reportService) : base(loggerFactory)
+    public ModerationService(ILoggerFactory loggerFactory,
+        IUserService userService,
+        IUserManagerService userManagerService,
+        ISubmissionService submissionService,
+        IReportService reportService) : base(loggerFactory)
     {
         _userService = userService;
         _userManagerService = userManagerService;
+        _submissionService = submissionService;
         _reportService = reportService;
     }
 
@@ -47,7 +54,7 @@ public class ModerationService : Service, IModerationService
     /// <inheritdoc />
     public async Task ReportSubmission(ReportDto reportDto)
     {
-        await _reportService.Add(reportDto);
+        await _reportService.UpdateAsync(reportDto);
     }
 
     /// <summary>
@@ -101,5 +108,28 @@ public class ModerationService : Service, IModerationService
     {
         var userRoles = await _userManagerService.GetClaimsOfTypesAsync(user, ClaimTypes.Role);
         return rolesToCheck.Any(role => userRoles.Any(userRole => userRole.Value == role));
+    }
+
+    /// <inheritdoc />
+    public async Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm)
+    {
+        SubmissionKey submissionKey = new ()
+        {
+            UserId = moderatorActionOnReportVm.SubmissionUserId,
+            EntryTime = moderatorActionOnReportVm.SubmissionEntryTime
+        };
+        
+        switch (moderatorActionOnReportVm.Action)
+        {
+            case ModeratorActions.EraseSubmission:
+                await _submissionService.DeleteSubmissionAsync(submissionKey);
+                break;
+            case ModeratorActions.EraseReport:
+                await _submissionService.UpdateSubmissionStatusAsync(submissionKey, SubmissionStatus.Moderated);
+                break;
+            case ModeratorActions.Default:
+            default:
+                throw new ArgumentOutOfRangeException(nameof(moderatorActionOnReportVm));
+        }
     }
 }

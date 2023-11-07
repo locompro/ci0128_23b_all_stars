@@ -6,5 +6,5 @@ namespace Locompro.Services.Domain;
 
 public interface ISearchService
 {
-    Task<SubmissionDto> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria);
+    Task<SubmissionsDto> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria);
 }

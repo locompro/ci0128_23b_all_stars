@@ -46,11 +46,20 @@ public class CrudRepository<T, TK> : ICrudRepository<T, TK> where T : class
     }
 
     /// <inheritdoc />
-    public void UpdateAsync(T entity)
+    public async Task UpdateAsync(TK id, T entity)
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));
-
-        Set.Update(entity);
+        
+        var existingEntity = await GetByIdAsync(id);
+        if (existingEntity != null)
+        {
+            Context.Entry(existingEntity).CurrentValues.SetValues(entity);
+            await Context.SaveChangesAsync();
+        }
+        else
+        {
+            await AddAsync(entity);
+        }
     }
 
     /// <inheritdoc />

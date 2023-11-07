@@ -13,7 +13,7 @@ public class ReportServiceTest
 {
     private Mock<IUnitOfWork> _unitOfWork;
     private Mock<ICrudRepository<Report, string>> _reportRepository;
-    private Mock<ILoggerFactory> _loggerFactory;
+    private ILoggerFactory _loggerFactory;
     private ReportService _reportService;
 
     [SetUp]
@@ -21,16 +21,16 @@ public class ReportServiceTest
     {
         _unitOfWork = new Mock<IUnitOfWork>();
         _reportRepository = new Mock<ICrudRepository<Report, string>>();
-        _loggerFactory = new Mock<ILoggerFactory>();
+        _loggerFactory = new LoggerFactory();
 
         _unitOfWork.Setup(u => u.GetCrudRepository<Report, string>()).Returns(_reportRepository.Object);
 
-        _reportService = new ReportService(_unitOfWork.Object, _loggerFactory.Object);
+        _reportService = new ReportService(_unitOfWork.Object, _loggerFactory);
     }
 
     /// <author>Ariel Arevalo Alvarado B50562</author>
     [Test]
-    public async Task Add_CreatesReportFromDtoAndSavesToDatabase()
+    public async Task UpdateAsync_CreatesReportFromDtoAndSavesToDatabase()
     {
         // Arrange
         var reportDto = new ReportDto
@@ -45,7 +45,7 @@ public class ReportServiceTest
         _unitOfWork.Setup(u => u.SaveChangesAsync()).Returns(Task.CompletedTask);
 
         // Act
-        await _reportService.Add(reportDto);
+        await _reportService.UpdateAsync(reportDto);
 
         // Assert
         _reportRepository.Verify(repo => repo.AddAsync(It.Is<Report>(r =>

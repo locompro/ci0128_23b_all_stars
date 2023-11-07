@@ -27,11 +27,12 @@ public interface ICrudRepository<T, TK> : IRepository
     Task AddAsync(T entity);
 
     /// <summary>
-    ///     Updates an entity for this repository asynchronously.
+    ///     Updates an entity for this repository asynchronously. If the entity does not exist, adds it.
     /// </summary>
+    /// <param name="id"></param>
     /// <param name="entity">Entity to update.</param>
-    void UpdateAsync(T entity);
-
+    Task UpdateAsync(TK id, T entity);
+    
     /// <summary>
     ///     Deletes an entity for this repository asynchronously.
     /// </summary>

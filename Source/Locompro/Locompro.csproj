@@ -39,6 +39,8 @@
 
 		<PackageReference Include="NUnitTDNet" Version="3.4.1" />
 
+		<PackageReference Include="Selenium.WebDriver" Version="4.15.0" />
+
 		<PackageReference Include="System.Device.Location.Portable" Version="1.0.0" />
 		<PackageReference Include="System.Linq.Dynamic.Core" Version="1.3.5" />
 	</ItemGroup>

@@ -218,7 +218,7 @@
 
                     <div class="modal-footer">
                         <button class="btn btn-light" type="reset" data-bs-dismiss="modal">Cancelar</button>
-                        <button class="btn btn-primary" type="submit">Cambiar</button>
+                        <button class="btn btn-primary" id ="PostChangePasswordButton" type="submit">Cambiar</button>
                     </div>
                 </form>
             </div>
@@ -243,7 +243,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="post" asp-page-handler="UpdateUserData">
+                <form method="post" asp-page-handler="UpdateUserData" id="UpdateUserDataForm">
                     <div class="text-danger" id="UpdateUserModalErrorsList">
                         @{
                             var errorMessagesUpdateData = Model.UpdateUserDataModalErrors.GetErrors();
@@ -385,13 +385,6 @@
 @section Scripts {
     <script src="~/lib/jquery/jquery.min.js"></script>
     <script src="~/assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-filter.min.js"></script>
-    <script
-        src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/widgets/widget-storage.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src=""></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script type="module" src="~/js/profile/profile.js"></script>
