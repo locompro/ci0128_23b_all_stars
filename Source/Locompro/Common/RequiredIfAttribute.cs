@@ -1,8 +1,7 @@
-namespace Locompro.Common;
-
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+
+namespace Locompro.Common;
 
 public class RequiredIfAttribute : ValidationAttribute
 {
@@ -22,22 +21,16 @@ public class RequiredIfAttribute : ValidationAttribute
         var type = instance.GetType();
 
         // Attempt to find the specified method
-        var methodInfo = type.GetMethod(_conditionMethodName, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-        if (methodInfo == null)
-        {
-            return new ValidationResult("Method not found.");
-        }
+        var methodInfo = type.GetMethod(_conditionMethodName,
+            BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+        if (methodInfo == null) return new ValidationResult("Method not found.");
 
         // Invoke the method and get the return value
         var returnValue = methodInfo.Invoke(instance, null);
 
-        if (Object.Equals(returnValue, _conditionValue))
-        {
+        if (Equals(returnValue, _conditionValue))
             if (value == null)
-            {
                 return new ValidationResult(ErrorMessageString);
-            }
-        }
 
         return ValidationResult.Success;
     }

@@ -1,0 +1,39 @@
+.btn-primary.green-button {
+    background-color: green;
+    border: #006c00;
+    border-radius: 5px;
+    cursor: pointer;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    
+    width: 200px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.btn-primary.green-button:hover,
+.btn-primary.green-button:focus,
+.btn-primary.green-button:active {
+    background-color: #007300; /* Darker green color for hover state */
+    border-color: #006100; /* Even darker green color for border */
+}
+
+.btn-primary.red-button {
+    background-color: #EE4B2B;
+    border: #ca3f24;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+
+    width: 200px;
+    margin-left: 50px;
+    margin-right: 50px;
+}
+
+.btn-primary.red-button:hover,
+.btn-primary.red-button:focus,
+.btn-primary.red-button:active {
+    background-color: #d64326; /* Darker red color for hover state */
+    border-color: #b53820; /* Even darker red color for border */
+}

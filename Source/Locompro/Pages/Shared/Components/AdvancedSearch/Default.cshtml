@@ -1,87 +1,104 @@
-﻿@using Locompro.Pages.Modals.AdvancedSearch;
-@using Locompro.Services;
-@model AdvancedSearchModalModel;
+@using Locompro.Models.Entities
+@using Locompro.Services.Domain
+@model Locompro.Pages.Modals.AdvancedSearch.AdvancedSearchModalModel;
 
-<link rel="stylesheet" href="~/css/AdvancedSearchModal.css" asp-append-version="true"/>
 
-<div class="container advanced-search-modal-container">
+@inject INamedEntityDomainService<Category, string> CategoryService
+@inject IProductService ProductService
+@{
+    var categories = (await CategoryService.GetAll()).ToList();
+    var brands = await ProductService.GetBrandsAsync();
+    var models = await ProductService.GetModelsAsync();
+}
+<div class="container advanced-search-modal-container" id="advancedSearchModal">
     <div class="advanced-search-modal-secondary-container">
-        <div class="advanced-search-modal-card">
+        <div class="card-body advanced-search-modal-card">
             <div class="row d-xl-flex justify-content-xxl-center advanced-search-modal-card-contents">
-                <div class="col-xxl-4 row">
-                    <div class="col-xxl province-input-container">
-                        <label class="form-label d-lg-flex justify-content-xxl-center">Provincia</label>
+                <div class="col-xl-2 col-xxl-3 d-xxl-flex justify-content-xxl-center" style="margin-right: 0px;">
+                    <div class="mb-3" style="margin-left: 5px; margin-right: 5px;margin-bottom: 0px;width: 200px; margin-top: 0px">
+                        <label class="form-label d-lg-flex justify-content-lg-start">Provincia</label>
                         <select class="form-select"
                                 type="submit"
                                 onchange="loadProvince(this)"
                                 style="font-family: Roboto, sans-serif;"
-                                name=province
+                                name="province"
                                 id="provinceDropdown">
-                            <option>@Model.EmptyValue</option>
+                            <option>Todos</option>
                             @foreach (var provincia in Model.provinces)
                             {
                                 <option>@provincia.Name</option>
                             }
                         </select>
                     </div>
-                    <div class="col-xxl canton-input-container">
-                        <label class="form-label d-lg-flex justify-content-xxl-center">Cantón</label>
+                    <div class="mb-3" style="margin-left: 5px; margin-right: 5px; margin-bottom: 0px;width: 200px; margin-top: 0px">
+                        <label class="form-label d-lg-flex justify-content-lg-start">Cantón</label>
                         <select class="form-select"
                                 style="font-family: Roboto, sans-serif;padding-right: 10px;margin-right: 0px;"
-                                name=canton
+                                name="canton"
                                 id="cantonDropdown">
-                            <option>@Model.EmptyValue</option>
+                            <option>Todos</option>
                         </select>
                     </div>
                 </div>
                 <!--
-                 -->
-                <div class="col-xxl-4 row">
+                -->
+                <div class="col-xxl-3 row">
                     <div class="col-xxl mb-3 minValue-input-container">
                         <label class="form-label d-lg-flex justify-content-xxl-center">Precio Mínimo</label>
                         <input class="form-control"
-                               min=1
+                               min="1"
                                type="number"
                                id="minValue"
                                onchange="validatePriceInput(this)"
-                               value=0>
+                               value="0">
                     </div>
                     <div class="col-xxl mb-3 maxValue-input-container">
                         <label class="form-label d-lg-flex justify-content-xxl-center">Precio máximo</label>
                         <input class="form-control"
-                               min=0
+                               min="0"
                                type="number"
                                id="maxValue"
                                onchange="validatePriceInput(this)"
-                               value=0>
+                               value="0">
                     </div>
                 </div>
-                <div class="col-xxl mb-3 d-none category-input-container">
+                <div class="col-xxl mb-3 category-input-container">
                     <label class="form-label d-lg-flex justify-content-lg-start">Categoría</label>
-                    <select class="form-select category-input"
-                            id="categoryDropdown">
-                        <option>@Model.EmptyValue</option>
-                        @foreach (var category in Model.categories)
+                    <select id="categoryDropdown"
+                            class="form-control form-select" style="font-family:Roboto, sans-serif; min-width: 210px;">
+                        <option value="" disabled selected hidden>Seleccionar</option>
+                        @foreach (var category in categories)
                         {
-                            <option>@category.Name</option>
+                            <option value="@category.Name">@category.Name</option>
                         }
                     </select>
                 </div>
+
                 <div class="col-xxl mb-3 brand-input-container"
                      style="margin-left: 5px; margin-right: 5px">
                     <label class="form-label d-lg-flex justify-content-xxl-center">Marca</label>
-                    <input class="form-control"
-                           type="text"
-                           id="brandInput"
-                           value="">
+                    <select class="form-control form-select"
+                            style="font-family: Roboto, sans-serif;"
+                            id="brandDropdown">
+                        <option value="">Todos</option>
+                        @foreach (var brand in brands)
+                        {
+                            <option>@brand</option>
+                        }
+                    </select>
                 </div>
                 <div class="col-xxl mb-3 model-input-container"
                      style="margin-left: 5px; margin-right: 5px">
                     <label class="form-label d-lg-flex justify-content-xxl-center">Modelo</label>
-                    <input class="form-control"
-                           type="text"
-                           id="modelInput"
-                           value="">
+                    <select class="form-control form-select "
+                            style="font-family: Roboto, sans-serif;"
+                            id="modelDropdown">
+                        <option value="">Todos</option>
+                        @foreach (var myModel in models)
+                        {
+                            <option>@myModel</option>
+                        }
+                    </select>
                 </div>
             </div>
         </div>

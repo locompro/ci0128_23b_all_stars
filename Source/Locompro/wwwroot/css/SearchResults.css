@@ -9,7 +9,8 @@
 }
 
 .search-input-group-on-advanced-search {
-    .card;
+    .card
+;
     padding-top: 10px;
     padding-bottom: 10px;
     border-color: #b9deff;
@@ -86,14 +87,15 @@
 }
 
 .advanced-search-button-on-modal-shown {
-    .col-1;
+    .col-1
+;
     width: 30px;
     background-color: #b9deff;
     border-color: #b9deff;
 }
 
 .search-results-card {
-    margin-top: 15px;
+    margin-top: 10px;
     padding-top: 25px;
     padding-bottom: 0px;
     padding-left: 25px;
@@ -102,11 +104,11 @@
 }
 
 .table-encapsulate-for-results {
-    overflow-y:auto;
+    overflow-y: auto;
 }
 
 .search-results-table {
-    cursor:pointer
+    cursor: pointer
 }
 
 .previous-next-button-area {
@@ -128,7 +130,7 @@
 
 .page-amount-text {
     margin-left: 10px;
-    margin-bottom:0px;
+    margin-bottom: 0px;
 }
 
 .sort-asc::after {
@@ -157,7 +159,7 @@
     padding-bottom: 0px;
     margin-top: 0px;
     margin-bottom: 0px;
-    height: 10px; 
+    height: 10px;
     color: white;
     display: none;
 }
@@ -172,4 +174,14 @@
     color: white;
     display: block;
     margin: 0 auto;
+}
+
+.prices-cell {
+    text-align: right;
+    padding-left: 0px;
+' !important;
+}
+
+.store-cell {
+    padding-left: 30px !important;
 }
