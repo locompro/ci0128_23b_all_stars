@@ -1,14 +1,15 @@
 using Locompro.Models.Entities;
+using Locompro.Models.ViewModels;
 
 namespace Locompro.Models.Dtos;
 
-public class SubmissionDto
+public class SubmissionsDto
 {
-    public Func<IEnumerable<Submission>, Submission> BestSubmissionQualifier;
+    public readonly Func<IEnumerable<Submission>, Submission> BestSubmissionQualifier;
+
+    public readonly IEnumerable<Submission> Submissions;
     
-    public IEnumerable<Submission> Submissions { get; set; }
-    
-    public SubmissionDto(
+    public SubmissionsDto(
         IEnumerable<Submission> submissions,
         Func<IEnumerable<Submission>, Submission> bestSubmissionQualifier)
     {
