@@ -54,6 +54,7 @@
     <link rel="stylesheet" href="~/assets/css/Table-With-Search-search-table.css">
     <link rel="stylesheet" href="~/assets/css/Table-With-Search.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <div id="isLoggedIn" data="@Html.Raw(isLoggedIn)" style="display: none;"></div>
 </head>
 
 <body>
@@ -125,8 +126,6 @@
     <main>
         @RenderBody()
     </main>
-    
-    <div id="isLoggedIn" data="@isLoggedIn" style="display: none;"></div>
 </div>
 
 <footer class="text-center py-4 border-top footer text-muted"
