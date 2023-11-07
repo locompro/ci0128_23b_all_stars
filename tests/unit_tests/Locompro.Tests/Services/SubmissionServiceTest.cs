@@ -290,6 +290,8 @@ public class SubmissionServiceTest
         Assert.That(changedSubmission.Rating, Is.EqualTo(3.6500001f));
     }
 
+
+
     /// <summary>
     ///     Sets up the mock for the submission repository so that it behaves as expected for the tests
     /// </summary>

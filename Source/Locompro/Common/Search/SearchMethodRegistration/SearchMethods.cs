@@ -123,7 +123,7 @@ public class SearchMethods
 
         // find if submission has been reported an specific amount of times at minimum
         AddSearchParameter<string>(SearchParameterTypes.UserId
-            , (submission, userId) => submission.UserId.Contains(userId)
+            , (submission, userId) => submission.UserId ==userId 
             , userId => !string.IsNullOrEmpty(userId));
 
     }
