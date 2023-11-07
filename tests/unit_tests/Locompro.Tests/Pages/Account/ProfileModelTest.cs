@@ -100,7 +100,7 @@ public class ProfileModelTest
     /// <summary>
     ///     Tests the OnGetAsync method by simulating a scenario where the user is found
     /// </summary>
-    /// <author> A.Badila-Olivas b80874 </author>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnGetAsync_UserFound_ReturnsPage()
     {
@@ -125,7 +125,7 @@ public class ProfileModelTest
     ///     Tests the OnPostChangePasswordAsync method by simulating a scenario where the user is not found,
     ///     and verifying the method redirects to the Login page.
     /// </summary>
-    /// <author> A.Badila-Olivas b80874 </author>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnPostChangePasswordAsync_UserNotFound_RedirectsToLoginPage()
     {
@@ -141,7 +141,11 @@ public class ProfileModelTest
         Assert.That(result, Is.InstanceOf<RedirectToRouteResult>());
     }
 
-    // Test for invalid password change
+    /// <summary>
+    ///     Tests the OnPostChangePasswordAsync method by simulating a scenario
+    ///     where the current password is incorrect. The method should re-render the page with error messages.
+    /// </summary>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnPostChangePasswordAsync_InvalidCurrentPassword_RendersPageWithError()
     {
@@ -166,7 +170,11 @@ public class ProfileModelTest
         });
     }
 
-    // Test for valid password change
+    /// <summary>
+    ///   Tests the OnPostChangePasswordAsync method by simulating a scenario
+    ///   where the password change is valid. The method should redirect to the page.
+    /// </summary>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnPostChangePasswordAsync_ValidPasswordChange_RedirectsToPage()
     {
@@ -203,7 +211,7 @@ public class ProfileModelTest
     ///     Tests the OnPostUpdateUserDataAsync method by simulating a scenario where the user is not found,
     ///     and verifying the method redirects to the Login page.
     /// </summary>
-    /// <author> A.Badila-Olivas b80874 </author>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnPostUpdateUserDataAsync_UserNotFound_RedirectsToLoginPage()
     {
@@ -219,6 +227,11 @@ public class ProfileModelTest
         Assert.That(result, Is.InstanceOf<RedirectToRouteResult>());
     }
 
+    /// <summary>
+    ///   Tests the OnPostUpdateUserDataAsync method by simulating a scenario where the user is found,
+    ///  and the update data is valid. The method should redirect to the page.
+    /// </summary>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnPostUpdateUserDataAsync_UserFound_ValidUpdate()
     {
@@ -241,8 +254,10 @@ public class ProfileModelTest
         // Assert
         Assert.That(result, Is.InstanceOf<RedirectToPageResult>());
         _userServiceMock.Verify(us => us.Update(It.IsAny<string>(), It.Is<User>(u => u.Id == user.Id)), Times.Once);
-        _userServiceMock.Verify(us => us.Update(It.IsAny<string>(), It.Is<User>(u => u.Email == userDataUpdate.Email)), Times.Once);
-        _userServiceMock.Verify(us => us.Update(It.IsAny<string>(), It.Is<User>(u => u.Address == userDataUpdate.GetAddress())),
+        _userServiceMock.Verify(us => us.Update(It.IsAny<string>(), It.Is<User>(u => u.Email == userDataUpdate.Email)),
+            Times.Once);
+        _userServiceMock.Verify(
+            us => us.Update(It.IsAny<string>(), It.Is<User>(u => u.Address == userDataUpdate.GetAddress())),
             Times.Once);
         Assert.Multiple(() =>
         {
@@ -251,6 +266,11 @@ public class ProfileModelTest
         });
     }
 
+    /// <summary>
+    ///   Tests the OnPostUpdateUserDataAsync method by simulating a scenario where the user is found,
+    ///    but the update data is invalid. The method should re-render the page with error messages.
+    /// </summary>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnPostUpdateUserDataAsync_UserFound_InvalidUpdate()
     {
@@ -284,7 +304,7 @@ public class ProfileModelTest
     ///     Tests the OnGetCantonsAsync method by simulating a scenario where the province is null or empty,
     ///     and verifying the method returns an empty list.
     /// </summary>
-    /// <author> A.Badila-Olivas b80874 </author>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnGetCantonsAsync_ProvinceNullOrEmpty_ReturnsEmptyList()
     {
@@ -305,7 +325,7 @@ public class ProfileModelTest
     ///     Tests the OnPostChangePasswordAsync method by simulating a scenario where the current password is incorrect,
     ///     and verifying the method re-renders the page with error messages.
     /// </summary>
-    /// <author> A.Badila-Olivas b80874 </author>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnPostChangePasswordAsync_IncorrectCurrentPassword_RendersPageWithError()
     {
@@ -331,7 +351,7 @@ public class ProfileModelTest
     ///     Tests the OnPostUpdateUserDataAsync method by simulating a scenario where the update data is invalid,
     ///     and verifying the method re-renders the page with an error message.
     /// </summary>
-    /// <author> A.Badila-Olivas b80874 </author>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnPostUpdateUserDataAsync_InvalidUpdateData_RendersPageWithError()
     {
@@ -352,7 +372,7 @@ public class ProfileModelTest
     ///     Tests the OnGetCantonsAsync method by simulating a scenario where a valid province is specified,
     ///     and verifying the method returns a list of cantons.
     /// </summary>
-    /// <author> A.Badila-Olivas b80874 </author>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnGetCantonsAsync_ValidProvince_ReturnsListOfCantons()
     {
@@ -384,7 +404,10 @@ public class ProfileModelTest
         }
     }
 
-    // Test for successful moderation role declination
+    /// <summary>
+    ///     Tests OnPostDeclineModerationAsync method by simulating a successful moderation decline.s
+    /// </summary>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnPostDeclineModerationAsync_SuccessfulDeclination_RedirectsToPage()
     {
@@ -412,7 +435,10 @@ public class ProfileModelTest
         Assert.That(result, Is.InstanceOf<RedirectToPageResult>());
     }
 
-// Test for user not found
+    /// <summary>
+    ///     Tests the OnPostDeclineModerationAsync method by simulating a scenario where the user is not found,
+    /// </summary>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnPostDeclineModerationAsync_UserNotFound_RedirectsToLogin()
     {
@@ -428,7 +454,11 @@ public class ProfileModelTest
         Assert.That(redirectToRouteResult.RouteName, Is.EqualTo("Account/Login"));
     }
 
-// Test for incorrect password
+    /// <summary>
+    ///   Tests the OnPostDeclineModerationAsync method by simulating a scenario where the current password is incorrect,
+    ///     and verifying the method re-renders the page with error messages.
+    /// </summary>
+    /// <author> A.Badila-Olivas b80874 - Sprint 2</author>
     [Test]
     public async Task OnPostDeclineModerationAsync_IncorrectPassword_RendersPageWithError()
     {

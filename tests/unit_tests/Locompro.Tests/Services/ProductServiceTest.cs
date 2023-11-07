@@ -23,7 +23,7 @@ namespace Locompro.Tests.Services
         /// <summary>
         /// Setup method to initialize mocks and product service before each test.
         /// </summary>
-        /// <author>Brandon Alonso Mora Umaña</author>
+        /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
         [SetUp]
         public void Setup()
         {
@@ -42,7 +42,7 @@ namespace Locompro.Tests.Services
         /// <summary>
         /// Tests that GetBrandsAsync returns a list of brands when they exist.
         /// </summary>
-        /// <author>Brandon Alonso Mora Umaña</author>
+        /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
         [Test]
         public async Task GetBrandsAsync_ShouldReturnBrands_WhenBrandsExist()
         {
@@ -61,7 +61,7 @@ namespace Locompro.Tests.Services
         /// <summary>
         /// Tests that GetModelsAsync returns a list of models when they exist.
         /// </summary>
-        /// <author>Brandon Alonso Mora Umaña</author>
+        /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
         [Test]
         public async Task GetModelsAsync_ShouldReturnModels_WhenModelsExist()
         {

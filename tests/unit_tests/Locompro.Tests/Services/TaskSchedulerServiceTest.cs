@@ -23,7 +23,7 @@ public class MockScheduledTask : IScheduledTask
 
     /// <summary>
     ///     Simulates the task's asynchronous execution.
-    ///     Author: Brandon Alonso Mora Umaña.
+    ///     Author: Brandon Alonso Mora Umaña - Sprint 2.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token that the task will observe.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
@@ -37,14 +37,14 @@ public class MockScheduledTask : IScheduledTask
 
 /// <summary>
 ///     Test fixture for the TaskSchedulerService.
-///     Author: Brandon Alonso Mora Umaña.
+///     Author: Brandon Alonso Mora Umaña - Sprint 2.
 /// </summary>
 [TestFixture]
 public class TaskSchedulerServiceTests
 {
     /// <summary>
     ///     Sets up the test environment before each test.
-    ///     Author: Brandon Alonso Mora Umaña.
+    ///     Author: Brandon Alonso Mora Umaña. - Sprint 2
     /// </summary>
     [SetUp]
     public void Setup()
@@ -60,7 +60,7 @@ public class TaskSchedulerServiceTests
 
     /// <summary>
     ///     Ensures that tasks are scheduled correctly when StartAsync is called.
-    ///     Author: Brandon Alonso Mora Umaña.
+    ///     Author: Brandon Alonso Mora Umaña - Sprint 2
     /// </summary>
     [Test]
     public async Task StartAsync_SchedulesTasksCorrectly()
@@ -76,7 +76,7 @@ public class TaskSchedulerServiceTests
 
     /// <summary>
     ///     Ensures that tasks are stopped correctly when StopAsync is called.
-    ///     Author: Brandon Alonso Mora Umaña.
+    ///     Author: Brandon Alonso Mora Umaña - Sprint 2
     /// </summary>
     [Test]
     public async Task StopAsync_StopsTasks()
