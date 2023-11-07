@@ -90,17 +90,14 @@ ci0128_23b_all_stars/
 ### 1. Información de acceso
 
 #### Registrarse
-Para registrarse, la persona usuaria puede desde cualquier lugar de la aplicación, se puede presionar el botón iniciar sesión. Al presionar sobre el botón se redirige a una página con un formulario para iniciar la sesión, al final de ese formulario encontrará un enlace "Registrese" para registrarse, acompañado de la frase "¿No tiene una cuenta aún?"
+Para registrarse, la persona usuaria puede desde cualquier lugar de la aplicación, presionar el botón iniciar sesión. Al presionar sobre el botón se redirige a una página con un formulario para iniciar la sesión, al final de ese formulario encontrará un enlace "Registrese" para registrarse, acompañado de la frase "¿No tiene una cuenta aún?"
 
-<center>
-    <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/e5d74ddf-4ca2-4241-80d0-a7e8ae6abd95" alt="FormularioDeInicioDeSesión" width="500"/>
-</center>
+![InicioDeSesionPagina](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/07ac034e-60ba-40e1-ac97-b7d58186c5be)
+
 
 Al presionar el enlace "Registrese" la persona usuaria será redirigida a la página del formulario de registro, donde podrá ingresar sus datos. Luego de ingresados los datos, presiona el botón "crear un cuenta" y esto realizará el registro.
 
-<center>
-    <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/a40d6f07-c63d-4a00-a548-e0158b76c1ce" alt="FormularioDeRegistro" width="500"/>
-</center>
+![Registro](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/817dd592-0bd8-4cc1-825d-4bc48ff1a6fe)
 
 Luego del registro, la persona usuaria habrá entrado automáticamente a su nueva cuenta sin necesidad de ir al formulario de inicio de sesión y será redirigida a la página de inicio.
 
@@ -108,67 +105,85 @@ Luego del registro, la persona usuaria habrá entrado automáticamente a su nuev
 
 Para iniciar sesión, desde cualquier lugar de la aplicación, se puede presionar el botón iniciar sesión. 
 
-<center>
-    <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/de2454b5-7ec7-4f40-9deb-2fb9817126d3" alt="Página principal con botón de Iniciar Sesión" width="800"/>
-</center>
+![InicioDeSesion](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/853ef2e6-ea6b-427a-b9f0-5d41fa792845)
+
 
 Al presionar sobre el botón se redirige a una página con un formulario para iniciar la sesión, allí la persona usuaria debe ingresar su nombre de usuario y su contraseña tal y como fueron puestas durante el registro con el fin de iniciar su sesión.
 
-<center>
-    <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/e5d74ddf-4ca2-4241-80d0-a7e8ae6abd95" alt="Formulario de inicio de sesión" width="500"/>
-</center>
+![InicioDeSesionPagina](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/07ac034e-60ba-40e1-ac97-b7d58186c5be)
 
 #### Cerrar sesión
 Luego de haber iniciado sesión, para cerrar sesión se debe presionar el botón "Cerrar Sesión" disponible desde cualquier parte de la aplicación. Al cerrar sesión la persona usuaria será redirigida a la página de inicio.
-<center>
-    <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/7b1ebf82-272f-438a-96f4-766e2def90d8" alt="Página principal con botón de Cerrar Sesión" width="800"/>
-</center>
 
-### 2. Funcionalidad de la aplicación
+![paginaprincipal](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/fd5558c5-2c63-433b-9bff-b8f8b4f81082)
+
+### Ver mi perfil
+La persona usuaria también puede ver su perfil e información relacionada como contribuciones y calificaciones. 
+![Perfil](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/a994c352-9179-48d1-aba1-a0ab659e09c4)
+
+### Modificar los datos personales
+Si fuera necesario dentro de mi perfil, la persona usuaria puede modificar su contraseña, su correo y su dirección, haciendo uso de los botones bien identificados en la interfaz.
+
+![PerfilModificar](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/b0da8442-7609-4a4c-a9e5-e589d3312b9f)
+
+![PerfilCambiarContrasena](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/efb15109-80fc-433c-a095-acc7d27edd49)
+
+
+### 2. Funcionalidad de búsqueda 
 
 
 #### Búsqueda simple y Búsqueda avanzada
 En la página principal y en la página de resultados se pueden realizar tanto las busquedas simples como las busquedas avanzadas.
 
 **Vista en la página principal**
-<center>
-    <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/de2454b5-7ec7-4f40-9deb-2fb9817126d3" alt="Página Principal con botón de búsqueda avanzada" width="800"/>
-</center>
+
+![paginaprincipal](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/fd5558c5-2c63-433b-9bff-b8f8b4f81082)
 
 La página principal es lo primero que ve el usuario a la hora de ingresar a la aplicación. En ella se encuentran diversas opciones para realizar busquedas. Primero se puede observar la barra de busqueda donde se ingresa en nombre del producto que el usuario desea buscar. Posteriormente, dentro de este se encuentra el botón para realizar la busqueda. Cuando solo se encuentra el nombre del producto, la busqueda será realizada solamente en terminos de esta. Inferior a estos se encuentra el botón de búsqueda avanzada, el cual al presionarlo despliega un menú de opciones para realizar búsquedas más especificas.
 
 **Vista de la página principal con menú de busqueda avanzada**
-<center>
-    <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/0c679361-c4e8-466e-be83-05333d7abd31" alt="PaginaDeResultadosBusquedaAvanzadaDespuesDelClick" width="800"/>
-</center>
-De presionar el boton de busqueda avanzada, se despliega el menu de busqueda avanzada. Dentro de este se pueden realizar busquedas por nombre de producto, nombre de tienda, provincia, canton, precio minimo y precio maximo. Al presionar el boton de buscar, se realizara la busqueda con los parametros ingresados. Siendo estos, en esta version y entrega, por provincia y canton, por marca y modelo. Un usuario puede elegir solamente una de estos parametros de busqueda o por combinación de estos. Por ejemplo uno puede buscar solamente por marca y sin ingresar un nombre de producto en la barra de busqueda, con lo cual solo se realizará una busqueda por el parametro de marca. 
+
+![paginaprincipalavanzada](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/a8b9063c-631f-4623-9340-a89db2715d2e)
+
+
+De presionar el boton de busqueda avanzada, se despliega el menu de busqueda avanzada. Dentro de este se pueden realizar busquedas por nombre de producto, nombre de tienda, provincia, canton, precio minimo y precio maximo. Al presionar el boton de buscar, se realizara la busqueda con los parametros ingresados. Siendo esta entrega los que se pueden ver en la imagen adjunta. Un usuario puede elegir solamente una de estos parametros de busqueda o por combinación de estos. Por ejemplo uno puede buscar solamente por marca y sin ingresar un nombre de producto en la barra de busqueda, con lo cual solo se realizará una busqueda por el parametro de marca. 
 
 **Vista en la página de resultados**
-<center>
-    <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/5c7fda27-a623-4b21-b0bf-5f6da8931a9b" alt="PáginaDeResultados" width="800"/>
-</center>
 
-Dentro de la página de resultados, al igual que en la página principal, se encuentra la barra de busqueda y el botón de busqueda avanzada. Las busquedas correspondientes se pueden realizar de la misma manera que en la página principal.
+![resultadodebusqueda](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/bdb4f0e1-be58-4fc8-bea2-d11077bedefe)
+
+Dentro de la página de resultados, al igual que en la página principal, se encuentra la barra de busqueda y el botón de busqueda avanzada. Las busquedas correspondientes se pueden realizar de la misma manera que en la página principal. Además se muestra la barra de filtros, con ellos la persona usuaria puede organizar y obtener información más especifica de resultados ya obtenidos. 
 
 **Vista en la página de resultados con menú de busqueda avanzada**
-<center>
-    <img src="https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/2b935d19-844a-4c9f-97e2-2fa1cc7bccce" alt="PaginaDeResultadosBusquedaAvanzadaDespuesDelClick" width="800"/>
-</center>
-La busqueda avanzada en la página de resultados se realiza de la misma manera que en la página principal.
+
+La busqueda avanzada en la página de resultados se realiza de la misma manera que en la página principal. Es importante recordar que la búsqueda avanzada y los filtros son distintos, pues la primera hacer consultas a los servidores de lo compro, mientras que la segunda solo filtra sobre los resultados ya obtenidos por la persona usuaria.
+
+![ResultadodeBusquedaAvanzada](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/d185d5c9-4ee1-48ec-af67-2435ab7c8f07)
+
+### 3. Funcionalidad de Aportar
+
+**Vista general de aportar**
+![Aportes](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/a355c92c-c40c-49de-a430-aa16272b2423)
+
+Para hacer un aporte la persona usuaria puede presionar el botón de **Aportar** desde cualquier lugar de la página. Aquí encontra un formulario para hacer su aporte. Los campos como producto y tienda se autocompletan conforme se escribe. Además se permite agregar imágenes
+
+**Agregar una tienda nueva**
+
+![AportesAgregarTienda](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/de7fbb88-e6b1-4a10-a246-841813a5d178)
+
+Cuando la tienda no existe ya en la base de datos de lo compro, la persona usuaria puede usar el formulario de agregar tienda para introducirla al sistema y al finalizar, continuar justo donde estaba en la creación de su aporte.
+
+**Agregar un producto nuevo**
+
+![AportesAgregarProducto](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/3eb27e18-d7d3-4f36-915d-8b6478bec639)
+
+Cuando el producto no existe ya en la base de datos de lo compro, la persona usuaria puede usar el formulario de agregar un producto nuevo al sistema y al finalizar, continuar justo donde estaba en la creación de su aporte.
 
 
-##### Buscar por provincia y cantón
-Para buscar los aportes hechos en una provincia y cantón especificos, se puede seleccionar la provincia o el cantón en el menú desplegable de nombre "Provincia" y "Cantón" en el menú de busqueda avanzada, luego presione el botón de buscar (la lupa azul en la barra de búsqueda). Se pueden agregar más condiciones para la búsqueda simultaneamente.
+### 4. Calificiones y Reportar
 
+![resultadodebusquedaVotarYModerar](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/10b499de-0ff0-408d-87c8-a955ab87b762)
 
-##### Buscar por marca
-Para buscar los aportes hechos a productos de una marca especifica, se debe ingresar el nombre de la marca a consultar en el campo de texto de nombre "Marca" en el menú de busqueda avanzada, luego presione el botón de buscar (la lupa azul en la barra de búsqueda). Se pueden agregar más condiciones para la búsqueda simultaneamente.'
-
-##### Buscar por modelo
-De la misma manera que la búsqueda por marca, para buscar los aportes hechos a productos de un modelo especifico, se debe ingresar el nombre del modelo a consultar en el campo de texto de nombre "Modelo" en el menú de busqueda avanzada, luego presione el botón de buscar. Es posible agregar más filtros para la búsqueda simultaneamente.
-
-
-#### Hacer un aporte
 
 ## Manual técnico
 
