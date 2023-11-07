@@ -251,7 +251,7 @@ BEGIN
 
             UPDATE AspNetUsers
             SET Rating = @NewRating
-            WHERE Username = @UpdatedUsername;
+            WHERE Id = @UpdatedUsername;
         END
 END;
 GO
