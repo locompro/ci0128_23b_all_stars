@@ -29,7 +29,7 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     /// <inheritdoc />
     public override async Task<Submission> GetByIdAsync(SubmissionKey id)
     {
-        return await Set.FirstOrDefaultAsync(submission =>
+        Submission submission = await Set.FirstOrDefaultAsync(submission =>
             submission.UserId == id.UserId &&
             submission.EntryTime.Year == id.EntryTime.Year &&
             submission.EntryTime.Month == id.EntryTime.Month &&
@@ -37,6 +37,14 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
             submission.EntryTime.Hour == id.EntryTime.Hour &&
             submission.EntryTime.Minute == id.EntryTime.Minute &&
             submission.EntryTime.Second == id.EntryTime.Second);
+
+        if (submission == null)
+        {
+            throw new InvalidOperationException("Error loading submission! No submission for user:" + id.UserId + " and entry time: " +
+                                                id.EntryTime + " was found.");
+        }
+        
+        return submission;
     }
 
     /// <inheritdoc />
