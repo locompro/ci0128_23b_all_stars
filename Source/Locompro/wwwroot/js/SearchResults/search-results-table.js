@@ -68,20 +68,23 @@ class SearchResultsTableBody {
         let storeNameCell = row.insertCell(2);
         storeNameCell.innerHTML = item.Store;
         storeNameCell.classList.add("store-cell");
+        
+        let brandCell = row.insertCell(3);
+        brandCell.innerHTML = item.Brand;
 
-        let modelCell = row.insertCell(3);
+        let modelCell = row.insertCell(4);
         modelCell.innerHTML = item.Model;
 
-        let provinceCell = row.insertCell(4);
+        let provinceCell = row.insertCell(5);
         provinceCell.innerHTML = item.Province;
 
-        let cantonCell = row.insertCell(5);
+        let cantonCell = row.insertCell(6);
         cantonCell.innerHTML = item.Canton;
 
-        let descriptionCell = row.insertCell(6);
+        let descriptionCell = row.insertCell(7);
         descriptionCell.innerHTML = item.Description;
 
-        let submissionTimeCell = row.insertCell(7);
+        let submissionTimeCell = row.insertCell(8);
         submissionTimeCell.innerHTML = item.LastSubmissionDate;
     }
 
