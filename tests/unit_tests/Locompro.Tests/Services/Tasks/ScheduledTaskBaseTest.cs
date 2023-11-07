@@ -11,7 +11,7 @@ public class ScheduledTaskBaseTest
     ///     Sets up the mocks for the service provider, service scope, service scope factory, and the
     ///     scoped service required for testing the ScheduledTaskBase class.
     /// </summary>
-    /// <author>Brandon Alonso Mora Umaña - C15179</author>
+    /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
     [SetUp]
     public void SetUp()
     {
@@ -47,7 +47,7 @@ public class ScheduledTaskBaseTest
     ///     Tests that the ExecuteAsync method on an instance of a ScheduledTaskBase-derived class
     ///     correctly invokes the ExecuteScopedAsync method of the scoped service.
     /// </summary>
-    /// <author>Brandon Alonso Mora Umaña - C15179</author>
+    /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
     [Test]
     public async Task ExecuteAsync_CallsExecuteScopedAsync()
     {
