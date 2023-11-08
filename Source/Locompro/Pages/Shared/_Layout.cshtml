@@ -72,6 +72,11 @@
                                     <i class="fa fa-plus" style="margin-right: 8px;"></i>Aportar
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/SearchResults/Contributions" asp-route-query="@userId">
+                                    Mis Contribuciones
+                                </a>
+                            </li>
                             @if (isModerator)
                             {
                                 <li class="nav-item">

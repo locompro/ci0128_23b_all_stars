@@ -103,4 +103,8 @@
 		<PackageReference Include="NUnitTDNet" Version="3.4.1" />
 
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="Pages\SearchResults\Contributions.cshtml" />
+	</ItemGroup>
 </Project>

@@ -123,5 +123,11 @@ public class SearchMethods
                 && submission.Reports.Count >= minReportAmount
                 && submission.Status != SubmissionStatus.Moderated
             , minReportAmount => minReportAmount > 0);
+
+        // find if submission has been reported an specific amount of times at minimum
+        AddSearchParameter<string>(SearchParameterTypes.UserId
+            , (submission, userId) => submission.UserId ==userId 
+            , userId => !string.IsNullOrEmpty(userId));
+
     }
 }
