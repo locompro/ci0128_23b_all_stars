@@ -16,7 +16,7 @@ public class QueryBuilderTest
 
     /// <summary>
     ///     Tests that if an invalid criterion is added, it is not added to the query
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public void AddInvalidSearchCriterion()
@@ -32,7 +32,7 @@ public class QueryBuilderTest
 
     /// <summary>
     ///     Tests that if a valid criterion is added, it is added to the query
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public void AddValidSearchCriterion()
@@ -59,7 +59,7 @@ public class QueryBuilderTest
     /// <summary>
     ///     Checks that the reset method resets the query builder
     ///     Which means that the query builder is empty after the reset
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public void ResetResetsSuccessfully()
@@ -99,7 +99,7 @@ public class QueryBuilderTest
 
     /// <summary>
     ///     Checks that if multiple search criteria are added, they are all added to the query
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public void AddMultipleSearchCriterion()
@@ -129,7 +129,7 @@ public class QueryBuilderTest
     ///     an invalid null search criterion,
     ///     an invalid empty search criterion,
     ///     an invalid search criterion with an invalid parameter and an invalid search criterion with a default parameter
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public void AddSearchCriterionReturnsValidOutputs()

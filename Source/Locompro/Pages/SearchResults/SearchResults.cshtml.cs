@@ -129,7 +129,7 @@ public class SearchResultsModel : SearchPageModel
             {
                 SearchResults = searchResults,
                 Data = SearchVm,
-                Redirect = (searchResults is { Count: 0 }? "redirect" : null)
+                Redirect = SearchVm.IsEmpty()? "redirect" : null
             });
 
         return Content(searchResultsJson);

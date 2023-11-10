@@ -126,7 +126,6 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
     public async Task DeleteSubmissionAsync(SubmissionKey submissionKey)
     {
         await _submissionRepository.DeleteAsync(submissionKey);
-        
         await UnitOfWork.SaveChangesAsync();
     }
     

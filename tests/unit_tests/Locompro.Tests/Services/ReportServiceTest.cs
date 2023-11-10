@@ -28,7 +28,7 @@ public class ReportServiceTest
         _reportService = new ReportService(_unitOfWork.Object, _loggerFactory);
     }
 
-    /// <author>Ariel Arevalo Alvarado B50562</author>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
     [Test]
     public async Task UpdateAsync_CreatesReportFromDtoAndSavesToDatabase()
     {

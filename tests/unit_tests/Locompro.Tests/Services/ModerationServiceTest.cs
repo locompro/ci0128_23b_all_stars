@@ -84,7 +84,7 @@ public class ModerationServiceTests
     ///     Tests that the AssignPossibleModeratorsAsync method successfully assigns the 'PossibleModerator' role
     ///     to all qualified users.
     /// </summary>
-    /// <author>Brandon Alonso Mora Umaña - C15179</author>
+    /// <author>Brandon Alonso Mora Umaña - C15179- Sprint 2</author>
     [Test]
     public async Task AssignPossibleModeratorsAsync_AssignsRolesToQualifiedUsers()
     {
@@ -127,7 +127,7 @@ public class ModerationServiceTests
     /// <summary>
     ///     Tests that the AssignPossibleModeratorsAsync method logs an error when a user cannot be found.
     /// </summary>
-    /// <author>Brandon Alonso Mora Umaña - C15179</author>
+    /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
     [Test]
     public async Task AssignPossibleModeratorsAsync_LogsErrorIfUserNotFound()
     {
@@ -158,7 +158,7 @@ public class ModerationServiceTests
     /// <summary>
     ///     Tests that the AssignPossibleModeratorsAsync method logs an error if the role cannot be assigned to the user.
     /// </summary>
-    /// <author>Brandon Alonso Mora Umaña - C15179</author>
+    /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
     [Test]
     public async Task AssignPossibleModeratorsAsync_LogsErrorIfRoleCannotBeAssigned()
     {
@@ -203,7 +203,7 @@ public class ModerationServiceTests
     ///     Tests that the AssignPossibleModeratorsAsync method logs an informational message if the user is already a
     ///     moderator.
     /// </summary>
-    /// <author>Brandon Alonso Mora Umaña - C15179</author>
+    /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
     [Test]
     public async Task AssignPossibleModeratorsAsync_LogsInformationIfUserIsAlreadyModerator()
     {
@@ -244,7 +244,7 @@ public class ModerationServiceTests
 
     /// <summary>
     ///     If moderator sends action to erase a submission, it is erased
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public async Task ReportActionToEraseSubmissionErasesSubmission()
@@ -270,7 +270,7 @@ public class ModerationServiceTests
     
     /// <summary>
     ///     If a moderator acts to remove a report, the report is removed
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public async Task ReportActionToEraseReportErasesReport()
@@ -305,7 +305,7 @@ public class ModerationServiceTests
 
     /// <summary>
     ///     If an invalid action is sent, then it is caught
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public void ReportActionInvalidOrDefaultThrowException()
@@ -345,5 +345,174 @@ public class ModerationServiceTests
             Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _moderationService.ActOnReport(modAction));
             Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _moderationService.ActOnReport(modAction1));
         });
+    }
+    
+    /// <summary>
+    /// Tests that the IsUserPossibleModerator method returns true when the user is in the 'PossibleModerator' role.
+    /// </summary>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
+    [Test]
+    public async Task IsUserPossibleModerator_ReturnsTrueWhenUserIsInRole()
+    {
+        // Arrange
+        string userId = "user1";
+        var user = new User { Id = userId };
+
+        _mockUserManagerService.Setup(x => x.FindByIdAsync(userId))
+            .ReturnsAsync(user);
+
+        _mockUserManagerService.Setup(x => x.IsInRoleAsync(user, RoleNames.PossibleModerator))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _moderationService.IsUserPossibleModerator(userId);
+
+        // Assert
+        Assert.IsTrue(result);
+    }
+
+    /// <summary>
+    /// Tests that the IsUserPossibleModerator method returns false when the user is not in the 'PossibleModerator' role.
+    /// </summary>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
+    [Test]
+    public async Task IsUserPossibleModerator_ReturnsFalseWhenUserIsNotInRole()
+    {
+        // Arrange
+        string userId = "user1";
+        var user = new User { Id = userId };
+
+        _mockUserManagerService.Setup(x => x.FindByIdAsync(userId))
+            .ReturnsAsync(user);
+
+        _mockUserManagerService.Setup(x => x.IsInRoleAsync(user, RoleNames.PossibleModerator))
+            .ReturnsAsync(false);
+
+        // Act
+        var result = await _moderationService.IsUserPossibleModerator(userId);
+
+        // Assert
+        Assert.IsFalse(result);
+    }
+
+    /// <summary>
+    /// Tests that the IsUserPossibleModerator method throws an ArgumentException when the user ID does not correspond to any user.
+    /// </summary>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
+    [Test]
+    public void IsUserPossibleModerator_ThrowsArgumentExceptionIfUserNotFound()
+    {
+        // Arrange
+        string userId = "user1";
+
+        _mockUserManagerService.Setup(x => x.FindByIdAsync(userId))
+            .ReturnsAsync((User)null);
+
+        // Act & Assert
+        Assert.ThrowsAsync<ArgumentException>(async () => await _moderationService.IsUserPossibleModerator(userId));
+    }
+    
+    /// <summary>
+    /// Tests that the DecideOnModeratorRole method successfully adds the 'Moderator' role when the user accepts it.
+    /// </summary>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
+    [Test]
+    public async Task DecideOnModeratorRole_AddsModeratorRoleWhenAccepted()
+    {
+        // Arrange
+        string userId = "user1";
+        bool didAcceptRole = true;
+        var user = new User { Id = userId };
+
+        _mockUserManagerService.Setup(x => x.FindByIdAsync(userId))
+            .ReturnsAsync(user);
+
+        _mockUserManagerService.Setup(x => x.IsInRoleAsync(user, RoleNames.PossibleModerator))
+            .ReturnsAsync(true);
+
+        _mockUserManagerService.Setup(x => x.AddClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.Moderator)))
+            .ReturnsAsync(IdentityResult.Success);
+        
+        _mockUserManagerService.Setup(x => x.DeleteClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.PossibleModerator)))
+            .ReturnsAsync(IdentityResult.Success);
+
+        // Act
+        await _moderationService.DecideOnModeratorRole(userId, didAcceptRole);
+
+        // Assert
+        _mockUserManagerService.Verify(x => x.AddClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.Moderator)), Times.Once);
+        _mockUserManagerService.Verify(x => x.DeleteClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.PossibleModerator)), Times.Once);
+    }
+    
+    /// <summary>
+    /// Tests that the DecideOnModeratorRole method successfully adds the 'RejectedModeratorRole' when the user declines it.
+    /// </summary>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
+    [Test]
+    public async Task DecideOnModeratorRole_AddsRejectedModeratorRoleWhenDeclined()
+    {
+        // Arrange
+        string userId = "user1";
+        bool didAcceptRole = false;
+        var user = new User { Id = userId };
+
+        _mockUserManagerService.Setup(x => x.FindByIdAsync(userId))
+            .ReturnsAsync(user);
+
+        _mockUserManagerService.Setup(x => x.IsInRoleAsync(user, RoleNames.PossibleModerator))
+            .ReturnsAsync(true);
+
+        _mockUserManagerService.Setup(x => x.AddClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.RejectedModeratorRole)))
+            .ReturnsAsync(IdentityResult.Success);
+        
+        _mockUserManagerService.Setup(x => x.DeleteClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.PossibleModerator)))
+            .ReturnsAsync(IdentityResult.Success);
+
+        // Act
+        await _moderationService.DecideOnModeratorRole(userId, didAcceptRole);
+
+        // Assert
+        _mockUserManagerService.Verify(x => x.AddClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.RejectedModeratorRole)), Times.Once);
+        _mockUserManagerService.Verify(x => x.DeleteClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.PossibleModerator)), Times.Once);
+    }
+    
+    /// <summary>
+    /// Tests that the DecideOnModeratorRole method throws an ArgumentException when the user is not found.
+    /// </summary>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
+    [Test]
+    public void DecideOnModeratorRole_ThrowsArgumentExceptionIfUserNotFound()
+    {
+        // Arrange
+        string userId = "user1";
+        bool didAcceptRole = true;
+
+        _mockUserManagerService.Setup(x => x.FindByIdAsync(userId))
+            .ReturnsAsync((User)null);
+
+        // Act & Assert
+        Assert.ThrowsAsync<ArgumentException>(async () => await _moderationService.DecideOnModeratorRole(userId, didAcceptRole));
+    }
+    
+    /// <summary>
+    /// Tests that the DecideOnModeratorRole method throws an ArgumentException when the user is not in the 'PossibleModerator' role.
+    /// </summary>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
+    [Test]
+    public void DecideOnModeratorRole_ThrowsArgumentExceptionIfUserNotInPossibleModeratorRole()
+    {
+        // Arrange
+        string userId = "user1";
+        bool didAcceptRole = true;
+        var user = new User { Id = userId };
+
+        _mockUserManagerService.Setup(x => x.FindByIdAsync(userId))
+            .ReturnsAsync(user);
+
+        _mockUserManagerService.Setup(x => x.IsInRoleAsync(user, RoleNames.PossibleModerator))
+            .ReturnsAsync(false);
+
+        // Act & Assert
+        Assert.ThrowsAsync<ArgumentException>(async () => await _moderationService.DecideOnModeratorRole(userId, didAcceptRole));
     }
 }
