@@ -30,6 +30,10 @@ public class PictureServiceTest
     private Mock<IUnitOfWork>? _unitOfWork;
     private Mock<IPictureRepository>? _picturesRepository;
 
+    /// <summary>
+    ///    Test to ensure GetPicturesForItem returns expected pictures.
+    /// </summary>
+    /// <author> Joseph Valverde Kong - Sprint 2 </author>
     [Test]
     public async Task GetPicturesForItem_ReturnsPictures()
     {

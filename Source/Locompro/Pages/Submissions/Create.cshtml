@@ -2,10 +2,6 @@
 @model CreateModel
 
 @section Head {
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/css/select2.min.css" rel="stylesheet"/>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="~/css/custom-select2-styles.css"/>
-
     <title>Agregar contribución</title>
 }
 
@@ -16,7 +12,7 @@
         </svg>
     </div>
     <fieldset>
-        <legend>Producto</legend>
+        <legend>Contribución</legend>
     </fieldset>
     <form class="text-center" id="mainForm" method="post" enctype="multipart/form-data">
         <div class="mb-3">
@@ -153,5 +149,4 @@
 @section Scripts {
     <script type="module" src="~/js/modal-manager.js"></script>
     <script type="module" src="~/js/create.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-beta.1/js/select2.min.js"></script>
 }
