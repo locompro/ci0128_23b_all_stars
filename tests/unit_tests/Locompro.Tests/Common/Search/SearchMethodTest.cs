@@ -1,4 +1,5 @@
 using Locompro.Common.Search.SearchMethodRegistration;
+using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 
 namespace Locompro.Tests.Common.Search;
 
@@ -12,10 +13,10 @@ public class SearchMethodTest
     public void GetSearchMethodByNameReturnsNull()
     {
         // Arrange
-        var searchMethods = SearchMethods.GetInstance;
-
+        var searchMethods = SubmissionSearchMethods.GetInstance();
+ 
         // Act
-        var searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Default);
+        var searchParam = searchMethods. GetSearchMethodByName(SearchParameterTypes.Default);
 
         // Assert
         Assert.IsNull(searchParam);
@@ -29,7 +30,7 @@ public class SearchMethodTest
     public void GetSearchMethodByNameReturnsNotNull()
     {
         // Arrange
-        var searchMethods = SearchMethods.GetInstance;
+        var searchMethods = SubmissionSearchMethods.GetInstance();
 
         Assert.Multiple(() =>
         {

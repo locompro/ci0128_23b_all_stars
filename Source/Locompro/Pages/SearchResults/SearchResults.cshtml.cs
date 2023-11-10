@@ -3,6 +3,7 @@ using Castle.Core.Internal;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration;
+using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Locompro.Models;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;

@@ -15,7 +15,7 @@ public class SearchDomainService : DomainService<Submission, SubmissionKey>, ISe
         _submissionRepository = unitOfWork.GetSpecialRepository<ISubmissionRepository>();
     }
 
-    public Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries)
+    public Task<IEnumerable<Submission>> GetSearchResults(ISearchQueries searchQueries)
     {
         return _submissionRepository.GetSearchResults(searchQueries);
     }

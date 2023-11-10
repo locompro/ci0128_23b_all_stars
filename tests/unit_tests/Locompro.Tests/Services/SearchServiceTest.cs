@@ -8,6 +8,7 @@ using Locompro.Models.ViewModels;
 using Locompro.Services;
 using Locompro.Services.Domain;
 using Locompro.Common.Mappers;
+using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -1167,17 +1168,17 @@ public class SearchServiceTest
         // setting up mock repository behavior requires the methods to be virtual on class being mocked or using interface, in this case
         // the methods are virtual because interface does not have the methods being implemented.
         _submissionRepositoryMock!
-            .Setup(repo => repo.GetSearchResults(It.IsAny<SearchQueries>()))
-            .ReturnsAsync((SearchQueries searchQueries) =>
+            .Setup(repo => repo.GetSearchResults(It.IsAny<ISearchQueries>()))
+            .ReturnsAsync((ISearchQueries searchQueries) =>
             {
                 // initiate the query
-                IQueryable<Submission> submissionsResults =
+                IQueryable<Submission>? submissionsResults =
                     submissions.AsQueryable().Include(submission => submission.Product);
 
                 // append the search queries to the query
-                submissionsResults =
-                    searchQueries.SearchQueryFunctions.Aggregate(submissionsResults,
-                        (current, query) => current.Where(query));
+                submissionsResults = searchQueries.ApplySearch(submissionsResults) as IQueryable<Submission>;
+
+                if (submissionsResults == null) return new List<Submission>();
 
                 // get and return the results
                 return submissionsResults.ToList();

@@ -5,5 +5,5 @@ namespace Locompro.Services.Domain;
 
 public interface ISearchDomainService
 {
-    Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries);
+    Task<IEnumerable<Submission>> GetSearchResults(ISearchQueries searchQueries);
 }

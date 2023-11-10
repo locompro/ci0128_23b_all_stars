@@ -1,4 +1,4 @@
-namespace Locompro.Common.Search.SearchMethodRegistration;
+namespace Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 
 /// <summary>
 ///     List of all possible search paramaters
