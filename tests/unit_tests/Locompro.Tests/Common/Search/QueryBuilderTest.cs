@@ -42,7 +42,7 @@ public class QueryBuilderTest
         // Arrange
         ISearchCriterion searchCriterion = new SearchCriterion<string>
         {
-            ParameterName = SearchParameterTypes.Name,
+            ParameterName = SearchParameterTypes.SubmissionByName,
             SearchValue = "test"
         };
 
@@ -73,7 +73,7 @@ public class QueryBuilderTest
         // Arrange
         ISearchCriterion searchCriterion = new SearchCriterion<string>
         {
-            ParameterName = SearchParameterTypes.Name,
+            ParameterName = SearchParameterTypes.SubmissionByName,
             SearchValue = "test"
         };
 
@@ -109,9 +109,9 @@ public class QueryBuilderTest
         // Arrange
         var searchCriteria = new List<ISearchCriterion>
         {
-            new SearchCriterion<string>(SearchParameterTypes.Name, "name"),
-            new SearchCriterion<string>(SearchParameterTypes.Province, "province"),
-            new SearchCriterion<string>(SearchParameterTypes.Canton, "canton")
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, "name"),
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionByProvince, "province"),
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionByCanton, "canton")
         };
 
         // Act
@@ -139,7 +139,7 @@ public class QueryBuilderTest
         // Arrange
         ISearchCriterion validSearchCriterion = new SearchCriterion<string>
         {
-            ParameterName = SearchParameterTypes.Name,
+            ParameterName = SearchParameterTypes.SubmissionByName,
             SearchValue = "test"
         };
 

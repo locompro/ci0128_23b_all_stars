@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Linq.Dynamic.Core;
+using Locompro.Common.Search;
+using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Data.Repositories;
 
@@ -67,5 +69,21 @@ public class CrudRepository<T, TK> : ICrudRepository<T, TK> where T : class
     {
         var entity = await GetByIdAsync(id);
         if (entity != null) Set.Remove(entity);
+    }
+    
+    /// <inheritdoc />
+    public async Task<IEnumerable<T>> GetByDynamicQuery(ISearchQueries searchQueries)
+    {
+        IQueryable<T> searchResults = Set;
+
+        // append the search queries to the query
+        searchResults = searchQueries.ApplySearch(searchResults) as IQueryable<T> ;
+
+        if (searchResults == null)
+        {
+            return await new Task<IEnumerable<T>>(() => new List<T>());
+        }
+        
+        return await searchResults.ToListAsync();
     }
 }

@@ -14,6 +14,10 @@ public class SearchQuery<TSearchResult, TSearchParameter> : ISearchQuery
 {
     private Expression<Func<TSearchResult, TSearchParameter, bool>> QueryFunction { get; init; }
     
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="queryFunction"></param>
     public SearchQuery(Expression<Func<TSearchResult, TSearchParameter, bool>> queryFunction)
     {
         QueryFunction = queryFunction;

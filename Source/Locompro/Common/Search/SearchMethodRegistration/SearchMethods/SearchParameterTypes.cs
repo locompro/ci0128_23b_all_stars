@@ -7,13 +7,13 @@ namespace Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 public enum SearchParameterTypes
 {
     Default,
-    Name,
-    Province,
-    Canton,
-    Minvalue,
-    Maxvalue,
-    Category,
-    Model,
-    Brand,
-    HasNAmountReports
+    SubmissionByName,
+    SubmissionByProvince,
+    SubmissionByCanton,
+    SubmissionByMinvalue,
+    SubmissionByMaxvalue,
+    SubmissionByCategory,
+    SubmissionByModel,
+    SubmissionByBrand,
+    SubmissionByNAmountReports
 }

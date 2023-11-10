@@ -34,22 +34,22 @@ public class SearchMethodTest
 
         Assert.Multiple(() =>
         {
-            var searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Name);
+            var searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.SubmissionByName);
             Assert.That(searchParam, Is.Not.Null);
 
-            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Province);
+            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.SubmissionByProvince);
             Assert.That(searchParam, Is.Not.Null);
 
-            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Canton);
+            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.SubmissionByCanton);
             Assert.That(searchParam, Is.Not.Null);
 
-            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Model);
+            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.SubmissionByModel);
             Assert.That(searchParam, Is.Not.Null);
 
-            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Brand);
+            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.SubmissionByBrand);
             Assert.That(searchParam, Is.Not.Null);
 
-            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.Category);
+            searchParam = searchMethods.GetSearchMethodByName(SearchParameterTypes.SubmissionByCategory);
             Assert.That(searchParam, Is.Not.Null);
         });
     }

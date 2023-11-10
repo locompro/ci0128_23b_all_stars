@@ -1,4 +1,6 @@
-﻿namespace Locompro.Data.Repositories;
+﻿using Locompro.Common.Search;
+
+namespace Locompro.Data.Repositories;
 
 /// <summary>
 ///     An application repository.
@@ -38,4 +40,11 @@ public interface ICrudRepository<T, TK> : IRepository
     /// </summary>
     /// <param name="id">ID for entity to delete.</param>
     Task DeleteAsync(TK id);
+    
+    /// <summary>
+    /// Gets the search results of the entity type according to the list of search criteria or queries to be used
+    /// </summary>
+    /// <param name="searchQueries"> search queries, criteria or strategies to be used to find the desired submissions</param>
+    /// <returns></returns>
+    Task<IEnumerable<T>> GetByDynamicQuery(ISearchQueries searchQueries);
 }

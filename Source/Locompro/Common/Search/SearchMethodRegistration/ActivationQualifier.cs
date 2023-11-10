@@ -17,10 +17,7 @@ public class ActivationQualifier<T> : IActivationQualifier
         QualifierFunction = qualifierFunction;
     }
     
-    /// <summary>
-    ///     returns the internal qualifier
-    /// </summary>
-    /// <returns></returns>
+    /// <inheritdoc />
     public dynamic GetQualifierFunction()
     {
         return QualifierFunction;

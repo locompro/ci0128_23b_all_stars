@@ -119,7 +119,7 @@ public class ModeratorPageModel : BasePageModel
     {
         List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new SearchCriterion<int>(SearchParameterTypes.HasNAmountReports, minAmountOfReports)
+            new SearchCriterion<int>(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports)
         };
 
         SubmissionsDto submissionsDto = null;

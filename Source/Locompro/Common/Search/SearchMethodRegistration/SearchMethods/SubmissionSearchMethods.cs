@@ -11,48 +11,48 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
     protected override void InitializeSearchMethods()
     {
         // find by name
-        AddSearchParameter<string>(SearchParameterTypes.Name
+        AddSearchParameter<string>(SearchParameterTypes.SubmissionByName
             , (submission, productName) => submission.Product.Name.Contains(productName)
             , productName => !string.IsNullOrEmpty(productName));
 
         // find by model
-        AddSearchParameter<string>(SearchParameterTypes.Model
+        AddSearchParameter<string>(SearchParameterTypes.SubmissionByModel
             , (submission, model) => submission.Product.Model.Contains(model)
             , model => !string.IsNullOrEmpty(model));
 
         // find by province
-        AddSearchParameter<string>(SearchParameterTypes.Province
+        AddSearchParameter<string>(SearchParameterTypes.SubmissionByProvince
             , (submission, province) => submission.Store.Canton.Province.Name.Contains(province)
             , province => !string.IsNullOrEmpty(province));
 
         // find by canton
-        AddSearchParameter<string>(SearchParameterTypes.Canton
+        AddSearchParameter<string>(SearchParameterTypes.SubmissionByCanton
             , (submission, canton) => submission.Store.Canton.Name.Contains(canton)
             , canton => !string.IsNullOrEmpty(canton));
 
         // find by brand
-        AddSearchParameter<string>(SearchParameterTypes.Brand
+        AddSearchParameter<string>(SearchParameterTypes.SubmissionByBrand
             , (submission, brand) => submission.Product.Brand.Contains(brand)
             , brand => !string.IsNullOrEmpty(brand));
 
         // find by category
-        AddSearchParameter<string>(SearchParameterTypes.Category,
+        AddSearchParameter<string>(SearchParameterTypes.SubmissionByCategory,
             (submission, category) =>
                 submission.Product.Categories.Any(existingCategory => existingCategory.Name.Contains(category)),
             category => !string.IsNullOrEmpty(category));
 
         // find if price is more than min price
-        AddSearchParameter<long>(SearchParameterTypes.Minvalue
+        AddSearchParameter<long>(SearchParameterTypes.SubmissionByMinvalue
             , (submission, minVal) => submission.Price > minVal
             , minVal => minVal != 0);
 
         // find if price is less than max value
-        AddSearchParameter<long>(SearchParameterTypes.Maxvalue
+        AddSearchParameter<long>(SearchParameterTypes.SubmissionByMaxvalue
             ,  (submission, maxVal) => submission.Price < maxVal
             , maxVal => maxVal != 0);
         
         // find if submission has been reported an specific amount of times at minimum
-        AddSearchParameter<int>(SearchParameterTypes.HasNAmountReports
+        AddSearchParameter<int>(SearchParameterTypes.SubmissionByNAmountReports
             , (Submission submission, int minReportAmount) =>
                 submission.Reports != null
                 && submission.Reports.Count >= minReportAmount

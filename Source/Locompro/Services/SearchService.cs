@@ -3,6 +3,7 @@ using Locompro.Common.Search;
 using Locompro.Common.Search.QueryBuilder;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Locompro.Data;
+using Locompro.Data.Repositories;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
@@ -15,19 +16,19 @@ public class SearchService : Service, ISearchService
     public const int ImageAmountPerItem = 5;
 
     private readonly IQueryBuilder _queryBuilder;
-    private readonly ISearchDomainService _searchDomainService;
+    private readonly IDomainService<Submission, SubmissionKey> _submissionDomainService;
 
     /// <summary>
     ///     Constructor for the search service
     /// </summary>
     /// <param name="loggerFactory"> logger </param>
-    /// <param name="searchDomainService"></param>
+    /// <param name="submissionDomainService"></param>
     /// <param name="pictureService"></param>
-    public SearchService(ILoggerFactory loggerFactory, ISearchDomainService searchDomainService,
+    public SearchService(ILoggerFactory loggerFactory, IDomainService<Submission, SubmissionKey> submissionDomainService,
         IPictureService pictureService) :
         base(loggerFactory)
     {
-        _searchDomainService = searchDomainService;
+        _submissionDomainService = submissionDomainService;
         _queryBuilder = new QueryBuilder<Submission, SubmissionSearchMethods>(SubmissionSearchMethods.GetInstance());
     }
 
@@ -57,7 +58,7 @@ public class SearchService : Service, ISearchService
         if (searchQueries.IsEmpty()) return new SubmissionsDto(null, null);
 
         // get the submissions that match the search functions
-        var submissions = await _searchDomainService.GetSearchResults(searchQueries);
+        var submissions = await _submissionDomainService.GetByDynamicQuery(searchQueries);
 
         _queryBuilder.Reset();
 

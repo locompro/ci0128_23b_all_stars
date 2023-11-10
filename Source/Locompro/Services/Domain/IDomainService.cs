@@ -1,4 +1,6 @@
-﻿namespace Locompro.Services.Domain;
+﻿using Locompro.Common.Search;
+
+namespace Locompro.Services.Domain;
 
 /// <summary>
 ///     An application domain service.
@@ -19,6 +21,13 @@ public interface IDomainService<T, TK> where T : class
     /// </summary>
     /// <returns>All entities for this service.</returns>
     Task<IEnumerable<T>> GetAll();
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="searchQueries"></param>
+    /// <returns></returns>
+    Task<IEnumerable<T>> GetByDynamicQuery(ISearchQueries searchQueries);
 
     /// <summary>
     ///     Adds an entity through the service.
