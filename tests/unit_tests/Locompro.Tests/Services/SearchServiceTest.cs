@@ -21,7 +21,7 @@ public class SearchServiceTest
     [SetUp]
     public void Setup()
     {
-        var loggerFactoryMock = new Mock<ILoggerFactory>();
+        ILoggerFactory loggerFactoryMock = new LoggerFactory();
 
         _submissionRepositoryMock = new Mock<ICrudRepository<Submission, SubmissionKey>>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
@@ -30,9 +30,9 @@ public class SearchServiceTest
             .Returns(_submissionRepositoryMock.Object);
 
         IDomainService<Submission, SubmissionKey> searchDomainService =
-            new DomainService<Submission, SubmissionKey>(_unitOfWorkMock.Object, loggerFactoryMock.Object);
+            new DomainService<Submission, SubmissionKey>(_unitOfWorkMock.Object, loggerFactoryMock);
 
-        _searchService = new SearchService(loggerFactoryMock.Object, searchDomainService, null);
+        _searchService = new SearchService(loggerFactoryMock, searchDomainService, null);
     }
 
     private Mock<ICrudRepository<Submission, SubmissionKey>>? _submissionRepositoryMock;
@@ -768,9 +768,189 @@ public class SearchServiceTest
     }
 
     /// <summary>
-    ///     Searches for an item with a specific model and the result is empty
+    ///     SPRINT 2
+    ///     Searches for an item with a specific userId and the search is empty
     /// </summary>
-    /// <author> Brandon Alonso Mora Umaña C15179 </author>
+    /// <author> Gabriel Molina Bulgarelli C15179 </author>
+    [Test]
+    public async Task SearchByUserId_InvalidSearchEmptyString_EmptyResults()
+    {
+        // Arrange
+        var userIdToSearch = string.Empty;
+
+        MockDataSetup();
+
+        // Act
+        var searchCriteria = new List<ISearchCriterion>
+        {
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, userIdToSearch)
+        };
+
+        // Act
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+
+        ItemMapper itemMapper = new();
+
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    ///     SPRINT 2
+    ///     Searches for an item with a specific invalid userId and the search is empty
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli C15179 </author>
+    [Test]
+    public async Task SearchByInvalidUserId_SubmissionsFound()
+    {
+        // Arrange
+        var userIdToSearch = "User333";
+        MockDataSetup();
+
+        var searchCriteria = new List<ISearchCriterion>
+        {
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, userIdToSearch)
+        };
+
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        ItemMapper itemMapper = new();
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    ///     SPRINT 2
+    ///     Searches for an item with a specific invalid userId and the search is empty
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli C15179 </author>
+    [Test]
+    public async Task SearchByUserId_SubmissionsFound()
+    {
+        // Arrange
+        var userIdToSearch = "User1";
+        MockDataSetup();
+
+        var searchCriteria = new List<ISearchCriterion>
+        {
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, userIdToSearch)
+        };
+
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        ItemMapper itemMapper = new();
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    ///     SPRINT 2
+    ///     Searching for an item with a specific user and brand, but no results
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli C15179 </author>
+    [Test]
+    public async Task SearchByUserAndBrand_NoResults()
+    {
+        // Arrange
+        var userIdToSearch = "User1";
+        var brandToSearch = "NonExistentBrand";
+        MockDataSetup();
+
+        var searchCriteria = new List<ISearchCriterion>
+    {
+        new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, userIdToSearch),
+        new SearchCriterion<string>(SearchParameterTypes.SubmissionByBrand, brandToSearch)
+    };
+
+        // Act
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        ItemMapper itemMapper = new();
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.EqualTo(0));
+    }
+
+
+    /// <summary>
+    ///     SPRINT 2
+    ///     Searching for an item with a specific user and brand, but no results
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli C15179 </author>
+    [Test]
+    public async Task SearchByPriceRangeAndBrand_ValidResults()
+    {
+        // Arrange
+        var minPrice = 100;
+        var maxPrice = 200;
+        var brandToSearch = "Brand2";
+        MockDataSetup();
+
+        var searchCriteria = new List<ISearchCriterion>
+    {
+        new SearchCriterion<decimal>(SearchParameterTypes.SubmissionByMinvalue, minPrice),
+        new SearchCriterion<decimal>(SearchParameterTypes.SubmissionByMaxvalue, maxPrice),
+        new SearchCriterion<string>(SearchParameterTypes.SubmissionByBrand, brandToSearch)
+    };
+
+        // Act
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        ItemMapper itemMapper = new();
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.EqualTo(3));
+    }
+
+    /// <summary>
+    ///     SPRINT 2
+    ///     Searching for an item with several different criteria to be certain that it holds several at once
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli C15179 </author>
+    [Test]
+    public async Task SearchWithMultipleCriteria_ValidResults()
+    {
+        // Arrange
+        var nameToSearch = "Product1";
+        var provinceToSearch = "Province1";
+        var cantonToSearch = "Canton1";
+        var categoryToSearch = "Category1";
+        var modelToSearch = "Model1";
+        var brandToSearch = "Brand1";
+        var userIdToSearch = "User1";
+
+        MockDataSetup();
+
+        var searchCriteria = new List<ISearchCriterion>
+    {
+        new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, nameToSearch),
+        new SearchCriterion<string>(SearchParameterTypes.SubmissionByProvince, provinceToSearch),
+        new SearchCriterion<string>(SearchParameterTypes.SubmissionByCanton, cantonToSearch),
+        new SearchCriterion<string>(SearchParameterTypes.SubmissionByCategory, categoryToSearch),
+        new SearchCriterion<string>(SearchParameterTypes.SubmissionByModel, modelToSearch),
+        new SearchCriterion<string>(SearchParameterTypes.SubmissionByBrand, brandToSearch),
+        new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, userIdToSearch),
+    };
+
+        // Act
+        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        ItemMapper itemMapper = new();
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.GreaterThan(0));
+    }
+
     /// <summary>
     ///     Sets up the mock for the submission service so that it behaves as expected for the tests
     /// </summary>

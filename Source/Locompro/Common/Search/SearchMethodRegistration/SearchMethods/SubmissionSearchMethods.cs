@@ -58,5 +58,10 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
                 && submission.Reports.Count >= minReportAmount
                 && submission.Status != SubmissionStatus.Moderated
             , minReportAmount => minReportAmount >= 0);
+        
+        // find by user id
+        AddSearchParameter<string>(SearchParameterTypes.SubmissionByUserId
+            , (submission, userId) => submission.UserId == userId
+            , userId => !string.IsNullOrEmpty(userId));
     }
 }
