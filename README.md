@@ -83,16 +83,16 @@ ci0128_23b_all_stars/
 │           │       <a href="./Design/Mockups/Sprint1/Avance2/resultados_registros.png">resultados_registros.png</a>  
 |
 |
-├───<a href="./Source"> Source </a>
+├───<a href="./Source">Source</a>
 |    |
-│    └───<a href="./Source/Locompro">Código Fuente de Locompro </a>
+│    └───<a href="./Source/Locompro">Código Fuente de Locompro</a>
 |
-└───<a href="./tests"> tests </a>
+└───<a href="./tests">tests</a>
     |
-    └───<a href="./test/unit_test/Locompro.Tests">Unit Tests</a>
+    └───<a href="./tests/unit_tests/Locompro.Tests">Unit Tests</a>
     |
-    └───<a href="tests/functional_tests/Locompro.FunctionalTests"> Functional Tests</a>
-
+    └───<a href="./tests/functional_tests/Locompro.FunctionalTests">Functional Tests</a>
+</pre>
 ## Manual de usuario
 
 ### 1. Información de acceso
@@ -344,8 +344,3 @@ También puede ejecutar las pruebas funcionales sin generar el documento de repo
  dotnet test .\tests\unit_tests\Locompro.Tests\Locompro.Tests.csproj
  ```
 Esto contruye la solución de test funcionales, ejecuta estas pruebas y muestra los resultados en terminal de cuantas pruebas fallaron, fueron exitosas o fueron ignoradas.
-
-
-
-   
-
