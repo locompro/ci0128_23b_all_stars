@@ -48,7 +48,7 @@ public class PictureServiceTest
             Name = "Test Store",
             Canton = new Canton
             {
-                Name = "Test Canton"
+                Name = "Test SubmissionByCanton"
             }
         };
 
