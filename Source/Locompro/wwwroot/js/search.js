@@ -154,21 +154,22 @@ function validatePriceInput(button) {
         // check if the min field is greater or equal than the max field
         if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
             // if no then make it less than the max field
-            minButton.value = parseInt(maxButton.value, 10) - 1;
-            // ensure the value is not negative
-            if (minButton.value < 0) {
-                minButton.value = 0;
-            }
+            maxButton.value = parseInt(minButton.value, 10) + 1;
         }
     }
-
     // field is the max field
     if (button === maxButton) {
         // if the value is less or equal than the min field
-        if (parseInt(minButton.value, 10) >= parseInt(maxButton.value, 10)) {
+        if (parseInt(maxButton.value, 10) <= parseInt(minButton.value, 10)) {
             // make it greater than the min field
-            maxButton.value = parseInt(minButton.value, 10) + 1;
+            minButton.value = parseInt(maxButton.value, 10) - 1;
         }
+    }
+    if (minButton.value < 0) {
+        minButton.value = 0;
+    }
+    if (maxButton.value < 0) {
+        maxButton.value = 0;
     }
 }
 
