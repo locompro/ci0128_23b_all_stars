@@ -1,4 +1,6 @@
 ﻿using Locompro.Common.Search;
+using Locompro.Common.Search.QueryBuilder;
+using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 
@@ -14,6 +16,7 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
 {
     protected readonly IUnitOfWork UnitOfWork;
     protected readonly ICrudRepository<T, TK> CrudRepository;
+    protected readonly IQueryBuilder QueryBuilder;
 
     /// <summary>
     ///     Constructs a domain service for a given repository.
@@ -25,6 +28,7 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
     {
         UnitOfWork = unitOfWork;
         CrudRepository = UnitOfWork.GetCrudRepository<T, TK>();
+        QueryBuilder = new QueryBuilder<T>(SearchMethodsFactory.GetInstance().Create<T>());
     }
 
     /// <inheritdoc />
@@ -40,9 +44,30 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
     }
     
     /// <inheritdoc />
-    public async Task<IEnumerable<T>> GetByDynamicQuery(ISearchQueries searchQueries)
+    public async Task<IEnumerable<T>> GetByDynamicQuery(List<ISearchCriterion> searchQueries)
     {
-        return await CrudRepository.GetByDynamicQuery(searchQueries);
+        foreach (var criterion in searchQueries)
+        {
+            try
+            {
+                QueryBuilder.AddSearchCriterion(criterion);
+            }
+            catch (ArgumentException exception)
+            {
+                // if the search criterion is invalid, report on it but continue execution
+                Logger.LogWarning(exception.ToString());
+            }
+        }
+        
+        ISearchQueries builtqueries = QueryBuilder.GetSearchFunction();
+        
+        IEnumerable<T> results = builtqueries.IsEmpty()?
+            null :
+            await CrudRepository.GetByDynamicQuery(builtqueries);
+        
+        QueryBuilder.Reset();
+        
+        return results;
     }
 
     /// <inheritdoc />

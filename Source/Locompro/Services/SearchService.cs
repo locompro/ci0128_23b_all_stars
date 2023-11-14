@@ -14,8 +14,7 @@ namespace Locompro.Services;
 public class SearchService : Service, ISearchService
 {
     public const int ImageAmountPerItem = 5;
-
-    private readonly IQueryBuilder _queryBuilder;
+    
     private readonly IDomainService<Submission, SubmissionKey> _submissionDomainService;
 
     /// <summary>
@@ -29,7 +28,6 @@ public class SearchService : Service, ISearchService
         base(loggerFactory)
     {
         _submissionDomainService = submissionDomainService;
-        _queryBuilder = new QueryBuilder<Submission, SubmissionSearchMethods>(SubmissionSearchMethods.GetInstance());
     }
 
     /// <summary>
@@ -38,29 +36,9 @@ public class SearchService : Service, ISearchService
     ///     canton/province.
     ///     It then returns a list of items that match all the criteria.
     /// </summary>
-    public async Task<SubmissionsDto> GetSearchResults(List<ISearchCriterion> unfilteredSearchCriteria)
+    public async Task<SubmissionsDto> GetSearchResults(List<ISearchCriterion> searchCriteria)
     {
-        // add the list of unfiltered search criteria to the query builder
-        foreach (var searchCriterion in unfilteredSearchCriteria)
-            try
-            {
-                _queryBuilder.AddSearchCriterion(searchCriterion);
-            }
-            catch (ArgumentException exception)
-            {
-                // if the search criterion is invalid, report on it but continue execution
-                Logger.LogWarning(exception.ToString());
-            }
-
-        // compose the list of search functions
-        ISearchQueries searchQueries = _queryBuilder.GetSearchFunction();
-
-        if (searchQueries.IsEmpty()) return new SubmissionsDto(null, null);
-
-        // get the submissions that match the search functions
-        var submissions = await _submissionDomainService.GetByDynamicQuery(searchQueries);
-
-        _queryBuilder.Reset();
+        var submissions = await _submissionDomainService.GetByDynamicQuery(searchCriteria);
 
         return new SubmissionsDto(submissions, GetBestSubmission);
     }
