@@ -107,4 +107,8 @@
 	<ItemGroup>
 	  <None Include="Pages\SearchResults\Contributions.cshtml" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="wwwroot\js\Contributions\" />
+	</ItemGroup>
 </Project>

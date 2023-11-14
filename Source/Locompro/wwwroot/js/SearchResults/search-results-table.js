@@ -58,11 +58,14 @@ class SearchResultsTableBody {
      * @param row - The table row to be populated.
      */
     populateRow(item, row) {
+
         let productNameCell = row.insertCell(0);
         productNameCell.innerHTML = item.Name;
 
+        let formattedPrice = item.Price.toLocaleString('en-US');
+
         let priceCell = row.insertCell(1);
-        priceCell.innerHTML = item.Price;
+        priceCell.innerHTML = formattedPrice;
         priceCell.classList.add("prices-cell");
 
         let storeNameCell = row.insertCell(2);

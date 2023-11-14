@@ -65,9 +65,14 @@ class SearchResultsModal {
             dateCell.innerHTML = submission.EntryTime;
             dateCell.classList.add("text-center");
 
+            // Formats string to add the distintion (with a ,) 
+            // between hundreds and millions
+            let formattedPrice = submission.Price.toLocaleString('en-US');
+
             // Inserting the price cell
             const priceCell = row.insertCell(1);
-            priceCell.innerHTML = submission.Price;
+            priceCell.innerHTML = formattedPrice;
+
 
             // Inserting the description cell
             const descriptionCell = row.insertCell(2);
