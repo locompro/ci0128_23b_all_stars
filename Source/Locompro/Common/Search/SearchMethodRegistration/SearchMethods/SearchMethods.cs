@@ -14,8 +14,6 @@ public abstract class SearchMethods<TSearchResult, TSearchMethods> : ISearchMeth
     where TSearchMethods : SearchMethods<TSearchResult, TSearchMethods>, new()
 {
     private readonly Dictionary<SearchParameterTypes, SearchParam> _searchParameters;
-
-    private readonly Dictionary<Type, ISearchMethods> _typedSearchMethods;
     
     private static TSearchMethods _instance;
     
@@ -51,7 +49,6 @@ public abstract class SearchMethods<TSearchResult, TSearchMethods> : ISearchMeth
     protected SearchMethods()
     {
         _searchParameters = new Dictionary<SearchParameterTypes, SearchParam>();
-        _typedSearchMethods = new Dictionary<Type, ISearchMethods>();
     }
     
     /// <summary>

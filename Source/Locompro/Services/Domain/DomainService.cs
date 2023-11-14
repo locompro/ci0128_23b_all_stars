@@ -46,6 +46,12 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
     /// <inheritdoc />
     public async Task<IEnumerable<T>> GetByDynamicQuery(List<ISearchCriterion> searchQueries)
     {
+        if (QueryBuilder == null)
+        {
+            throw new NullReferenceException("Dynamic query search sent for entity where no search methods" + 
+                                             " was declared or registered. Entity: " + typeof(T).ToString());
+        }
+        
         foreach (var criterion in searchQueries)
         {
             try
