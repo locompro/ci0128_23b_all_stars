@@ -8,12 +8,11 @@ namespace Locompro.Common.Search.QueryBuilder;
 /// <summary>
 ///     Builder class that constructs a list of search functions that can be used to filter the results of a query
 /// </summary>
-public class QueryBuilder<TSearchResults, TSearchMethods> :
-    IQueryBuilder where TSearchMethods : SearchMethods<TSearchResults, TSearchMethods>, new()
+public class QueryBuilder<TSearchResults> : IQueryBuilder
 {
     private readonly List<ISearchCriterion> _searchCriteria;
     private readonly List<Expression<Func<TSearchResults, bool>>> _searchCriteriaFunctions;
-    private readonly TSearchMethods _searchMethods;
+    private readonly ISearchMethods _searchMethods;
 
     /// <summary>
     ///     Constructor
@@ -22,7 +21,7 @@ public class QueryBuilder<TSearchResults, TSearchMethods> :
     {
         _searchCriteria = new List<ISearchCriterion>();
         _searchCriteriaFunctions = new List<Expression<Func<TSearchResults, bool>>>();
-        _searchMethods = (TSearchMethods) searchMethods;
+        _searchMethods = searchMethods;
     }
 
     /// <inheritdoc />

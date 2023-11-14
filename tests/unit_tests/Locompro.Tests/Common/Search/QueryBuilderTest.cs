@@ -13,7 +13,7 @@ public class QueryBuilderTest
 
     public QueryBuilderTest()
     {
-        _queryBuilder = new QueryBuilder<Submission, SubmissionSearchMethods>(SubmissionSearchMethods.GetInstance());
+        _queryBuilder = new QueryBuilder<Submission>(SubmissionSearchMethods.GetInstance());
     }
 
     /// <summary>
@@ -68,7 +68,7 @@ public class QueryBuilderTest
     {
         // Ensure that state is empty for query builder in this test
         var temp = _queryBuilder;
-        _queryBuilder = new QueryBuilder<Submission, SubmissionSearchMethods>(SubmissionSearchMethods.GetInstance());
+        _queryBuilder = new QueryBuilder<Submission>(SubmissionSearchMethods.GetInstance());
 
         // Arrange
         ISearchCriterion searchCriterion = new SearchCriterion<string>

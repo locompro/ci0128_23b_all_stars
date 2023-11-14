@@ -35,7 +35,7 @@ public class SearchResultsModel : SearchPageModel
     private readonly IAuthService _authService;
 
     private IConfiguration Configuration { get; set; }
-    
+
     /// <summary>
     ///     Constructor
     /// </summary>
@@ -47,6 +47,7 @@ public class SearchResultsModel : SearchPageModel
     /// <param name="searchService"></param>
     /// <param name="submissionService"></param>
     /// <param name="moderationService"></param>
+    /// <param name="authService"></param>
     public SearchResultsModel(ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
         AdvancedSearchInputService advancedSearchServiceHandler,
