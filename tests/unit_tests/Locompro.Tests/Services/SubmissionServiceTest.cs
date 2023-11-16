@@ -45,14 +45,14 @@ public class SubmissionServiceTest
         var province = "Province1";
         MockDataSetup();
 
-        var searchQueries = new SearchQueries
-        {
-            SearchQueryFunctions = new List<Expression<Func<Submission, bool>>>
+        var searchQueries = new SearchQueries<Submission>(
+            new List<Expression<Func<Submission, bool>>>
             {
                 submission => submission.Store.Canton.Name == canton,
                 submission => submission.Store.Canton.ProvinceName == province
             }
-        };
+        );
+        
 
         // Act
         var results = await _submissionService.GetSearchResults(searchQueries);
@@ -85,14 +85,13 @@ public class SubmissionServiceTest
         MockDataSetup();
 
         // Act
-        var searchQueries = new SearchQueries
-        {
-            SearchQueryFunctions = new List<Expression<Func<Submission, bool>>>
+        var searchQueries = new SearchQueries<Submission> (
+            new List<Expression<Func<Submission, bool>>>
             {
                 submission => submission.Store.Canton.Name == canton,
                 submission => submission.Store.Canton.ProvinceName == province
             }
-        };
+        );
 
         var results = await _submissionService.GetSearchResults(searchQueries);
 
@@ -105,7 +104,7 @@ public class SubmissionServiceTest
     /// <summary>
     /// Tests that the search by store name returns the expected results when
     /// the store name is mentioned in the submissions
-    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public async Task AddingFirstRatingToSubmissionResultsInNewSubmissionRatingBeingSame()
@@ -131,7 +130,7 @@ public class SubmissionServiceTest
 
     /// <summary>
     /// Tests that the average of the ratings is calculated correctly
-    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// <author>Joseph Stuart Valverde Kong C18100- Sprint 2</author>
     /// </summary>
     [Test]
     public async Task AddingSecondRatingToSubmissionResultsInNewSubmissionRatingBeingAverage()
@@ -160,7 +159,7 @@ public class SubmissionServiceTest
 
     /// <summary>
     /// Tests that an exception is thrown when the rating view model is null or
-    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// <author>Joseph Stuart Valverde Kong C18100- Sprint 2</author>
     /// </summary>
     [Test]
     public async Task AddingRatingOnNonExistentSubmissionThrowsException()
@@ -182,7 +181,7 @@ public class SubmissionServiceTest
 
     /// <summary>
     /// Tests that an exception is thrown when the rating view model is null or
-    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// <author>Joseph Stuart Valverde Kong C18100- Sprint 2</author>
     /// </summary>
     [Test]
     public async Task AddingNullRatingComponentThrowsException()
@@ -204,7 +203,7 @@ public class SubmissionServiceTest
     /// <summary>
     /// Tests that an exception is thrown when the rating view model is null or
     /// the rating string is not a number between 1 and 5
-    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// <author>Joseph Stuart Valverde Kong C18100- Sprint 2</author>
     /// </summary>
     [Test]
     public async Task AddingRatingComponentWithInvalidRatingThrowsException()
@@ -233,7 +232,7 @@ public class SubmissionServiceTest
 
     /// <summary>
     /// Tests that an exception is thrown when the rating view model is null or the rating string
-    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// <author>Joseph Stuart Valverde Kong C18100- Sprint 2</author>
     /// </summary>
     [Test]
     public void AddingRatingWithInvalidParametersThrowsException()
@@ -265,7 +264,7 @@ public class SubmissionServiceTest
     /// <summary>
     /// For a corner case where there is a rating and somehow the amount of ratings is 0
     /// Would usually happen only for seeded data
-    /// <author>Joseph Stuart Valverde Kong C18100</author>
+    /// <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public async Task AddRatingOnSubmissionWithRatingButZeroRatingsAmountResultsInValidAverage()
@@ -294,7 +293,7 @@ public class SubmissionServiceTest
 
     /// <summary>
     ///     
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public async Task DeleteSubmissionDeletesSubmission()
@@ -315,7 +314,7 @@ public class SubmissionServiceTest
     
     /// <summary>
     ///     
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public async Task UpdateSubmissionStatusUpdatesSubmissionStatus()
@@ -337,7 +336,7 @@ public class SubmissionServiceTest
     
     /// <summary>
     ///     
-    ///     <author>Joseph Stuart Valverde Kong C18100</author>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public async Task GetItemSubmissionsReturnsSubmissions()
@@ -739,20 +738,20 @@ public class SubmissionServiceTest
         };
 
         _submissionCrudRepositoryMock
-            .Setup(repository => repository.GetSearchResults(It.IsAny<SearchQueries>()))
-            .ReturnsAsync((SearchQueries searchQueries) =>
+            .Setup(repo => repo.GetSearchResults(It.IsAny<ISearchQueries>()))
+            .ReturnsAsync((ISearchQueries searchQueries) =>
             {
                 // initiate the query
-                IQueryable<Submission> submissionsResults = submissions.AsQueryable()
-                    .Include(submission => submission.Product);
+                IQueryable<Submission>? submissionsResults =
+                    submissions.AsQueryable().Include(submission => submission.Product);
 
                 // append the search queries to the query
-                submissionsResults =
-                    searchQueries.SearchQueryFunctions.Aggregate(submissionsResults,
-                        (current, query) => current.Where(query));
+                submissionsResults = searchQueries.ApplySearch(submissionsResults) as IQueryable<Submission>;
+
+                if (submissionsResults == null) return new List<Submission>();
 
                 // get and return the results
-                return submissionsResults;
+                return submissionsResults.ToList();
             });
 
         _submissionCrudRepositoryMock

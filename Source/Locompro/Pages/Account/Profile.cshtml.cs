@@ -22,7 +22,7 @@ public class ProfileModel : PageModel
     private readonly IDomainService<Canton, string> _cantonService;
     private readonly IDomainService<User, string> _userService;
     private readonly IUserManagerService _userManagerService;
-
+    private readonly IModerationService _moderationService;
 
     /// <summary>
     ///     Initializes a new instance of the ProfileModel class.
@@ -32,14 +32,16 @@ public class ProfileModel : PageModel
     /// <param name="cantonService">To get canton related information </param>
     /// <param name="errorStoreFactory"></param>
     /// <param name="userManagerService"></param>
+    /// <param name="moderationService"></param>
     public ProfileModel(IDomainService<User, string> userService, IAuthService authService,
         IDomainService<Canton, string> cantonService, IErrorStoreFactory errorStoreFactory,
-        IUserManagerService userManagerService)
+        IUserManagerService userManagerService, IModerationService moderationService)
     {
         _userService = userService;
         _authService = authService;
         _cantonService = cantonService;
         _userManagerService = userManagerService;
+        _moderationService = moderationService;
         ChangePasswordModalErrors = errorStoreFactory.Create();
         UpdateUserDataModalErrors = errorStoreFactory.Create();
         DeclineModerationModalErrors = errorStoreFactory.Create();
@@ -50,7 +52,7 @@ public class ProfileModel : PageModel
     [BindProperty] public PasswordChangeVm PasswordChange { get; set; }
 
     [BindProperty] public UserDataUpdateVm UserDataUpdate { get; set; }
-    
+
     [BindProperty] public DeclineModeratorViewModel DeclineRoleUpdate { get; set; }
 
     public IErrorStore ChangePasswordModalErrors { get; set; }
@@ -62,7 +64,13 @@ public class ProfileModel : PageModel
     public bool IsPasswordChanged { get; set; }
 
     public bool IsUserDataUpdated { get; set; }
+
     public bool IsNoLongerModerator { get; set; }
+
+    public bool IsPossibleModerator { get; set; }
+
+    public bool IsNowModerator { get; set; }
+
     public bool IsModerator { get; set; }
 
     /// <summary>
@@ -75,6 +83,11 @@ public class ProfileModel : PageModel
         if (user == null) return RedirectToRoute("Account/Login");
 
         IsModerator = await IsUserModerator(user);
+
+        var userId = _authService.GetUserId();
+        if (userId == null) return RedirectToRoute("Account/Login");
+
+        IsPossibleModerator = await _moderationService.IsUserPossibleModerator(userId);
 
         SetProfileViewModel(user);
         RecoverTemporaryFlags();
@@ -142,6 +155,27 @@ public class ProfileModel : PageModel
         return RedirectToPage();
     }
 
+    public async Task<IActionResult> OnPostDecideOnModeratorRoleAsync(string decision)
+    {
+        bool didAcceptRole = decision == "true";
+        
+        var userId = _authService.GetUserId();
+        if (userId == null) return RedirectToRoute("Account/Login");
+
+        await _moderationService.DecideOnModeratorRole(userId, didAcceptRole);
+        await _authService.RefreshUserLogin();
+
+        if (didAcceptRole)
+        {
+            StoreTemporaryFlag("IsNowModerator", true);
+        }
+        else
+        {
+            StoreTemporaryFlag("IsNoLongerModerator", true);
+        }
+
+        return RedirectToPage();
+    }
 
     public async Task<IActionResult> OnPostDeclineModerationAsync()
     {
@@ -160,7 +194,7 @@ public class ProfileModel : PageModel
         await AddClaimDeclinedModerator(user);
         await _authService.RefreshUserLogin();
 
-        StoreTemporaryFlag("IsModerationRoleDeclined", true);
+        StoreTemporaryFlag("IsNoLongerModerator", true);
         return RedirectToPage();
     }
 
@@ -230,14 +264,15 @@ public class ProfileModel : PageModel
     {
         IsPasswordChanged = RecoverTemporaryFlag("IsPasswordChanged");
         IsUserDataUpdated = RecoverTemporaryFlag("IsUserDataUpdated");
-        IsNoLongerModerator = RecoverTemporaryFlag("IsModerationRoleDeclined");
+        IsNoLongerModerator = RecoverTemporaryFlag("IsNoLongerModerator");
+        IsNowModerator = RecoverTemporaryFlag("IsNowModerator");
     }
 
     /// <summary>
     ///     Retrieves all the cantons names for a given province.
     /// </summary>
     /// <param name="province"> the name of the province get the cantons from </param>
-    /// <returns>a list of Canton Names in that province </returns>
+    /// <returns>a list of SubmissionByCanton Names in that province </returns>
     private async Task<List<CantonDto>> GetCantonsOnProvince(string province)
     {
         var cantons = await _cantonService.GetAll();

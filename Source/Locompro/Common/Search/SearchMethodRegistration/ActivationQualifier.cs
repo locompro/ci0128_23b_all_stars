@@ -6,12 +6,18 @@ namespace Locompro.Common.Search.SearchMethodRegistration;
 /// <typeparam name="T"></typeparam>
 public class ActivationQualifier<T> : IActivationQualifier
 {
-    public Func<T, bool> QualifierFunction { get; init; }
+    private Func<T, bool> QualifierFunction { get; init; }
 
     /// <summary>
-    ///     returns the internal qualifier
+    /// Constructor
     /// </summary>
-    /// <returns></returns>
+    /// <param name="qualifierFunction"> function that determines if another is executed or not </param>
+    public ActivationQualifier(Func<T, bool> qualifierFunction)
+    {
+        QualifierFunction = qualifierFunction;
+    }
+    
+    /// <inheritdoc />
     public dynamic GetQualifierFunction()
     {
         return QualifierFunction;

@@ -7,6 +7,9 @@
 
 <link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
 <link rel="stylesheet" href="~/css/ImageDisplay.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/assets/css/select2.min.css"/>
+    <link rel="stylesheet" href="~/assets/css/select2-bootstrap.min.css"/>
+<link rel="stylesheet" href="~/css/custom-select2-styles.css"/>
 
 <div class="container  pt-5 search-results-page-container">
     <div class="container">
@@ -34,7 +37,7 @@
                 </div>
                 <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
                         id="advancedSearchButton"
-                        style="margin-left: 15px;"
+                        style="margin-left: 15px; padding-left: 15px; padding-right: 15px"
                         onclick="advancedSearchButtonPressed()"
                         type="button">
                     Búsqueda avanzada
@@ -48,11 +51,10 @@
         </div>
         <div class="container search-input-group-on-advanced-search row"
              style="margin-top: 10px; margin-left: 0px">
-            <div class="col">
-                <h5 style="padding-top: 5px">Filtros</h5>
+            <div class="col align-self-center">
                 <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
                         id="clearFiltersButton"
-                        style="margin-right: 3px"
+                        style="padding-left: 10px; padding-right: 10px; padding-top: 7px; padding-bottom: 7px"
                         onclick="clearFilters()"
                         type="button">
                     Limpiar filtros
@@ -91,6 +93,15 @@
                        onChange="applyFilter(this)">
             </div>
             <div class="col">
+                <label class="form-label d-lg-flex justify-content-xxl-center">Categoria</label>
+                <select class="form-select"
+                        type="submit"
+                        onChange="applyFilter(this)"
+                        style="font-family: Roboto, sans-serif;"
+                        id="categoryFilter">
+                </select>
+            </div>
+            <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Marca</label>
                 <select class="form-select"
                         type="submit"
@@ -106,15 +117,6 @@
                         onChange="applyFilter(this)"
                         style="font-family: Roboto, sans-serif;"
                         id="modelFilter">
-                </select>
-            </div>
-            <div class="col">
-                <label class="form-label d-lg-flex justify-content-xxl-center">Categoria</label>
-                <select class="form-select"
-                        type="submit"
-                        onChange="applyFilter(this)"
-                        style="font-family: Roboto, sans-serif;"
-                        id="categoryFilter">
                 </select>
             </div>
         </div>
@@ -156,14 +158,14 @@
                             </th>
                             <th scope="col">
                                 <a
-                                    onclick="setOrder('Canton')"
+                                    onclick="setOrder('SubmissionByCanton')"
                                     id="cantonSortButton"
                                     class="no-underline-link">
                                     Cantón
                                 </a>
                             </th>
                             <th scope="col">Descripción</th>
-                            <th scope="col">Último Aporte </th>
+                            <th scope="col">Última Contribución </th>
                         </tr>
                         </thead>
                         <tbody id="resultsTableBody">

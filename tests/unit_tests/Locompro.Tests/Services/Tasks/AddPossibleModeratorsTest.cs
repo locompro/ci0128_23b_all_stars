@@ -15,7 +15,7 @@ public class AddPossibleModeratorsTaskTest
     /// <summary>
     ///     Set up the test environment, mocking the necessary services and scope factory.
     /// </summary>
-    /// <author>Brandon Alonso Mora Umaña - C15179</author>
+    /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
     [SetUp]
     public void SetUp()
     {
@@ -48,7 +48,7 @@ public class AddPossibleModeratorsTaskTest
     ///     method on the IModerationService exactly once, verifying that the task correctly triggers
     ///     the moderation action.
     /// </summary>
-    /// <author>Brandon Alonso Mora Umaña - C15179</author>
+    /// <author>Brandon Alonso Mora Umaña - C15179 - Sprint 2</author>
     [Test]
     public async Task ExecuteAsync_CallsAssignPossibleModeratorsAsync()
     {

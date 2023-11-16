@@ -36,7 +36,7 @@ public class UserServiceTests
 
     /// <summary>
     ///     Test to ensure GetQualifiedUserIDs returns expected user IDs.
-    ///     Author: Brandon Alonso Mora Umaña.
+    ///     Author: Brandon Alonso Mora Umaña - Sprint 2
     /// </summary>
     [Test]
     public void GetQualifiedUserIDs_ReturnsExpectedUserIDs()
