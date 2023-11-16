@@ -7,6 +7,9 @@
 
 <link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
 <link rel="stylesheet" href="~/css/ImageDisplay.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/assets/css/select2.min.css"/>
+    <link rel="stylesheet" href="~/assets/css/select2-bootstrap.min.css"/>
+<link rel="stylesheet" href="~/css/custom-select2-styles.css"/>
 
 <div class="container  pt-5 search-results-page-container">
     <div class="container">
@@ -34,7 +37,7 @@
                 </div>
                 <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
                         id="advancedSearchButton"
-                        style="margin-left: 15px;"
+                        style="margin-left: 15px; padding-left: 15px; padding-right: 15px"
                         onclick="advancedSearchButtonPressed()"
                         type="button">
                     Búsqueda avanzada
@@ -48,14 +51,13 @@
         </div>
         <div class="container search-input-group-on-advanced-search row"
              style="margin-top: 10px; margin-left: 0px">
-            <div class="col">
-                <h5 style="padding-top: 5px;  padding-right: 0px">filtros</h5>
+            <div class="col align-self-center">
                 <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
                         id="clearFiltersButton"
-                        style="margin-left: 0px;"
+                        style="padding-left: 15px; padding-right: 15px; padding-top: 7px; padding-bottom: 7px"
                         onclick="clearFilters()"
                         type="button">
-                    Limpiar filtros
+                    Limpiar
                 </button>
             </div>
             <div class="col">
@@ -165,14 +167,14 @@
                             </th>
                             <th scope="col">
                                 <a
-                                    onclick="setOrder('Canton')"
+                                    onclick="setOrder('SubmissionByCanton')"
                                     id="cantonSortButton"
                                     class="no-underline-link">
                                     Cantón
                                 </a>
                             </th>
                             <th scope="col">Descripción</th>
-                            <th scope="col">Último Aporte </th>
+                            <th scope="col">Última Contribución </th>
                         </tr>
                         </thead>
                         <tbody id="resultsTableBody">

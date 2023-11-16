@@ -4,6 +4,7 @@ using Locompro.Common;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration;
+using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Locompro.Models.Dtos;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
@@ -41,7 +42,7 @@ namespace Locompro.Pages.SearchResults
             CurrentUserId = query;
             var searchParameters = new List<ISearchCriterion>
             {
-              new SearchCriterion<string>(SearchParameterTypes.UserId, query),
+              new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, query),
             };
             List<ItemVm> searchResults = null;
             try

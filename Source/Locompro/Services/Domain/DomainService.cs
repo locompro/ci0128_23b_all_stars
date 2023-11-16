@@ -1,4 +1,5 @@
-﻿using Locompro.Data;
+﻿using Locompro.Common.Search;
+using Locompro.Data;
 using Locompro.Data.Repositories;
 
 namespace Locompro.Services.Domain;
@@ -36,6 +37,12 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
     public async Task<IEnumerable<T>> GetAll()
     {
         return await CrudRepository.GetAllAsync();
+    }
+    
+    /// <inheritdoc />
+    public async Task<IEnumerable<T>> GetByDynamicQuery(ISearchQueries searchQueries)
+    {
+        return await CrudRepository.GetByDynamicQuery(searchQueries);
     }
 
     /// <inheritdoc />

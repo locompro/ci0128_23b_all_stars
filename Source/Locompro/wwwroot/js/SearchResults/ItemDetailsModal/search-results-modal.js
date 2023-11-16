@@ -96,7 +96,7 @@ class SearchResultsModal {
             // Append the icon to the button
             reportButton.appendChild(icon);
 
-            if(submission.Status !== 'Moderated') {
+            if(submission.Status !== 1) {
                 const submissionId = submission.UserId + submission.NonFormatedEntryTime;
                 
                 reportButton.setAttribute('data-id', submissionId);
@@ -104,6 +104,9 @@ class SearchResultsModal {
                 reportButton.setAttribute('data-bs-target', '#descriptionModal');
 
                 reportButton.addEventListener('click', () => {
+                    const reportForm = document.getElementById('reportForm');
+                    reportForm.reset();
+                    
                     const isLoggedInElement = document.getElementById('isLoggedIn');
                     const isLoggedIn = isLoggedInElement.getAttribute('data') === 'True';
                     
@@ -113,7 +116,7 @@ class SearchResultsModal {
                     }
 
                     document.querySelector('input[name="ReportVm.SubmissionUserId"]').value = submission.UserId;
-                    document.querySelector('input[name="ReportVm.SubmissionEntryTime"]').value = submission.NonFormatedEntryTime;                
+                    document.querySelector('input[name="ReportVm.SubmissionEntryTime"]').value = submission.NonFormatedEntryTime;
                 });
             } else {
                 reportButton.disabled = true;

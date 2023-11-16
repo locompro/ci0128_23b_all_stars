@@ -5,6 +5,9 @@ using Locompro.Services.Domain;
 
 namespace Locompro.Services;
 
+/// <summary>
+/// Provides services for handling user contributions, such as adding new submissions.
+/// </summary>
 public class ContributionService : Service, IContributionService
 {
     private const string OnlyCountry = "Costa Rica";
@@ -19,6 +22,15 @@ public class ContributionService : Service, IContributionService
 
     private readonly ISubmissionService _submissionService;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ContributionService"/> class.
+    /// </summary>
+    /// <param name="loggerFactory">The factory used for creating loggers.</param>
+    /// <param name="cantonService">The service for canton-related operations.</param>
+    /// <param name="storeService">The service for store-related operations.</param>
+    /// <param name="productService">The service for product-related operations.</param>
+    /// <param name="categoryService">The service for category-related operations.</param>
+    /// <param name="submissionService">The service for submission-related operations.</param>
     public ContributionService(ILoggerFactory loggerFactory, ICantonService cantonService,
         INamedEntityDomainService<Store, string> storeService, INamedEntityDomainService<Product, int> productService,
         INamedEntityDomainService<Category, string> categoryService, ISubmissionService submissionService)
@@ -31,6 +43,15 @@ public class ContributionService : Service, IContributionService
         _submissionService = submissionService;
     }
 
+    /// <inheritdoc />
+    /// <summary>
+    /// Adds a new submission to the system based on the provided view models.
+    /// </summary>
+    /// <param name="storeVm">The view model containing the store data.</param>
+    /// <param name="productVm">The view model containing the product data.</param>
+    /// <param name="submissionVm">The view model containing the submission data.</param>
+    /// <param name="picturesVMs">The list of view models for the pictures associated with the submission.</param>
+    /// <returns>A task representing the asynchronous operation of adding a submission.</returns>
     public async Task AddSubmission(StoreVm storeVm, ProductVm productVm,
         SubmissionVm submissionVm, List<PictureVm> picturesVMs)
     {

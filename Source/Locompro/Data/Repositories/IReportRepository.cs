@@ -2,6 +2,7 @@ using Locompro.Models.Entities;
 
 namespace Locompro.Data.Repositories;
 
+/// <inheritdoc />
 public interface IReportRepository : ICrudRepository<Report, string>
 {
     /// <summary>

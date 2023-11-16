@@ -1,9 +1,12 @@
 ﻿@page
 @using Locompro.Models.Entities
 @using Locompro.Services.Domain
+@using Locompro.Services.Auth
 @model ProfileModel
 @inject INamedEntityDomainService<Country, string> CountryService
+@inject IAuthService AuthService
 @{
+    var userId = AuthService.GetUserId();
     ViewData["Title"] = "Perfil";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
@@ -88,7 +91,13 @@
     </div>
 </div>
 <div class="row" id="UserActionsRow">
-    <div class="col d-xxl-flex justify-content-xxl-end">
+     <div class="col d-xxl-flex justify-content-xxl-end">
+        <a class="btn btn-primary text-center border rounded-pill d-xxl-flex flex-grow-0 flex-shrink-1 justify-content-xxl-start"
+                role="button" asp-page="/SearchResults/Contributions" asp-route-query="@userId" id="Contributions">
+            Mis Contribuciones
+        </a>
+    </div>
+    <div class="col">
         <button class="btn btn-primary border rounded-pill d-xxl-inline-flex"
                 style="padding-left: 31px;padding-right: 31px;" type="button" data-bs-target="#UpdateUserDataModal"
                 data-bs-toggle="modal" id="UpdateUserDataButton">
@@ -109,7 +118,7 @@
 {
     <div class="row" id="ModerationAction">
         <div class="col d-xxl-flex justify-content-xxl-center">
-            <button class="btn critical-button border rounded-pill d-xxl-inline-flex"
+            <button class="btn btn-primary critical-button border rounded-pill d-xxl-inline-flex"
                     style="padding-left: 31px;padding-right: 31px;" type="button"
                     data-bs-target="#DeclineModerationRoleModal" data-bs-toggle="modal"
                     id="DeclineModerationRoleButton">
@@ -150,6 +159,18 @@
         <div id="DeclineModerationAlert" class="alert alert-success alert-dismissible fade show" role="alert"
              style="display: block;">
             ¡Ha renunciado a su rol de moderador exitosamente!
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+}
+
+@if (Model.IsNowModerator)
+{
+    <div class="row justify-content-center align-items-center align-content-center"
+         style="margin-top: 20px; margin-bottom: 20px">
+        <div id="AcceptModerationAlert" class="alert alert-success alert-dismissible fade show" role="alert"
+             style="display: block;">
+            ¡Ha aceptado el rol de moderador exitosamente!
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     </div>
@@ -319,7 +340,7 @@
                     <h4 class="modal-title text-center d-xxl-flex justify-content-xxl-center">
                         Renunciar a Moderación
                     </h4>
-                    
+
                     <button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal"
                             id="CloseDeclineModerationRole">
                     </button>
@@ -360,7 +381,7 @@
 
                         <div class="modal-footer">
                             <button class="btn btn-light" type="reset" data-bs-dismiss="modal">Cancelar</button>
-                            <button class="btn critical-button" type="submit">Dejar el rol</button>
+                            <button class="btn btn-primary critical-button" type="submit">Dejar el rol</button>
                         </div>
                     </form>
                 </div>
@@ -371,6 +392,30 @@
     <div id="DeclineModalErrors"
          data-has-errors="@Model.DeclineModerationModalErrors.HasErrors.ToString().ToLower()">
 
+    </div>
+}
+
+<!-- Acquire Moderation Modal -->
+@if (Model.IsPossibleModerator)
+{
+    <div class="modal fade" role="dialog" tabindex="-1" id="AcquireModerationRoleModal" style="display: block;" aria-modal="true" aria-hidden="false">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="border-radius: 15px; padding: 5px 6px 10px 8px;">
+                <div class="modal-body">
+                    <h4 class="text-center">
+                        Ha sido seleccionado para ser moderador.
+
+                        ¿Desea adquirir el rol de moderador?
+                    </h4>
+                </div>
+                <div class="text-center mb-3">
+                    <form method="post" asp-page-handler="DecideOnModeratorRole">
+                        <button class="btn btn-danger me-4" style="width: 120px" type="submit" name="decision" value="false" data-bs-dismiss="modal">Rechazar</button>
+                        <button class="btn btn-success ms-4" style="width: 120px" type="submit" name="decision" value="true" data-bs-dismiss="modal">Aceptar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
