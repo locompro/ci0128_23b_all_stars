@@ -37,7 +37,7 @@ namespace Locompro.Migrations
                     b.ToTable("CategoryProduct");
                 });
 
-            modelBuilder.Entity("Locompro.Models.Entities.Canton", b =>
+            modelBuilder.Entity("Locompro.Models.Entities.SubmissionByCanton", b =>
                 {
                     b.Property<string>("CountryName")
                         .HasColumnType("nvarchar(450)");
@@ -503,7 +503,7 @@ namespace Locompro.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Locompro.Models.Entities.Canton", b =>
+            modelBuilder.Entity("Locompro.Models.Entities.SubmissionByCanton", b =>
                 {
                     b.HasOne("Locompro.Models.Entities.Province", "Province")
                         .WithMany("Cantons")
@@ -565,13 +565,13 @@ namespace Locompro.Migrations
 
             modelBuilder.Entity("Locompro.Models.Entities.Store", b =>
                 {
-                    b.HasOne("Locompro.Models.Entities.Canton", "Canton")
+                    b.HasOne("Locompro.Models.Entities.SubmissionByCanton", "SubmissionByCanton")
                         .WithMany()
                         .HasForeignKey("CantonCountryName", "CantonProvinceName", "CantonName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Canton");
+                    b.Navigation("SubmissionByCanton");
                 });
 
             modelBuilder.Entity("Locompro.Models.Entities.Submission", b =>

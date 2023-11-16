@@ -29,7 +29,7 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     /// <inheritdoc />
     public override async Task<Submission> GetByIdAsync(SubmissionKey id)
     {
-        return await Set.FirstOrDefaultAsync(submission =>
+        Submission submission = await Set.FirstOrDefaultAsync(submission =>
             submission.UserId == id.UserId &&
             submission.EntryTime.Year == id.EntryTime.Year &&
             submission.EntryTime.Month == id.EntryTime.Month &&
@@ -37,6 +37,14 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
             submission.EntryTime.Hour == id.EntryTime.Hour &&
             submission.EntryTime.Minute == id.EntryTime.Minute &&
             submission.EntryTime.Second == id.EntryTime.Second);
+
+        if (submission == null)
+        {
+            throw new InvalidOperationException("Error loading submission! No submission for user:" + id.UserId + " and entry time: " +
+                                                id.EntryTime + " was found.");
+        }
+        
+        return submission;
     }
 
     /// <inheritdoc />
@@ -68,16 +76,20 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries)
+    public async Task<IEnumerable<Submission>> GetSearchResults(ISearchQueries searchQueries)
     {
         // initiate the query
         IQueryable<Submission> submissionsResults = Set
             .Include(submission => submission.Product);
 
         // append the search queries to the query
-        submissionsResults =
-            searchQueries.SearchQueryFunctions.Aggregate(submissionsResults, (current, query) => current.Where(query));
+        submissionsResults = searchQueries.ApplySearch(submissionsResults) as IQueryable<Submission> ;
 
+        if (submissionsResults == null)
+        {
+            return await new Task<IEnumerable<Submission>>(() => new List<Submission>());
+        }
+        
         // get and return the results
         return await submissionsResults.ToListAsync();
     }

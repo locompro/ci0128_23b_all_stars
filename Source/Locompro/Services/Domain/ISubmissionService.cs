@@ -13,7 +13,7 @@ public interface ISubmissionService : IDomainService<Submission, SubmissionKey>
     /// </summary>
     /// <param name="searchQueries"> search queries, criteria or strategies to be used to find the desired submissions</param>
     /// <returns></returns>
-    Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries);
+    Task<IEnumerable<Submission>> GetSearchResults(ISearchQueries searchQueries);
 
     /// <summary>
     ///     Gets the submissions for a given Item

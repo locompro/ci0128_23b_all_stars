@@ -48,8 +48,8 @@ class SearchResultsFilterMenu {
             categoryFilter.innerHTML = "";
 
             const todosOption = document.createElement("option");
-            todosOption.value = "todos";
-            todosOption.innerHTML = "todos";
+            todosOption.value = "Todos";
+            todosOption.innerHTML = "Todos";
 
             categoryFilter.appendChild(todosOption);
             for (const category of this.filters.get("Categories")) {
@@ -81,14 +81,14 @@ class SearchResultsFilterMenu {
             let passedAllFilters = true;
 
             for (const [type, value] of this.currentFilters) {
-                if (type === "MinPrice") {
+                if (type === "MinPrice" && value !== "Todos") {
                     passedAllFilters = passedAllFilters && item.Price >= value;
-                } else if (type === "MaxPrice") {
+                } else if (type === "MaxPrice" && value !== "Todos") {
                     passedAllFilters = passedAllFilters && item.Price <= value;
-                } else if (type === "Category") {
+                } else if (type === "Category" && value !== "Todos") {
                     passedAllFilters = passedAllFilters &&
                         item.Categories.some(category => value.includes(category))
-                } else if(item[type] !== value) {
+                } else if(item[type] !== value && value !== "Todos") {
                     passedAllFilters = false;
                 }
             }
@@ -203,8 +203,8 @@ class FilterField {
             this.element.innerHTML = "";
 
             const todosOption = document.createElement("option");
-            todosOption.value = "todos";
-            todosOption.innerHTML = "todos";
+            todosOption.value = "Todos";
+            todosOption.innerHTML = "Todos";
 
             this.element.appendChild(todosOption);
 

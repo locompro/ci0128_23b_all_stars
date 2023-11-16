@@ -8,6 +8,11 @@ namespace Locompro.Tests.Utilities;
 [TestFixture]
 public class PictureParserTest
 {
+    /// <summary>
+    ///    Tests that the Parse method returns a list of pictures.
+    /// </summary>
+    /// <author>Joseph Valderde Kong - C18100 - Sprint 2</author>
+
     [Test]
     public void Parse_ReturnsListOfPictures()
     {
@@ -20,6 +25,11 @@ public class PictureParserTest
         // Assert
         Assert.That(pictures, Is.Not.Null);
     }
+
+    /// <summary>
+    ///   Parses a single image and checks that the name and data are correct.
+    /// </summary>
+    /// <author>Joseph Valderde Kong - C18100 - Sprint 2</author>
 
     [Test]
     public void ParseSingleImage()
@@ -39,6 +49,10 @@ public class PictureParserTest
         });
     }
 
+    /// <summary>
+    /// Checks that the parser accepts valid formats.
+    /// </summary>
+    /// <author>Joseph Valderde Kong - C18100 - Sprint 2</author>
     [Test]
     public void ParserAcceptsValidFormats()
     {
@@ -51,6 +65,10 @@ public class PictureParserTest
         Assert.That(pictures, Has.Count.EqualTo(3));
     }
 
+    /// <summary>
+    /// Checks that the parser rejects invalid formats.
+    /// </summary>
+    /// <author>Joseph Valderde Kong - C18100 - Sprint 2</author>
     [Test]
     public void ParserRejectsInvalidFormat()
     {
@@ -61,6 +79,10 @@ public class PictureParserTest
         Assert.That(pictures, Is.Empty);
     }
 
+    /// <summary>
+    /// Checks that the parser serializes the pictures correctly.
+    /// </summary>
+    /// <author>Joseph Valderde Kong - C18100 - Sprint 2</author>
     [Test]
     public void ParserSerializes()
     {
@@ -91,6 +113,10 @@ public class PictureParserTest
         });
     }
 
+    /// <summary>
+    /// Checks that the parser serializes the raw data correctly.
+    /// </summary>
+    /// <author>Joseph Valderde Kong - C18100 - Sprint 2</author>
     [Test]
     public void ParserSerializesRawData()
     {

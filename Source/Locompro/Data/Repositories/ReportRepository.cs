@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Data.Repositories;
 
+/// <inheritdoc />
 public class ReportRepository : CrudRepository<Report, string>, IReportRepository
 {
     public ReportRepository(DbContext context, ILoggerFactory loggerFactory) : base(context, loggerFactory)
