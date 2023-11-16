@@ -96,6 +96,29 @@ public class ModerationService : Service, IModerationService
         return await _userManagerService.IsInRoleAsync(user, RoleNames.PossibleModerator);
     }
 
+    /// <inheritdoc />
+    public async Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm)
+    {
+        SubmissionKey submissionKey = new ()
+        {
+            UserId = moderatorActionOnReportVm.SubmissionUserId,
+            EntryTime = moderatorActionOnReportVm.SubmissionEntryTime
+        };
+        
+        switch (moderatorActionOnReportVm.Action)
+        {
+            case ModeratorActions.EraseSubmission:
+                await _submissionService.DeleteSubmissionAsync(submissionKey);
+                break;
+            case ModeratorActions.EraseReport:
+                await _submissionService.UpdateSubmissionStatusAsync(submissionKey, SubmissionStatus.Moderated);
+                break;
+            case ModeratorActions.Default:
+            default:
+                throw new ArgumentOutOfRangeException(nameof(moderatorActionOnReportVm));
+        }
+    }
+
     private async Task AddRoleAsync(User user, string roleName)
     {
         if (user == null)
@@ -177,28 +200,5 @@ public class ModerationService : Service, IModerationService
     {
         var userRoles = await _userManagerService.GetClaimsOfTypesAsync(user, ClaimTypes.Role);
         return rolesToCheck.Any(role => userRoles.Any(userRole => userRole.Value == role));
-    }
-
-    /// <inheritdoc />
-    public async Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm)
-    {
-        SubmissionKey submissionKey = new ()
-        {
-            UserId = moderatorActionOnReportVm.SubmissionUserId,
-            EntryTime = moderatorActionOnReportVm.SubmissionEntryTime
-        };
-        
-        switch (moderatorActionOnReportVm.Action)
-        {
-            case ModeratorActions.EraseSubmission:
-                await _submissionService.DeleteSubmissionAsync(submissionKey);
-                break;
-            case ModeratorActions.EraseReport:
-                await _submissionService.UpdateSubmissionStatusAsync(submissionKey, SubmissionStatus.Moderated);
-                break;
-            case ModeratorActions.Default:
-            default:
-                throw new ArgumentOutOfRangeException(nameof(moderatorActionOnReportVm));
-        }
     }
 }

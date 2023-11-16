@@ -199,7 +199,7 @@ GO
 --- AS-279 
 -- Procedimiento que elimina todos los registros con el status de ser eliminados
 -- luego de ser aprobados por un moderador
--- Autor: Ariel Antonio Arévalo Alvarado	B50562
+-- Autor: Ariel Antonio Arévalo Alvarado B50562
 CREATE OR ALTER PROCEDURE DeleteModeratedSubmissions
 AS
 BEGIN

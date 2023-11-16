@@ -3,6 +3,7 @@ using Castle.Core.Internal;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration;
+using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Locompro.Models;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
@@ -99,14 +100,14 @@ public class SearchResultsModel : SearchPageModel
         // get items from search service
         var searchParameters = new List<ISearchCriterion>
         {
-            new SearchCriterion<string>(SearchParameterTypes.Name, SearchVm.ProductName),
-            new SearchCriterion<string>(SearchParameterTypes.Province, SearchVm.ProvinceSelected),
-            new SearchCriterion<string>(SearchParameterTypes.Canton, SearchVm.CantonSelected),
-            new SearchCriterion<long>(SearchParameterTypes.Minvalue, SearchVm.MinPrice),
-            new SearchCriterion<long>(SearchParameterTypes.Maxvalue, SearchVm.MaxPrice),
-            new SearchCriterion<string>(SearchParameterTypes.Category, SearchVm.CategorySelected),
-            new SearchCriterion<string>(SearchParameterTypes.Model, SearchVm.ModelSelected),
-            new SearchCriterion<string>(SearchParameterTypes.Brand, SearchVm.BrandSelected)
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, SearchVm.ProductName),
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionByProvince, SearchVm.ProvinceSelected),
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionByCanton, SearchVm.CantonSelected),
+            new SearchCriterion<long>(SearchParameterTypes.SubmissionByMinvalue, SearchVm.MinPrice),
+            new SearchCriterion<long>(SearchParameterTypes.SubmissionByMaxvalue, SearchVm.MaxPrice),
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionByCategory, SearchVm.CategorySelected),
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionByModel, SearchVm.ModelSelected),
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionByBrand, SearchVm.BrandSelected)
         };
 
         SearchVm.ResultsPerPage = Configuration.GetValue("PageSize", 4);

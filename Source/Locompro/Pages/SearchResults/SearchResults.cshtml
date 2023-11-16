@@ -37,7 +37,7 @@
                 </div>
                 <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
                         id="advancedSearchButton"
-                        style="margin-left: 15px;"
+                        style="margin-left: 15px; padding-left: 15px; padding-right: 15px"
                         onclick="advancedSearchButtonPressed()"
                         type="button">
                     Búsqueda avanzada
@@ -54,9 +54,10 @@
             <div class="col align-self-center">
                 <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
                         id="clearFiltersButton"
+                        style="padding-left: 15px; padding-right: 15px; padding-top: 7px; padding-bottom: 7px"
                         onclick="clearFilters()"
                         type="button">
-                    Limpiar filtros
+                    Limpiar
                 </button>
             </div>
             <div class="col">
@@ -166,14 +167,14 @@
                             </th>
                             <th scope="col">
                                 <a
-                                    onclick="setOrder('Canton')"
+                                    onclick="setOrder('SubmissionByCanton')"
                                     id="cantonSortButton"
                                     class="no-underline-link">
                                     Cantón
                                 </a>
                             </th>
                             <th scope="col">Descripción</th>
-                            <th scope="col">Último Aporte </th>
+                            <th scope="col">Última Contribución </th>
                         </tr>
                         </thead>
                         <tbody id="resultsTableBody">
