@@ -63,6 +63,10 @@
                             style="margin-bottom: 0;padding-bottom: 94px;"></textarea>
         </div>
         <span class="text-danger field-validation-valid pb-2" asp-validation-for="Address"></span>
+        <div id="StoreModalMap" style="height: 400px; width: 100%;"></div>
+            <input type="hidden" asp-for="Latitude" id="latitude">
+            <input type="hidden" asp-for="Longitude" id="longitude">
+            <input type="hidden" asp-for="MapGeneratedAddress" id="MapGeneratedAddress">
     </div>
 </div>
 
