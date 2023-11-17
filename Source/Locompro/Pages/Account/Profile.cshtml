@@ -1,9 +1,12 @@
 ﻿@page
 @using Locompro.Models.Entities
 @using Locompro.Services.Domain
+@using Locompro.Services.Auth
 @model ProfileModel
 @inject INamedEntityDomainService<Country, string> CountryService
+@inject IAuthService AuthService
 @{
+    var userId = AuthService.GetUserId();
     ViewData["Title"] = "Perfil";
     Layout = "~/Pages/Shared/_Layout.cshtml";
 }
@@ -88,7 +91,13 @@
     </div>
 </div>
 <div class="row" id="UserActionsRow">
-    <div class="col d-xxl-flex justify-content-xxl-end">
+     <div class="col d-xxl-flex justify-content-xxl-end">
+        <a class="btn btn-primary text-center border rounded-pill d-xxl-flex flex-grow-0 flex-shrink-1 justify-content-xxl-start"
+                role="button" asp-page="/SearchResults/Contributions" asp-route-query="@userId" id="Contributions">
+            Mis Contribuciones
+        </a>
+    </div>
+    <div class="col">
         <button class="btn btn-primary border rounded-pill d-xxl-inline-flex"
                 style="padding-left: 31px;padding-right: 31px;" type="button" data-bs-target="#UpdateUserDataModal"
                 data-bs-toggle="modal" id="UpdateUserDataButton">

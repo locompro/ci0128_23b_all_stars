@@ -54,20 +54,11 @@
             <div class="col align-self-center">
                 <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
                         id="clearFiltersButton"
-                        style="padding-left: 15px; padding-right: 15px; padding-top: 7px; padding-bottom: 7px"
+                        style="padding-left: 10px; padding-right: 10px; padding-top: 7px; padding-bottom: 7px"
                         onclick="clearFilters()"
                         type="button">
-                    Limpiar
+                    Limpiar filtros
                 </button>
-            </div>
-            <div class="col">
-                <label class="form-label d-lg-flex justify-content-xxl-center">Nombre</label>
-                <select class="form-select"
-                        type="submit"
-                        onChange="applyFilter(this)"
-                        style="font-family: Roboto, sans-serif;"
-                        id="productNameFilter">
-                </select>
             </div>
             <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Provincia</label>
@@ -102,6 +93,15 @@
                        onChange="applyFilter(this)">
             </div>
             <div class="col">
+                <label class="form-label d-lg-flex justify-content-xxl-center">Categoria</label>
+                <select class="form-select"
+                        type="submit"
+                        onChange="applyFilter(this)"
+                        style="font-family: Roboto, sans-serif;"
+                        id="categoryFilter">
+                </select>
+            </div>
+            <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Marca</label>
                 <select class="form-select"
                         type="submit"
@@ -117,15 +117,6 @@
                         onChange="applyFilter(this)"
                         style="font-family: Roboto, sans-serif;"
                         id="modelFilter">
-                </select>
-            </div>
-            <div class="col">
-                <label class="form-label d-lg-flex justify-content-xxl-center">Categoria</label>
-                <select class="form-select"
-                        type="submit"
-                        onChange="applyFilter(this)"
-                        style="font-family: Roboto, sans-serif;"
-                        id="categoryFilter">
                 </select>
             </div>
         </div>
