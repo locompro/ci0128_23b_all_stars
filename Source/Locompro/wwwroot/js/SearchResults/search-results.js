@@ -56,17 +56,15 @@ class SearchResultsTable extends ResultsTable {
         
         const pageConfiguration
             = new ResultsPageConfiguration(
-            "searchResultsTable",
-            headerFields,
-            "pageAmountDisplay",
-            "resultsAmountDisplay");
+            "resultsCard",
+            headerFields);
 
         let selectItem = (index) => {
             this.selectItem(index);
         };
         
         const tableBody =
-            new SearchResultsTableBody(pageConfiguration.table, pageData.ResultsPerPage, selectItem);
+            new SearchResultsTableBody(pageData.ResultsPerPage, selectItem);
 
         super(tableBody, searchResults, pageData, pageConfiguration);
     }

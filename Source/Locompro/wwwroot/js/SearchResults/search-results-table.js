@@ -9,11 +9,10 @@ export default class SearchResultsTableBody extends TableBody {
      * Constructs the SearchResultsTableBody with a specified number of results per page.
      * @param resultsPerPage - The number of results to display per page.
      * @param selectItem - The function to call when an item is selected.
-     * @param {*} table
      * @param {*} resultsPerPage
      * @param {selectItem} selectItem
      */
-    constructor(table, resultsPerPage, selectItem) {
+    constructor(resultsPerPage, selectItem) {
         const attributes = [
             new Attribute("data-bs-toggle", "modal"),
             new Attribute("data-bs-target", "#ItemModal")
@@ -42,6 +41,6 @@ export default class SearchResultsTableBody extends TableBody {
             new TableRowColumn('LastSubmissionDate', [])
         ];
         
-        super(table, row, columns, resultsPerPage);
+        super(row, columns, resultsPerPage);
     }
 }

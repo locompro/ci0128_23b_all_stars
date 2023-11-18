@@ -5,13 +5,12 @@
 class TableBody {
     /**
      * Constructs the SearchResultsTableBody with a specified number of results per page.
-     * @param table
      * @param resultsPerPage - The number of results to display per page.
      * @param rowDefinition
      * @param columns
      */
-    constructor(table, rowDefinition, columns, resultsPerPage) {
-        this.table = table;
+    constructor(rowDefinition, columns, resultsPerPage) {
+        this.table = null;
         this.rowDefinition = rowDefinition;
         this.columns = columns;
         this.resultsPerPage = resultsPerPage;
@@ -19,7 +18,8 @@ class TableBody {
         this.currentPage = [];
     }
     
-    buildTableBody() {
+    buildTableBody(table) {
+        this.table = table;
         this.tableBody = document.createElement("tbody");
         this.tableBody.innerHTML = "";
         this.tableBody.id = "searchResultsTableBody";

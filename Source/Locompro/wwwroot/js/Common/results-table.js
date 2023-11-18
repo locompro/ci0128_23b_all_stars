@@ -1,14 +1,12 @@
 import {SearchResultsFilterMenu, FilterField} from "../SearchResults/search-results-filter-menu.js";
-import SearchResultsPageIndexComplex from "./search-results-page-index-complex.js";
+import PageIndexComplex from "./page-index-complex.js";
 import {TableHead} from "./table-head.js";
 
 class ResultsTable {
     constructor(tableBody, tableData, pageData, pageConfiguration) {
-        this.tableHead = new TableHead(pageConfiguration);
-        this.table = pageConfiguration.table;
-        this.tableBody = tableBody;
-        this.tableBody.buildTableBody();
+        this.buildCardContents(pageConfiguration, tableBody);
         
+        // set all other data
         this.tableData = [];
         this.pageData = pageData;
         this.resultsPerPage = pageData.ResultsPerPage;
@@ -24,8 +22,60 @@ class ResultsTable {
         }
         
         this.currentModal = null;
+    }
+    
+    buildCardContents(pageConfiguration, tableBody) {
+        this.cardBody = this.setUpCardBody(pageConfiguration);
+
+        this.resultsAmountDisplay = this.setUpResultsAmountDisplay();
+        this.table = this.setUpTable();
         
-        this.pageNumberComplex = new SearchResultsPageIndexComplex();
+        this.tableHead = new TableHead(pageConfiguration, this.table);
+        
+        this.tableBody = tableBody;
+        this.tableBody.buildTableBody(this.table);
+
+        // set the page number complex
+        this.pageNumberComplex = new PageIndexComplex( () => {this.changeResultsPage()});
+        this.cardBody.appendChild(this.pageNumberComplex.complexElement);
+    }
+    
+    setUpCardBody(pageConfiguration) {
+        const cardBody = pageConfiguration.table;
+
+        cardBody.classList.add("card");
+        cardBody.classList.add("border");
+        cardBody.classList.add("search-results-card");
+        
+        const insideDiv = document.createElement("div");
+        cardBody.appendChild(insideDiv);
+        
+        return insideDiv;
+    }
+    
+    setUpResultsAmountDisplay() {
+        const resultsAmountDisplay = document.createElement("h6");
+        resultsAmountDisplay.id = "resultsAmountDisplay";
+        this.cardBody.appendChild(resultsAmountDisplay);
+        
+        return resultsAmountDisplay;
+    }
+    
+    setUpTable() {
+        const tableContainer = document.createElement("div");
+        tableContainer.classList.add("table-encapsulate-for-results");
+        this.cardBody.appendChild(tableContainer);
+        
+        const table = document.createElement("div");
+        table.classList.add("table");
+        table.classList.add("table-hover");
+        table.classList.add("search-results-table");
+        table.style.display = "table";
+        table.id = "searchResultsTable";
+        
+        tableContainer.appendChild(table);
+        
+        return table;
     }
 
     /**
@@ -35,12 +85,11 @@ class ResultsTable {
     populateTable() {
         this.tableData = this.filters.applyFilters(this.rawTableData);
         this.totalResults = this.tableData.length;
-        
+       
         this.pageNumberComplex.updateTotalPages(Math.ceil(this.totalResults / this.resultsPerPage));
         this.pageNumberComplex.updatePageIndexComplex();
         
-        this.pageConfiguration.pageAmountDisplay.innerHTML = this.pageNumberComplex.totalPages  + " paginas de resultados";
-        this.pageConfiguration.resultsAmountDisplay.innerHTML = this.totalResults + " resultados encontrados";
+        this.resultsAmountDisplay.innerHTML = this.totalResults + " resultados encontrados";
         
         this.tableBody.populateTableBody(this.tableData, this.pageNumberComplex.currentPage);
     }
@@ -63,8 +112,8 @@ class ResultsTable {
         this.tableBody.populateTableBody(this.tableData, this.pageNumberComplex.currentPage);
 
         this.pageNumberComplex.currentPage = 0;
-        console.log("updating page index complex" + this.pageNumberComplex.currentPage);
-        this.pageNumberComplex.updatePageIndexComplex();
+
+        this.pageNumberComplex.updatePageIndexComplex(false);
     }
 
     /**
@@ -103,25 +152,11 @@ class ResultsTable {
      */
     setFilter(filterType, filterValue) {
         this.filters.setFilter(filterType, filterValue);
+        this.pageNumberComplex.currentPage = 0;
         this.populateTable();
     }
-
-    /**
-     * Changes the current page in the pagination based on the user's button
-     * interaction.
-     *
-     * @param change The direction and amount to change the current page index.
-     */
-    changeIndexButtonPressed(change) {
-        this.pageNumberComplex.changeIndexButtonPressed(change);
-        this.tableBody.populateTableBody(this.tableData, this.pageNumberComplex.currentPage);
-    }
-
-    /**
-     * Updates the pagination index page display.
-     */
-    changeIndexPage() {
-        this.pageNumberComplex.changeIndexPage();
+    
+    changeResultsPage() {
         this.tableBody.populateTableBody(this.tableData, this.pageNumberComplex.currentPage);
     }
 
@@ -154,11 +189,9 @@ class ResultsTable {
 }
 
 class ResultsPageConfiguration {
-    constructor(tableName, headerFields, pageAmountDisplayId, resultsAmountDisplay) {
+    constructor(tableName, headerFields) {
         this.table = document.getElementById(tableName);
         this.headerFields = headerFields;
-        this.pageAmountDisplay = document.getElementById(pageAmountDisplayId);
-        this.resultsAmountDisplay = document.getElementById(resultsAmountDisplay);
         this.headerOrderingElements = [];
         
         for (const headerField of this.headerFields) {

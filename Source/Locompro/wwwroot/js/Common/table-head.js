@@ -1,16 +1,18 @@
 class TableHead {
-    constructor(pageConfiguration) {
-        this.table = pageConfiguration.table;
+    constructor(pageConfiguration, table) {
+        this.table = table;
         this.pageConfiguration = pageConfiguration;
         this.generateTableHead();
     }
     
     generateTableHead() {
         this.table.innerHTML = "";
-        const tableHead = this.table.createTHead();
+        const tableHead = document.createElement("thead");
+        this.table.appendChild(tableHead);
+        
         const tr = document.createElement("tr");
         tableHead.appendChild(tr);
-        
+
         for (let headerField of this.pageConfiguration.headerFields) {
             headerField.createHeader(tr);
         }

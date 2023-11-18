@@ -108,7 +108,8 @@
 }
 
 .search-results-table {
-    cursor: pointer
+    cursor: pointer;
+    align-items: center;
 }
 
 .previous-next-button-area {
