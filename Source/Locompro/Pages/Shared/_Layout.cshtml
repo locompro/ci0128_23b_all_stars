@@ -53,7 +53,9 @@
     <link rel="stylesheet" href="~/assets/css/Stats-icons.css">
     <link rel="stylesheet" href="~/assets/css/Table-With-Search-search-table.css">
     <link rel="stylesheet" href="~/assets/css/Table-With-Search.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/assets/css/select2.min.css"/>
+    <link rel="stylesheet" href="~/assets/css/select2-bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/custom-select2-styles.css"/>
     <div id="isLoggedIn" data="@Html.Raw(isLoggedIn)" style="display: none;"></div>
 </head>
 
@@ -70,11 +72,6 @@
                             <li class="nav-item me-2">
                                 <a id="CreateSubmissionButton" class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Submissions/Create">
                                     <i class="fa fa-plus" style="margin-right: 8px;"></i>Aportar
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/SearchResults/Contributions" asp-route-query="@userId">
-                                    Mis Contribuciones
                                 </a>
                             </li>
                             @if (isModerator)
@@ -106,7 +103,7 @@
                         {
                             <li class="nav-item" style="margin-right: 10px">
                                 <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Account/Profile">
-                                    <i class="fa fa-user" style="margin-left: 8px;"></i>  Perfil
+                                    <i class="fa fa-user"></i>  Perfil
                                 </a>
                             </li>
                             <form asp-page="/Account/Logout" method="post" class="d-inline-block">
@@ -152,6 +149,7 @@
 
 <script src="~/lib/jquery/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/lib/select2.min.js"></script>
 <script src="~/js/site.js" asp-append-version="true"></script>
 
 <partial name="_ValidationScriptsPartial"/>

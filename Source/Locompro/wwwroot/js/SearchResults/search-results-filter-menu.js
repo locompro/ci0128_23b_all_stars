@@ -21,7 +21,6 @@ class SearchResultsFilterMenu {
      */
     setUpFields() {
         return [
-            new FilterField("productNameFilter", "ProductNames"),
             new FilterField("provinceFilter", "Provinces"),
             new FilterField("cantonFilter", "Cantons"),
             new FilterField("minPriceFilter", "MinPrice"),
@@ -48,8 +47,8 @@ class SearchResultsFilterMenu {
             categoryFilter.innerHTML = "";
 
             const todosOption = document.createElement("option");
-            todosOption.value = "todos";
-            todosOption.innerHTML = "todos";
+            todosOption.value = "Todos";
+            todosOption.innerHTML = "Todos";
 
             categoryFilter.appendChild(todosOption);
             for (const category of this.filters.get("Categories")) {
@@ -81,14 +80,14 @@ class SearchResultsFilterMenu {
             let passedAllFilters = true;
 
             for (const [type, value] of this.currentFilters) {
-                if (type === "MinPrice") {
+                if (type === "MinPrice" && value !== "Todos") {
                     passedAllFilters = passedAllFilters && item.Price >= value;
-                } else if (type === "MaxPrice") {
+                } else if (type === "MaxPrice" && value !== "Todos") {
                     passedAllFilters = passedAllFilters && item.Price <= value;
-                } else if (type === "Category") {
+                } else if (type === "Category" && value !== "Todos") {
                     passedAllFilters = passedAllFilters &&
                         item.Categories.some(category => value.includes(category))
-                } else if(item[type] !== value) {
+                } else if(item[type] !== value && value !== "Todos") {
                     passedAllFilters = false;
                 }
             }
@@ -127,7 +126,6 @@ class SearchResultsFilterMenu {
         this.filters = new Map();
         this.filters.set("Provinces", []);
         this.filters.set("Cantons", []);
-        this.filters.set("ProductNames", []);
         this.filters.set("Brands", []);
         this.filters.set("Models", []);
         this.filters.set("Categories", []);
@@ -141,10 +139,6 @@ class SearchResultsFilterMenu {
 
             if (!this.filters.get("Cantons").includes(item.Canton)) {
                 this.filters.get("Cantons").push(item.Canton);
-            }
-
-            if (!this.filters.get("ProductNames").includes(item.Name)) {
-                this.filters.get("ProductNames").push(item.Name);
             }
 
             if (!this.filters.get("Brands").includes(item.Brand)) {
@@ -181,7 +175,6 @@ class FilterField {
      * Constructs a new FilterField.
      *
      * @param id The DOM element ID of the filter field.
-     * @param key The key used for filtering (e.g., "ProductNames").
      */
     constructor(id, key) {
         this.element = document.getElementById(id);
@@ -203,8 +196,8 @@ class FilterField {
             this.element.innerHTML = "";
 
             const todosOption = document.createElement("option");
-            todosOption.value = "todos";
-            todosOption.innerHTML = "todos";
+            todosOption.value = "Todos";
+            todosOption.innerHTML = "Todos";
 
             this.element.appendChild(todosOption);
 
@@ -220,11 +213,9 @@ class FilterField {
                     this.element.selected = value;
                 }
             }
-
             if (!currentFilters.get(this.optionKey)) {
                 return;
             }
-
             this.element.value = currentFilters.get(this.optionKey);
         }
     }

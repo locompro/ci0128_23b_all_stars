@@ -17,7 +17,7 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries)
+    public async Task<IEnumerable<Submission>> GetSearchResults(ISearchQueries searchQueries)
     {
         return await _submissionRepository.GetSearchResults(searchQueries);
     }
@@ -126,7 +126,6 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
     public async Task DeleteSubmissionAsync(SubmissionKey submissionKey)
     {
         await _submissionRepository.DeleteAsync(submissionKey);
-        
         await UnitOfWork.SaveChangesAsync();
     }
     

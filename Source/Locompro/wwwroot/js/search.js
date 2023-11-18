@@ -7,7 +7,7 @@ const invalidAdvancedSearch =
     + "&canton=Todos"
     + "&minValue=0"
     + "&maxValue=0"
-    + "&category=Todos"
+    + "&category="
     + "&model="
     + "&brand=";
 
@@ -65,7 +65,7 @@ function performSearchButtonShared(modalShownParam) {
     const dataToSend = getDataToSend(modalShownParam);
 
     if (dataToSend === null) {
-        return
+        return;
     }
 
     sendSearchRequest(dataToSend);
@@ -98,6 +98,8 @@ function getDataToSend(modalShownParam) {
             + "&category=" + categoryValue
             + "&model=" + modelValue
             + "&brand=" + brandValue;
+        
+        console.log(redirect  + "\n" + invalidAdvancedSearch);  
 
         if (redirect.localeCompare(invalidAdvancedSearch) === 0) {
             return null;
