@@ -1,3 +1,7 @@
+@{
+    var isLoggedIn = User.Identity is {IsAuthenticated: true };
+}
+
 <div class="row">
     <div class="col-5">
         <div class="row card-title">
@@ -44,11 +48,12 @@
                 <th class="text-center">Reportar</th>
             </tr>
             </thead>
-            <tbody id="ItemModalSubmissionsTable">
+            <div> </div>
+            <tbody id="ItemModalSubmissionsTable" data-is-user-authenticated="@isLoggedIn">
             </tbody>
         </table>
     </div>
-    
+
     <!-- Modal -->
     <div class="modal fade no-backdrop-opacity" id="descriptionModal" tabindex="-1" role="dialog" aria-labelledby="descriptionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -68,6 +73,19 @@
                             <button type="submit" class="btn btn-primary">Reportar</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="mustBeAuthenticatedModal" tabindex="-1" role="dialog" aria-labelledby="mustBeAuthenticatedModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; padding: 5px 6px 10px 5px;">
+                <div class="modal-header" style="border-bottom: none; padding: 10px 15px;">
+                    <h5 class="modal-title" id="mustBeAuthenticatedModalTitle" style="flex-grow: 1;">Debes estar identificado para poder calificar aportes</h5>
+                </div>
+                <div class="modal-footer" style="border-top: none; padding: 10px 15px 0px 15px;">
+                    <div role="button" class="btn btn-primary" href="/Account/Login">Iniciar sesión</div>
                 </div>
             </div>
         </div>
