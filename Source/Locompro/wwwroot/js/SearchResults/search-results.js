@@ -1,3 +1,8 @@
+import SearchResultsTableBody from './search-results-table.js';
+import {TableHead, HeaderField} from "../Common/table-head.js";
+import {ResultsTable, ResultsPageConfiguration, OrderingField} from '../Common/results-table.js';
+
+
 var searchResultsPage;
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -14,8 +19,8 @@ document.addEventListener("DOMContentLoaded", function () {
             if (searchResultsData.Redirect === 'redirect') {
                 location.href = '/';
             }
-            searchResultsPage = new SearchResultsPage(searchResultsData.SearchResults, searchResultsData.Data);
-            searchResultsPage.populateTableWithResults();
+            searchResultsPage = new SearchResultsTable(searchResultsData.SearchResults, searchResultsData.Data);
+            searchResultsPage.populateTable();
         })
         .catch(() => {
         });
@@ -26,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
  * associated with it such as initializing the page with data, populating the
  * table with results, setting the order of results, and handling item selection.
  */
-class SearchResultsPage {
+class SearchResultsTable extends ResultsTable {
     /**
      * Constructs a new SearchResultsPage with specified search results and page data.
      *
@@ -34,113 +39,36 @@ class SearchResultsPage {
      * @param pageData      The data related to the pagination and display of search results.
      */
     constructor(searchResults, pageData) {
-        this.pageSearchData = pageData;
-        this.resultsPerPage = pageData.ResultsPerPage;
-        this.searchResults = searchResults;
-        this.rawSearchResults = searchResults;
+        const storeField = new HeaderField("Tienda", false, 'Store');
+        storeField.addStyle("paddingLeft", "30px");
+        
+        const headerFields = [
+            new HeaderField("Producto", true, 'Name'),
+            new HeaderField("Precio", false, 'Price'),
+            storeField,
+            new HeaderField("Marca", false, 'Brand'),
+            new HeaderField("Modelo", false, 'Model'),
+            new HeaderField("Provincia", true, 'Province'),
+            new HeaderField("Cantón", true, 'Canton'),
+            new HeaderField("Descripción", false, 'Description'),
+            new HeaderField("Última Contribución", false, 'LastSubmissionDate')
+        ];
+        
+        const pageConfiguration
+            = new ResultsPageConfiguration(
+            "searchResultsTable",
+            headerFields,
+            "pageAmountDisplay",
+            "resultsAmountDisplay");
 
-        this.itemSelected = 0;
-        this.filters = new SearchResultsFilterMenu();
-        this.currentOrder = {
-            attribute: '',
-            isDescending: false
+        let selectItem = (index) => {
+            this.selectItem(index);
         };
+        
+        const tableBody =
+            new SearchResultsTableBody(pageConfiguration.table, pageData.ResultsPerPage, selectItem);
 
-        this.currentModal = null;
-        this.resultsTable = new SearchResultsTableBody(this.resultsPerPage);
-        this.pageNumberComplex = new SearchResultsPageIndexComplex();
-
-        this.requestSent = false;
-    }
-
-    /**
-     * Populates the table with search results after applying any set filters and
-     * sorting the results.
-     */
-    populateTableWithResults() {
-        this.pageNumberComplex.updatePageIndexComplex();
-
-        this.searchResults = this.filters.applyFilters(this.rawSearchResults);
-
-        this.totalResults = this.searchResults.length;
-        this.pageNumberComplex.totalPages = Math.ceil(this.totalResults / this.resultsPerPage);
-
-        let pageAmountDisplay = document.getElementById("pageAmountDisplay");
-        pageAmountDisplay.innerHTML = this.pageNumberComplex.totalPages + " paginas de resultados";
-
-        let resultsAmountDisplay = document.getElementById("resultsAmountDisplay");
-        resultsAmountDisplay.innerHTML = this.totalResults + " resultados encontrados";
-
-        this.resultsTable.populateTableBody(this.searchResults, this.pageNumberComplex.currentPage);
-    }
-
-    /**
-     * Sets the sorting order of the search results based on the specified attribute.
-     * If the attribute is the same as the current, the method will toggle the sort
-     * direction between ascending and descending.
-     *
-     * @param order The attribute on which to sort the results.
-     */
-    setOrder(order) {
-        if (this.currentOrder.attribute === order) {
-            this.currentOrder.isDescending = !this.currentOrder.isDescending;
-        }
-        this.orderList(order);
-
-        this.updateTableHeaders();
-
-        this.resultsTable.populateTableBody(this.searchResults, this.pageNumberComplex.currentPage);
-
-        this.pageNumberComplex.currentPage = 0;
-        this.pageNumberComplex.updatePageIndexComplex();
-    }
-
-    /**
-     * Orders the list of search results based on the current sorting attribute and
-     * direction specified in the currentOrder object.
-     *
-     * @param order The attribute on which to sort the results.
-     */
-    orderList(order) {
-        this.currentOrder.attribute = order;
-        const attribute = this.currentOrder.attribute;
-        const direction = this.currentOrder.isDescending ? -1 : 1;
-
-        this.searchResults.sort((a, b) => {
-            if (a[attribute] < b[attribute]) return -1 * direction;
-            if (a[attribute] > b[attribute]) return 1 * direction;
-            return 0;
-        });
-    }
-
-    /**
-     * Updates the visual indicators (e.g., arrows) on the table headers to reflect
-     * the current sorting state.
-     */
-    updateTableHeaders() {
-        let productNameHeader = document.getElementById("nameSortButton");
-        let provinceHeader = document.getElementById("provinceSortButton");
-        let cantonHeader = document.getElementById("cantonSortButton");
-
-        emptyClassList(productNameHeader);
-        emptyClassList(provinceHeader);
-        emptyClassList(cantonHeader);
-
-        productNameHeader.classList.add("no-underline-link");
-        provinceHeader.classList.add("no-underline-link");
-        cantonHeader.classList.add("no-underline-link");
-
-        switch (this.currentOrder.attribute) {
-            case "Name":
-                productNameHeader.classList.add(this.currentOrder.isDescending ? "sort-desc" : "sort-asc");
-                break;
-            case "Province":
-                provinceHeader.classList.add(this.currentOrder.isDescending ? "sort-desc" : "sort-asc");
-                break;
-            case "Canton":
-                cantonHeader.classList.add(this.currentOrder.isDescending ? "sort-desc" : "sort-asc");
-                break;
-        }
+        super(tableBody, searchResults, pageData, pageConfiguration);
     }
 
     /**
@@ -151,140 +79,15 @@ class SearchResultsPage {
      */
     selectItem(index) {
         this.itemSelected = index;
-        this.currentModal = new SearchResultsModal(this.searchResults, this.itemSelected);
-    }
-
-    /**
-     * Applies a filter to the search results based on the type and value of the
-     * filter, then repopulates the table with the filtered results.
-     *
-     * @param filterType  The type of filter to apply.
-     * @param filterValue The value of the filter to apply.
-     */
-    setFilter(filterType, filterValue) {
-        this.filters.setFilter(filterType, filterValue);
-        this.populateTableWithResults();
-    }
-
-    /**
-     * Changes the current page in the pagination based on the user's button
-     * interaction.
-     *
-     * @param change The direction and amount to change the current page index.
-     */
-    changeIndexButtonPressed(change) {
-        this.pageNumberComplex.changeIndexButtonPressed(change);
-        this.resultsTable.populateTableBody(this.searchResults, this.pageNumberComplex.currentPage);
-    }
-
-    /**
-     * Updates the pagination index page display.
-     */
-    changeIndexPage() {
-        this.pageNumberComplex.changeIndexPage();
-        this.resultsTable.populateTableBody(this.searchResults, this.pageNumberComplex.currentPage);
-    }
-
-    /**
-     * Updates the pagination index page display.
-     */
-    plusSlides(slideIndex) {
-        this.currentModal.plusSlides(slideIndex);
+        this.currentModal = new SearchResultsModal(this.tableData, this.itemSelected);
     }
 }
 
-/**
- * Changes the current page of search results when a pagination button is pressed.
- * It updates the view to the new page of results.
- *
- * @param change - The number indicating how many pages to move forward or backward.
- */
-function changeIndexButtonPressed(change) {
-    searchResultsPage.changeIndexButtonPressed(change);
+window.getPage = () => {
+    return searchResultsPage;
 }
 
-/**
- * Changes the current page to the page number entered in the pagination input field.
- * It updates the view to the new page of results.
- *
- * @param field - The page number to navigate to.
- */
-function changeIndexPage(field) {
-    searchResultsPage.changeIndexPage(field);
-}
-
-/**
- * Sets the order of the search results based on the selected attribute. It toggles
- * between ascending and descending order for the attribute.
- *
- * @param order - The attribute name to sort by.
- */
-function setOrder(order) {
-    searchResultsPage.setOrder(order);
-}
-
-/**
- * Selects an item from the search results to display more information. It triggers
- * the modal to open and show the item details.
- *
- * @param index - The index of the selected item in the search results array.
- */
-function selectItem(index) {
-    searchResultsPage.selectItem(index);
-}
-
-/**
- * Clears all classes from the given DOM element. It is typically used to reset the
- * state of a UI element before applying new classes.
- *
- * @param element - The DOM element to clear classes from.
- */
-function emptyClassList(element) {
-    while (element.classList.length > 0) {
-        element.classList.remove(element.classList[0]);
-    }
-}
-
-/**
- * Navigates through the slides in the modal dialog when viewing detailed information
- * about a search result item.
- *
- * @param slideIndex - The index indicating the next slide to navigate to.
- */
-function plusSlides(slideIndex) {
-    searchResultsPage.plusSlides(slideIndex);
-}
-
-/*
- * Clears all filters from the filter menu.
- */
-function clearFilters() {
-    searchResultsPage.filters.clearFilters();
-    searchResultsPage.populateTableWithResults();
-}
-
-const modal = document.getElementById('ItemModal');
-
-/**
- * Applies a filter to the search results based on the selected value from a filter field.
- * It updates the view to only display the results that match the filter criteria.
- *
- * @param filterField - The input element that contains the filter value.
- */
-function applyFilter(filterField) {
-    const filterFieldId = filterField.id;
-    let filterType = filterFieldId.replace(/Filter$/, '');
-    const filterValue = filterField.value === "Todos" ? null : filterField.value;
-
-    if (filterType === "productName") {
-        filterType = "Name";
-    } else {
-        filterType = filterType.charAt(0).toUpperCase() + filterType.slice(1);
-    }
-
-    searchResultsPage.setFilter(filterType, filterValue);
-    filterField.value = filterValue ? filterValue : "Todos";
-}
+window.modal = document.getElementById('ItemModal');
 
 window.addEventListener('beforeunload', function (e) {
     if (searchResultsPage.requestSent) {
@@ -298,10 +101,6 @@ window.addEventListener('beforeunload', function (e) {
     let location = url + handler;
 
     let data = searchResultsPage.pageSearchData;
-    
-    //console.log(data);
-    //alert("data: "  +  data);
-    //e.preventDefault();
 
     fetch(location, {
         method: 'POST',
@@ -366,3 +165,5 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 });
+
+// export {changeIndexButtonPressed, changeIndexPage, setOrder, selectItem, applyFilter, plusSlides, clearFilters};

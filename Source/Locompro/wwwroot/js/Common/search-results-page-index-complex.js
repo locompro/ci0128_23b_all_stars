@@ -1,7 +1,7 @@
 /**
  * This class handles the pagination logic for a search results page. It controls the index of the currently viewed page and updates navigation buttons.
  */
-class SearchResultsPageIndexComplex {
+export default class SearchResultsPageIndexComplex {
     /**
      * Constructs the pagination handler and binds the navigation buttons and input field from the DOM.
      */
@@ -39,8 +39,12 @@ class SearchResultsPageIndexComplex {
         value = this.validateIndexValue(value);
 
         this.currentPage = value;
-
+        
         this.updatePageIndexComplex();
+    }
+    
+    updateTotalPages(totalPages) {
+        this.totalPages = totalPages;
     }
 
     /**
@@ -55,7 +59,7 @@ class SearchResultsPageIndexComplex {
         } else {
             this.leftButton.classList.remove("disabled");
         }
-
+        
         // Disable the right button if on the last page, otherwise enable it
         if (this.currentPage === this.totalPages - 1) {
             this.rightButton.classList.add("disabled");
