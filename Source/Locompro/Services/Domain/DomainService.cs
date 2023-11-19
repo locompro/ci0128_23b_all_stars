@@ -59,11 +59,11 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
             }
         }
         
-        ISearchQueries builtqueries = QueryBuilder.GetSearchFunction();
+        ISearchQueries builtQueries = QueryBuilder.GetSearchFunction();
         
-        IEnumerable<T> results = builtqueries.IsEmpty()?
+        IEnumerable<T> results = builtQueries.IsEmpty()?
             null :
-            await CrudRepository.GetByDynamicQuery(builtqueries);
+            await CrudRepository.GetByDynamicQuery(builtQueries);
         
         QueryBuilder.Reset();
         
