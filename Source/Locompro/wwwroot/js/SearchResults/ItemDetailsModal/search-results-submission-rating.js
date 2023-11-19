@@ -100,12 +100,24 @@ class RatingStar {
 
         this.starList[nextStarToUpdate].updateStarRatings(nextStarToUpdate, ratingSet);
     }
-    
+
     toggleNotAuthenticatedModal() {
-        const notAuthenticatedModal = document.getElementById("mustBeAuthenticatedModal");
-        const notAuthenticatedModalInstance = new bootstrap.Modal(notAuthenticatedModal);
-        notAuthenticatedModalInstance.show();
+        // Deletes the opacity of the modal backdrop
+        $('#mustBeAuthenticatedModal').on('show.bs.modal', function () {
+            setTimeout(() => {
+                $('.modal-backdrop').last().css('opacity', '0');
+            }, 0);
+        });
+        
+        $('#mustBeAuthenticatedModal').modal('toggle');
+        // Adds an event listener to the modal's button
+        document.getElementById("mustBeAuthenticatedSignInButton").addEventListener("click", () => this.redirectUserToLogin());
+
     }
+
+    redirectUserToLogin() {
+        window.location.href = "/Account/Login";
+    };
 
     notifyNewRatingToServer() {
         let url = window.location.pathname;
