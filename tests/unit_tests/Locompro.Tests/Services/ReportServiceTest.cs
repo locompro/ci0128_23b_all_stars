@@ -12,7 +12,7 @@ namespace Locompro.Tests.Services;
 public class ReportServiceTest
 {
     private Mock<IUnitOfWork> _unitOfWork;
-    private Mock<ICrudRepository<Report, string>> _reportRepository;
+    private Mock<IReportRepository> _reportRepository;
     private ILoggerFactory _loggerFactory;
     private ReportService _reportService;
 
@@ -20,10 +20,10 @@ public class ReportServiceTest
     public void Setup()
     {
         _unitOfWork = new Mock<IUnitOfWork>();
-        _reportRepository = new Mock<ICrudRepository<Report, string>>();
+        _reportRepository = new Mock<IReportRepository>();
         _loggerFactory = new LoggerFactory();
 
-        _unitOfWork.Setup(u => u.GetCrudRepository<Report, string>()).Returns(_reportRepository.Object);
+        _unitOfWork.Setup(u => u.GetSpecialRepository<IReportRepository>()).Returns(_reportRepository.Object);
 
         _reportService = new ReportService(_unitOfWork.Object, _loggerFactory);
     }
@@ -48,11 +48,13 @@ public class ReportServiceTest
         await _reportService.UpdateAsync(reportDto);
 
         // Assert
-        _reportRepository.Verify(repo => repo.AddAsync(It.Is<Report>(r =>
-            r.SubmissionUserId == reportDto.SubmissionUserId &&
-            r.SubmissionEntryTime == reportDto.SubmissionEntryTime &&
-            r.UserId == reportDto.UserId &&
-            r.Description == reportDto.Description
-        )), Times.Once);
+        _reportRepository.Verify(repo => repo.UpdateAsync(reportDto.SubmissionUserId, reportDto.SubmissionEntryTime,
+            reportDto.UserId,
+            It.Is<Report>(r =>
+                r.SubmissionUserId == reportDto.SubmissionUserId &&
+                r.SubmissionEntryTime == reportDto.SubmissionEntryTime &&
+                r.UserId == reportDto.UserId &&
+                r.Description == reportDto.Description
+            )), Times.Once);
     }
 }

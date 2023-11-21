@@ -82,9 +82,17 @@ public class LocomproContext : IdentityDbContext<User>
 
         builder.Entity<Submission>()
             .HasOne(s => s.User)
-            .WithMany(u => u.Submissions)
+            .WithMany(u => u.CreatedSubmissions)
             .HasForeignKey(s => s.UserId)
             .IsRequired();
+
+        builder.Entity<Submission>()
+            .HasMany(s => s.Approvers)
+            .WithMany(u => u.ApprovedSubmissions);
+
+        builder.Entity<Submission>()
+            .HasMany(s => s.Rejecters)
+            .WithMany(u => u.RejectedSubmissions);
 
         builder.Entity<Submission>()
             .HasMany(s => s.Reports)
@@ -109,7 +117,7 @@ public class LocomproContext : IdentityDbContext<User>
             .IsRequired();
 
         builder.Entity<User>()
-            .HasMany(u => u.Submissions)
+            .HasMany(u => u.CreatedSubmissions)
             .WithOne(s => s.User);
 
         builder.Entity<Picture>()

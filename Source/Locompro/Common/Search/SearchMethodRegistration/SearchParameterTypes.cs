@@ -15,5 +15,6 @@ public enum SearchParameterTypes
     Category,
     Model,
     Brand,
-    HasNAmountReports
+    HasNAmountReports,
+    IsNotApproverOrRejecter
 }
