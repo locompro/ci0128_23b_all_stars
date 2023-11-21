@@ -121,7 +121,13 @@ public class SearchMethods
             , (submission, minReportAmount) =>
                 submission.Reports != null
                 && submission.Reports.Count >= minReportAmount
-                && submission.Status != SubmissionStatus.Moderated
             , minReportAmount => minReportAmount > 0);
+        
+        // find if submission has user as approver or rejecter
+        AddSearchParameter<string>(SearchParameterTypes.IsNotApproverOrRejecter
+            , (submission, userId) => 
+                submission.Approvers.All(u => u.Id != userId)
+                && submission.Rejecters.All(u => u.Id != userId)
+            , userId => !string.IsNullOrWhiteSpace(userId));
     }
 }

@@ -17,7 +17,7 @@ public class ProfileVm
         Name = user.Name;
         Address = user.Address;
         Rating = user.Rating;
-        Contributions = user.Submissions.Count;
+        Contributions = user.CreatedSubmissions.Count;
         Email = user.Email;
     }
 
