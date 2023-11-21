@@ -8,6 +8,9 @@
     margin-right: 0px;
 }
 
+th {
+    white-space: nowrap;
+}
 .search-input-group-on-advanced-search {
     .card
 ;
