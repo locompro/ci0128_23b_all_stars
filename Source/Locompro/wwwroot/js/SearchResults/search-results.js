@@ -39,19 +39,20 @@ class SearchResultsTable extends ResultsTable {
      * @param pageData      The data related to the pagination and display of search results.
      */
     constructor(searchResults, pageData) {
-        const storeField = new HeaderField("Tienda", false, 'Store');
+        const storeField = new HeaderField("Tienda", true, 'Store');
         storeField.addStyle("paddingLeft", "30px");
         
         const headerFields = [
             new HeaderField("Producto", true, 'Name'),
-            new HeaderField("Precio", false, 'Price'),
+            new HeaderField("Precio", true, 'Price'),
+            new HeaderField("Categorías", true, 'Categories'),
             storeField,
-            new HeaderField("Marca", false, 'Brand'),
-            new HeaderField("Modelo", false, 'Model'),
+            new HeaderField("Marca", true, 'Brand'),
+            new HeaderField("Modelo", true, 'Model'),
             new HeaderField("Provincia", true, 'Province'),
             new HeaderField("Cantón", true, 'Canton'),
             new HeaderField("Descripción", false, 'Description'),
-            new HeaderField("Última Contribución", false, 'LastSubmissionDate')
+            new HeaderField("Última Contribución", true, 'LastSubmissionDate')
         ];
         
         const pageConfiguration
