@@ -88,7 +88,9 @@ public class ContributionService : Service, IContributionService
             Name = storeVm.SName,
             Canton = canton,
             Address = storeVm.Address,
-            Telephone = storeVm.Telephone
+            Telephone = storeVm.Telephone,
+            Latitude = storeVm.Latitude,
+            Longitude = storeVm.Longitude
         };
 
         return store;

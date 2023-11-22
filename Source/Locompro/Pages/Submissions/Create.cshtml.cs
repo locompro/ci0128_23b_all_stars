@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Locompro.Common;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Util;
@@ -17,19 +18,23 @@ namespace Locompro.Pages.Submissions;
 public class CreateModel : PageModel
 {
     private readonly IContributionService _contributionService;
+    
+    private readonly IApiKeyHandler _apiKeyHandler;
 
     private readonly INamedEntityDomainService<Product, int> _productService;
 
     private readonly INamedEntityDomainService<Store, string> _storeService;
 
     public CreateModel(INamedEntityDomainService<Store, string> storeService,
-        INamedEntityDomainService<Product, int> productService, IContributionService contributionService)
+        INamedEntityDomainService<Product, int> productService, IContributionService contributionService, IApiKeyHandler apiKeyHandler)
     {
         _storeService = storeService;
         _productService = productService;
         _contributionService = contributionService;
+        _apiKeyHandler = apiKeyHandler;
+        
     }
-
+    public string GoogleMapsApiKey => _apiKeyHandler.GetApiKey();
     [BindProperty] public StoreVm StoreVm { get; set; }
 
     [BindProperty] public ProductVm ProductVm { get; set; }
