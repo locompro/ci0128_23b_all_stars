@@ -1,7 +1,7 @@
-﻿import { GoogleMap } from "./google-map.js";
+﻿import { StoreGoogleMap } from "./store-google-map.js";
 
 function initMap() {
-    new GoogleMap("StoreModalMap", "latitude", "longitude", "MapGeneratedAddress");
+    new StoreGoogleMap("StoreModalMap", "latitude", "longitude", "MapGeneratedAddress", "#partialStoreProvince","#partialStoreCanton")
 }
 
 window.initMap = initMap;
