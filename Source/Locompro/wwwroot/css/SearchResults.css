@@ -104,7 +104,8 @@
 }
 
 .table-encapsulate-for-results {
-    overflow-y: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .search-results-table {
@@ -185,4 +186,32 @@
 
 .store-cell {
     padding-left: 30px !important;
+}
+
+.categories-cell {
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.cell-further-info {
+    position: relative;
+    display: inline-block;
+    max-width: 300px;
+}
+
+.cell-further-info-text {
+    visibility: hidden;
+    width: 500px;
+    max-height: 100px;
+    background-color: grey;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    overflow: auto;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
 }
