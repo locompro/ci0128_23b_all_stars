@@ -126,7 +126,6 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<IErrorStore, ErrorStore>();
     builder.Services.AddScoped<AdvancedSearchInputService>();
-    builder.Services.AddScoped<ISearchDomainService, SearchDomainService>();
     builder.Services.AddScoped<ISearchService, SearchService>();
     builder.Services.AddScoped<IPictureService, PictureService>();
     builder.Services.AddScoped<SearchService>();

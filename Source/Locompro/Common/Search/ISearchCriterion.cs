@@ -1,4 +1,5 @@
 using Locompro.Common.Search.SearchMethodRegistration;
+using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 
 namespace Locompro.Common.Search;
 

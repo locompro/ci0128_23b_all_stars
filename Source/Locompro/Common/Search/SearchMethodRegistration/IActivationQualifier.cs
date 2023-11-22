@@ -5,5 +5,9 @@ namespace Locompro.Common.Search.SearchMethodRegistration;
 /// </summary>
 public interface IActivationQualifier
 {
+    /// <summary>
+    /// Gets the qualifier function Func<Type, bool>
+    /// </summary>
+    /// <returns> Qualifier function </returns>
     dynamic GetQualifierFunction();
 }
