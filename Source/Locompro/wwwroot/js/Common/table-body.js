@@ -88,20 +88,76 @@ class TableRowDefinition {
 }
 
 class TableRowColumn {
-    constructor(name, classes) {
+    constructor(name, classes, optionalInnerContent = null) {
         this.name = name;
         this.classes = classes;
+        this.optionalInnerContent = optionalInnerContent;
+        this.rowColumn = null;
+        this.textDiv = null;
     }
     
     createColumn(row, item, columnIndex) {
         let newColumn = row.insertCell(columnIndex);
-        // insert the item's data into the column
-        newColumn.innerHTML = item[this.name];
+        this.rowColumn = newColumn;
 
+        // insert the item's data into the column
+        this.textDiv = document.createElement("div");
+        
+        if (this.name === 'Categories') {
+            console.log('Name: ' + item['Name']);
+            console.log('Categories: ' + item['Categories']);
+        }
+        
+        let textToAdd = "";
+        
+        if (typeof item[this.name] === "object") {
+            for (let element = 0; element < item[this.name].length; element++) {
+                console.log(item[this.name][element]);
+                textToAdd += item[this.name][element];
+                if (element < item[this.name].length - 1) {
+                    textToAdd += ", ";
+                }
+            }
+        } else {
+            textToAdd += item[this.name];
+        }
+        
+        this.textDiv.innerHTML = textToAdd;
+        
+        newColumn.appendChild(this.textDiv);
+        
         // if column has any classes add any classes defined for the column
         if (this.classes.length > 0) {
-            newColumn.classList.add(...this.classes);
+            this.textDiv.classList.add(...this.classes);
         }
+        
+        if (this.optionalInnerContent !== null) {
+            this.optionalInnerContent = this.optionalInnerContent.cloneNode(true);
+            
+            // if the inner content has any children, find the inner most child
+            let innerContent = this.optionalInnerContent;
+            while (innerContent.children.length > 0) {
+                innerContent = innerContent.children[0];
+            }
+            
+            innerContent.innerHTML = textToAdd;
+            
+            newColumn.appendChild(this.optionalInnerContent);
+            
+            this.addMakeInnerHiddenContentVisibleListener(innerContent);
+        }
+    }
+    
+    
+    addMakeInnerHiddenContentVisibleListener(hiddenInnerContent) {
+        this.rowColumn.addEventListener("mouseover", function () { 
+            hiddenInnerContent.classList.toggle("visible");
+            console.log("hover");
+        });
+        
+        this.rowColumn.addEventListener("mouseout", function () { 
+            hiddenInnerContent.classList.toggle("visible");
+        });
     }
 }
 

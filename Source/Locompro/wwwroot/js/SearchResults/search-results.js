@@ -45,6 +45,7 @@ class SearchResultsTable extends ResultsTable {
         const headerFields = [
             new HeaderField("Producto", true, 'Name'),
             new HeaderField("Precio", false, 'Price'),
+            new HeaderField("Categorías", false, 'Categories'),
             storeField,
             new HeaderField("Marca", false, 'Brand'),
             new HeaderField("Modelo", false, 'Model'),
