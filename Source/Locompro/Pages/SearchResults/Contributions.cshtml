@@ -1,36 +1,96 @@
 ﻿@page
-@using System.Net;
-@using Castle.Core.Internal;
 @using Locompro.Common;
-@using Locompro.Common.Mappers;
-@using Locompro.Common.Search;
-@using Locompro.Common.Search.SearchMethodRegistration;
-@using Locompro.Models.Dtos;
+@using Locompro.Services.Auth
+@inject IAuthService AuthService
 @using Locompro.Models.ViewModels;
-@using Locompro.Pages.Shared;
-@using Locompro.Services;
-@using Locompro.Models.Entities
 @model Locompro.Pages.SearchResults.ContributionsPageModel
+@{
+    var prevDisabled = !Model.DisplaySubmissions.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.DisplaySubmissions.HasNextPage ? "disabled" : "";
+    var title = "Contribuciones";
+    var userId = AuthService.GetUserId();
+    var myContributions = false;
+    if (userId == Model.RequestedUserId)
+    {
+        title = "Mis " + title;
+        myContributions = true;
+    }
+        
+}
 
 <link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
-<div class="container"> 
-    <h2>Mis Contribuciones</h2>
-    <h6> @Model.DisplayAmount contribuciones totales </h6>
+<div class="container">
+        @if (!myContributions)
+        {
+            <div class="card">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-sm-1 d-flex justify-content-center align-items-center">
+                            <div class="bs-icon-md bs-icon-circle bs-icon-primary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-2 bs-icon lg"
+                                 id="UserIcon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
+                                     viewBox="0 0 16 16" class="bi bi-person-fill text-center d-lg-flex justify-content-lg-center"
+                                     style="font-size: 33px;">
+                                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <h5 class="card-title">@Model.RequestedUser.Profile.Username</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@Model.RequestedUser.Profile.Name</h6>
+                        </div>
+                        <div class="col-sm-1 d-flex justify-content-center align-items-center">
+                            <div class="bs-icon-md bs-icon-circle bs-icon-primary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-2 bs-icon lg"
+                                 id="RatingIcon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-star-fill">
+                                    <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z">
+                                    </path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <p class="card-text">
+                                <strong>Calificación:</strong> @Model.RequestedUser.Profile.Rating <br>
+                                <strong>Contribuciones:</strong> @Model.RequestedUser.Profile.ContributionsCount <br>
+                            </p>
+                        </div>
+                        <div class="col-sm-1 d-flex justify-content-center align-items-center">
+                            <div class="bs-icon-md bs-icon-circle bs-icon-primary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-2 bs-icon lg"
+                                 id="MailIcon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-envelope-fill">
+                                    <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="col-5">
+                            <p class="card-text">
+                                <strong>Email:</strong> @Model.RequestedUser.Profile.Email <br>
+                                <strong>Dirección:</strong> @Model.RequestedUser.Profile.Address <br>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    <h3>@title</h3>
+    <h6> @(Model.RequestedUser?.Profile?.ContributionsCount ?? 0) contribuciones totales </h6>
+    @if (Model.DisplaySubmissions != null && Model.DisplaySubmissions.Any())
+    {
         <div class="table-encapsulate-for-results">
             <table class="table table-hover search-results-table">
                 <thead>
-                    <tr>
-                        <th scope="col">Fecha de aporte </th>
-                        <th scope="col">Producto</th>
-                        <th scope="col">Modelo</th>
-                        <th scope="col">Marca</th>
-                        <th scope="col">Descripción</th>
-                        <th scope="col">Precio</th>
-                        <th scope="col">Rating</th>
-                        <th scope="col">Tienda</th>
-                        <th scope="col">Provincia</th>
-                        <th scope="col">Canton</th>
-                    </tr>
+                <tr>
+                    <th scope="col">Fecha de aporte </th>
+                    <th scope="col">Producto</th>
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Marca</th>
+                    <th scope="col">Descripción</th>
+                    <th scope="col">Precio</th>
+                    <th scope="col">Rating</th>
+                    <th scope="col">Tienda</th>
+                    <th scope="col">Provincia</th>
+                    <th scope="col">Canton</th>
+                </tr>
                 </thead>
                 <tbody>
                 @{
@@ -40,66 +100,63 @@
                         foreach (SubmissionVm submission in item.Submissions)
                         {
                             <tr>
-                            <td>
-                                @Html.DisplayFor(modelSubmission => submission.EntryTime)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelSubmission => item.Name)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelSubmission => item.Model)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelSubmission => item.Brand)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelSubmission => submission.Description)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelSubmission => submission.Price)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelSubmission => submission.Rating)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelSubmission => item.Store)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelSubmission => item.Province)
-                            </td>
-                            <td>
-                                @Html.DisplayFor(modelSubmission => item.Canton)
-                            </td>
-                        </tr>
+                                <td>
+                                    @Html.DisplayFor(modelSubmission => submission.EntryTime)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelSubmission => item.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelSubmission => item.Model)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelSubmission => item.Brand)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelSubmission => submission.Description)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelSubmission => submission.Price)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelSubmission => submission.Rating)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelSubmission => item.Store)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelSubmission => item.Province)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelSubmission => item.Canton)
+                                </td>
+                            </tr>
                         }
                     }
-                 }
+                }
                 </tbody>
             </table>
         </div>
-        @{
-            var prevDisabled = !Model.DisplaySubmissions.HasPreviousPage ? "disabled" : "";
-            var nextDisabled = !Model.DisplaySubmissions.HasNextPage ? "disabled" : "";
-        }
         <div class="previous-next-button-area">
             <a asp-page=""
-                asp-route-query=@Model.CurrentUserId
-                asp-route-pageIndex="@(Model.DisplaySubmissions.PageIndex - 1)"
-                class="btn btn-primary @prevDisabled">
+               asp-route-query=@Model.RequestedUserId
+               asp-route-pageIndex="@(Model.DisplaySubmissions.PageIndex - 1)"
+               class="btn btn-primary @prevDisabled">
                 Previo
             </a>
             <input type="number"
-                    class="number-input-pages"
-                    min=1
-                    max="@Model.DisplaySubmissions.TotalPages"
-                    value="@Model.DisplaySubmissions.PageIndex"
-                    onchange="changeIndexPage(this)">
+                   class="number-input-pages"
+                   min=1
+                   max="@Model.DisplaySubmissions.TotalPages"
+                   value="@Model.DisplaySubmissions.PageIndex"
+                   onchange="changeIndexPage(this)">
             <a asp-page=""
-                asp-route-query=@Model.CurrentUserId
-                asp-route-pageIndex="@(Model.DisplaySubmissions.PageIndex + 1)"
-                class="btn btn-primary @nextDisabled">
+               asp-route-query=@Model.RequestedUserId
+               asp-route-pageIndex="@(Model.DisplaySubmissions.PageIndex + 1)"
+               class="btn btn-primary @nextDisabled">
                 Siguiente
             </a>
             <h6 class="page-amount-text"> @Model.DisplaySubmissions.TotalPages páginas de resultados </h6>
         </div>
+    }
 </div>

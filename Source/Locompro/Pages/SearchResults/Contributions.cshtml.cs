@@ -1,65 +1,49 @@
-using System.Net;
-using Castle.Core.Internal;
 using Locompro.Common;
-using Locompro.Common.Mappers;
-using Locompro.Common.Search;
-using Locompro.Common.Search.SearchMethodRegistration;
-using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
-using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
-using Locompro.Pages.Shared;
-using Locompro.Services;
-
-
+using Locompro.Services.Auth;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Locompro.Pages.SearchResults
 {
-    public class ContributionsPageModel : BasePageModel
+    public class ContributionsPageModel : PageModel
     {
-        private readonly SearchService _searchService;
+        private IUserManagerService _userManagerService;
         private readonly IConfiguration _configuration;
-        private readonly int _pageSize;
-
+        public readonly int PageSize;
+        public string RequestedUserId { get; set; }
+        public ContributionsVm RequestedUser { get; set; }
         public PaginatedList<ItemVm> DisplaySubmissions { get; set; }
-        public double DisplayAmount { get; set; }
-        public string CurrentUserId { get; set; }
-
-
-        public ContributionsPageModel(ILoggerFactory loggerFactory, 
-                                    IHttpContextAccessor httpContextAccessor, 
-                                    IConfiguration configuration, 
-                                    SearchService searchService)
-                                    : base(loggerFactory, httpContextAccessor)
+        
+        public ContributionsPageModel(IUserManagerService userManagerService, 
+            IConfiguration configuration)
         {
-            _searchService = searchService;
+            _userManagerService = userManagerService;
             _configuration = configuration;
-            _pageSize = _configuration.GetValue("PageSize", 4);
+            PageSize = _configuration.GetValue("PageSize", 4);
         }
 
-        // Reacts to the current user and gives all the submissions done by them
+        // Reacts to the userId given, checks their user data and gives all the submissions done by them
         public async Task OnGetAsync(int? pageIndex, string query)
         {
-            CurrentUserId = query;
-            var searchParameters = new List<ISearchCriterion>
+            RequestedUserId = query;
+            var requestedUser = await GetUserRequested(RequestedUserId);
+            DisplaySubmissions = PaginatedList<ItemVm>.Create(new List<ItemVm>(), pageIndex ?? 1, PageSize);
+            if (requestedUser != null)
             {
-              new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, query),
-            };
-            List<ItemVm> searchResults = null;
-            try
-            {
-                ItemMapper itemMapper = new();
-                SubmissionsDto submissionDto = await _searchService.GetSearchResults(searchParameters);
-                searchResults = itemMapper.ToVm(submissionDto);
+                RequestedUser = new ContributionsVm (requestedUser);
+                DisplaySubmissions = PaginatedList<ItemVm>.Create(RequestedUser.Contributions, pageIndex ?? 1, PageSize);
             }
-            catch (Exception e)
-            {
-                Logger.LogError("Error when attempting to get search results: " + e.Message);
-            }
-            foreach (var itemVm in searchResults)
-            {
-                DisplayAmount += itemVm.Submissions.Count;
-            }
-            DisplaySubmissions = PaginatedList<ItemVm>.Create(searchResults, pageIndex ?? 1, _pageSize);
+        }
+
+        
+        /// <summary>
+        ///     Asynchronously retrieves the current user.
+        /// </summary>
+        /// <returns> the current user </returns>
+        private async Task<User> GetUserRequested(string userIdRequested)
+        {
+            return await _userManagerService.FindByIdAsync(userIdRequested);
         }
     }
 }
