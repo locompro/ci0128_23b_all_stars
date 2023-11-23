@@ -175,6 +175,7 @@ class FilterField {
      * Constructs a new FilterField.
      *
      * @param id The DOM element ID of the filter field.
+     * @param key
      */
     constructor(id, key) {
         this.element = document.getElementById(id);
@@ -220,3 +221,5 @@ class FilterField {
         }
     }
 }
+
+export {SearchResultsFilterMenu, FilterField};
