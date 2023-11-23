@@ -4,6 +4,7 @@ using Locompro.Common.ErrorStore;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
+using Locompro.Services;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Authorization;

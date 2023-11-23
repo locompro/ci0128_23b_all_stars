@@ -11,9 +11,12 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
 {
     private readonly ISubmissionRepository _submissionRepository;
 
+    private readonly ICrudRepository<User, string> _userRepository;
+
     public SubmissionService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
     {
         _submissionRepository = UnitOfWork.GetSpecialRepository<ISubmissionRepository>();
+        _userRepository = unitOfWork.GetCrudRepository<User, string>();
     }
 
     /// <inheritdoc />
@@ -132,11 +135,64 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
     /// <inheritdoc />
     public async Task UpdateSubmissionStatusAsync(SubmissionKey submissionKey, SubmissionStatus submissionStatus)
     {
-        Submission submission = await _submissionRepository.GetByIdAsync(submissionKey);
+        var submission = await _submissionRepository.GetByIdAsync(submissionKey);
 
-        if (submission == null) return;
+        if (submission == null)
+        {
+            throw new ArgumentException("Submission key is not valid", nameof(submissionKey));
+        }
                 
-        submission.Status = SubmissionStatus.Moderated;
+        submission.Status = submissionStatus;
+
+        await _submissionRepository.UpdateAsync(submissionKey, submission);
+        
+        await UnitOfWork.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task AddSubmissionApprover(SubmissionKey submissionKey, string userId)
+    {
+        var submission = await _submissionRepository.GetByIdAsync(submissionKey);
+
+        if (submission == null)
+        {
+            throw new ArgumentException("Submission key is not valid", nameof(submissionKey));
+        }
+
+        var user = await _userRepository.GetByIdAsync(userId);
+
+        if (user == null)
+        {
+            throw new ArgumentException("User ID is not valid", nameof(userId));
+        }
+        
+        submission.Approvers.Add(user);
+
+        await _submissionRepository.UpdateAsync(submissionKey, submission);
+        
+        await UnitOfWork.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task AddSubmissionRejecter(SubmissionKey submissionKey, string userId)
+    {
+        var submission = await _submissionRepository.GetByIdAsync(submissionKey);
+
+        if (submission == null)
+        {
+            throw new ArgumentException("Submission key is not valid", nameof(submissionKey));
+        }
+
+        var user = await _userRepository.GetByIdAsync(userId);
+
+        if (user == null)
+        {
+            throw new ArgumentException("User ID is not valid", nameof(userId));
+        }
+        
+        submission.Rejecters.Add(user);
+
+        await _submissionRepository.UpdateAsync(submissionKey, submission);
         
         await UnitOfWork.SaveChangesAsync();
     }

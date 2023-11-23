@@ -1,8 +1,7 @@
-﻿using Locompro.Common;
+﻿using Locompro.Models.Dtos;
 using Locompro.Models.ViewModels;
 
-using Locompro.Models.Dtos;
-using Locompro.Models.ViewModels;
+namespace Locompro.Services;
 
 /// <summary>
 ///     Defines a contract for a service that handles the assignment of moderators within the application.
@@ -25,9 +24,9 @@ public interface IModerationService
     /// <summary>
     /// Acts on a report
     /// </summary>
-    /// <param name="moderatorActionOnReportVm"> Report action information</param>
+    /// <param name="moderatorActionDto"></param>
     /// <returns></returns>
-    Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm);
+    Task ActOnReport(ModeratorActionDto moderatorActionDto);
 
     /// <summary>
     ///     Adds a report for a given submission

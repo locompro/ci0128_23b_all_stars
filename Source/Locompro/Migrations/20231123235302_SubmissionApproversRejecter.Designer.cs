@@ -4,6 +4,7 @@ using Locompro.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Locompro.Migrations
 {
     [DbContext(typeof(LocomproContext))]
-    partial class LocomproContextModelSnapshot : ModelSnapshot
+    [Migration("20231123235302_SubmissionApproversRejecter")]
+    partial class SubmissionApproversRejecter
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

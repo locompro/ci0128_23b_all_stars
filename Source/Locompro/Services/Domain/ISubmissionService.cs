@@ -44,4 +44,18 @@ public interface ISubmissionService : IDomainService<Submission, SubmissionKey>
     /// <param name="submissionStatus"> new status of submission </param>
     /// <returns></returns>
     Task UpdateSubmissionStatusAsync(SubmissionKey submissionKey, SubmissionStatus submissionStatus);
+
+    /// <summary>
+    /// Adds a user to list of submission approvers by their user ID.
+    /// </summary>
+    /// <param name="submissionKey">key for submission to add approver to.</param>
+    /// <param name="userId">ID of user to add as approver.</param>
+    Task AddSubmissionApprover(SubmissionKey submissionKey, string userId);
+
+    /// <summary>
+    /// Adds a user to list of submission rejecters by their user ID.
+    /// </summary>
+    /// <param name="submissionKey">key for submission to add rejecter to.</param>
+    /// <param name="userId">ID of user to add as rejecter.</param>
+    Task AddSubmissionRejecter(SubmissionKey submissionKey, string userId);
 }

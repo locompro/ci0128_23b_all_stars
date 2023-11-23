@@ -97,25 +97,25 @@ public class ModerationService : Service, IModerationService
     }
 
     /// <inheritdoc />
-    public async Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm)
+    public async Task ActOnReport(ModeratorActionDto moderatorActionDto)
     {
         SubmissionKey submissionKey = new ()
         {
-            UserId = moderatorActionOnReportVm.SubmissionUserId,
-            EntryTime = moderatorActionOnReportVm.SubmissionEntryTime
+            UserId = moderatorActionDto.SubmissionUserId,
+            EntryTime = moderatorActionDto.SubmissionEntryTime
         };
         
-        switch (moderatorActionOnReportVm.Action)
+        switch (moderatorActionDto.Action)
         {
-            case ModeratorActions.EraseSubmission:
-                await _submissionService.DeleteSubmissionAsync(submissionKey);
+            case ModeratorActions.RejectSubmission:
+                await _submissionService.AddSubmissionRejecter(submissionKey, moderatorActionDto.ModeratorId);
                 break;
-            case ModeratorActions.EraseReport:
-                await _submissionService.UpdateSubmissionStatusAsync(submissionKey, SubmissionStatus.Moderated);
+            case ModeratorActions.ApproveSubmission:
+                await _submissionService.AddSubmissionApprover(submissionKey, moderatorActionDto.ModeratorId);
                 break;
             case ModeratorActions.Default:
             default:
-                throw new ArgumentOutOfRangeException(nameof(moderatorActionOnReportVm));
+                throw new ArgumentOutOfRangeException(nameof(moderatorActionDto));
         }
     }
 

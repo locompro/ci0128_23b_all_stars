@@ -63,5 +63,12 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
         AddSearchParameter<string>(SearchParameterTypes.SubmissionByUserId
             , (submission, userId) => submission.UserId == userId
             , userId => !string.IsNullOrEmpty(userId));
+        
+        // find if submission has user as approver or rejecter
+        AddSearchParameter<string>(SearchParameterTypes.SubmissionHasApproverOrRejecter
+            , (submission, userId) => 
+                submission.Approvers.All(u => u.Id != userId)
+                && submission.Rejecters.All(u => u.Id != userId)
+            , userId => !string.IsNullOrWhiteSpace(userId));
     }
 }

@@ -1,4 +1,5 @@
 using System.Drawing.Printing;
+using System.Security.Authentication;
 using Locompro.Common;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
@@ -7,6 +8,8 @@ using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Locompro.Models.Dtos;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
+using Locompro.Services;
+using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -27,6 +30,8 @@ public class ModeratorPageModel : BasePageModel
     private readonly ISearchService _searchService;
     
     private readonly IModerationService _moderationService;
+
+    private readonly IAuthService _authService;
     
     private readonly IConfiguration _configuration;
     
@@ -35,11 +40,13 @@ public class ModeratorPageModel : BasePageModel
         IHttpContextAccessor httpContextAccessor,
         ISearchService service,
         IModerationService moderationService,
+        IAuthService authService,
         IConfiguration configuration) : base(loggerFactory, httpContextAccessor)
     {
         _searchService = service;
         _configuration = configuration;
         _moderationService = moderationService;
+        _authService = authService;
     }
     
     /// <summary>
@@ -48,6 +55,11 @@ public class ModeratorPageModel : BasePageModel
     /// <param name="pageIndex"></param>
     public async Task OnGet(int? pageIndex)
     {
+        if (!_authService.IsLoggedIn())
+        {
+            throw new AuthenticationException("No user is logged in");
+        }
+        
         await PopulatePageData(pageIndex, 1);
     }
     
@@ -56,26 +68,34 @@ public class ModeratorPageModel : BasePageModel
     /// </summary>
     public async Task<PageResult> OnPostActOnReport()
     {
-        ModeratorActionOnReportVm moderatorActionOnReportVm = await GetDataSentByClient<ModeratorActionOnReportVm>();
+        ModeratorActionVm moderatorActionVm = await GetDataSentByClient<ModeratorActionVm>();
+        
+        var moderatorActionMapper = new ModeratorActionMapper();
+
+        var moderatorActionDto = moderatorActionMapper.ToDto(moderatorActionVm);
+
+        moderatorActionDto.ModeratorId = _authService.GetUserId();
         
         try
         {
-            await _moderationService.ActOnReport(moderatorActionOnReportVm);
+            await _moderationService.ActOnReport(moderatorActionDto);
         } catch (Exception e)
         {
             Logger.LogError(e, "Error while acting on report");
+            
+            return Page();
         }
         
         Items = GetCachedDataFromSession<List<ModerationSubmissionVm>>("StoredData", false);
         
         ModerationSubmissionVm submissionVmToRemove = Items.Find(moderationSubmissionVm =>
-            moderationSubmissionVm.UserId == moderatorActionOnReportVm.SubmissionUserId &&
-            moderationSubmissionVm.EntryTime.Year == moderatorActionOnReportVm.SubmissionEntryTime.Year &&
-            moderationSubmissionVm.EntryTime.Month == moderatorActionOnReportVm.SubmissionEntryTime.Month &&
-            moderationSubmissionVm.EntryTime.Day == moderatorActionOnReportVm.SubmissionEntryTime.Day &&
-            moderationSubmissionVm.EntryTime.Hour == moderatorActionOnReportVm.SubmissionEntryTime.Hour &&
-            moderationSubmissionVm.EntryTime.Minute == moderatorActionOnReportVm.SubmissionEntryTime.Minute &&
-            moderationSubmissionVm.EntryTime.Second == moderatorActionOnReportVm.SubmissionEntryTime.Second);
+            moderationSubmissionVm.UserId == moderatorActionVm.SubmissionUserId &&
+            moderationSubmissionVm.EntryTime.Year == moderatorActionVm.SubmissionEntryTime.Year &&
+            moderationSubmissionVm.EntryTime.Month == moderatorActionVm.SubmissionEntryTime.Month &&
+            moderationSubmissionVm.EntryTime.Day == moderatorActionVm.SubmissionEntryTime.Day &&
+            moderationSubmissionVm.EntryTime.Hour == moderatorActionVm.SubmissionEntryTime.Hour &&
+            moderationSubmissionVm.EntryTime.Minute == moderatorActionVm.SubmissionEntryTime.Minute &&
+            moderationSubmissionVm.EntryTime.Second == moderatorActionVm.SubmissionEntryTime.Second);
 
         Items.Remove(submissionVmToRemove);
              
@@ -117,9 +137,17 @@ public class ModeratorPageModel : BasePageModel
     
     private async Task GetDataFromDataBase(int minAmountOfReports)
     {
+        string userId = _authService.GetUserId();
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new AuthenticationException("Retrieved user ID is not valid");
+        }
+        
         List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new SearchCriterion<int>(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports)
+            new SearchCriterion<int>(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports),
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionHasApproverOrRejecter, userId)
         };
 
         SubmissionsDto submissionsDto = null;
