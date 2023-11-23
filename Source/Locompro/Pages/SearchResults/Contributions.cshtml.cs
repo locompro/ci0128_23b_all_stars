@@ -1,4 +1,3 @@
-using Locompro.Common;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Auth;
@@ -13,7 +12,6 @@ namespace Locompro.Pages.SearchResults
         public readonly int PageSize;
         public string RequestedUserId { get; set; }
         public ContributionsVm RequestedUser { get; set; }
-        public PaginatedList<ItemVm> DisplaySubmissions { get; set; }
         
         public ContributionsPageModel(IUserManagerService userManagerService, 
             IConfiguration configuration)
@@ -28,14 +26,13 @@ namespace Locompro.Pages.SearchResults
         {
             RequestedUserId = query;
             var requestedUser = await GetUserRequested(RequestedUserId);
-            DisplaySubmissions = PaginatedList<ItemVm>.Create(new List<ItemVm>(), pageIndex ?? 1, PageSize);
             if (requestedUser != null)
             {
                 RequestedUser = new ContributionsVm (requestedUser);
-                DisplaySubmissions = PaginatedList<ItemVm>.Create(RequestedUser.Contributions, pageIndex ?? 1, PageSize);
+                var contributionsData = Newtonsoft.Json.JsonConvert.SerializeObject(RequestedUser.Contributions);
+                ViewData["ContributionsData"] = contributionsData;
             }
         }
-
         
         /// <summary>
         ///     Asynchronously retrieves the current user.
