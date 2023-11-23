@@ -4,6 +4,7 @@ using Locompro.Common;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration;
+using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Locompro.Models.Dtos;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
@@ -145,8 +146,8 @@ public class ModeratorPageModel : BasePageModel
         
         List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
-            new SearchCriterion<int>(SearchParameterTypes.HasNAmountReports, minAmountOfReports),
-            new SearchCriterion<string>(SearchParameterTypes.IsNotApproverOrRejecter, userId)
+            new SearchCriterion<int>(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports),
+            new SearchCriterion<string>(SearchParameterTypes.SubmissionHasApproverOrRejecter, userId)
         };
 
         SubmissionsDto submissionsDto = null;

@@ -64,12 +64,14 @@ public class ItemMapper : GenericMapper<SubmissionsDto, List<ItemVm>>
         var bestSubmission = bestSubmissionQualifier(itemGrouping);
 
         var categories = new List<string>();
-
+        Dictionary<string, string> categoriesMap = null;
+        
         foreach (var submission in itemGrouping)
         {
-            if (submission.Product.Categories == null) continue;
-            categories.AddRange(submission.Product.Categories.Select(c => c.Name).ToList());
+            categoriesMap = submission.Product.Categories.ToDictionary(c => c.Name, c => c.Name);
         }
+
+        if (categoriesMap != null) categories.AddRange(categoriesMap.Values);
 
         var item = new ItemVm(
             bestSubmission,

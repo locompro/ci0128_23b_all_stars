@@ -52,14 +52,14 @@ public class SubmissionServiceTest
         var province = "Province1";
         MockDataSetup();
 
-        var searchQueries = new SearchQueries
-        {
-            SearchQueryFunctions = new List<Expression<Func<Submission, bool>>>
+        var searchQueries = new SearchQueries<Submission>(
+            new List<Expression<Func<Submission, bool>>>
             {
                 submission => submission.Store.Canton.Name == canton,
                 submission => submission.Store.Canton.ProvinceName == province
             }
-        };
+        );
+        
 
         // Act
         var results = await _submissionService.GetSearchResults(searchQueries);
@@ -92,14 +92,13 @@ public class SubmissionServiceTest
         MockDataSetup();
 
         // Act
-        var searchQueries = new SearchQueries
-        {
-            SearchQueryFunctions = new List<Expression<Func<Submission, bool>>>
+        var searchQueries = new SearchQueries<Submission> (
+            new List<Expression<Func<Submission, bool>>>
             {
                 submission => submission.Store.Canton.Name == canton,
                 submission => submission.Store.Canton.ProvinceName == province
             }
-        };
+        );
 
         var results = await _submissionService.GetSearchResults(searchQueries);
 
@@ -296,6 +295,8 @@ public class SubmissionServiceTest
 
         Assert.That(changedSubmission.Rating, Is.EqualTo(3.6500001f));
     }
+
+
 
     /// <summary>
     ///     
@@ -858,20 +859,20 @@ public class SubmissionServiceTest
         };
 
         _submissionRepositoryMock
-            .Setup(repository => repository.GetSearchResults(It.IsAny<SearchQueries>()))
-            .ReturnsAsync((SearchQueries searchQueries) =>
+            .Setup(repo => repo.GetSearchResults(It.IsAny<ISearchQueries>()))
+            .ReturnsAsync((ISearchQueries searchQueries) =>
             {
                 // initiate the query
-                IQueryable<Submission> submissionsResults = submissions.AsQueryable()
-                    .Include(submission => submission.Product);
+                IQueryable<Submission>? submissionsResults =
+                    submissions.AsQueryable().Include(submission => submission.Product);
 
                 // append the search queries to the query
-                submissionsResults =
-                    searchQueries.SearchQueryFunctions.Aggregate(submissionsResults,
-                        (current, query) => current.Where(query));
+                submissionsResults = searchQueries.ApplySearch(submissionsResults) as IQueryable<Submission>;
+
+                if (submissionsResults == null) return new List<Submission>();
 
                 // get and return the results
-                return submissionsResults;
+                return submissionsResults.ToList();
             });
 
         _submissionRepositoryMock

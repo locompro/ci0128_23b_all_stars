@@ -74,7 +74,7 @@ public class CreateModel : PageModel
             ModelState.Remove("StoreVm.Address");
             ModelState.Remove("StoreVm.Telephone");
             ModelState.Remove("StoreVm.Province");
-            ModelState.Remove("StoreVm.Canton");
+            ModelState.Remove("StoreVm.SubmissionByCanton");
         }
 
         if (!ModelState.IsValid) return Page();
