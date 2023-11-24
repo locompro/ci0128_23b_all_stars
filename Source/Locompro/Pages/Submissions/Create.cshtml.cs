@@ -34,7 +34,7 @@ public class CreateModel : PageModel
         _apiKeyHandler = apiKeyHandler;
         
     }
-    public string GoogleMapsApiKey => _apiKeyHandler.GetApiKey();
+    
     [BindProperty] public StoreVm StoreVm { get; set; }
 
     [BindProperty] public ProductVm ProductVm { get; set; }
@@ -70,7 +70,11 @@ public class CreateModel : PageModel
 
         return new JsonResult(result);
     }
-
+    public IActionResult OnGetGoogleMapsApiKey()
+    {
+        var apiKey = _apiKeyHandler.GetApiKey();
+        return new JsonResult(apiKey);
+    }
     public async Task<IActionResult> OnPostAsync()
     {
         // Remove ModelState errors for StoreVm if it's an existing store
