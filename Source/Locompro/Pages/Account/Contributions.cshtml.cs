@@ -3,7 +3,7 @@ using Locompro.Models.ViewModels;
 using Locompro.Services.Auth;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Locompro.Pages.SearchResults
+namespace Locompro.Pages.Account
 {
     public class ContributionsPageModel : PageModel
     {
