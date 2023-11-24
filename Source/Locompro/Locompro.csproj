@@ -103,8 +103,4 @@
 		<PackageReference Include="NUnitTDNet" Version="3.4.1" />
 
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="wwwroot\js\Contributions\" />
-	</ItemGroup>
 </Project>
