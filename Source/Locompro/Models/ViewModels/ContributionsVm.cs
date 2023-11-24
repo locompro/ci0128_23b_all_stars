@@ -23,7 +23,7 @@ public class ContributionsVm
         }
         catch (Exception e)
         {
-            throw new Exception(e + "Invalid User used to create a ContributionsVm");
+            throw new ArgumentNullException(e + "Invalid User used to create a ContributionsVm");
         }
     }
     

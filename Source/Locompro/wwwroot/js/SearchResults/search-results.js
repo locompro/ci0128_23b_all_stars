@@ -1,6 +1,6 @@
 import SearchResultsTableBody from './search-results-table.js';
-import {TableHead, HeaderField} from "../Common/table-head.js";
-import {ResultsTable, ResultsPageConfiguration, OrderingField} from '../Common/results-table.js';
+import {HeaderField} from "../Common/table-head.js";
+import {ResultsTable, ResultsPageConfiguration} from '../Common/results-table.js';
 
 
 var searchResultsPage;

@@ -3,7 +3,6 @@
 @inject IAuthService AuthService
 @model Locompro.Pages.Account.ContributionsPageModel
 @{
-    var title = "Contribuciones";
     var userId = AuthService.GetUserId();
     var myContributions = false;
     if (userId == Model.RequestedUserId)
@@ -89,6 +88,7 @@
     }
     <div class="table-encapsulate-for-results">
         <table class="table table-hover search-results-table">
+            <caption></caption>
             <thead>
             <tr>
                 <th scope="col">Fecha de aporte </th>

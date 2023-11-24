@@ -7,8 +7,7 @@ namespace Locompro.Pages.Account
 {
     public class ContributionsPageModel : PageModel
     {
-        private IUserManagerService _userManagerService;
-        private readonly IConfiguration _configuration;
+        private readonly IUserManagerService _userManagerService;
         public readonly int PageSize;
         public string RequestedUserId { get; set; }
         public ContributionsVm RequestedUser { get; set; }
@@ -17,8 +16,7 @@ namespace Locompro.Pages.Account
             IConfiguration configuration)
         {
             _userManagerService = userManagerService;
-            _configuration = configuration;
-            PageSize = _configuration.GetValue("PageSize", 4);
+            PageSize = configuration.GetValue("PageSize", 4);
         }
 
         // Reacts to the userId given, checks their user data and gives all the submissions done by them
