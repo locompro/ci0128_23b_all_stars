@@ -1,4 +1,4 @@
-import {SearchResultsFilterMenu, FilterField} from "../SearchResults/search-results-filter-menu.js";
+import {SearchResultsFilterMenu} from "../SearchResults/search-results-filter-menu.js";
 import PageIndexComplex from "./page-index-complex.js";
 import {TableHead} from "./table-head.js";
 

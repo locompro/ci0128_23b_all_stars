@@ -64,9 +64,26 @@ class SearchResultsModal {
 
             // Inserting and formatting the date cell
             const dateCell = row.insertCell(0);
-            dateCell.innerHTML = submission.EntryTime;
             dateCell.classList.add("text-center");
 
+            // Prepare "Mis Contribuciones" button
+            const contributionsButton = document.createElement('a');
+            contributionsButton.className = 'btn btn-primary text-center border rounded-pill flex-shrink-1 justify-content-xxl-start';
+            contributionsButton.href = '/Account/Contributions?query=' + submission.UserId; // Set the appropriate URL
+            contributionsButton.id = 'Contributions';
+            let userIcon = document.createElement('i');
+            userIcon.classList.add('fa', 'fa-user');
+
+            // Append the icon to the contributions button
+            contributionsButton.appendChild(userIcon);
+
+            contributionsButton.style.marginRight = '5px';
+            
+            // Append the "Mis Contribuciones" button to the date cell
+            dateCell.appendChild(contributionsButton);
+
+            // Add the text content to the date cell
+            dateCell.insertAdjacentHTML('beforeend', submission.EntryTime);            
             // Inserting the price cell
             const priceCell = row.insertCell(1);
             priceCell.innerHTML = submission.Price;
@@ -124,6 +141,7 @@ class SearchResultsModal {
             reportCell.style.textAlign = 'center';
             reportCell.appendChild(reportButton);
         }
+        
     }
 
     /**
