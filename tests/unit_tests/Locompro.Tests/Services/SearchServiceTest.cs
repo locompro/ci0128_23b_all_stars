@@ -9,6 +9,7 @@ using Locompro.Services;
 using Locompro.Services.Domain;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -50,11 +51,9 @@ public class SearchServiceTest
         var productSearchName = "Product1";
 
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, productSearchName)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -69,7 +68,7 @@ public class SearchServiceTest
         productSearchName = "Product2";
 
         searchCriteria.Clear();
-        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, productSearchName));
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
         
@@ -81,7 +80,7 @@ public class SearchServiceTest
 
         productSearchName = "Product3";
         searchCriteria.Clear();
-        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, productSearchName));
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
         
@@ -92,7 +91,7 @@ public class SearchServiceTest
 
         productSearchName = "Product4";
         searchCriteria.Clear();
-        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, productSearchName));
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
         
@@ -103,7 +102,7 @@ public class SearchServiceTest
 
         productSearchName = "Product5";
         searchCriteria.Clear();
-        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, productSearchName));
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
         
@@ -114,7 +113,7 @@ public class SearchServiceTest
 
         productSearchName = "Product6";
         searchCriteria.Clear();
-        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, productSearchName));
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
         
@@ -125,7 +124,7 @@ public class SearchServiceTest
 
         productSearchName = "Product7";
         searchCriteria.Clear();
-        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, productSearchName));
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
         
@@ -147,11 +146,9 @@ public class SearchServiceTest
         var productSearchName = "ProductNonExistent";
 
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, productSearchName)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -180,12 +177,9 @@ public class SearchServiceTest
         var productSearchName = "";
 
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, productSearchName)
-        };
-
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
 
@@ -216,11 +210,9 @@ public class SearchServiceTest
         var productSearchName = "Product1";
 
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, productSearchName)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -246,11 +238,9 @@ public class SearchServiceTest
         var productSearchName = "Product1";
 
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, productSearchName)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -275,11 +265,9 @@ public class SearchServiceTest
         var productSearchName = "Product1";
 
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, productSearchName)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -322,12 +310,9 @@ public class SearchServiceTest
         var modelName = "Model1";
 
         MockDataSetup();
-
-        // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByModel, modelName)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelName);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -357,12 +342,9 @@ public class SearchServiceTest
         var modelName = "Model2";
 
         MockDataSetup();
-
-        // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByModel, modelName)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelName);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -396,12 +378,9 @@ public class SearchServiceTest
         var modelName = "NonExistentModel";
 
         MockDataSetup();
-
-        // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByModel, modelName)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelName);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -426,11 +405,9 @@ public class SearchServiceTest
         var modelName = string.Empty;
 
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByModel, modelName)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelName);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -457,12 +434,11 @@ public class SearchServiceTest
         var province = "Province1";
 
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByProvince, province),
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByCanton, canton)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByProvince, province)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCanton, canton);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -497,11 +473,10 @@ public class SearchServiceTest
         MockDataSetup();
 
         // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByProvince, province),
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByCanton, canton)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByProvince, province)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCanton, canton);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -525,9 +500,9 @@ public class SearchServiceTest
         // Arrange
         var brand = "Brand1";
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-            { new SearchCriterion<string>(SearchParameterTypes.SubmissionByBrand, brand) };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brand);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -552,9 +527,9 @@ public class SearchServiceTest
         // Arrange
         var brand = "Brand1";
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-            { new SearchCriterion<string>(SearchParameterTypes.SubmissionByBrand, brand) };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brand);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -600,9 +575,9 @@ public class SearchServiceTest
         // Arrange
         var brand = "InvalidBrand";
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-            { new SearchCriterion<string>(SearchParameterTypes.SubmissionByBrand, brand) };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brand);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -627,9 +602,9 @@ public class SearchServiceTest
         var brand = string.Empty;
 
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-            { new SearchCriterion<string>(SearchParameterTypes.SubmissionByBrand, brand) };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brand);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -654,12 +629,11 @@ public class SearchServiceTest
         const long minPrice = 60;
         const long maxPrice = 200;
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<long>(SearchParameterTypes.SubmissionByMinvalue, minPrice),
-            new SearchCriterion<long>(SearchParameterTypes.SubmissionByMaxvalue, maxPrice)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByMinvalue, minPrice)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByMaxvalue, maxPrice);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -685,12 +659,9 @@ public class SearchServiceTest
         var category = "Category1";
 
         MockDataSetup();
-
-        // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByCategory, category)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByCategory, category);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -718,12 +689,9 @@ public class SearchServiceTest
         var category = "InvalidCategory";
 
         MockDataSetup();
-
-        // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByCategory, category)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByCategory, category);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -748,12 +716,11 @@ public class SearchServiceTest
         var category = string.Empty;
 
         MockDataSetup();
-
-        // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByCategory, category)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, category)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, category);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -781,10 +748,8 @@ public class SearchServiceTest
         MockDataSetup();
 
         // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, userIdToSearch)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -809,11 +774,9 @@ public class SearchServiceTest
         // Arrange
         var userIdToSearch = "User333";
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, userIdToSearch)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch);
 
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
         ItemMapper itemMapper = new();
@@ -835,11 +798,9 @@ public class SearchServiceTest
         // Arrange
         var userIdToSearch = "User1";
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, userIdToSearch)
-        };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch);
 
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
         ItemMapper itemMapper = new();
@@ -862,12 +823,11 @@ public class SearchServiceTest
         var userIdToSearch = "User1";
         var brandToSearch = "NonExistentBrand";
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-    {
-        new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, userIdToSearch),
-        new SearchCriterion<string>(SearchParameterTypes.SubmissionByBrand, brandToSearch)
-    };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brandToSearch);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -893,13 +853,12 @@ public class SearchServiceTest
         var maxPrice = 200;
         var brandToSearch = "Brand2";
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-    {
-        new SearchCriterion<decimal>(SearchParameterTypes.SubmissionByMinvalue, minPrice),
-        new SearchCriterion<decimal>(SearchParameterTypes.SubmissionByMaxvalue, maxPrice),
-        new SearchCriterion<string>(SearchParameterTypes.SubmissionByBrand, brandToSearch)
-    };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByMinvalue, minPrice)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByMaxvalue, maxPrice)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brandToSearch);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -929,17 +888,16 @@ public class SearchServiceTest
         var userIdToSearch = "User1";
 
         MockDataSetup();
-
-        var searchCriteria = new List<ISearchCriterion>
-    {
-        new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, nameToSearch),
-        new SearchCriterion<string>(SearchParameterTypes.SubmissionByProvince, provinceToSearch),
-        new SearchCriterion<string>(SearchParameterTypes.SubmissionByCanton, cantonToSearch),
-        new SearchCriterion<string>(SearchParameterTypes.SubmissionByCategory, categoryToSearch),
-        new SearchCriterion<string>(SearchParameterTypes.SubmissionByModel, modelToSearch),
-        new SearchCriterion<string>(SearchParameterTypes.SubmissionByBrand, brandToSearch),
-        new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, userIdToSearch),
-    };
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByName, nameToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByProvince, provinceToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCanton, cantonToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, categoryToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brandToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch);
 
         // Act
         var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
@@ -1348,8 +1306,8 @@ public class SearchServiceTest
         // setting up mock repository behavior requires the methods to be virtual on class being mocked or using interface, in this case
         // the methods are virtual because interface does not have the methods being implemented.
         _submissionRepositoryMock!
-            .Setup(repo => repo.GetByDynamicQuery(It.IsAny<ISearchQueries>()))
-            .ReturnsAsync((ISearchQueries searchQueries) =>
+            .Setup(repo => repo.GetByDynamicQuery(It.IsAny<ISearchQueries<Submission>>()))
+            .ReturnsAsync((ISearchQueries<Submission> searchQueries) =>
             {
                 // initiate the query
                 IQueryable<Submission>? submissionsResults =

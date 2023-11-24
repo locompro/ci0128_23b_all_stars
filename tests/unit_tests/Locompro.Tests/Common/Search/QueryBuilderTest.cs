@@ -3,17 +3,23 @@ using Locompro.Common.Search.QueryBuilder;
 using Locompro.Common.Search.SearchMethodRegistration;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Locompro.Models.Entities;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Locompro.Tests.Common.Search;
 
 [TestFixture]
 public class QueryBuilderTest
 {
-    private IQueryBuilder _queryBuilder;
+    private IQueryBuilder<Submission> _queryBuilder;
+    private ILogger _logger;
 
     public QueryBuilderTest()
     {
-        _queryBuilder = new QueryBuilder<Submission>(SubmissionSearchMethods.GetInstance());
+        ILoggerFactory loggerFactoryMock = new LoggerFactory();
+        
+        _logger = loggerFactoryMock.CreateLogger<QueryBuilder<Submission>>();
+        _queryBuilder = new QueryBuilder<Submission>(SubmissionSearchMethods.GetInstance(), _logger);
     }
 
     /// <summary>
@@ -68,7 +74,7 @@ public class QueryBuilderTest
     {
         // Ensure that state is empty for query builder in this test
         var temp = _queryBuilder;
-        _queryBuilder = new QueryBuilder<Submission>(SubmissionSearchMethods.GetInstance());
+        _queryBuilder = new QueryBuilder<Submission>(SubmissionSearchMethods.GetInstance(), _logger);
 
         // Arrange
         ISearchCriterion searchCriterion = new SearchCriterion<string>

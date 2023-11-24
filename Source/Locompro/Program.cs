@@ -91,8 +91,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<IPictureService, PictureService>();
     builder.Services.AddScoped<SearchService>();
     builder.Services.AddScoped<IModerationService, ModerationService>();
-
-
+    
     builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
     builder.Services.AddSingleton<IApiKeyHandler>(serviceProvider => {
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();

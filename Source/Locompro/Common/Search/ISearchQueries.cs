@@ -1,11 +1,13 @@
 namespace Locompro.Common.Search;
 
-public interface ISearchQueries
+public interface ISearchQueries<TSearchResult>
 {
     /// <summary>
     ///     returns if the search query is empty
     /// </summary>
-    public bool IsEmpty();
+    bool IsEmpty();
+
+    bool NoSearchFilters();
     
     /// <summary>
     /// Finds the amount of query functions within
@@ -21,5 +23,7 @@ public interface ISearchQueries
     /// </remarks>
     /// <param name="queryable"> queryable to which the search queries will be applied </param>
     /// <returns> queryable with search queries applied </returns>
-    IQueryable ApplySearch(IQueryable queryable);
+    IQueryable<TSearchResult> ApplySearch(IQueryable<TSearchResult> queryable);
+
+    IEnumerable<TSearchResult> ApplySearchFilters(IEnumerable<TSearchResult> unfilteredResults);
 }

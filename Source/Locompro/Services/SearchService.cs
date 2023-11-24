@@ -36,7 +36,7 @@ public class SearchService : Service, ISearchService
     ///     canton/province.
     ///     It then returns a list of items that match all the criteria.
     /// </summary>
-    public async Task<SubmissionsDto> GetSearchResults(List<ISearchCriterion> searchCriteria)
+    public async Task<SubmissionsDto> GetSearchResults(ISearchQueryParameters<Submission> searchCriteria)
     {
         var submissions = await _submissionDomainService.GetByDynamicQuery(searchCriteria);
 

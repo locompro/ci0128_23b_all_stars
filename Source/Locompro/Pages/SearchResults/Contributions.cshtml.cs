@@ -5,11 +5,12 @@ using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
 using Locompro.Services;
-
 
 
 namespace Locompro.Pages.SearchResults
@@ -40,11 +41,12 @@ namespace Locompro.Pages.SearchResults
         public async Task OnGetAsync(int? pageIndex, string query)
         {
             CurrentUserId = query;
-            var searchParameters = new List<ISearchCriterion>
-            {
-              new SearchCriterion<string>(SearchParameterTypes.SubmissionByUserId, query),
-            };
+            
+            ISearchQueryParameters<Submission> searchParameters = new SearchQueryParameters<Submission>();
+            searchParameters.AddQueryParameter(SearchParameterTypes.SubmissionByUserId, query);
+            
             List<ItemVm> searchResults = null;
+            
             try
             {
                 ItemMapper itemMapper = new();

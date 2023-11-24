@@ -26,7 +26,9 @@ public class CreateModel : PageModel
     private readonly INamedEntityDomainService<Store, string> _storeService;
 
     public CreateModel(INamedEntityDomainService<Store, string> storeService,
-        INamedEntityDomainService<Product, int> productService, IContributionService contributionService, IApiKeyHandler apiKeyHandler)
+        INamedEntityDomainService<Product, int> productService,
+        IContributionService contributionService,
+        IApiKeyHandler apiKeyHandler)
     {
         _storeService = storeService;
         _productService = productService;

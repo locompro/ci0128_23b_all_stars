@@ -38,10 +38,10 @@ public class StoreVm
     [Required(ErrorMessage = "Debe seleccionar la ubicación de la tienda.")]
     
     [Precision(18, 2)]
-    public decimal Latitude { get; set; } = 0;
+    public double Latitude { get; set; } = 0;
 
     [Precision(18, 2)]
-    public decimal Longitude { get; set; } = 0;
+    public double Longitude { get; set; } = 0;
     
     public string MapGeneratedAddress { get; set; } = string.Empty;
 

@@ -46,5 +46,5 @@ public interface ICrudRepository<T, TK> : IRepository
     /// </summary>
     /// <param name="searchQueries"> search queries, criteria or strategies to be used to find the desired submissions</param>
     /// <returns></returns>
-    Task<IEnumerable<T>> GetByDynamicQuery(ISearchQueries searchQueries);
+    Task<IEnumerable<T>> GetByDynamicQuery(ISearchQueries<T> searchQueries);
 }

@@ -1,4 +1,5 @@
 ﻿using Locompro.Models.Entities;
+using Locompro.Models.ViewModels;
 using Locompro.Services;
 
 namespace Locompro.Pages.Modals.AdvancedSearch;
@@ -17,6 +18,7 @@ public class AdvancedSearchModalModel
     {
         this.advancedSearchService = advancedSearchService;
         EmptyValue = advancedSearchService.EmptyValue;
+        MapVm = new MapVm();
     }
 
     /// <summary>
@@ -47,6 +49,8 @@ public class AdvancedSearchModalModel
     public string cantonSelected { get; set; }
 
     public string EmptyValue { get; set; }
+    
+    public MapVm MapVm { get; set; }
 
     /// <summary>
     ///     Sets the model cantons as the cantons loaded into the service by the province name

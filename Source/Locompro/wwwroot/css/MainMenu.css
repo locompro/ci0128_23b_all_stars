@@ -155,3 +155,8 @@
     margin-top: 30px;
     margin-bottom: 200px;
 }
+
+.modal-select2 .select2-container--default .select2-selection--single {
+    width: 100%; /* This will make select2 elements as wide as their container */
+    min-width: 100px; /* Override any min-width */
+}

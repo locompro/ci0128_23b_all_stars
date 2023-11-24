@@ -1,4 +1,5 @@
 using Locompro.Models.Entities;
+using Locompro.Models.ViewModels;
 
 namespace Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 
@@ -48,20 +49,25 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
 
         // find if price is less than max value
         AddSearchParameter<long>(SearchParameterTypes.SubmissionByMaxvalue
-            ,  (submission, maxVal) => submission.Price < maxVal
+            , (submission, maxVal) => submission.Price < maxVal
             , maxVal => maxVal != 0);
-        
+
         // find if submission has been reported an specific amount of times at minimum
         AddSearchParameter<int>(SearchParameterTypes.SubmissionByNAmountReports
-            , (Submission submission, int minReportAmount) =>
+            , (submission, minReportAmount) =>
                 submission.Reports != null
                 && submission.Reports.Count >= minReportAmount
                 && submission.Status != SubmissionStatus.Moderated
             , minReportAmount => minReportAmount >= 0);
-        
+
         // find by user id
         AddSearchParameter<string>(SearchParameterTypes.SubmissionByUserId
             , (submission, userId) => submission.UserId == userId
             , userId => !string.IsNullOrEmpty(userId));
+
+        // find by distance from the user
+        /*AddSearchParameter<MapVm>(SearchParameterTypes.SubmissionByLocationFilter
+            , (submission, mapVm) => submission.Store.Location.IsWithinDistance(mapVm.Location, mapVm.Distance)
+            , mapVm => mapVm.Distance != 0 && mapVm.Location != null);*/
     }
 }

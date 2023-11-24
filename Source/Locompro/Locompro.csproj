@@ -27,6 +27,7 @@
 		<PackageReference Include="Microsoft.jQuery.Unobtrusive.Validation" Version="3.2.11" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
 		<PackageReference Include="NetBike.XmlUnit.NUnitAdapter3" Version="0.3.0" />
+		<PackageReference Include="NetTopologySuite.Core" Version="1.15.3" />
 		<PackageReference Include="NUnit" Version="3.13.3" />
 		<PackageReference Include="NUnit.Analyzers" Version="3.6.1">
 		  <PrivateAssets>all</PrivateAssets>
