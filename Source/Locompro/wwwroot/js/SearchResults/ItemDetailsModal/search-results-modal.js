@@ -84,13 +84,10 @@ class SearchResultsModal {
 
             // Add the text content to the date cell
             dateCell.insertAdjacentHTML('beforeend', submission.EntryTime);
-
-            // Formats the text to separate between thousands and millions
-            let formattedPrice = submission.Price.toLocaleString('en-US');
             
             // Inserting the price cell
             const priceCell = row.insertCell(1);
-            priceCell.innerHTML = formattedPrice;
+            priceCell.innerHTML = submission.FormattedPrice;
 
             // Inserting the description cell
             const descriptionCell = row.insertCell(2);

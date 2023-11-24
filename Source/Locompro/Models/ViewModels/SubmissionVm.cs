@@ -33,7 +33,7 @@ public class SubmissionVm
     [RegularExpression(@"^\d+$", ErrorMessage = "El precio debe contener solamente números enteros.")]
     public int Price { get; init; }
 
-    public string FormattedPrice => Price.ToString("C0");
+    public string FormattedPrice => Price.ToString("C0").TrimStart('$');
 
     public string EntryTime { get; }
 
