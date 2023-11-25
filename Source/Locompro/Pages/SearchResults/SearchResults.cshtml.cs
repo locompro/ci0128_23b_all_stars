@@ -105,31 +105,13 @@ public class SearchResultsModel : SearchPageModel
     {
         SearchVm = GetCachedDataFromSession<SearchVm>("SearchData", false);
         SearchVm.ResultsPerPage = Configuration.GetValue("PageSize", 4);
-        
-        MapVm mapVm = new(SearchVm.Latitude, SearchVm.Longitude, SearchVm.Distance);
-        
-        ISearchQueryParameters<Submission> searchParameters = new SearchQueryParameters<Submission>();
-        searchParameters
-            .AddQueryParameter(SearchParameterTypes.SubmissionByName, SearchVm.ProductName)
-            .AddQueryParameter(SearchParameterTypes.SubmissionByProvince, SearchVm.ProvinceSelected)
-            .AddQueryParameter(SearchParameterTypes.SubmissionByCanton, SearchVm.CantonSelected)
-            .AddQueryParameter(SearchParameterTypes.SubmissionByMinvalue, SearchVm.MinPrice)
-            .AddQueryParameter(SearchParameterTypes.SubmissionByMaxvalue, SearchVm.MaxPrice)
-            .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, SearchVm.CategorySelected)
-            .AddQueryParameter(SearchParameterTypes.SubmissionByModel, SearchVm.ModelSelected)
-            .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, SearchVm.BrandSelected)
-            .AddUniqueSearch(submission => submission.Store.Location.IsWithinDistance(mapVm.Location, mapVm.Distance),
-                 mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
-                 mapVm);
-
-        SearchVm.ResultsPerPage = Configuration.GetValue("PageSize", 4);
 
         List<ItemVm> searchResults = null;
 
         try
         {
             ItemMapper itemMapper = new();
-            SubmissionsDto submissionsDto = await _searchService.GetSearchResults(searchParameters);
+            SubmissionsDto submissionsDto = await _searchService.GetSearchResults(SearchVm);
             searchResults = itemMapper.ToVm(submissionsDto);
         }
         catch (Exception e)

@@ -2,6 +2,7 @@ using Locompro.Common;
 using Locompro.Common.Search;
 using Locompro.Common.Search.QueryBuilder;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models.Dtos;
@@ -36,11 +37,32 @@ public class SearchService : Service, ISearchService
     ///     canton/province.
     ///     It then returns a list of items that match all the criteria.
     /// </summary>
-    public async Task<SubmissionsDto> GetSearchResults(ISearchQueryParameters<Submission> searchCriteria)
+    public async Task<SubmissionsDto> GetSearchSubmissions(ISearchQueryParameters<Submission> searchCriteria)
     {
         var submissions = await _submissionDomainService.GetByDynamicQuery(searchCriteria);
 
         return new SubmissionsDto(submissions, GetBestSubmission);
+    }
+
+    public Task<SubmissionsDto> GetSearchResults(SearchVm searchVm)
+    {
+        MapVm mapVm = new(searchVm.Latitude, searchVm.Longitude, searchVm.Distance);
+        
+        ISearchQueryParameters<Submission> searchParameters = new SearchQueryParameters<Submission>();
+        searchParameters
+            .AddQueryParameter(SearchParameterTypes.SubmissionByName, searchVm.ProductName)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByProvince, searchVm.ProvinceSelected)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCanton, searchVm.CantonSelected)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByMinvalue, searchVm.MinPrice)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByMaxvalue, searchVm.MaxPrice)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, searchVm.CategorySelected)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByModel, searchVm.ModelSelected)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, searchVm.BrandSelected)
+            .AddUniqueSearch(submission => submission.Store.Location.IsWithinDistance(mapVm.Location, mapVm.Distance),
+                mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
+                mapVm);
+        
+        return GetSearchSubmissions(searchParameters);
     }
 
     /// <summary>
