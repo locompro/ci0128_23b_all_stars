@@ -43,7 +43,7 @@ public class AdvancedSearchModalModel
     public string provinceSelected { get; set; }
 
     /// <summary>
-    ///     SubmissionByCanton that was selected
+    ///     Canton that was selected
     /// </summary>
     public string cantonSelected { get; set; }
 
