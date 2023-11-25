@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 
 #nullable disable
 
@@ -37,7 +38,7 @@ namespace Locompro.Migrations
                     b.ToTable("CategoryProduct");
                 });
 
-            modelBuilder.Entity("Locompro.Models.Entities.SubmissionByCanton", b =>
+            modelBuilder.Entity("Locompro.Models.Entities.Canton", b =>
                 {
                     b.Property<string>("CountryName")
                         .HasColumnType("nvarchar(450)");
@@ -189,13 +190,8 @@ namespace Locompro.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(60)");
 
-                    b.Property<decimal>("Latitude")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Longitude")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<Point>("Location")
+                        .HasColumnType("geography");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -503,7 +499,7 @@ namespace Locompro.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Locompro.Models.Entities.SubmissionByCanton", b =>
+            modelBuilder.Entity("Locompro.Models.Entities.Canton", b =>
                 {
                     b.HasOne("Locompro.Models.Entities.Province", "Province")
                         .WithMany("Cantons")
@@ -565,13 +561,13 @@ namespace Locompro.Migrations
 
             modelBuilder.Entity("Locompro.Models.Entities.Store", b =>
                 {
-                    b.HasOne("Locompro.Models.Entities.SubmissionByCanton", "SubmissionByCanton")
+                    b.HasOne("Locompro.Models.Entities.Canton", "Canton")
                         .WithMany()
                         .HasForeignKey("CantonCountryName", "CantonProvinceName", "CantonName")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SubmissionByCanton");
+                    b.Navigation("Canton");
                 });
 
             modelBuilder.Entity("Locompro.Models.Entities.Submission", b =>

@@ -126,7 +126,6 @@ $(document).ready(function () {
         $("#categoriesData")
     );
     productManager.setupEvents();
-
     // Attach global event listeners for validation
     $("input, select, textarea").on('input', function () {
         $(this).valid();

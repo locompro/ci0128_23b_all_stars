@@ -2,6 +2,7 @@ using Locompro.Data;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
+using NetTopologySuite.Geometries;
 
 namespace Locompro.Services;
 
@@ -88,7 +89,11 @@ public class ContributionService : Service, IContributionService
             Name = storeVm.SName,
             Canton = canton,
             Address = storeVm.Address,
-            Telephone = storeVm.Telephone
+            Telephone = storeVm.Telephone,
+            /*Location = new Point(storeVm.Latitude, storeVm.Longitude)
+            {
+                SRID = 4326
+            },*/
         };
 
         return store;

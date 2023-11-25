@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using Locompro.Common.Search.SearchFilters;
 
 namespace Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 
@@ -13,7 +14,9 @@ namespace Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 public abstract class SearchMethods<TSearchResult, TSearchMethods> : ISearchMethods
     where TSearchMethods : SearchMethods<TSearchResult, TSearchMethods>, new()
 {
-    private readonly Dictionary<SearchParameterTypes, SearchParam> _searchParameters;
+    private readonly Dictionary<SearchParameterTypes, ISearchParam> _searchParameters;
+
+    private readonly Dictionary<SearchParameterTypes, ISearchFilterParam> _searchFilterParameters;
     
     private static TSearchMethods _instance;
     
@@ -31,7 +34,7 @@ public abstract class SearchMethods<TSearchResult, TSearchMethods> : ISearchMeth
     }
 
     /// <inheritdoc />
-    public SearchParam GetSearchMethodByName(SearchParameterTypes parameterName)
+    public ISearchParam GetSearchMethodByName(SearchParameterTypes parameterName)
     {
         _searchParameters.TryGetValue(parameterName, out var searchParameter);
         return searchParameter;
@@ -43,12 +46,26 @@ public abstract class SearchMethods<TSearchResult, TSearchMethods> : ISearchMeth
         return _searchParameters.ContainsKey(parameterName);
     }
     
+    /// <inheritdoc />
+    public ISearchFilterParam GetSearchFilterByName(SearchParameterTypes parameterName)
+    {
+        _searchFilterParameters.TryGetValue(parameterName, out var searchParameter);
+        return searchParameter;
+    }
+    
+    /// <inheritdoc />
+    public bool ContainsSearchFilter(SearchParameterTypes parameterName)
+    {
+        return _searchFilterParameters.ContainsKey(parameterName);
+    }
+    
     /// <summary>
     ///     Constructor
     /// </summary>
     protected SearchMethods()
     {
-        _searchParameters = new Dictionary<SearchParameterTypes, SearchParam>();
+        _searchFilterParameters = new Dictionary<SearchParameterTypes, ISearchFilterParam>();
+        _searchParameters = new Dictionary<SearchParameterTypes, ISearchParam>();
     }
     
     /// <summary>
@@ -71,6 +88,30 @@ public abstract class SearchMethods<TSearchResult, TSearchMethods> : ISearchMeth
                 ActivationQualifier = new ActivationQualifier<TSearchParameter>(activationQualifier)
             }
         );
+    }
+    
+    /// <summary>
+    ///     Adds a new search filter, strategy or way to filter a given TSearchResult
+    /// </summary>
+    /// <param name="searchParameterType"> the name to find which filter to apply </param>
+    /// <param name="searchQuery"> the strategy of how to filter for a given TSearchResult</param>
+    /// <param name="activationQualifier">
+    ///     a function used to determine whether the filter is to be performed or not. e.g. if
+    ///     string is not null then search
+    /// </param>
+    /// <typeparam name="TSearchParameter"> type of parameter for which the search is being made</typeparam>
+    protected void AddSearchFilter<TSearchParameter>(
+        SearchParameterTypes searchParameterType,
+        Func<TSearchResult, TSearchParameter, bool> searchQuery,
+        Func<TSearchParameter, bool> activationQualifier)
+    {
+        _searchFilterParameters.Add(
+            searchParameterType,
+            new SearchFilterParam(
+                new SearchFilterQuery<TSearchResult, TSearchParameter>(searchQuery),
+                new ActivationQualifier<TSearchParameter>(activationQualifier)
+                )
+            );
     }
 
     /// <summary>

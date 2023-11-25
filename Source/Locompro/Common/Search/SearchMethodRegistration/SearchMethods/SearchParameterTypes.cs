@@ -16,5 +16,7 @@ public enum SearchParameterTypes
     SubmissionByModel,
     SubmissionByBrand,
     SubmissionByNAmountReports,
-    SubmissionByUserId
+    SubmissionByUserId,
+    
+    SubmissionByLocationFilter
 }

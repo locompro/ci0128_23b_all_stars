@@ -26,6 +26,39 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 });
 
+window.addEventListener('beforeunload', function (e) {
+    /*alert("leaving page!!!!");
+    if (searchResultsPage.requestSent) {
+        searchResultsPage.requestSent = false;
+        e.returnValue = '';
+        return;
+    }*/
+    /*
+    let url = window.location.pathname;
+    let handler = '?handler=ReturnResults';
+    let location = url + handler;
+
+    let data = searchResultsPage.pageSearchData;
+
+    fetch(location, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => {
+
+            alert("leaving page");
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+        });*/
+
+    e.returnValue = '';
+});
+
 /**
  * This class represents the search results page and encapsulates the operations
  * associated with it such as initializing the page with data, populating the
@@ -88,35 +121,7 @@ window.getPage = () => {
 
 window.modal = document.getElementById('ItemModal');
 
-window.addEventListener('beforeunload', function (e) {
-    if (searchResultsPage.requestSent) {
-        searchResultsPage.requestSent = false;
-        e.returnValue = '';
-        return;
-    }
 
-    let url = window.location.pathname;
-    let handler = '?handler=ReturnResults';
-    let location = url + handler;
-
-    let data = searchResultsPage.pageSearchData;
-
-    fetch(location, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-        },
-        body: JSON.stringify(data)
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-        });
-    
-    e.returnValue = '';
-});
 
 // Inside your document ready function, when setting up the form submission listener:
 document.addEventListener('DOMContentLoaded', function () {

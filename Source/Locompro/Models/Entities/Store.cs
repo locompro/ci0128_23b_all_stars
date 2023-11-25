@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Locompro.Models.Entities;
 
+using NetTopologySuite.Geometries;
+
 /// <summary>
 ///     A store in a canton.
 /// </summary>
@@ -24,8 +26,6 @@ public class Store
     public string Telephone { get; set; }
 
     [Required] public Status Status { get; set; } = Status.Active;
-
-    [Precision(18, 2)] public decimal Latitude { get; set; }
-
-    [Precision(18, 2)] public decimal Longitude { get; set; }
+    
+    public virtual Point Location { get; set; }
 }
