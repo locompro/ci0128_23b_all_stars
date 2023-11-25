@@ -19,7 +19,8 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.22" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.21" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.22" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.NetTopologySuite" Version="6.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.21">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

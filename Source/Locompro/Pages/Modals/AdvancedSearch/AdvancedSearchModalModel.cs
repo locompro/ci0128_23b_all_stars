@@ -18,7 +18,6 @@ public class AdvancedSearchModalModel
     {
         this.advancedSearchService = advancedSearchService;
         EmptyValue = advancedSearchService.EmptyValue;
-        MapVm = new MapVm();
     }
 
     /// <summary>

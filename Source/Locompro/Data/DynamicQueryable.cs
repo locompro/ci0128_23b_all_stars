@@ -21,6 +21,8 @@ public class DynamicQueryable<T> : IDynamicQueryable<T>
     {
         _queryable = searchQueries.ApplySearch(_queryable);
         
+        _queryable = searchQueries.ApplyUniqueSearches(_queryable);
+        
         return searchQueries.NoSearchFilters()?
             await _queryable.ToListAsync() :
             searchQueries.ApplySearchFilters(await _queryable.ToListAsync());

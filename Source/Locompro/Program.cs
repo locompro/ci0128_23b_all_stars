@@ -9,6 +9,7 @@ using Locompro.Services.Domain;
 using Locompro.Services.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -134,7 +135,11 @@ void AddDatabaseServices(WebApplicationBuilder builder)
         {
             if (connectionString != null)
                 options.UseLazyLoadingProxies()
-                    .UseSqlServer(connectionString);
+                    .UseSqlServer(connectionString, sqlOptions =>
+                    {
+                        sqlOptions.UseNetTopologySuite();
+                        sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    });
         });
     }
     catch (InvalidOperationException e)

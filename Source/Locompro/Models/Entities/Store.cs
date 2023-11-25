@@ -27,5 +27,5 @@ public class Store
 
     [Required] public Status Status { get; set; } = Status.Active;
     
-    /*public virtual Point Location { get; set; }*/
+    public virtual Point Location { get; set; }
 }

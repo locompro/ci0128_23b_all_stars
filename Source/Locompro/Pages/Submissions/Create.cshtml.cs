@@ -8,6 +8,7 @@ using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Locompro.Pages.Submissions;
 
@@ -75,6 +76,10 @@ public class CreateModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
+        Console.WriteLine("\n\n>>>\nOnPostAsync\n<<<\n\n");
+        
+        Console.WriteLine("\n\n>>>\nModelState.IsValid: " + ModelState.IsValid + "\n<<<\n\n");
+        
         // Remove ModelState errors for StoreVm if it's an existing store
         if (StoreVm != null && StoreVm.IsExistingStore())
         {
@@ -83,6 +88,8 @@ public class CreateModel : PageModel
             ModelState.Remove("StoreVm.Province");
             ModelState.Remove("StoreVm.SubmissionByCanton");
         }
+        
+        Console.WriteLine("\n\n>>>\nModelState.IsValid: " + ModelState.IsValid + "\n<<<\n\n");
 
         if (!ModelState.IsValid) return Page();
 
@@ -92,8 +99,10 @@ public class CreateModel : PageModel
         
         var pictureVMs = PictureParser.Parse(formFiles);
 
-        await _contributionService.AddSubmission(StoreVm, ProductVm, SubmissionVm, pictureVMs);
+        Console.WriteLine(StoreVm.Canton + ", " + StoreVm.Province + ", " + ProductVm.Model + ", " + ProductVm.Brand + ", " + ProductVm.PName);
 
+        await _contributionService.AddSubmission(StoreVm, ProductVm, SubmissionVm, pictureVMs);
+        
         return RedirectToPage("/Index");
     }
 }

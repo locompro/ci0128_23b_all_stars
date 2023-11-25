@@ -105,12 +105,8 @@ public class SearchResultsModel : SearchPageModel
     {
         SearchVm = GetCachedDataFromSession<SearchVm>("SearchData", false);
         SearchVm.ResultsPerPage = Configuration.GetValue("PageSize", 4);
-       
-        MapVm mapVm = new()
-        {
-            Location = new Point(SearchVm.Latitude, SearchVm.Longitude),
-            Distance = SearchVm.Distance
-        };
+        
+        MapVm mapVm = new(SearchVm.Latitude, SearchVm.Longitude, SearchVm.Distance);
         
         ISearchQueryParameters<Submission> searchParameters = new SearchQueryParameters<Submission>();
         searchParameters
@@ -122,7 +118,9 @@ public class SearchResultsModel : SearchPageModel
             .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, SearchVm.CategorySelected)
             .AddQueryParameter(SearchParameterTypes.SubmissionByModel, SearchVm.ModelSelected)
             .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, SearchVm.BrandSelected)
-            .AddQueryParameter(SearchParameterTypes.SubmissionByLocationFilter, mapVm);
+            .AddUniqueSearch(submission => submission.Store.Location.IsWithinDistance(mapVm.Location, mapVm.Distance),
+                 mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
+                 mapVm);
 
         SearchVm.ResultsPerPage = Configuration.GetValue("PageSize", 4);
 

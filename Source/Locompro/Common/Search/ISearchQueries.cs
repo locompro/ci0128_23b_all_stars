@@ -26,4 +26,6 @@ public interface ISearchQueries<TSearchResult>
     IQueryable<TSearchResult> ApplySearch(IQueryable<TSearchResult> queryable);
 
     IEnumerable<TSearchResult> ApplySearchFilters(IEnumerable<TSearchResult> unfilteredResults);
+    
+    IQueryable<TSearchResult> ApplyUniqueSearches(IQueryable<TSearchResult> queryable);
 }

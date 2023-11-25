@@ -12,24 +12,32 @@ namespace Locompro.Common.Search.QueryBuilder;
 /// </summary>
 public class QueryBuilder<TSearchResults> : IQueryBuilder<TSearchResults>
 {
-    private readonly List<ISearchCriterion> _searchCriteria;
-    private readonly List<Expression<Func<TSearchResults, bool>>> _searchCriteriaFunctions;
-    private readonly ISearchMethods _searchMethods;
-    private readonly List<ISearchCriterion> _searchFilters;
-    private readonly List<Func<TSearchResults, bool>> _searchFilterFunctions;
     private readonly ILogger _logger;
-
+    private readonly ISearchMethods _searchMethods;
+    
+    private readonly List<ISearchCriterion> _searchCriteria;
+    private readonly List<ISearchCriterion> _searchFilters;
+    
+    private readonly List<Expression<Func<TSearchResults, bool>>> _searchCriteriaFunctions;
+    private readonly List<Func<TSearchResults, bool>> _searchFilterFunctions;
+    
+    private readonly List<Expression<Func<TSearchResults, bool>>> _uniqueSearchExpressions;
+    
     /// <summary>
     ///     Constructor
     /// </summary>
     public QueryBuilder(ISearchMethods searchMethods, ILogger logger)
     {
-        _searchCriteria = new List<ISearchCriterion>();
-        _searchCriteriaFunctions = new List<Expression<Func<TSearchResults, bool>>>();
-        _searchMethods = searchMethods;
-        _searchFilters = new List<ISearchCriterion>();
-        _searchFilterFunctions = new List<Func<TSearchResults, bool>>();
         _logger = logger;
+        _searchMethods = searchMethods;
+        
+        _searchCriteria = new List<ISearchCriterion>();
+        _searchFilters = new List<ISearchCriterion>();
+        
+        _searchCriteriaFunctions = new List<Expression<Func<TSearchResults, bool>>>();
+        _searchFilterFunctions = new List<Func<TSearchResults, bool>>();
+        
+        _uniqueSearchExpressions = new List<Expression<Func<TSearchResults, bool>>>();
     }
     
     /// <inheritdoc />
@@ -58,13 +66,21 @@ public class QueryBuilder<TSearchResults> : IQueryBuilder<TSearchResults>
                 _logger.LogError(e, "Failed to add search filter");
             }
         }
+        
+        foreach (var uniqueSearchExpression in searchQueryParameters.GetUniqueSearchExpressions())
+        {
+            _uniqueSearchExpressions.Add(uniqueSearchExpression);
+        }
     }
     
     /// <inheritdoc />
     public ISearchQueries<TSearchResults> GetSearchFunction()
     {
         Compose();
-        return new SearchQueries<TSearchResults>(_searchCriteriaFunctions, _searchFilterFunctions);
+        return new SearchQueries<TSearchResults>(
+            _searchCriteriaFunctions,
+            _searchFilterFunctions,
+            _uniqueSearchExpressions);
     }
 
     /// <inheritdoc />
@@ -74,6 +90,7 @@ public class QueryBuilder<TSearchResults> : IQueryBuilder<TSearchResults>
         _searchCriteriaFunctions.Clear();
         _searchFilters.Clear();
         _searchFilterFunctions.Clear();
+        _uniqueSearchExpressions.Clear();
     }
     
     /// <inheritdoc />
@@ -195,7 +212,7 @@ public class QueryBuilder<TSearchResults> : IQueryBuilder<TSearchResults>
     {
         if (!_searchMethods.Contains(searchCriterion.ParameterName))
             throw new ArgumentException("Invalid search criterion addition attempt\n"
-                                        + "Search criterion: " + nameof(searchCriterion.GetSearchValue));
+                                        + "Search criterion: " + searchCriterion.ParameterName.ToString());
         
         var searchMethod = _searchMethods.GetSearchMethodByName(searchCriterion.ParameterName);
         
