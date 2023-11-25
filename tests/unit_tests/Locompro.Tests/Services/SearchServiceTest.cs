@@ -56,7 +56,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -70,7 +70,7 @@ public class SearchServiceTest
         searchCriteria.Clear();
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
-        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
         
         searchResults = itemMapper.ToVm(searchResultsDto);
 
@@ -82,7 +82,7 @@ public class SearchServiceTest
         searchCriteria.Clear();
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
-        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
         
         searchResults = itemMapper.ToVm(searchResultsDto);
 
@@ -93,7 +93,7 @@ public class SearchServiceTest
         searchCriteria.Clear();
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
-        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
         
         searchResults = itemMapper.ToVm(searchResultsDto);
 
@@ -104,7 +104,7 @@ public class SearchServiceTest
         searchCriteria.Clear();
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
-        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
         
         searchResults = itemMapper.ToVm(searchResultsDto);
 
@@ -115,7 +115,7 @@ public class SearchServiceTest
         searchCriteria.Clear();
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
-        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
         
         searchResults = itemMapper.ToVm(searchResultsDto);
 
@@ -126,7 +126,7 @@ public class SearchServiceTest
         searchCriteria.Clear();
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
-        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
         
         searchResults = itemMapper.ToVm(searchResultsDto);
 
@@ -151,7 +151,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -181,7 +181,7 @@ public class SearchServiceTest
         ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -215,7 +215,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -243,7 +243,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -270,7 +270,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -315,7 +315,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -347,7 +347,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -383,7 +383,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -410,7 +410,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -441,7 +441,7 @@ public class SearchServiceTest
             .AddQueryParameter(SearchParameterTypes.SubmissionByCanton, canton);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -479,7 +479,7 @@ public class SearchServiceTest
             .AddQueryParameter(SearchParameterTypes.SubmissionByCanton, canton);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -505,7 +505,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brand);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -532,7 +532,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brand);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -580,7 +580,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brand);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -607,7 +607,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brand);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -636,7 +636,7 @@ public class SearchServiceTest
             .AddQueryParameter(SearchParameterTypes.SubmissionByMaxvalue, maxPrice);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -664,7 +664,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByCategory, category);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -694,7 +694,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByCategory, category);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -723,7 +723,7 @@ public class SearchServiceTest
             .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, category);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new ();
         
@@ -752,7 +752,7 @@ public class SearchServiceTest
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
 
         ItemMapper itemMapper = new();
 
@@ -778,7 +778,7 @@ public class SearchServiceTest
         ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch);
 
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
         ItemMapper itemMapper = new();
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
@@ -802,7 +802,7 @@ public class SearchServiceTest
         ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
         searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch);
 
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
         ItemMapper itemMapper = new();
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
@@ -830,7 +830,7 @@ public class SearchServiceTest
             .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brandToSearch);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
         ItemMapper itemMapper = new();
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
@@ -861,7 +861,7 @@ public class SearchServiceTest
             .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brandToSearch);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
         ItemMapper itemMapper = new();
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
@@ -900,7 +900,7 @@ public class SearchServiceTest
             .AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissions(searchCriteria);
         ItemMapper itemMapper = new();
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
