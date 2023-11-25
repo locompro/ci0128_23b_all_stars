@@ -38,7 +38,7 @@ export default class SearchResultsTableBody extends TableBody {
         let row = new TableRowDefinition(attributes, [], modalFunction);
         const columns = [
             new TableRowColumn('Name', []),
-            new TableRowColumn('Price', ['prices-cell']),
+            new TableRowColumn('FormattedPrice', ['prices-cell']),
             new TableRowColumn('Categories', ['categories-cell'], categoriesDisplayDiv),
             new TableRowColumn('Store', ['store-cell']),
             new TableRowColumn('Brand', []),
