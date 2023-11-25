@@ -14,36 +14,46 @@ class StoreGoogleMap extends GoogleMap {
      * @param {string} cantonInputId - The ID of the input element for the canton.
      */
     constructor(mapElementId, latitudeInputId, longitudeInputId, addressInputId, provinceInputId, cantonInputId) {
-        super(mapElementId, latitudeInputId, longitudeInputId, addressInputId);
-        this.provinceInput = document.querySelector(provinceInputId);
-        this.cantonInput = document.querySelector(cantonInputId);
-
-        this.addChangeEventListeners();
+        super(mapElementId, latitudeInputId, longitudeInputId, addressInputId)
+        this.provinceInput = $(provinceInputId)
+        this.cantonInput = $(cantonInputId)
     }
+
+    /**
+     * 
+     * @param location
+     */
     addMarker(location) {
         this.marker = new google.maps.Marker({
             position: location,
             map: this.map,
             draggable: true
-        });
+        })
 
         this.marker.addListener('dragend', () => {
-            this.updateLocationFromMarker();
-            this.reverseGeocode(this.marker.getPosition());
-        });
+            console.log("cursor fue movido.")
+            this.updateLocationFromMarker()
+            this.reverseGeocode(this.marker.getPosition())
+        })
     }
     /**
      * Adds change event listeners to province and canton input elements.
      */
-    addChangeEventListeners() {
-        this.provinceInput.addEventListener('change', () => this.onLocationChange());
-        this.cantonInput.addEventListener('change', () => this.onLocationChange());
+    prepare() {
+        this.provinceInput.change(() =>{
+            console.log("provincia fue cambiada")
+            this.onLocationChange()
+        })
+        this.cantonInput.change(() => {
+            console.log("canton fue cambiado")
+            this.onLocationChange()
+        })
     }
     /**
      * Handles location change events for province and canton input elements.
      */
     onLocationChange() {
-        this.updateMarkerLocation(this.provinceInput.value, this.cantonInput.value);
+        this.updateMarkerLocation(this.provinceInput.value, this.cantonInput.value)
     }
     /**
      * Updates the marker location on the map based on the selected province and canton.
@@ -51,10 +61,10 @@ class StoreGoogleMap extends GoogleMap {
      * @param {string} canton - The selected canton.
      */
     updateMarkerLocation(province, canton) {
-        if (!province || !canton) return;
+        if (!province || !canton) return
 
-        const geocodeUrl = this.constructGeocodeUrl(canton, province);
-        this.fetchLocationAndUpdateMap(geocodeUrl);
+        const geocodeUrl = this.constructGeocodeUrl(canton, province)
+        this.fetchLocationAndUpdateMap(geocodeUrl)
     }
     /**
      * Constructs the geocode URL for a given canton and province.
@@ -65,7 +75,7 @@ class StoreGoogleMap extends GoogleMap {
     constructGeocodeUrl(canton, province) {
         return 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?singleLine='
             + encodeURIComponent(canton) + ','
-            + encodeURIComponent(province) + '&f=pjson';
+            + encodeURIComponent(province) + '&f=pjson'
     }
     /**
      * Fetches the location data from the geocode URL and updates the map accordingly.
@@ -76,45 +86,45 @@ class StoreGoogleMap extends GoogleMap {
             .then(response => response.json())
             .then(data => {
                 if (data.candidates.length > 0) {
-                    const location = data.candidates[0].location;
-                    this.setMapCenter(location);
-                    this.updateLocationInputs(location);
+                    const location = data.candidates[0].location
+                    this.setMapCenter(location)
+                    this.updateLocationInputs(location)
                 }
             })
-            .catch(error => console.error('Error fetching geocode data:', error));
+            .catch(error => console.error('Error obteniendo datos de geocodificación:', error))
     }
     /**
      * Sets the center of the map to a given location and updates the marker position.
      * @param {Object} location - The location to set as the map center.
      */
     setMapCenter(location) {
-        const newCenter = { lat: location.y, lng: location.x };
-        this.map.setCenter(newCenter);
-        this.marker.setPosition(newCenter);
+        const newCenter = { lat: location.y, lng: location.x }
+        this.map.setCenter(newCenter)
+        this.marker.setPosition(newCenter)
     }
     /**
      * Updates the latitude and longitude input elements based on the given location.
      * @param {Object} location - The location to update the inputs with.
      */
     updateLocationInputs(location) {
-        this.updateLocationDetails({ lat: location.y, lng: location.x });
+        this.updateLocationDetails({ lat: location.y, lng: location.x })
     }
     /**
      * Performs reverse geocoding for a given latitude and longitude.
      * @param {Object} latLng - The latitude and longitude to reverse geocode.
      */
     reverseGeocode(latLng) {
-        const reverseGeocodeUrl = this.constructReverseGeocodeUrl(latLng);
+        const reverseGeocodeUrl = this.constructReverseGeocodeUrl(latLng)
 
         fetch(reverseGeocodeUrl)
             .then(response => response.json())
             .then(data => {
                 if (data.address) {
-                    this.updateSelect(this.provinceInput, data.address.Region);
-                    this.updateSelect(this.cantonInput, data.address.Subregion);
+                    this.updateSelect(this.provinceInput, data.address.Region)
+                    this.updateSelect(this.cantonInput, data.address.Subregion)
                 }
             })
-            .catch(error => console.error('Error fetching reverse geocode data:', error));
+            .catch(error => console.error('Error obteniendo datos de geocodificación inversa:', error))
     }
     /**
      * Constructs the reverse geocode URL for a given latitude and longitude.
@@ -122,7 +132,7 @@ class StoreGoogleMap extends GoogleMap {
      * @returns {string} The constructed reverse geocode URL.
      */
     constructReverseGeocodeUrl(latLng) {
-        return `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?f=pjson&featureTypes=&location=${latLng.lng()},${latLng.lat()}`;
+        return `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?f=pjson&featureTypes=&location=${latLng.lng()},${latLng.lat()}`
     }
     /**
      * Updates the select element to select the option that matches the given value.
@@ -130,8 +140,8 @@ class StoreGoogleMap extends GoogleMap {
      * @param {string} value - The value to select in the select element.
      */
     updateSelect(selectElement, value) {
-        const optionToSelect = Array.from(selectElement.options).find(option => option.text === value);
-        if (optionToSelect) selectElement.value = optionToSelect.value;
+        const optionToSelect = Array.from(selectElement.options).find(option => option.text === value)
+        if (optionToSelect) selectElement.value = optionToSelect.value
     }
     
 }
