@@ -26,7 +26,7 @@ public class StoreVm
     [DisplayName("Teléfono")]
     public string Telephone { get; set; }
 
-    // Selected Province and SubmissionByCanton
+    // Selected Province and Canton
     [Required(ErrorMessage = "Seleccionar la provincia de la tienda.")]
     [DisplayName("Provincia")]
     public string Province { get; set; }
@@ -38,10 +38,10 @@ public class StoreVm
     [Required(ErrorMessage = "Debe seleccionar la ubicación de la tienda.")]
     
     [Precision(18, 2)]
-    public decimal Latitude { get; set; } = 0;
+    public double Latitude { get; set; } = 0;
 
     [Precision(18, 2)]
-    public decimal Longitude { get; set; } = 0;
+    public double Longitude { get; set; } = 0;
     
     public string MapGeneratedAddress { get; set; } = string.Empty;
 

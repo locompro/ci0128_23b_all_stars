@@ -1,6 +1,6 @@
 import SearchResultsTableBody from './search-results-table.js';
-import {TableHead, HeaderField} from "../Common/table-head.js";
-import {ResultsTable, ResultsPageConfiguration, OrderingField} from '../Common/results-table.js';
+import {HeaderField} from "../Common/table-head.js";
+import {ResultsTable, ResultsPageConfiguration} from '../Common/results-table.js';
 
 
 var searchResultsPage;
@@ -26,6 +26,39 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 });
 
+window.addEventListener('beforeunload', function (e) {
+    /*alert("leaving page!!!!");
+    if (searchResultsPage.requestSent) {
+        searchResultsPage.requestSent = false;
+        e.returnValue = '';
+        return;
+    }*/
+    /*
+    let url = window.location.pathname;
+    let handler = '?handler=ReturnResults';
+    let location = url + handler;
+
+    let data = searchResultsPage.pageSearchData;
+
+    fetch(location, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => {
+
+            alert("leaving page");
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+        });*/
+
+    e.returnValue = '';
+});
+
 /**
  * This class represents the search results page and encapsulates the operations
  * associated with it such as initializing the page with data, populating the
@@ -39,19 +72,20 @@ class SearchResultsTable extends ResultsTable {
      * @param pageData      The data related to the pagination and display of search results.
      */
     constructor(searchResults, pageData) {
-        const storeField = new HeaderField("Tienda", false, 'Store');
+        const storeField = new HeaderField("Tienda", true, 'Store');
         storeField.addStyle("paddingLeft", "30px");
         
         const headerFields = [
             new HeaderField("Producto", true, 'Name'),
-            new HeaderField("Precio", false, 'Price'),
+            new HeaderField("Precio", true, 'FormattedPrice'),
+            new HeaderField("Categorías", true, 'Categories'),
             storeField,
-            new HeaderField("Marca", false, 'Brand'),
-            new HeaderField("Modelo", false, 'Model'),
+            new HeaderField("Marca", true, 'Brand'),
+            new HeaderField("Modelo", true, 'Model'),
             new HeaderField("Provincia", true, 'Province'),
             new HeaderField("Cantón", true, 'Canton'),
             new HeaderField("Descripción", false, 'Description'),
-            new HeaderField("Última Contribución", false, 'LastSubmissionDate')
+            new HeaderField("Última contribución", true, 'LastSubmissionDate')
         ];
         
         const pageConfiguration
@@ -65,8 +99,8 @@ class SearchResultsTable extends ResultsTable {
         
         const tableBody =
             new SearchResultsTableBody(pageData.ResultsPerPage, selectItem);
-
         super(tableBody, searchResults, pageData, pageConfiguration);
+        console.log(tableBody);
     }
 
     /**
@@ -87,35 +121,7 @@ window.getPage = () => {
 
 window.modal = document.getElementById('ItemModal');
 
-window.addEventListener('beforeunload', function (e) {
-    if (searchResultsPage.requestSent) {
-        searchResultsPage.requestSent = false;
-        e.returnValue = '';
-        return;
-    }
 
-    let url = window.location.pathname;
-    let handler = '?handler=ReturnResults';
-    let location = url + handler;
-
-    let data = searchResultsPage.pageSearchData;
-
-    fetch(location, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-        },
-        body: JSON.stringify(data)
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-        });
-    
-    e.returnValue = '';
-});
 
 // Inside your document ready function, when setting up the form submission listener:
 document.addEventListener('DOMContentLoaded', function () {

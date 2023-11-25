@@ -8,6 +8,7 @@ using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Locompro.Pages.Submissions;
 
@@ -26,7 +27,9 @@ public class CreateModel : PageModel
     private readonly INamedEntityDomainService<Store, string> _storeService;
 
     public CreateModel(INamedEntityDomainService<Store, string> storeService,
-        INamedEntityDomainService<Product, int> productService, IContributionService contributionService, IApiKeyHandler apiKeyHandler)
+        INamedEntityDomainService<Product, int> productService,
+        IContributionService contributionService,
+        IApiKeyHandler apiKeyHandler)
     {
         _storeService = storeService;
         _productService = productService;
@@ -34,7 +37,7 @@ public class CreateModel : PageModel
         _apiKeyHandler = apiKeyHandler;
         
     }
-    public string GoogleMapsApiKey => _apiKeyHandler.GetApiKey();
+    
     [BindProperty] public StoreVm StoreVm { get; set; }
 
     [BindProperty] public ProductVm ProductVm { get; set; }
@@ -70,7 +73,11 @@ public class CreateModel : PageModel
 
         return new JsonResult(result);
     }
-
+    public IActionResult OnGetGoogleMapsApiKey()
+    {
+        var apiKey = _apiKeyHandler.GetApiKey();
+        return new JsonResult(apiKey);
+    }
     public async Task<IActionResult> OnPostAsync()
     {
         // Remove ModelState errors for StoreVm if it's an existing store
@@ -79,9 +86,9 @@ public class CreateModel : PageModel
             ModelState.Remove("StoreVm.Address");
             ModelState.Remove("StoreVm.Telephone");
             ModelState.Remove("StoreVm.Province");
-            ModelState.Remove("StoreVm.SubmissionByCanton");
+            ModelState.Remove("StoreVm.Canton");
         }
-
+        
         if (!ModelState.IsValid) return Page();
 
         SubmissionVm.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -89,9 +96,9 @@ public class CreateModel : PageModel
         var formFiles = Request.Form.Files;
         
         var pictureVMs = PictureParser.Parse(formFiles);
-
+        
         await _contributionService.AddSubmission(StoreVm, ProductVm, SubmissionVm, pictureVMs);
-
+        
         return RedirectToPage("/Index");
     }
 }

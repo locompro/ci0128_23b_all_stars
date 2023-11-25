@@ -272,7 +272,7 @@ public class ProfileModel : PageModel
     ///     Retrieves all the cantons names for a given province.
     /// </summary>
     /// <param name="province"> the name of the province get the cantons from </param>
-    /// <returns>a list of SubmissionByCanton Names in that province </returns>
+    /// <returns>a list of Canton Names in that province </returns>
     private async Task<List<CantonDto>> GetCantonsOnProvince(string province)
     {
         var cantons = await _cantonService.GetAll();

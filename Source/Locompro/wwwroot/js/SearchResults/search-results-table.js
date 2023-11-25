@@ -28,10 +28,18 @@ export default class SearchResultsTableBody extends TableBody {
             });
         }
         
+        
+        let categoriesDisplayDiv = document.createElement("div");
+        categoriesDisplayDiv.classList.add("cell-further-info");
+        let categoriesDisplay = document.createElement("span");
+        categoriesDisplay.classList.add("cell-further-info-text");
+        categoriesDisplayDiv.append(categoriesDisplay);
+        
         let row = new TableRowDefinition(attributes, [], modalFunction);
         const columns = [
             new TableRowColumn('Name', []),
-            new TableRowColumn('Price', ['prices-cell']),
+            new TableRowColumn('FormattedPrice', ['prices-cell']),
+            new TableRowColumn('Categories', ['categories-cell'], categoriesDisplayDiv),
             new TableRowColumn('Store', ['store-cell']),
             new TableRowColumn('Brand', []),
             new TableRowColumn('Model', []),

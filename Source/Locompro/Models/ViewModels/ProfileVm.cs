@@ -17,7 +17,7 @@ public class ProfileVm
         Name = user.Name;
         Address = user.Address;
         Rating = user.Rating;
-        Contributions = user.Submissions.Count;
+        ContributionsCount = user.Submissions.Count;
         Email = user.Email;
     }
 
@@ -33,7 +33,7 @@ public class ProfileVm
 
     public float Rating { get; set; }
 
-    public int Contributions { get; set; }
+    public int ContributionsCount { get; set; }
 
     public string Email { get; set; }
 }
