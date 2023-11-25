@@ -76,10 +76,6 @@ public class CreateModel : PageModel
 
     public async Task<IActionResult> OnPostAsync()
     {
-        Console.WriteLine("\n\n>>>\nOnPostAsync\n<<<\n\n");
-        
-        Console.WriteLine("\n\n>>>\nModelState.IsValid: " + ModelState.IsValid + "\n<<<\n\n");
-        
         // Remove ModelState errors for StoreVm if it's an existing store
         if (StoreVm != null && StoreVm.IsExistingStore())
         {
@@ -89,8 +85,6 @@ public class CreateModel : PageModel
             ModelState.Remove("StoreVm.SubmissionByCanton");
         }
         
-        Console.WriteLine("\n\n>>>\nModelState.IsValid: " + ModelState.IsValid + "\n<<<\n\n");
-
         if (!ModelState.IsValid) return Page();
 
         SubmissionVm.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -98,9 +92,7 @@ public class CreateModel : PageModel
         var formFiles = Request.Form.Files;
         
         var pictureVMs = PictureParser.Parse(formFiles);
-
-        Console.WriteLine(StoreVm.Canton + ", " + StoreVm.Province + ", " + ProductVm.Model + ", " + ProductVm.Brand + ", " + ProductVm.PName);
-
+        
         await _contributionService.AddSubmission(StoreVm, ProductVm, SubmissionVm, pictureVMs);
         
         return RedirectToPage("/Index");
