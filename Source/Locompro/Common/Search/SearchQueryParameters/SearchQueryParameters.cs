@@ -38,10 +38,9 @@ public class SearchQueryParameters<TSearchResult> : ISearchQueryParameters<TSear
     {
         if (!activationQualifier(parameter))
         {
-            Console.WriteLine("Unique search expression not added");
             return this;
         }
-        Console.WriteLine("Unique search expression added");
+        
         _uniqueSearchExpressions.Add(uniqueSearchExpression);
         
         return this;

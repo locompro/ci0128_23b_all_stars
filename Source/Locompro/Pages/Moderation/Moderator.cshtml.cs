@@ -127,7 +127,7 @@ public class ModeratorPageModel : BasePageModel
         
         try
         {
-            submissionsDto = await _searchService.GetSearchSubmissions(searchCriteria);
+            submissionsDto = await _searchService.GetSearchSubmissionsAsync(searchCriteria);
         } catch (Exception e)
         {
             Logger.LogError(e, "Error while getting search results");

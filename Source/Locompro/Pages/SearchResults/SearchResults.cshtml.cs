@@ -111,7 +111,7 @@ public class SearchResultsModel : SearchPageModel
         try
         {
             ItemMapper itemMapper = new();
-            SubmissionsDto submissionsDto = await _searchService.GetSearchResults(SearchVm);
+            SubmissionsDto submissionsDto = await _searchService.GetSearchResultsAsync(SearchVm);
             searchResults = itemMapper.ToVm(submissionsDto);
         }
         catch (Exception e)
