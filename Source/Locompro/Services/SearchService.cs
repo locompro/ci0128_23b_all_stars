@@ -37,14 +37,14 @@ public class SearchService : Service, ISearchService
     ///     canton/province.
     ///     It then returns a list of items that match all the criteria.
     /// </summary>
-    public async Task<SubmissionsDto> GetSearchSubmissions(ISearchQueryParameters<Submission> searchCriteria)
+    public async Task<SubmissionsDto> GetSearchSubmissionsAsync(ISearchQueryParameters<Submission> searchCriteria)
     {
         var submissions = await _submissionDomainService.GetByDynamicQuery(searchCriteria);
 
         return new SubmissionsDto(submissions, GetBestSubmission);
     }
 
-    public Task<SubmissionsDto> GetSearchResults(SearchVm searchVm)
+    public async Task<SubmissionsDto> GetSearchResultsAsync(SearchVm searchVm)
     {
         MapVm mapVm = new(searchVm.Latitude, searchVm.Longitude, searchVm.Distance);
         
@@ -62,7 +62,7 @@ public class SearchService : Service, ISearchService
                 mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
                 mapVm);
         
-        return GetSearchSubmissions(searchParameters);
+        return await GetSearchSubmissionsAsync(searchParameters);
     }
 
     /// <summary>

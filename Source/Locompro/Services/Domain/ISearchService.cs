@@ -7,7 +7,7 @@ namespace Locompro.Services.Domain;
 
 public interface ISearchService
 {
-    Task<SubmissionsDto> GetSearchSubmissions(ISearchQueryParameters<Submission> searchCriteria);
+    Task<SubmissionsDto> GetSearchSubmissionsAsync(ISearchQueryParameters<Submission> searchCriteria);
     
-    Task<SubmissionsDto> GetSearchResults(SearchVm searchVm);
+    Task<SubmissionsDto> GetSearchResultsAsync(SearchVm searchVm);
 }

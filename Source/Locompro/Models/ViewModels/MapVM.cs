@@ -16,7 +16,7 @@ public class MapVm
             return;
         }
         
-        Location = new Point(longitude, latitude) { SRID = 4326 };
-        Distance = distance * 1000;
+        Location = new Point(latitude, longitude);
+        Distance = distance;
     }
 }
