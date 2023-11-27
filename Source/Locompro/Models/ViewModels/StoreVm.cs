@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 
 namespace Locompro.Models.ViewModels;
 
@@ -52,5 +53,10 @@ public class StoreVm
                string.IsNullOrEmpty(Telephone) &&
                string.IsNullOrEmpty(Province) &&
                string.IsNullOrEmpty(Canton);
+    }
+    
+    public Point GetLocation()
+    {
+        return new Point(Longitude, Latitude) {SRID = 4326};
     }
 }
