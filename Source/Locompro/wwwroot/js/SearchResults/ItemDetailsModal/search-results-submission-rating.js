@@ -5,7 +5,7 @@ class SearchResultsSubmissionRating {
         this.stars = [];
     }
 
-    buildRating() {
+    buildRating(IsUserLoggedIn) {
         const ratingStars = document.createElement("div");
         ratingStars.classList.add("rating");
 
@@ -13,7 +13,7 @@ class SearchResultsSubmissionRating {
         for (let starIndex = 0; starIndex < 5; starIndex++) {
             let starRating = Math.max(0, Math.min(1, rating));
             rating--;
-            this.stars.push(new RatingStar(ratingStars, this.stars, (starRating >= 0.5), starIndex, this.submission));
+            this.stars.push(new RatingStar(ratingStars, this.stars, (starRating >= 0.5), starIndex, this.submission, IsUserLoggedIn));
         }
 
         this.ratingCell.appendChild(ratingStars);
@@ -21,7 +21,7 @@ class SearchResultsSubmissionRating {
 }
 
 class RatingStar {
-    constructor(RatingDiv, starList, originalState, starIndex, submission) {
+    constructor(RatingDiv, starList, originalState, starIndex, submission, canInteract = true) {
         this.ratingDiv = RatingDiv;
         this.starList = starList;
         this.colored = originalState;
@@ -42,10 +42,14 @@ class RatingStar {
         this.ratingDiv.style.display = 'inline-block';
         this.element.style.display = 'inline-block';
 
-        // Bind the event listeners to this class instance
-        this.element.addEventListener("mouseover", () => this.updateStarLook(true));
-        this.element.addEventListener("mouseout", () => this.updateStarLook(false));
-        this.element.addEventListener("click", () => this.setRating());
+        if (canInteract) {
+            // Bind the event listeners to this class instance
+            this.element.addEventListener("mouseover", () => this.updateStarLook(true));
+            this.element.addEventListener("mouseout", () => this.updateStarLook(false));
+            this.element.addEventListener("click", () => this.setRating());
+        } else {
+            this.element.addEventListener("click", () => this.toggleNotAuthenticatedModal());
+        }
 
         this.ratingDiv.appendChild(this.element);
     }
@@ -97,6 +101,24 @@ class RatingStar {
         this.starList[nextStarToUpdate].updateStarRatings(nextStarToUpdate, ratingSet);
     }
 
+    toggleNotAuthenticatedModal() {
+        // Deletes the opacity of the modal backdrop
+        $('#mustBeAuthenticatedModal').on('show.bs.modal', function () {
+            setTimeout(() => {
+                $('.modal-backdrop').last().css('opacity', '0');
+            }, 0);
+        });
+        
+        $('#mustBeAuthenticatedModal').modal('toggle');
+        // Adds an event listener to the modal's button
+        document.getElementById("mustBeAuthenticatedSignInButton").addEventListener("click", () => this.redirectUserToLogin());
+
+    }
+
+    redirectUserToLogin() {
+        window.location.href = "/Account/Login";
+    };
+
     notifyNewRatingToServer() {
         let url = window.location.pathname;
         url += "?handler=UpdateSubmissionRating";
@@ -128,8 +150,8 @@ class RatingStar {
                     window.location.href = data.redirectUrl;
                 }
             }).catch(error => {
-                console.error('There has been a problem with your fetch operation:', error);
-            });
-        
+            console.error('There has been a problem with your fetch operation:', error);
+        });
+
     }
 }

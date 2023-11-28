@@ -93,13 +93,14 @@
 
 .main-page-input-group-on-advanced-search {
     .card
-;
+    ;
     padding-top: 10px;
     padding-bottom: 10px;
     border-color: #b9deff;
     border-width: 2px;
     border-radius: 30px;
     background-color: #b9deff;
+    max-width: 80%;
 }
 
 .search-bar-default {

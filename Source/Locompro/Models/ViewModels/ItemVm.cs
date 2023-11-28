@@ -27,6 +27,7 @@ public class ItemVm
         Description = bestSubmission.Description ?? "";
         Model = bestSubmission.Product.Model ?? "";
         Brand = bestSubmission.Product.Brand ?? "";
+        
     }
 
     public string LastSubmissionDate { get; init; }
