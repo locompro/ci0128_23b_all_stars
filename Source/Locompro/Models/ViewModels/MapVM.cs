@@ -4,6 +4,9 @@ namespace Locompro.Models.ViewModels;
 
 public class MapVm
 {
+    public const int Ratio = 100;
+
+    private const int DistanceRatio = 1;
     public Point Location { get; set; }
     public long Distance { get; set; }
     
@@ -16,7 +19,7 @@ public class MapVm
             return;
         }
         
-        Location = new Point(latitude, longitude);
-        Distance = distance;
+        Location = new Point(latitude, longitude) { SRID = 4326 };
+        Distance = distance * DistanceRatio;
     }
 }

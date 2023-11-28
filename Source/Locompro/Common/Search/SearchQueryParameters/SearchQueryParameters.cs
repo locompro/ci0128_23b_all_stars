@@ -27,7 +27,6 @@ public class SearchQueryParameters<TSearchResult> : ISearchQueryParameters<TSear
         TSearchParameter parameter)
     {
         _searchFilters.Add(new SearchCriterion<TSearchParameter>(searchParameterType, parameter));
-
         return this;
     }
 

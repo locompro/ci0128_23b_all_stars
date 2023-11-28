@@ -911,21 +911,10 @@ public class SearchServiceTest
         Assert.That(searchResults.Count, Is.GreaterThan(0));
     }
     
-    public static SqlGeography ToSqlGeography(Point point)
-    {
-        // Assumes latitude and longitude are in degrees.
-        // 4326 is the SRID for the WGS 84 coordinate system.
-        return SqlGeography.Point(point.Y, point.X, 4326);
-    }
-
-    public static double CalculateDistance(Point p1, Point p2)
-    {
-        SqlGeography geo1 = ToSqlGeography(p1);
-        SqlGeography geo2 = ToSqlGeography(p2);
-
-        return (double)geo1.STDistance(geo2);
-    }
-
+    /// <summary>
+    ///     Searches by location within a 5 km range
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
     [Test]
     public async Task SearchWithLocationWithinFiveKm()
     {
@@ -933,23 +922,8 @@ public class SearchServiceTest
         
         MapVm mapVm = new MapVm(9.960912220799878, -84.08619109447427, 5);
         
-        Point point = new Point(9.924794131121706, -84.24072983843948);
-
-        var a = ToSqlGeography(mapVm.Location);
-        var b = ToSqlGeography(point);
-        
-        var distance = CalculateDistance(mapVm.Location, point);
-
-        Console.WriteLine("Distance: " + distance + " meters");
-        
-        Console.WriteLine("Distance Test: " + mapVm.Location.Distance(point));
-        
-        //Console.WriteLine("Distance: " + EF.Functions.Distance(mapVm.Location, point));
-        
-        Console.WriteLine("Answer: " + point.IsWithinDistance(mapVm.Location, mapVm.Distance));
-        
         ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
-        searchCriteria.AddUniqueSearch(submission => submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance,
+        searchCriteria.AddUniqueSearch(submission => MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance,
             mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
             mapVm);
         
@@ -963,23 +937,214 @@ public class SearchServiceTest
         {
             Assert.That(searchResults, Is.Not.Null);
             Assert.That(searchResults, Is.Not.Empty);
-            Assert.That(searchResults.Count, Is.EqualTo(1));
+            Assert.That(searchResults, Has.Count.EqualTo(7));
+        });
+    }
+    
+    /// <summary>
+    ///     Searches by location within a 4 km but no store is within that range
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SearchWithLocationWithinFourKmButIsFarther()
+    {
+        MockDataSetup();
+        MapVm mapVm = new MapVm(9.960912220799878, -84.08619109447427, 4);
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddUniqueSearch(submission => MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance,
+            mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
+            mapVm);
+        
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+        
+        ItemMapper itemMapper = new ();
+        
+        List<ItemVm> searchResults = itemMapper.ToVm(searchResultsDto);
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(searchResults, Is.Not.Null);
+            Assert.That(searchResults, Is.Empty);
+        });
+    }
+    
+    /// <summary>
+    ///     Searches by location on a 10 km range
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SearchWithLocationWithinTenKm()
+    {
+        MockDataSetup();
+        MapVm mapVm = new MapVm(9.960912220799878, -84.08619109447427, 10);
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddUniqueSearch(submission => MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance,
+            mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
+            mapVm);
+        
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+        
+        ItemMapper itemMapper = new ();
+        
+        List<ItemVm> searchResults = itemMapper.ToVm(searchResultsDto);
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(searchResults, Is.Not.Null);
+            Assert.That(searchResults, Is.Not.Empty);
+            Assert.That(searchResults, Has.Count.EqualTo(13));
+        });
+    }
+    
+    /// <summary>
+    ///     Searches by location within a 20km range
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SearchWithLocationWithinTwentyKm()
+    {
+        MockDataSetup();
+        MapVm mapVm = new MapVm(9.960912220799878, -84.08619109447427, 20);
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddUniqueSearch(submission => MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance,
+            mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
+            mapVm);
+        
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+        
+        ItemMapper itemMapper = new ();
+        
+        List<ItemVm> searchResults = itemMapper.ToVm(searchResultsDto);
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(searchResults, Is.Not.Null);
+            Assert.That(searchResults, Is.Not.Empty);
+            Assert.That(searchResults, Has.Count.EqualTo(19));
         });
     }
 
-    public async Task SearchWithLocationWithinFiveKmButIsFarther()
+    /// <summary>
+    ///     Search by filter on location
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SearchByFilterWorks()
     {
-        MapVm mapVm = new MapVm(9.960912220799878, -84.08619109447427, 5);
-    }
-    
-    public async Task SearchWithLocationWithinTenKm()
-    {
-        MapVm mapVm = new MapVm(9.960912220799878, -84.08619109447427, 10);
-    }
-    
-    public async Task SearchWithLocationWithinTwentyKm()
-    {
+        MockDataSetup();
         MapVm mapVm = new MapVm(9.960912220799878, -84.08619109447427, 20);
+        
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddFilterParameter(SearchParameterTypes.SubmissionByLocationFilter, mapVm);
+        
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+        
+        ItemMapper itemMapper = new ();
+        
+        List<ItemVm> searchResults = itemMapper.ToVm(searchResultsDto);
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(searchResults, Is.Not.Null);
+            Assert.That(searchResults, Is.Not.Empty);
+            Assert.That(searchResults, Has.Count.EqualTo(19));
+        });
+    }
+
+    /// <summary>
+    ///     Search on simple query with default search method
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SimpleSearchByGetSearchResults()
+    {
+        MockDataSetup();
+        
+        SearchVm searchVm = new SearchVm()
+        {
+            ProductName = "Product1"
+        };
+        
+        var searchResults = await _searchService!.GetSearchResultsAsync(searchVm);
+        
+        ItemMapper itemMapper = new ();
+        
+        var results = itemMapper.ToVm(searchResults);
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(results, Is.Not.Null);
+            Assert.That(results, Is.Not.Empty);
+            Assert.That(results, Has.Count.EqualTo(2));
+        });
+    }
+    
+    /// <summary>
+    ///     Search on complex query on default search method
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task ComplexSearchByGetSearchResults()
+    {
+        MockDataSetup();
+        
+        SearchVm searchVm = new SearchVm()
+        {
+            ProductName = "Product1",
+            ProvinceSelected  = "Province1",
+            CantonSelected = "Canton1",
+            CategorySelected = "Category1",
+            ModelSelected = "Model1",
+            BrandSelected = "Brand1"
+        };
+       
+        var searchResults = await _searchService!.GetSearchResultsAsync(searchVm);
+        
+        ItemMapper itemMapper = new ();
+        
+        var results = itemMapper.ToVm(searchResults);
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(results, Is.Not.Null);
+            Assert.That(results, Is.Not.Empty);
+            Assert.That(results, Has.Count.EqualTo(1));
+        });
+
+        MockDataSetup();
+    }
+
+    /// <summary>
+    ///     Searches by location on default search method
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SearchLocationByGetSearchResults()
+    {
+        MockDataSetup();
+        
+        SearchVm searchVm = new SearchVm()
+        {
+            Latitude = 9.960912220799878, 
+            Longitude = -84.08619109447427,
+            Distance = 5
+        };
+        
+        var searchResults = await _searchService!.GetSearchResultsAsync(searchVm);
+        
+        ItemMapper itemMapper = new ();
+        
+        var results = itemMapper.ToVm(searchResults);
+        
+        Assert.Multiple(() =>
+        {
+            Assert.That(results, Is.Not.Null);
+            Assert.That(results, Is.Not.Empty);
+            Assert.That(results, Has.Count.EqualTo(7));
+        });
     }
 
     /// <summary>
@@ -1026,7 +1191,7 @@ public class SearchServiceTest
                 Canton = canton1,
                 Address = "Address1",
                 Telephone = "Telephone1",
-                Location = new Point(9.938039, -84.051915) { SRID = 4326 } // <5
+                Location = new Point(9.93801190922732, -84.05199796732124) { SRID = 4326 } // <5
             },
             new()
             {
@@ -1386,15 +1551,12 @@ public class SearchServiceTest
             .Setup(repo => repo.GetByDynamicQuery(It.IsAny<ISearchQueries<Submission>>()))
             .ReturnsAsync((ISearchQueries<Submission> searchQueries) =>
             {
-                Console.WriteLine("Before applying search");
-                
                 // initiate the query
                 IQueryable<Submission>? submissionsResults =
                     submissions.AsQueryable().Include(submission => submission.Product);
-
+                
                 // append the search queries to the query
                 submissionsResults = searchQueries.ApplySearch(submissionsResults);
-                Console.WriteLine("Before applying unique searches");
                 submissionsResults = searchQueries.ApplyUniqueSearches(submissionsResults);
 
                 if (submissionsResults == null) return new List<Submission>();

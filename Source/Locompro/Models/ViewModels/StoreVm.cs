@@ -57,6 +57,6 @@ public class StoreVm
     
     public Point GetLocation()
     {
-        return new Point(Longitude, Latitude) {SRID = 4326};
+        return new Point(Latitude, Longitude) {SRID = 4326};
     }
 }
