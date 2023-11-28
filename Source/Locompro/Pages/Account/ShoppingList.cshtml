@@ -1,0 +1,121 @@
+@page
+@using Locompro.Services.Auth
+@inject IAuthService AuthService
+@model Locompro.Pages.Account.ShoppingListPageModel
+@{
+    var userId = AuthService.GetUserId();
+}
+
+<link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
+<div class="container">
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-primary">Buscar tiendas</button>
+    </div>
+    <h3>Lista de compras</h3>
+    <h6> X objetos en el carrito </h6>
+    <div class="table-encapsulate-for-results">
+        <table class="table table-hover search-results-table">
+            <caption></caption>
+            <thead>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Producto</th>
+                <th scope="col">Modelo</th>
+                <th scope="col">Marca</th>
+                <th scope="col" style="text-align: center">Precio mínimo</th>
+                <th scope="col" style="text-align: center">Precio máximo</th>
+                <th scope="col" style="text-align: center">Contribuciones totales</th>
+            </tr>
+            </thead>
+            <tbody id="contributionsBody"></tbody>
+        </table>
+    </div>
+    <div class="previous-next-button-area">
+        <button class="btn btn-primary" onclick="prevPage()" id="prevButton">Previo</button>
+        <input type="number" class="number-input-pages" min="1" value="1" onchange="changeIndexPage(this)">
+        <button class="btn btn-primary" onclick="nextPage()" id="nextButton">Siguiente</button>
+    </div>
+</div>
+
+<script src="~/lib/jquery/jquery.js"></script>
+<script>
+    let currentPage = 1;
+    const pageSize = @Model.PageSize;
+    const contributionsData = @Html.Raw(ViewData["ContributionsData"] ?? "[]");
+    function switchPage(pageIndex) {
+        $('#contributionsBody').empty();
+    
+        const startIndex = (pageIndex - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        
+        // Divide item and submission data into several pages
+        const pageData = contributionsData.slice(startIndex, endIndex);
+        pageData.forEach((item) => {
+            item.Submissions.forEach((submission) => {
+                $('#contributionsBody').append(`
+                    <tr>
+                        <td><button type="button" class="btn btn-danger btn-xs" onclick="removeItem()">X</button></td>
+                        <td>${item.Name}</td>
+                        <td>${item.Model}</td>
+                        <td>${item.Brand}</td>
+                        <td style="text-align: center;"> 15,000 </td>
+                        <td style="text-align: center;"> 113,000 </td>
+                        <td style="text-align: center;"> 34 </td>
+                    </tr>
+                `);
+            });
+        });
+    
+        // Update the input value
+        $('.number-input-pages').val(pageIndex);
+    
+        // Update the total pages text
+        const totalPages = Math.ceil(contributionsData.length / pageSize);
+        $('#totalPagesText').text(`${totalPages} páginas de resultados`);
+    
+        // Update button disabled state
+        const hasPrev = pageIndex > 1;
+        const hasNext = pageIndex < totalPages;
+    
+        $('#prevButton').prop('disabled', !hasPrev);
+        $('#nextButton').prop('disabled', !hasNext);
+    
+        // Hide or disable the entire pagination section if there's only one page
+        if (totalPages === 1) {
+            $('.previous-next-button-area').hide();
+        } else {
+            $('.previous-next-button-area').show();
+        }
+    }
+    
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            switchPage(currentPage);
+        }
+    }
+    
+    function nextPage() {
+        const totalPages = Math.ceil(contributionsData.length / pageSize);
+        if (currentPage < totalPages) {
+            currentPage++;
+            switchPage(currentPage);
+        }
+    }
+    
+    function changeIndexPage(input) {
+        const pageIndex = $(input).val();
+        const totalPages = Math.ceil(contributionsData.length / pageSize);
+        if (pageIndex >= 1 && pageIndex <= totalPages) {
+            currentPage = pageIndex;
+            switchPage(currentPage);
+        }
+    }
+    
+    // Initial page load
+    $(document).ready(function () {
+        // Assuming that your initial data is loaded on the page
+        switchPage(currentPage);
+    });
+
+</script>
