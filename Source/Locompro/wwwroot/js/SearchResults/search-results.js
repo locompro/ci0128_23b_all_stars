@@ -85,7 +85,7 @@ class SearchResultsTable extends ResultsTable {
             new HeaderField("Provincia", true, 'Province'),
             new HeaderField("Cantón", true, 'Canton'),
             new HeaderField("Descripción", false, 'Description'),
-            new HeaderField("Última contribución", true, 'LastSubmissionDate')
+            new HeaderField("Último aporte", true, 'LastSubmissionDate')
         ];
         
         const pageConfiguration
@@ -100,7 +100,6 @@ class SearchResultsTable extends ResultsTable {
         const tableBody =
             new SearchResultsTableBody(pageData.ResultsPerPage, selectItem);
         super(tableBody, searchResults, pageData, pageConfiguration);
-        console.log(tableBody);
     }
 
     /**

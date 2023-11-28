@@ -14,9 +14,10 @@ public class SubmissionVm
     {
         EntryTime = getFormattedDate(submission) ?? "";
         Price = submission.Price;
-        Description = submission.Description ?? "";
+        Description = submission.Description ?? "N/A";
         Status = submission.Status;
         UserId = submission.UserId ?? "";
+        Username = submission.User.UserName ?? "N/A";
         Rating = submission.Rating;
         NonFormatedEntryTime = submission.EntryTime;
     }
@@ -26,6 +27,7 @@ public class SubmissionVm
     public SubmissionStatus Status { get; set; }
     
     public string UserId { get; set; }
+    public string Username { get; set; }
 
     [BindProperty]
     [Required(ErrorMessage = "Ingresar el precio del producto.")]
