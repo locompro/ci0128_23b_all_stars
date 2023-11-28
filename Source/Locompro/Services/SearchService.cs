@@ -48,7 +48,7 @@ public class SearchService : Service, ISearchService
     public async Task<SubmissionsDto> GetSearchResultsAsync(SearchVm searchVm)
     {   
         MapVm mapVm = new(searchVm.Latitude, searchVm.Longitude, searchVm.Distance);
-        
+
         ISearchQueryParameters<Submission> searchParameters = new SearchQueryParameters<Submission>();
         searchParameters
             .AddQueryParameter(SearchParameterTypes.SubmissionByName, searchVm.ProductName)
