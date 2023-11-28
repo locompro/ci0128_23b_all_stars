@@ -1,0 +1,45 @@
+﻿@page
+@using Locompro.Common
+@using Locompro.Models.Entities
+@using Locompro.Services.Auth
+@model Locompro.Pages.Moderation.ModerationIndex
+
+@inject IUserManagerService UserManagerService
+@inject IAuthService AuthService
+@{
+    var isLoggedIn = AuthService.IsLoggedIn();
+    var userId = AuthService.GetUserId();
+    var isModerator = true;
+    User user = null;
+    if (isLoggedIn)
+    {
+        user = await UserManagerService.FindByIdAsync(userId);
+        isModerator = false;
+    }
+    if (user != null)
+    {
+        isModerator = await UserManagerService.IsInRoleAsync(user, RoleNames.Moderator);
+    }
+
+    if (!isModerator)
+    {
+        Response.Redirect("/Index");
+    }
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Moderar</title>
+</head>
+<body>
+<div class="row justify-content-center">
+    <div></div>
+    <div class="col-auto align-items-center">
+        <a class="btn btn-primary rounded" role="button" asp-page="/Moderation/PriceAnomalies">Precios anómalos</a>
+        <a class="btn btn-primary rounded" role="button" asp-page="/Moderation/Moderator">Reportes de usuarios</a>
+    </div>
+</div>
+</body>
+</html>
