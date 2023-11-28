@@ -40,9 +40,14 @@ public class SearchQueries<TSearchResult> : ISearchQueries<TSearchResult>
 
         _uniqueSearchExpressions = uniqueSearchExpressions;
     }
-    
+
     /// <inheritdoc />
-    public bool IsEmpty() => _searchQueryFunctions.Count == 0;
+    public bool IsEmpty()
+    {
+        return (_searchQueryFunctions is null || _searchQueryFunctions.Count == 0) &&
+                       (_searchQueryFilters is null || NoSearchFilters()) &&
+                       (_uniqueSearchExpressions is null || _uniqueSearchExpressions.Count == 0);
+    }
 
     public bool NoSearchFilters()
     {
@@ -52,7 +57,7 @@ public class SearchQueries<TSearchResult> : ISearchQueries<TSearchResult>
     /// <inheritdoc />
     public int Count()
     {
-        return _searchQueryFunctions.Count;
+        return _searchQueryFunctions.Count + _uniqueSearchExpressions.Count;
     }
     
     /// <inheritdoc />
@@ -72,14 +77,17 @@ public class SearchQueries<TSearchResult> : ISearchQueries<TSearchResult>
     
     public IQueryable<TSearchResult> ApplyUniqueSearches(IQueryable<TSearchResult> queryable)
     {
+        IQueryable<TSearchResult> results = queryable;
+        
         if (_uniqueSearchExpressions is null || _uniqueSearchExpressions.Count == 0)
         {
             return queryable;
         }
         
-        IQueryable<TSearchResult> results = 
-            _uniqueSearchExpressions.Aggregate(
-                queryable ,(current, query) =>current.Where(query));
+        foreach (var uniqueSearchExpression in _uniqueSearchExpressions)
+        {
+            results = results.Where(uniqueSearchExpression);
+        }
         
         return results;
     }

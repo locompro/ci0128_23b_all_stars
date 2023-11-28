@@ -90,11 +90,10 @@ public class ContributionService : Service, IContributionService
             Canton = canton,
             Address = storeVm.Address,
             Telephone = storeVm.Telephone,
-            /*Location = new Point(storeVm.Latitude, storeVm.Longitude)
-            {
-                SRID = 4326
-            },*/
+            Location = storeVm.GetLocation()
         };
+        
+        Console.WriteLine($"Store: {store.Name} Location: {store.Location.Coordinate}");
 
         return store;
     }
