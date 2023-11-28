@@ -91,13 +91,13 @@
             <caption></caption>
             <thead>
             <tr>
-                <th scope="col">Fecha de aporte </th>
+                <th scope="col" style="text-align: center;">Fecha de aporte </th>
                 <th scope="col">Producto</th>
                 <th scope="col">Modelo</th>
                 <th scope="col">Marca</th>
                 <th scope="col">Descripción</th>
                 <th scope="col">Precio</th>
-                <th scope="col">Rating</th>
+                <th scope="col" style="text-align: center;">Rating</th>
                 <th scope="col">Tienda</th>
                 <th scope="col">Provincia</th>
                 <th scope="col">Canton</th>
@@ -138,13 +138,13 @@ else
             item.Submissions.forEach((submission) => {
                 $('#contributionsBody').append(`
                     <tr>
-                        <td>${submission.EntryTime}</td>
+                        <td style="text-align: center;">${submission.EntryTime}</td>
                         <td>${item.Name}</td>
                         <td>${item.Model}</td>
                         <td>${item.Brand}</td>
                         <td>${submission.Description}</td>
-                        <td>${submission.Price}</td>
-                        <td>${submission.Rating}</td>
+                        <td>${submission.FormattedPrice}</td>
+                        <td style="text-align: center;">${submission.Rating}</td>
                         <td>${item.Store}</td>
                         <td>${item.Province}</td>
                         <td>${item.Canton}</td>

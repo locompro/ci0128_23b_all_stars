@@ -83,10 +83,11 @@ class SearchResultsModal {
             dateCell.appendChild(contributionsButton);
 
             // Add the text content to the date cell
-            dateCell.insertAdjacentHTML('beforeend', submission.EntryTime);            
+            dateCell.insertAdjacentHTML('beforeend', submission.EntryTime);
+            
             // Inserting the price cell
             const priceCell = row.insertCell(1);
-            priceCell.innerHTML = submission.Price;
+            priceCell.innerHTML = submission.FormattedPrice;
 
             // Inserting the description cell
             const descriptionCell = row.insertCell(2);
