@@ -9,6 +9,7 @@ using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
+using NetTopologySuite.Geometries;
 
 namespace Locompro.Services;
 
@@ -40,12 +41,12 @@ public class SearchService : Service, ISearchService
     public async Task<SubmissionsDto> GetSearchSubmissionsAsync(ISearchQueryParameters<Submission> searchCriteria)
     {
         var submissions = await _submissionDomainService.GetByDynamicQuery(searchCriteria);
-
+    
         return new SubmissionsDto(submissions, GetBestSubmission);
     }
 
     public async Task<SubmissionsDto> GetSearchResultsAsync(SearchVm searchVm)
-    {
+    {   
         MapVm mapVm = new(searchVm.Latitude, searchVm.Longitude, searchVm.Distance);
         
         ISearchQueryParameters<Submission> searchParameters = new SearchQueryParameters<Submission>();
@@ -58,11 +59,15 @@ public class SearchService : Service, ISearchService
             .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, searchVm.CategorySelected)
             .AddQueryParameter(SearchParameterTypes.SubmissionByModel, searchVm.ModelSelected)
             .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, searchVm.BrandSelected)
-            .AddUniqueSearch(submission => submission.Store.Location.IsWithinDistance(mapVm.Location, mapVm.Distance),
+            .AddFilterParameter(SearchParameterTypes.SubmissionByLocationFilter, mapVm)
+            /*
+            .AddUniqueSearch(submission => MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance,
                 mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
-                mapVm);
+                mapVm)*/;
         
-        return await GetSearchSubmissionsAsync(searchParameters);
+        var submissions = await _submissionDomainService.GetByDynamicQuery(searchParameters);
+    
+        return new SubmissionsDto(submissions, GetBestSubmission);
     }
 
     /// <summary>

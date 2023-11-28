@@ -44,9 +44,9 @@ public class SearchQueries<TSearchResult> : ISearchQueries<TSearchResult>
     /// <inheritdoc />
     public bool IsEmpty()
     {
-        return _searchQueryFunctions is null || _searchQueryFunctions.Count == 0 &&
-            _searchQueryFilters is null || _noFilters &&
-            _uniqueSearchExpressions is null || _uniqueSearchExpressions.Count == 0;
+        return (_searchQueryFunctions is null || _searchQueryFunctions.Count == 0) &&
+                       (_searchQueryFilters is null || NoSearchFilters()) &&
+                       (_uniqueSearchExpressions is null || _uniqueSearchExpressions.Count == 0);
     }
 
     public bool NoSearchFilters()
@@ -57,7 +57,7 @@ public class SearchQueries<TSearchResult> : ISearchQueries<TSearchResult>
     /// <inheritdoc />
     public int Count()
     {
-        return _searchQueryFunctions.Count;
+        return _searchQueryFunctions.Count + _uniqueSearchExpressions.Count;
     }
     
     /// <inheritdoc />

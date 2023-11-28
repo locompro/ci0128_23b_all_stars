@@ -92,6 +92,8 @@ public class ContributionService : Service, IContributionService
             Telephone = storeVm.Telephone,
             Location = storeVm.GetLocation()
         };
+        
+        Console.WriteLine($"Store: {store.Name} Location: {store.Location.Coordinate}");
 
         return store;
     }

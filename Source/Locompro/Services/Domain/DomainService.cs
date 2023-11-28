@@ -54,7 +54,7 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
         IEnumerable<T> results = builtQueries.IsEmpty()?
             null :
             await CrudRepository.GetByDynamicQuery(builtQueries);
-        
+
         QueryBuilder.Reset();
         
         return results;
