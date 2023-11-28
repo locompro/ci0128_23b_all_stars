@@ -167,8 +167,6 @@ class StoreGoogleMap extends GoogleMap {
             $selectElement.val(optionToSelect.value).trigger('change')
         }
     }
-
-
 }
 
 export { StoreGoogleMap }
