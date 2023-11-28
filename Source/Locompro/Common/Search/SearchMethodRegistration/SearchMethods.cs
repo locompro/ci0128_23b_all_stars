@@ -115,7 +115,7 @@ public class SearchMethods
         AddSearchParameter<long>(SearchParameterTypes.Maxvalue
             , (submission, maxVal) => submission.Price < maxVal
             , maxVal => maxVal != 0);
-        
+
         // find if submission has been reported an specific amount of times at minimum
         AddSearchParameter<int>(SearchParameterTypes.HasNAmountReports
             , (submission, minReportAmount) =>
@@ -123,5 +123,9 @@ public class SearchMethods
                 && submission.Reports.Count >= minReportAmount
                 && submission.Status != SubmissionStatus.Moderated
             , minReportAmount => minReportAmount > 0);
+
+        AddSearchParameter<int>(SearchParameterTypes.IsSuspectedAnomaly,
+            (submission, numReporte) => submission.Status == SubmissionStatus.SuspectedAnomaly,
+            numReporte => numReporte > 0);
     }
 }
