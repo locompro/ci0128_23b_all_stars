@@ -39,6 +39,7 @@ public class ItemVm
     public string Canton { get; init; }
     public string Province { get; init; }
     public List<string> Categories { get; init; }
+    
     public string Description { get; init; }
 
     [DisplayFormat(NullDisplayText = "N/A")]

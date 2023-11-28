@@ -14,8 +14,8 @@ public class ProfileVm
     public ProfileVm(User user)
     {
         Username = user.UserName;
-        Name = user.Name;
-        Address = user.Address;
+        Name = user.Name ?? "N/A";
+        Address = user.Address ?? "No fue proveído";
         Rating = user.Rating;
         ContributionsCount = user.Submissions.Count;
         Email = user.Email;

@@ -119,6 +119,8 @@ th {
 .previous-next-button-area {
     margin-bottom: 20px;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
 }
 
@@ -134,7 +136,9 @@ th {
 }
 
 .page-amount-text {
-    margin-left: 10px;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
     margin-bottom: 0px;
 }
 
