@@ -17,8 +17,15 @@ class StoreGoogleMap extends GoogleMap {
         super(mapElementId, latitudeInputId, longitudeInputId, addressInputId)
         this.provinceInput = $(provinceInputId)
         this.cantonInput = $(cantonInputId)
+        this.didMarkerChangeProvinceAndCanton = 0
     }
 
+    /**
+     * sets a counter flag to signal that the marker changed the province and canton
+     */
+    signalThatMarkerChangedProvinceAndCanton() {
+        this.didMarkerChangeProvinceAndCanton = 2
+    }
     /**
      * 
      * @param location
@@ -31,29 +38,45 @@ class StoreGoogleMap extends GoogleMap {
         })
 
         this.marker.addListener('dragend', () => {
-            console.log("cursor fue movido.")
+            this.signalThatMarkerChangedProvinceAndCanton()
+            
             this.updateLocationFromMarker()
             this.reverseGeocode(this.marker.getPosition())
+            
         })
     }
     /**
      * Adds change event listeners to province and canton input elements.
      */
     prepare() {
-        this.provinceInput.change(() =>{
-            console.log("provincia fue cambiada")
-            this.onLocationChange()
-        })
-        this.cantonInput.change(() => {
-            console.log("canton fue cambiado")
-            this.onLocationChange()
-        })
+        this.provinceInput.change(() => this.onLocationChange())
+        this.cantonInput.change(() => this.onLocationChange())
+    }
+
+    /**
+     * checks if the marker was the reason for the change in province and canton
+     * this is important so that the marker doesn't get updated when it is the one that changed the province and canton
+     * @returns {boolean}
+     */
+    checkIfItWasAMarkerChange() {
+        if (this.didMarkerChangeProvinceAndCanton) {
+            this.didMarkerChangeProvinceAndCanton -= 1
+            return true
+        }
+        return false
     }
     /**
      * Handles location change events for province and canton input elements.
      */
     onLocationChange() {
-        this.updateMarkerLocation(this.provinceInput.value, this.cantonInput.value)
+        if (this.checkIfItWasAMarkerChange()) return
+        
+        const provinceValue = this.provinceInput.val();
+        const cantonValue = this.cantonInput.val();
+        
+        if (!provinceValue || !cantonValue) return
+        
+        this.updateMarkerLocation(provinceValue, cantonValue);
     }
     /**
      * Updates the marker location on the map based on the selected province and canton.
@@ -61,8 +84,6 @@ class StoreGoogleMap extends GoogleMap {
      * @param {string} canton - The selected canton.
      */
     updateMarkerLocation(province, canton) {
-        if (!province || !canton) return
-
         const geocodeUrl = this.constructGeocodeUrl(canton, province)
         this.fetchLocationAndUpdateMap(geocodeUrl)
     }
@@ -124,7 +145,7 @@ class StoreGoogleMap extends GoogleMap {
                     this.updateSelect(this.cantonInput, data.address.Subregion)
                 }
             })
-            .catch(error => console.error('Error obteniendo datos de geocodificación inversa:', error))
+            .catch(error => console.error('Error en geocodificación inversa:', error))
     }
     /**
      * Constructs the reverse geocode URL for a given latitude and longitude.
@@ -136,14 +157,18 @@ class StoreGoogleMap extends GoogleMap {
     }
     /**
      * Updates the select element to select the option that matches the given value.
-     * @param {HTMLSelectElement} selectElement - The select element to update.
+     * @param {Object} $selectElement - The select element as a jQuery object.
      * @param {string} value - The value to select in the select element.
      */
-    updateSelect(selectElement, value) {
-        const optionToSelect = Array.from(selectElement.options).find(option => option.text === value)
-        if (optionToSelect) selectElement.value = optionToSelect.value
+    updateSelect($selectElement, value) {
+        const optionToSelect = $selectElement.find('option').toArray().find(option => option.text === value)
+
+        if (optionToSelect) {
+            $selectElement.val(optionToSelect.value).trigger('change')
+        }
     }
-    
+
+
 }
 
-export { StoreGoogleMap };
+export { StoreGoogleMap }
