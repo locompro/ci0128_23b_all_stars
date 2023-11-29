@@ -25,7 +25,7 @@ public class StoreVm
     [DisplayName("Teléfono")]
     public string Telephone { get; set; }
 
-    // Selected Province and Canton
+    // Selected Province and SubmissionByCanton
     [Required(ErrorMessage = "Seleccionar la provincia de la tienda.")]
     [DisplayName("Provincia")]
     public string Province { get; set; }
