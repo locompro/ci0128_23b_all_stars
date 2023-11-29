@@ -4,7 +4,9 @@ using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
 using Locompro.Services.Domain;
@@ -117,16 +119,15 @@ public class ModeratorPageModel : BasePageModel
     
     private async Task GetDataFromDataBase(int minAmountOfReports)
     {
-        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
-        {
-            new SearchCriterion<int>(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports);
 
         SubmissionsDto submissionsDto = null;
         
         try
         {
-            submissionsDto = await _searchService.GetSearchResults(searchCriteria);
+            submissionsDto = await _searchService.GetSearchSubmissions(searchCriteria);
         } catch (Exception e)
         {
             Logger.LogError(e, "Error while getting search results");

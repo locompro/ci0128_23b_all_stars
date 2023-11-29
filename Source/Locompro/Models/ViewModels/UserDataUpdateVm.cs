@@ -38,7 +38,7 @@ public class UserDataUpdateVm
     ///     Determines whether the view model holds a valid update for the user's data.
     /// </summary>
     /// <remarks>
-    ///     A valid update is one where the user's email or address (formed by Province, SubmissionByCanton, and ExactAddress) is not
+    ///     A valid update is one where the user's email or address (formed by Province, Canton, and ExactAddress) is not
     ///     empty.
     /// </remarks>
     /// <returns>True if is a valid update, false otherwise.</returns>
@@ -48,7 +48,7 @@ public class UserDataUpdateVm
     }
 
     /// <summary>
-    ///     Constructs a string representing the user's address by concatenating Province, SubmissionByCanton, and ExactAddress
+    ///     Constructs a string representing the user's address by concatenating Province, Canton, and ExactAddress
     ///     properties.
     /// </summary>
     /// <returns>The user's address as a string.</returns>
