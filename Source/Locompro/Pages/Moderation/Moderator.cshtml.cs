@@ -1,4 +1,3 @@
-using System.Drawing.Printing;
 using Locompro.Common;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
@@ -17,18 +16,12 @@ namespace Locompro.Pages.Moderation;
 /// </summary>
 public class ModeratorPageModel : BasePageModel
 {
-    public long ItemsAmount { get; set; }
-    
-    public PaginatedList<ModerationSubmissionVm> DisplayItems { get; set; }
-    
-    public List<ModerationSubmissionVm> Items { get; set; }
+    private readonly IConfiguration _configuration;
+
+    private readonly IModerationService _moderationService;
 
     private readonly ISearchService _searchService;
-    
-    private readonly IModerationService _moderationService;
-    
-    private readonly IConfiguration _configuration;
-    
+
     public ModeratorPageModel(
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
@@ -40,7 +33,15 @@ public class ModeratorPageModel : BasePageModel
         _configuration = configuration;
         _moderationService = moderationService;
     }
-    
+
+    public long ItemsAmount { get; set; }
+
+    public PaginatedList<UserReportedSubmissionVm> UserReportDisplayItems { get; set; }
+
+    public PaginatedList<AutoReportVm> AutoReportDisplayItems { get; set; }
+
+    public List<UserReportedSubmissionVm> Items { get; set; }
+
     /// <summary>
     /// Creates html for the page on get request
     /// </summary>
@@ -48,41 +49,73 @@ public class ModeratorPageModel : BasePageModel
     public async Task OnGet(int? pageIndex)
     {
         await PopulatePageData(pageIndex, 1);
+        var testAutoReport = new AutoReportVm()
+        {
+            Product = "test",
+            Store = "paoao",
+            Description = "test",
+            Confidence = 0.5f,
+            Price = 100,
+            MinimumPrice = 50,
+            MaximumPrice = 150,
+            AveragePrice = 100
+        };
+        var testAutoReport2 = new AutoReportVm()
+        {
+            Product = "test2",
+            Store = "paoao2",
+            Description = "test2",
+            Confidence = 0.5f,
+            Price = 100,
+            MinimumPrice = 50,
+            MaximumPrice = 150,
+            AveragePrice = 100
+        };
+
+        AutoReportDisplayItems = PaginatedList<AutoReportVm>.Create(
+            new List<AutoReportVm>()
+            {
+                testAutoReport,
+                testAutoReport2
+            },
+            0,
+            _configuration.GetValue("PageSize", 4));
     }
-    
+
     /// <summary>
     /// On post receives the moderator action on a report
     /// </summary>
     public async Task<PageResult> OnPostActOnReport()
     {
         ModeratorActionOnReportVm moderatorActionOnReportVm = await GetDataSentByClient<ModeratorActionOnReportVm>();
-        
+
         try
         {
             await _moderationService.ActOnReport(moderatorActionOnReportVm);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Logger.LogError(e, "Error while acting on report");
         }
-        
-        Items = GetCachedDataFromSession<List<ModerationSubmissionVm>>("StoredData", false);
-        
-        ModerationSubmissionVm submissionVmToRemove = Items.Find(moderationSubmissionVm =>
-            moderationSubmissionVm.UserId == moderatorActionOnReportVm.SubmissionUserId &&
-            moderationSubmissionVm.EntryTime.Year == moderatorActionOnReportVm.SubmissionEntryTime.Year &&
-            moderationSubmissionVm.EntryTime.Month == moderatorActionOnReportVm.SubmissionEntryTime.Month &&
-            moderationSubmissionVm.EntryTime.Day == moderatorActionOnReportVm.SubmissionEntryTime.Day &&
-            moderationSubmissionVm.EntryTime.Hour == moderatorActionOnReportVm.SubmissionEntryTime.Hour &&
-            moderationSubmissionVm.EntryTime.Minute == moderatorActionOnReportVm.SubmissionEntryTime.Minute &&
-            moderationSubmissionVm.EntryTime.Second == moderatorActionOnReportVm.SubmissionEntryTime.Second);
+
+        Items = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredData", false);
+
+        UserReportedSubmissionVm submissionVmToRemove = Items.Find(userReportedSubmissionVm =>
+            userReportedSubmissionVm.UserId == moderatorActionOnReportVm.SubmissionUserId &&
+            userReportedSubmissionVm.EntryTime.Year == moderatorActionOnReportVm.SubmissionEntryTime.Year &&
+            userReportedSubmissionVm.EntryTime.Month == moderatorActionOnReportVm.SubmissionEntryTime.Month &&
+            userReportedSubmissionVm.EntryTime.Day == moderatorActionOnReportVm.SubmissionEntryTime.Day &&
+            userReportedSubmissionVm.EntryTime.Hour == moderatorActionOnReportVm.SubmissionEntryTime.Hour &&
+            userReportedSubmissionVm.EntryTime.Minute == moderatorActionOnReportVm.SubmissionEntryTime.Minute &&
+            userReportedSubmissionVm.EntryTime.Second == moderatorActionOnReportVm.SubmissionEntryTime.Second);
 
         Items.Remove(submissionVmToRemove);
-             
+
         CacheDataInSession(Items, "StoredDataBetweenLoads");
-        
-        DisplayItems =
-            PaginatedList<ModerationSubmissionVm>.Create(
-                Items, 
+
+        UserReportDisplayItems =
+            PaginatedList<UserReportedSubmissionVm>.Create(
+                Items,
                 0,
                 _configuration.GetValue("PageSize", 4));
 
@@ -96,24 +129,24 @@ public class ModeratorPageModel : BasePageModel
     /// <param name="minAmountOfReports"></param>
     private async Task PopulatePageData(int? pageIndex, int minAmountOfReports)
     {
-        Items = GetCachedDataFromSession<List<ModerationSubmissionVm>>("StoredDataBetweenLoads", false);
-        
+        Items = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredDataBetweenLoads", false);
+
         if (Items == null)
         {
             await GetDataFromDataBase(minAmountOfReports);
         }
-        
+
         ItemsAmount = Items.Count;
-        
-        DisplayItems =
-            PaginatedList<ModerationSubmissionVm>.Create(
-                Items, 
-                pageIndex?? 0,
+
+        UserReportDisplayItems =
+            PaginatedList<UserReportedSubmissionVm>.Create(
+                Items,
+                pageIndex ?? 0,
                 _configuration.GetValue("PageSize", 4));
-        
+
         CacheDataInSession(Items, "StoredData");
     }
-    
+
     private async Task GetDataFromDataBase(int minAmountOfReports)
     {
         List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
@@ -122,16 +155,17 @@ public class ModeratorPageModel : BasePageModel
         };
 
         SubmissionsDto submissionsDto = null;
-        
+
         try
         {
             submissionsDto = await _searchService.GetSearchResults(searchCriteria);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Logger.LogError(e, "Error while getting search results");
         }
-        
-        ModerationSubmissionsMapper mapper = new ();
+
+        ModerationSubmissionsMapper mapper = new();
         Items = mapper.ToVm(submissionsDto);
     }
 }

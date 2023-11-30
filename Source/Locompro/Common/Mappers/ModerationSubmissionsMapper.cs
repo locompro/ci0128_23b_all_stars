@@ -8,22 +8,22 @@ namespace Locompro.Common.Mappers;
 /// Mapper than takes a Submission DTO and maps it to a list of ModerationSubmissionViewModels
 /// Each submission has a number of reports, which are mapped to a list of ReportViewModels
 /// </summary>
-public class ModerationSubmissionsMapper : GenericMapper<SubmissionsDto, List<ModerationSubmissionVm>>
+public class ModerationSubmissionsMapper : GenericMapper<SubmissionsDto, List<UserReportedSubmissionVm>>
 {
-    protected override List<ModerationSubmissionVm> BuildVm(SubmissionsDto dto)
+    protected override List<UserReportedSubmissionVm> BuildVm(SubmissionsDto dto)
     {
-        List<ModerationSubmissionVm> moderationSubmissionViewModels = new ();
+        List<UserReportedSubmissionVm> moderationSubmissionViewModels = new();
 
         if (dto == null || dto.Submissions == null || !dto.Submissions.Any() || dto.BestSubmissionQualifier == null)
         {
             return moderationSubmissionViewModels;
         }
-        
+
         foreach (Submission submission in dto.Submissions)
         {
-            List<ReportVm> reports = GetReportVmFromReports(submission.Reports.ToList());
-            
-            ModerationSubmissionVm newModerationSubmissionVm = new()
+            List<UserReportVm> reports = GetReportVmFromReports(submission.Reports.ToList());
+
+            UserReportedSubmissionVm newModerationSubmissionVm = new()
             {
                 UserId = submission.UserId,
                 EntryTime = submission.EntryTime,
@@ -37,32 +37,32 @@ public class ModerationSubmissionsMapper : GenericMapper<SubmissionsDto, List<Mo
                 Description = submission.Description,
                 Reports = reports
             };
-            
+
             moderationSubmissionViewModels.Add(newModerationSubmissionVm);
         }
 
         return moderationSubmissionViewModels;
     }
-    
-    
-    protected override SubmissionsDto BuildDto(List<ModerationSubmissionVm> vm)
+
+
+    protected override SubmissionsDto BuildDto(List<UserReportedSubmissionVm> vm)
     {
         return null;
     }
-    
+
     /// <summary>
     /// Gets reportVMs mapped for this use case from a list of reports
     /// </summary>
     /// <param name="reports"> reports to be mapped </param>
     /// <returns> mapped report VMS </returns>
-    private static List<ReportVm> GetReportVmFromReports(List<Report> reports)
+    private static List<UserReportVm> GetReportVmFromReports(List<UserReport> reports)
     {
         if (reports == null || !reports.Any())
         {
-            return new List<ReportVm>();
+            return new List<UserReportVm>();
         }
-        
-        return reports.Select(report => new ReportVm
+
+        return reports.Select(report => new UserReportVm
             {
                 SubmissionUserId = report.SubmissionUserId,
                 SubmissionEntryTime = report.SubmissionEntryTime,

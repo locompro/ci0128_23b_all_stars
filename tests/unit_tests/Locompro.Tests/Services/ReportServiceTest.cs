@@ -11,22 +11,22 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class ReportServiceTest
 {
-    private Mock<IUnitOfWork> _unitOfWork;
-    private Mock<ICrudRepository<Report, string>> _reportRepository;
-    private ILoggerFactory _loggerFactory;
-    private ReportService _reportService;
-
     [SetUp]
     public void Setup()
     {
         _unitOfWork = new Mock<IUnitOfWork>();
-        _reportRepository = new Mock<ICrudRepository<Report, string>>();
+        _reportRepository = new Mock<ICrudRepository<UserReport, string>>();
         _loggerFactory = new LoggerFactory();
 
-        _unitOfWork.Setup(u => u.GetCrudRepository<Report, string>()).Returns(_reportRepository.Object);
+        _unitOfWork.Setup(u => u.GetCrudRepository<UserReport, string>()).Returns(_reportRepository.Object);
 
         _reportService = new ReportService(_unitOfWork.Object, _loggerFactory);
     }
+
+    private Mock<IUnitOfWork> _unitOfWork;
+    private Mock<ICrudRepository<UserReport, string>> _reportRepository;
+    private ILoggerFactory _loggerFactory;
+    private ReportService _reportService;
 
     /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
     [Test]
@@ -41,14 +41,14 @@ public class ReportServiceTest
             Description = "This is a test report description."
         };
 
-        _reportRepository.Setup(repo => repo.AddAsync(It.IsAny<Report>())).Returns(Task.CompletedTask);
+        _reportRepository.Setup(repo => repo.AddAsync(It.IsAny<UserReport>())).Returns(Task.CompletedTask);
         _unitOfWork.Setup(u => u.SaveChangesAsync()).Returns(Task.CompletedTask);
 
         // Act
         await _reportService.UpdateAsync(reportDto);
 
         // Assert
-        _reportRepository.Verify(repo => repo.AddAsync(It.Is<Report>(r =>
+        _reportRepository.Verify(repo => repo.AddAsync(It.Is<UserReport>(r =>
             r.SubmissionUserId == reportDto.SubmissionUserId &&
             r.SubmissionEntryTime == reportDto.SubmissionEntryTime &&
             r.UserId == reportDto.UserId &&

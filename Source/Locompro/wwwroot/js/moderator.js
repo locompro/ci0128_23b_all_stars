@@ -38,3 +38,22 @@ function changeModeratorPage(element) {
     
     window.location.href = url;
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Get buttons and containers
+    reportButton = document.getElementById("btnReportes");
+    reportContainer = document.getElementById("reportContainer");
+    autoReportButton = document.getElementById("btnPreciosAnomalos");
+    autoReportContainer = document.getElementById("automaticReportContainer");
+
+    // Add event listener to the button
+    reportButton.addEventListener("click", function () {
+        reportContainer.classList.remove("d-none");
+        autoReportContainer.classList.add("d-none");
+    });
+
+    autoReportButton.addEventListener("click", function () {
+        autoReportContainer.classList.remove("d-none");
+        reportContainer.classList.add("d-none");
+    });
+});
