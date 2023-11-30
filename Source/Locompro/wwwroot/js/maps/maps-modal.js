@@ -1,5 +1,14 @@
 import {GoogleMap} from "./google-map.js";
 
+const country = "Costa Rica";
+const latitudeElementId = "latitude";
+const longitudeElementId = "longitude";
+const addressInputId = "MapGeneratedAddress";
+const cantonDropdownId = "cantonDropdown";
+const provinceDropdownId = "provinceDropdown";
+const distanceElementId = "distanceRangeSlider";
+const elementId = "mapModal";
+
 document.addEventListener("DOMContentLoaded", function () {
     const modalContainer = document.getElementById("modalContainer");
     let hasAdded = false;
@@ -29,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // otherwise, if false, nothing has been added previously and we are adding
             hasAdded = true;
             
-           getAdvancedSearchMapsModal("mapModal")
+           getAdvancedSearchMapsModal(elementId)
         }
     });
     
@@ -38,12 +47,8 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function getAdvancedSearchMapsModal(elementId) {
-    let cantonId = "provinceDropdown";
-    let provinceId = "cantonDropdown";
-    let distanceElement = "distanceRangeSlider";
-
-    var mapModal = new MapsModal(elementId, "Costa Rica", provinceId, cantonId, distanceElement,
-        "latitude", "longitude", "MapGeneratedAddress");
+    var mapModal = new MapsModal(elementId, country, provinceDropdownId, cantonDropdownId, distanceElementId,
+        latitudeElementId, longitudeElementId, addressInputId);
 
     window.GetModalMap = () => {
         return mapModal;
