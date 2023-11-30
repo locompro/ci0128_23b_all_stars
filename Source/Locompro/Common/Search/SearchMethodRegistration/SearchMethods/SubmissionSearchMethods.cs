@@ -67,7 +67,15 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
         
         // find by distance from the user
         AddSearchFilter<MapVm>(SearchParameterTypes.SubmissionByLocationFilter
-            , (submission, mapVm) => MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance,
+            , (submission, mapVm) =>
+            {
+                if (submission.Store.Location == null)
+                {
+                    return false;
+                }
+                
+                return MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance;
+            },
             mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0);
     }
 }
