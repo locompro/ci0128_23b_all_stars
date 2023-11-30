@@ -59,11 +59,7 @@ public class SearchService : Service, ISearchService
             .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, searchVm.CategorySelected)
             .AddQueryParameter(SearchParameterTypes.SubmissionByModel, searchVm.ModelSelected)
             .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, searchVm.BrandSelected)
-            .AddFilterParameter(SearchParameterTypes.SubmissionByLocationFilter, mapVm)
-            /*
-            .AddUniqueSearch(submission => MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance,
-                mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
-                mapVm)*/;
+            .AddFilterParameter(SearchParameterTypes.SubmissionByLocationFilter, mapVm);
         
         var submissions = await _submissionDomainService.GetByDynamicQuery(searchParameters);
     
