@@ -17,5 +17,6 @@ public enum SearchParameterTypes
     SubmissionByBrand,
     SubmissionByNAmountReports,
     SubmissionByUserId,
-    SubmissionHasApproverOrRejecter
+    SubmissionHasApproverOrRejecter,
+    SubmissionHasAutomatedReport
 }

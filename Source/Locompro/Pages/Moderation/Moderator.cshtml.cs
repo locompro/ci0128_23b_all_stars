@@ -1,10 +1,7 @@
 using System.Security.Authentication;
 using Locompro.Common;
-using System.Drawing.Printing;
-using System.Security.Authentication;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
-using Locompro.Common.Search.SearchMethodRegistration;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Locompro.Models.Dtos;
 using Locompro.Models.ViewModels;
@@ -22,13 +19,13 @@ namespace Locompro.Pages.Moderation;
 /// </summary>
 public class ModeratorPageModel : BasePageModel
 {
+    private readonly IAuthService _authService;
     private readonly IConfiguration _configuration;
 
     private readonly IModerationService _moderationService;
 
-    private readonly IAuthService _authService;
-    
     private readonly ISearchService _searchService;
+
     public ModeratorPageModel(
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
@@ -42,7 +39,15 @@ public class ModeratorPageModel : BasePageModel
         _moderationService = moderationService;
         _authService = authService;
     }
-    
+
+    public PaginatedList<UserReportedSubmissionVm> UserReportDisplayItems { get; set; }
+
+    public PaginatedList<AutoReportVm> AutoReportDisplayItems { get; set; }
+
+    public List<UserReportedSubmissionVm> Items { get; set; }
+
+    public int ItemsAmount { get; set; }
+
     /// <summary>
     /// Creates html for the page on get request
     /// </summary>
@@ -53,7 +58,7 @@ public class ModeratorPageModel : BasePageModel
         {
             throw new AuthenticationException("No user is logged in");
         }
-        
+
         await PopulatePageData(pageIndex, 1);
         var testAutoReport = new AutoReportVm()
         {
@@ -94,7 +99,7 @@ public class ModeratorPageModel : BasePageModel
     public async Task<PageResult> OnPostActOnReport()
     {
         ModeratorActionVm moderatorActionVm = await GetDataSentByClient<ModeratorActionVm>();
-        
+
         var moderatorActionMapper = new ModeratorActionMapper();
 
         var moderatorActionDto = moderatorActionMapper.ToDto(moderatorActionVm);
@@ -107,7 +112,7 @@ public class ModeratorPageModel : BasePageModel
         catch (Exception e)
         {
             Logger.LogError(e, "Error while acting on report");
-            
+
             return Page();
         }
 
@@ -168,7 +173,7 @@ public class ModeratorPageModel : BasePageModel
         {
             throw new AuthenticationException("Retrieved user ID is not valid");
         }
-        
+
         List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
         {
             new SearchCriterion<int>(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports),

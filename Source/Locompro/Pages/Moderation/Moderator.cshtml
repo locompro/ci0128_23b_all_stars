@@ -10,7 +10,7 @@
 @{
     var isLoggedIn = AuthService.IsLoggedIn();
     var userId = AuthService.GetUserId();
-    var isModerator = true;
+    var isModerator = false;
     User user = null;
     if (isLoggedIn)
     {
@@ -46,7 +46,7 @@
                         <h2>Reportes</h2>
                         <h6> @Model.ItemsAmount contribuciones a revisar </h6>
                         <div class="table-encapsulate-for-results">
-                            <table class="table table-hover search-results-table">
+                            <table class="table table-hover search-results-table" aria-label="Tabla de reportes">
                                 <thead>
                                 <tr>
                                     <th scope="col">Autor</th>
@@ -147,7 +147,7 @@
                         <h2>Precios anómalos</h2>
                         <h6> @Model.ItemsAmount contribuciones a revisar </h6>
                         <div class="table-encapsulate-for-results">
-                            <table class="table table-hover search-results-table">
+                            <table class="table table-hover search-results-table" aria-label="Tabla de precios anómalos">
                                 <thead>
                                 <tr>
                                     <th scope="col">Producto</th>
@@ -196,7 +196,7 @@
                                     }
                                 }
                                 </tbody>
-                            </table>
+                            
 
                             @for (int modalIndex = 0; modalIndex < Model.AutoReportDisplayItems.Count; modalIndex++)
                             {
