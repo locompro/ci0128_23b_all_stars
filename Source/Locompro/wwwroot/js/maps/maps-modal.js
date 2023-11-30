@@ -40,20 +40,31 @@ document.addEventListener("DOMContentLoaded", function () {
 function getAdvancedSearchMapsModal(elementId) {
     let cantonId = "provinceDropdown";
     let provinceId = "cantonDropdown";
+    let distanceElement = "distanceRangeSlider";
 
-    var mapModal = new MapsModal(elementId, "Costa Rica", provinceId, cantonId);
+    var mapModal = new MapsModal(elementId, "Costa Rica", provinceId, cantonId, distanceElement,
+        "latitude", "longitude", "MapGeneratedAddress");
 
-    window.GetModalMap = () => { return mapModal; };
+    window.GetModalMap = () => {
+        return mapModal;
+    };
 
     mapModal.setMapModalCreationListener().then(() => {});
 }
 
 class MapsModal {
-    constructor(mapModalElementId, country, provinceId, cantonId) {
+    constructor(mapModalElementId, country, provinceId, cantonId,
+                distanceElement, latitudeElementId, longitudeElementId, addressInputId) {
         this.country = country;
         this.mapModalElement = document.getElementById(mapModalElementId);
         this.provinceInput = document.getElementById(provinceId);
         this.cantonInput = document.getElementById(cantonId);
+        this.distanceElement = document.getElementById(distanceElement);
+        
+        this.latitudeElementId = latitudeElementId;
+        this.longitudeElementId = longitudeElementId;
+        this.addressInputId = addressInputId;
+        
         this.apiAlreadyLoaded = false;
         this.apiKey = "";
 
@@ -118,7 +129,11 @@ class MapsModal {
     }
     
     initiateMap() {
-        this.map = new GoogleMap("StoreModalMap", "latitude", "longitude", "MapGeneratedAddress");
+        this.map = new GoogleMap(
+            "StoreModalMap",
+            this.latitudeElementId,
+            this.longitudeElementId,
+            this.addressInputId,);
         
         this.setMapModalCreationListener().then(() => {});
     }
@@ -129,6 +144,7 @@ class MapsModal {
         }
 
         let address = this.getLocationAddress();
+        
         this.map.findLocationByAddress(address);
     }
     
@@ -157,6 +173,23 @@ class MapsModal {
         }
         
         return address;
+    }
+
+    clearLocation() {
+        this.provinceInput.disabled = "";
+        this.cantonInput.disabled = "";
+        
+        document.getElementById(this.latitudeElementId).value = 0;
+        document.getElementById(this.longitudeElementId).value = 0;
+        document.getElementById(this.addressInputId).value = "";
+        this.distanceElement.value = 25;
+    }
+    
+    submitLocation() {
+        this.provinceInput.disabled = "disabled";
+        this.cantonInput.disabled = "disabled";
+        this.provinceInput.value = "Todos";
+        this.cantonInput.value = "Todos";
     }
 }
 
