@@ -270,9 +270,9 @@ public class QueryBuilder<TSearchResults> : IQueryBuilder<TSearchResults>
     {
         Func<TSearchResults, dynamic, bool>? queryFunction = searchFilter.GetQueryFunction() as Func<TSearchResults, dynamic, bool>;
         var value = filterValue.GetSearchValue();
-        
+
         Func<TSearchResults, bool>? constructedFilter = searchResult => queryFunction(searchResult, value);
-        
+
         return constructedFilter;
     }
 }

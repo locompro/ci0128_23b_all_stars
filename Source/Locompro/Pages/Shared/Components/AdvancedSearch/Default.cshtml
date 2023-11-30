@@ -15,12 +15,31 @@
     <div class="advanced-search-modal-secondary-container">
         <div class="card-body advanced-search-modal-card">
             <div class="row d-xl-flex justify-content-xxl-center advanced-search-modal-card-contents">
-                <div class="mb-3 category-input-container" style="float:left; width: 6%">
-                    <button class="btn btn-primary justify-content-center d-flex"
-                            style="width:100%; max-width: 90px; height: 100%"
-                            data-bs-toggle="modal" data-bs-target="#mapModal">
-                        <i class="fa fa-map-marker justify-content-center" style="margin-top: 7px; font-size:40px"></i>
-                    </button>
+                <div class="mb-3 category-input-container" style="float:left; width: 200px; ">
+                    <label class="form-label d-lg-flex justify-content-xxl-center">Localización exacta</label>
+                    <div class="row justify-content-center" style="">
+                        <button class="btn btn-primary justify-content-center d-flex"
+                                style="width: 60px; height: 40px; margin-left: 0; margin-right: 30px;
+                                    padding-top: 0;"
+                                data-bs-toggle="modal" data-bs-target="#mapModal">
+                            <i class="fa fa-map-marker justify-content-center" style="margin-top: 7px; font-size:30px"></i>
+                        </button>
+                        <button class="btn btn-primary justify-content-center d-flex" 
+                                style="width: 60px; height: 40px; 
+                                    background-color: firebrick; border: solid 1px firebrick; 
+                                    margin-right: 0; padding-top: 4px; position: relative;"
+                                    onclick="window.GetModalMap().clearLocation()">
+                            <i class="fa fa-map-marker justify-content-center" 
+                               style="margin-top: 7px; font-size:20px; color: lightgrey"></i>
+                            <span class="overlay-x" 
+                                  style="position: absolute; top: 0; left: 0; 
+                                  width: 100%; height: 100%; 
+                                  font-size: 30px; line-height: 40px; 
+                                  text-align: center; color: white;">
+                                X
+                            </span>
+                        </button>
+                    </div>
                 </div>
                 <div class="d-xxl-flex justify-content-xxl-center" style="margin-right: 0px; float:left; width: 26%">
                     <div class="mb-3" style="margin-left: 5px; margin-right: 5px;margin-bottom: 0px;width: 200px; margin-top: 0px">

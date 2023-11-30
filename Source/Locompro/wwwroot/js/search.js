@@ -167,7 +167,6 @@ function sendSearchRequest(dataToSend) {
         });
 }
 
-
 // makes sure the min field is less than the max field
 function validatePriceInput(button) {
     // get the fields
@@ -182,6 +181,7 @@ function validatePriceInput(button) {
             maxButton.value = parseInt(minButton.value, 10) + 1;
         }
     }
+    
     // field is the max field
     if (button === maxButton) {
         // if the value is less or equal than the min field
@@ -190,9 +190,11 @@ function validatePriceInput(button) {
             minButton.value = parseInt(maxButton.value, 10) - 1;
         }
     }
+    
     if (minButton.value < 0) {
         minButton.value = 0;
     }
+    
     if (maxButton.value < 0) {
         maxButton.value = 0;
     }

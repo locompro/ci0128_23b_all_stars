@@ -64,10 +64,18 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
         AddSearchParameter<string>(SearchParameterTypes.SubmissionByUserId
             , (submission, userId) => submission.UserId == userId
             , userId => !string.IsNullOrEmpty(userId));
-
+        
         // find by distance from the user
-        AddSearchParameter<MapVm>(SearchParameterTypes.SubmissionByLocationFilter
-            , (submission, mapVm) => submission.Store.Location.IsWithinDistance(mapVm.Location, mapVm.Distance)
-            , mapVm => mapVm.Distance != 0 && mapVm.Location != null);
+        AddSearchFilter<MapVm>(SearchParameterTypes.SubmissionByLocationFilter
+            , (submission, mapVm) =>
+            {
+                if (submission.Store.Location == null)
+                {
+                    return false;
+                }
+                
+                return MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance;
+            },
+            mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0);
     }
 }
