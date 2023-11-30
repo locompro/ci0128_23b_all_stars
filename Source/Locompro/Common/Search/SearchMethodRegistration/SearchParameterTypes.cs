@@ -16,5 +16,5 @@ public enum SearchParameterTypes
     Model,
     Brand,
     HasNAmountReports,
-    IsSuspectedAnomaly
+    HasAutoReport
 }

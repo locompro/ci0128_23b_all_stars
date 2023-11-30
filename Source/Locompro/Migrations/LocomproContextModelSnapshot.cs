@@ -156,7 +156,8 @@ namespace Locompro.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Description")
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SubmissionUserId", "SubmissionEntryTime", "UserId");
@@ -164,6 +165,8 @@ namespace Locompro.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Reports");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Report");
                 });
 
             modelBuilder.Entity("Locompro.Models.Entities.Store", b =>
@@ -488,6 +491,35 @@ namespace Locompro.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Locompro.Models.Entities.AutoReport", b =>
+                {
+                    b.HasBaseType("Locompro.Models.Entities.Report");
+
+                    b.Property<float>("AveragePrice")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Confidence")
+                        .HasColumnType("real");
+
+                    b.Property<int>("MaximumPrice")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MinimumPrice")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("AutoReport");
+                });
+
+            modelBuilder.Entity("Locompro.Models.Entities.UserReport", b =>
+                {
+                    b.HasBaseType("Locompro.Models.Entities.Report");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasDiscriminator().HasValue("UserReport");
+                });
+
             modelBuilder.Entity("CategoryProduct", b =>
                 {
                     b.HasOne("Locompro.Models.Entities.Category", null)
@@ -551,14 +583,6 @@ namespace Locompro.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .IsRequired();
-
-                    b.HasOne("Locompro.Models.Entities.Submission", "Submission")
-                        .WithMany("Reports")
-                        .HasForeignKey("SubmissionUserId", "SubmissionEntryTime")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Submission");
 
                     b.Navigation("User");
                 });
@@ -652,6 +676,28 @@ namespace Locompro.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Locompro.Models.Entities.AutoReport", b =>
+                {
+                    b.HasOne("Locompro.Models.Entities.Submission", "Submission")
+                        .WithMany("AutoReports")
+                        .HasForeignKey("SubmissionUserId", "SubmissionEntryTime")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Submission");
+                });
+
+            modelBuilder.Entity("Locompro.Models.Entities.UserReport", b =>
+                {
+                    b.HasOne("Locompro.Models.Entities.Submission", "Submission")
+                        .WithMany("Reports")
+                        .HasForeignKey("SubmissionUserId", "SubmissionEntryTime")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Submission");
+                });
+
             modelBuilder.Entity("Locompro.Models.Entities.Category", b =>
                 {
                     b.Navigation("Children");
@@ -674,6 +720,8 @@ namespace Locompro.Migrations
 
             modelBuilder.Entity("Locompro.Models.Entities.Submission", b =>
                 {
+                    b.Navigation("AutoReports");
+
                     b.Navigation("Pictures");
 
                     b.Navigation("Reports");

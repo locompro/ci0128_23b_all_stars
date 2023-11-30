@@ -1,4 +1,4 @@
-using Locompro.Common.Search;
+﻿using Locompro.Common.Search;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models.Entities;

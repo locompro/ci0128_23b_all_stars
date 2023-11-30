@@ -124,8 +124,11 @@ public class SearchMethods
                 && submission.Status != SubmissionStatus.Moderated
             , minReportAmount => minReportAmount > 0);
 
-        AddSearchParameter<int>(SearchParameterTypes.IsSuspectedAnomaly,
-            (submission, numReporte) => submission.Status == SubmissionStatus.SuspectedAnomaly,
-            numReporte => numReporte > 0);
+        AddSearchParameter<int>(SearchParameterTypes.HasAutoReport
+            , (submission, minReportAmount) =>
+                submission.AutoReports != null
+                && submission.AutoReports.Count >= minReportAmount
+                && submission.Status != SubmissionStatus.Moderated,
+            minReportAmount => minReportAmount > 0);
     }
 }

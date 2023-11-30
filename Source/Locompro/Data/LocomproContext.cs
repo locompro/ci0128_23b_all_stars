@@ -27,6 +27,8 @@ public class LocomproContext : IdentityDbContext<User>
     public DbSet<Category> Categories { get; set; } = default!;
     public DbSet<Submission> Submissions { get; set; } = default!;
     public DbSet<Report> Reports { get; set; } = default!;
+    public DbSet<UserReport> UserReports { get; set; } = default!;
+    public DbSet<AutoReport> AutoReports { get; set; } = default!;
     public DbSet<Store> Stores { get; set; } = default!;
     public DbSet<Product> Products { get; set; } = default!;
     public DbSet<Picture> Pictures { get; set; } = default!;
@@ -94,19 +96,38 @@ public class LocomproContext : IdentityDbContext<User>
         builder.Entity<Report>()
             .HasKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime, r.UserId });
 
-        builder.Entity<Report>()
+        builder.Entity<UserReport>().HasBaseType<Report>();
+
+        builder.Entity<UserReport>()
             .HasOne(r => r.Submission)
             .WithMany(s => s.Reports)
             .HasForeignKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime })
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
-        builder.Entity<Report>()
+        builder.Entity<UserReport>()
             .HasOne(r => r.User)
             .WithMany()
             .HasForeignKey(r => r.UserId)
             .OnDelete(DeleteBehavior.ClientSetNull)
             .IsRequired();
+
+        builder.Entity<AutoReport>().HasBaseType<Report>();
+
+        builder.Entity<AutoReport>()
+            .HasOne(r => r.Submission)
+            .WithMany(s => s.AutoReports)
+            .HasForeignKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime })
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
+        builder.Entity<AutoReport>()
+            .HasOne(r => r.User)
+            .WithMany()
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.ClientSetNull)
+            .IsRequired();
+
 
         builder.Entity<User>()
             .HasMany(u => u.Submissions)
