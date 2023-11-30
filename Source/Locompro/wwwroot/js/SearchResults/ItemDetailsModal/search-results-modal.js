@@ -112,8 +112,8 @@ class SearchResultsModal {
                         return; // Exit the function to prevent the rest of the code from running
                     }
 
-                    document.querySelector('input[name="ReportVm.SubmissionUserId"]').value = submission.UserId;
-                    document.querySelector('input[name="ReportVm.SubmissionEntryTime"]').value = submission.NonFormatedEntryTime;
+                    document.querySelector('input[name="UserReportVm.SubmissionUserId"]').value = submission.UserId;
+                    document.querySelector('input[name="UserReportVm.SubmissionEntryTime"]').value = submission.NonFormatedEntryTime;
                 });
             } else {
                 reportButton.disabled = true;

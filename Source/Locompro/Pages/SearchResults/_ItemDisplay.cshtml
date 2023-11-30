@@ -65,9 +65,9 @@
                     <!-- This form will post to your OnPost method -->
                     <form id="reportForm" method="post" asp-page="/SearchResults/SearchResults" asp-page-handler="ReportSubmission">
                         <div class="form-group">
-                            <textarea class="form-control" id="descriptionInput" name="ReportVm.Description" rows="3"></textarea>
-                            <input type="hidden" name="ReportVm.SubmissionUserId" value="">
-                            <input type="hidden" name="ReportVm.SubmissionEntryTime" value="">
+                            <textarea class="form-control" id="descriptionInput" name="UserReportVm.Description" rows="3"></textarea>
+                            <input type="hidden" name="UserReportVm.SubmissionUserId" value="">
+                            <input type="hidden" name="UserReportVm.SubmissionEntryTime" value="">
                         </div>
                         <div class="modal-footer" style="border-top: none; padding: 10px 15px 0px 15px;">
                             <button type="submit" class="btn btn-primary">Reportar</button>

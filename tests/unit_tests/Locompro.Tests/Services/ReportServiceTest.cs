@@ -41,7 +41,7 @@ public class ReportServiceTest
             Description = "This is a test report description."
         };
 
-        _reportRepository.Setup(repo => repo.AddAsync(It.IsAny<Report>())).Returns(Task.CompletedTask);
+        _reportRepository.Setup(repo => repo.AddAsync(It.IsAny<UserReport>())).Returns(Task.CompletedTask);
         _unitOfWork.Setup(u => u.SaveChangesAsync()).Returns(Task.CompletedTask);
 
         // Act
@@ -50,7 +50,7 @@ public class ReportServiceTest
         // Assert
         _reportRepository.Verify(repo => repo.UpdateAsync(reportDto.SubmissionUserId, reportDto.SubmissionEntryTime,
             reportDto.UserId,
-            It.Is<Report>(r =>
+            It.Is<UserReport>(r =>
                 r.SubmissionUserId == reportDto.SubmissionUserId &&
                 r.SubmissionEntryTime == reportDto.SubmissionEntryTime &&
                 r.UserId == reportDto.UserId &&

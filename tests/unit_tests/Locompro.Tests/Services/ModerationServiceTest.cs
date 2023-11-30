@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using Locompro.Common;
-using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
@@ -36,6 +35,7 @@ public class ModerationServiceTests
 
         _submissionService = new Mock<ISubmissionService>();
 
+
         // Setup mock logger factory to return the mock logger
         var mockLoggerFactory = new Mock<ILoggerFactory>();
         mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>()))
@@ -47,7 +47,6 @@ public class ModerationServiceTests
 
         _mockReportService = new Mock<IReportService>();
     }
-
     /// <summary>
     ///     Tests that the AssignPossibleModeratorsAsync method successfully assigns the 'PossibleModerator' role
     ///     to all qualified users.
