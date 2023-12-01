@@ -19,7 +19,7 @@
      <div class="card border search-results-card">
     @if (!myContributions)
     {
-        <h3 class="text-center">Perfil de contribuciones</h3>
+        <h3 class="text-center">Historial de contribuciones</h3>
             <div class="card border search-results-card" style="padding-top: 10px; padding-bottom: 0px; padding-left: 35px; padding-right: 25px; border-radius: 30px;">
             <div class="card-body">
                 <div class="row align-items-center">
@@ -127,7 +127,9 @@ else
 <script>
     let currentPage = 1;
     const pageSize = @Model.PageSize;
-    const contributionsData = @Html.Raw(ViewData["ContributionsData"] ?? "[]");
+    const contributionsData = @Html.Raw(Model.ContributionsToShow ?? "[]");
+    console.log(contributionsData)
+
     function switchPage(pageIndex) {
         $('#contributionsBody').empty();
     

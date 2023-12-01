@@ -118,7 +118,7 @@ export default class PageIndexComplex {
         }
         
         // Disable the right button if on the last page, otherwise enable it
-        if (this.currentPage === this.totalPages - 1) {
+        if (this.currentPage >= this.totalPages - 1) {
             this.rightButton.classList.add("disabled");
         } else {
             this.rightButton.classList.remove("disabled");
