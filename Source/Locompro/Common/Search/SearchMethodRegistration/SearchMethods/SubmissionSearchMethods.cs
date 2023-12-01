@@ -73,8 +73,8 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
             , userId => !string.IsNullOrWhiteSpace(userId));
 
         // find if submission has more than max auto reports
-        AddSearchParameter<int>(SearchParameterTypes.SubmissionHasMaxAutoReports
-            , (submission, maxAutoReports) => submission.AutoReports.Count >= maxAutoReports
+        AddSearchParameter<int>(SearchParameterTypes.SubmissionHasNAutoReports
+            , (submission, maxAutoReports) => submission.AutoReports.Count == maxAutoReports
             , maxAutoReports => maxAutoReports >= 0);
         
         // find by distance from the user

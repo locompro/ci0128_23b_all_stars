@@ -1,9 +1,7 @@
-using Castle.Core.Internal;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Auth;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 
 namespace Locompro.Pages.Account
@@ -11,20 +9,22 @@ namespace Locompro.Pages.Account
     public class ContributionsPageModel : PageModel
     {
         private readonly IUserManagerService _userManagerService;
-        private IConfiguration Configuration { get; set; }
 
         public readonly int PageSize;
-        public string RequestedUserId { get; set; }
-        public ContributionsVm RequestedUser { get; set; }
-        
-        public string ContributionsToShow { get; set; }
-        public ContributionsPageModel(IUserManagerService userManagerService, 
+
+        public ContributionsPageModel(IUserManagerService userManagerService,
             IConfiguration configuration)
         {
             _userManagerService = userManagerService;
             Configuration = configuration;
             PageSize = 8;
         }
+
+        private IConfiguration Configuration { get; set; }
+        public string RequestedUserId { get; set; }
+        public ContributionsVm RequestedUser { get; set; }
+
+        public string ContributionsToShow { get; set; }
 
         // Reacts to the userId given, checks their user data and gives all the submissions done by them
         public async Task OnGetAsync(string query)
@@ -37,7 +37,6 @@ namespace Locompro.Pages.Account
                 ContributionsToShow = JsonConvert.SerializeObject(RequestedUser.Contributions);
             }
         }
-
 
 
         /// <summary>

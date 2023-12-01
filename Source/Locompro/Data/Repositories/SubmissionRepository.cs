@@ -1,4 +1,3 @@
-using Locompro.Common.Search;
 using Locompro.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,10 +39,11 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
 
         if (submission == null)
         {
-            throw new InvalidOperationException("Error loading submission! No submission for user:" + id.UserId + " and entry time: " +
+            throw new InvalidOperationException("Error loading submission! No submission for user:" + id.UserId +
+                                                " and entry time: " +
                                                 id.EntryTime + " was found.");
         }
-        
+
         return submission;
     }
 
@@ -62,7 +62,7 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     public async Task UpdateAsync(string userId, DateTime entryTime, Submission entity)
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));
-        
+
         var existingEntity = await GetByIdAsync(userId, entryTime);
         if (existingEntity != null)
         {
