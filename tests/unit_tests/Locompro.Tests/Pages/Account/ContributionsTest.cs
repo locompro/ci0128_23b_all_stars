@@ -133,7 +133,7 @@ namespace Locompro.Tests.Pages.Account
                 UserName = "temp",
                 Email = "anEmail@email.com",
                 Rating = 0,
-                Submissions = new List<Submission>()
+                CreatedSubmissions = new List<Submission>()
             };
             return user;
 
@@ -153,7 +153,7 @@ namespace Locompro.Tests.Pages.Account
             var category3 = new Category { Name = "Category3" };
 
             var user = CreateFakeUserDefault();
-            user.Submissions = new List<Submission>
+            user.CreatedSubmissions = new List<Submission>
             {
             new()
             {
