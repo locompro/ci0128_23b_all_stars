@@ -4,6 +4,7 @@ using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Locompro.Models.Dtos;
+using Locompro.Models.Results;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
 using Locompro.Services;
@@ -25,22 +26,26 @@ public class ModeratorPageModel : BasePageModel
     private readonly IModerationService _moderationService;
 
     private readonly ISearchService _searchService;
+    private readonly IUserService _userService;
 
     public ModeratorPageModel(
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
         ISearchService service,
         IModerationService moderationService,
-        IAuthService authService,
+        IAuthService authService,IUserService userService,
         IConfiguration configuration) : base(loggerFactory, httpContextAccessor)
     {
         _searchService = service;
         _configuration = configuration;
         _moderationService = moderationService;
         _authService = authService;
+        _userService = userService;
     }
 
     public PaginatedList<UserReportedSubmissionVm> UserReportDisplayItems { get; set; }
+    
+    public List<MostReportedUsersResult> MostReportedUsers { get; set; }
 
     public PaginatedList<AutoReportVm> AutoReportDisplayItems { get; set; }
 
@@ -61,6 +66,15 @@ public class ModeratorPageModel : BasePageModel
 
         await PopulateUserReportData(pageIndex, 1);
         await PopulateAutoReportData(pageIndex);
+        try
+        {
+            MostReportedUsers = _userService.GetMostReportedUsersInfo();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("Error obtaining most reported Users in Moderator", e);
+            MostReportedUsers = new List<MostReportedUsersResult>();
+        }
     }
 
     /// <summary>
