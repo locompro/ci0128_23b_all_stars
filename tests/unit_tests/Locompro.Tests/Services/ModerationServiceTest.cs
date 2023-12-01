@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Locompro.Common;
-using Locompro.Data;
 using Locompro.Data.Repositories;
+using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.Results;
 using Locompro.Models.ViewModels;
@@ -22,9 +22,8 @@ public class ModerationServiceTests
     private Mock<ILogger<ModerationService>> _mockLogger = null!;
     private Mock<ISubmissionService> _submissionService = null!;
     private ModerationService _moderationService = null!;
-    private List<Submission> _submissions = null!;
     private Mock<IReportService> _mockReportService = null!;
-    
+
     [SetUp]
     public void SetUp()
     {
@@ -33,9 +32,9 @@ public class ModerationServiceTests
         _mockUserManagerService = new Mock<IUserManagerService>();
         _mockReportService = new Mock<IReportService>();
         _mockLogger = new Mock<ILogger<ModerationService>>();
-        
+
         _submissionService = new Mock<ISubmissionService>();
-       
+
 
         // Setup mock logger factory to return the mock logger
         var mockLoggerFactory = new Mock<ILoggerFactory>();
@@ -46,40 +45,8 @@ public class ModerationServiceTests
         _moderationService = new ModerationService(mockLoggerFactory.Object, _mockUserService.Object,
             _mockUserManagerService.Object, _submissionService.Object, _mockReportService.Object);
 
-        _submissions = new List<Submission>();
-        
-        _submissionService
-            .Setup(repository => repository.DeleteSubmissionAsync(It.IsAny<SubmissionKey>()))
-            .Returns((SubmissionKey submissionKey) =>
-            {
-                _submissions.RemoveAll(submission => submission.UserId == submissionKey.UserId &&
-                                                            submission.EntryTime == submissionKey.EntryTime);
-                return Task.CompletedTask;
-            });
-        _submissionService
-            .Setup(repository =>
-                repository.UpdateSubmissionStatusAsync(It.IsAny<SubmissionKey>(), It.IsAny<SubmissionStatus>()))
-            .Returns((SubmissionKey submissionKey, SubmissionStatus status) =>
-            {
-                var submission = _submissions.Find(submission =>
-                    submission.UserId == submissionKey.UserId &&
-                    submission.EntryTime.Year == submissionKey.EntryTime.Year &&
-                    submission.EntryTime.Month == submissionKey.EntryTime.Month &&
-                    submission.EntryTime.Day == submissionKey.EntryTime.Day &&
-                    submission.EntryTime.Hour == submissionKey.EntryTime.Hour &&
-                    submission.EntryTime.Minute == submissionKey.EntryTime.Minute &&
-                    submission.EntryTime.Second == submissionKey.EntryTime.Second);
-                if (submission != null)
-                {
-                    submission.Status = status;
-                }
-                
-                return Task.CompletedTask;
-            });
-        
-        _mockReportService = new Mock<IReportService>();    
+        _mockReportService = new Mock<IReportService>();
     }
-
     /// <summary>
     ///     Tests that the AssignPossibleModeratorsAsync method successfully assigns the 'PossibleModerator' role
     ///     to all qualified users.
@@ -243,110 +210,83 @@ public class ModerationServiceTests
     }
 
     /// <summary>
-    ///     If moderator sends action to erase a submission, it is erased
-    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
+    ///     If a moderator sends the reject submission action, they are added to list of rejecters
+    ///     <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
     /// </summary>
     [Test]
-    public async Task ReportActionToEraseSubmissionErasesSubmission()
+    public async Task ReportActionToRejectSubmissionAddsRejecter()
     {
-        _submissions = new List<Submission>();
-        _submissions.Add(new Submission()
+        ModeratorActionDto modAction = new()
         {
-            UserId = "1",
-            EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc)
-        });
-
-        ModeratorActionOnReportVm modAction = new()
-        {
+            ModeratorId = "0",
             SubmissionUserId = "1",
             SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
-            Action = ModeratorActions.EraseSubmission
+            Action = ModeratorActions.RejectSubmission
         };
 
         await _moderationService.ActOnReport(modAction);
-        
-        Assert.That(_submissions, Is.Empty);
-    }
-    
-    /// <summary>
-    ///     If a moderator acts to remove a report, the report is removed
-    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
-    /// </summary>
-    [Test]
-    public async Task ReportActionToEraseReportErasesReport()
-    {
-        _submissions = new List<Submission>();
-        
-        _submissions.Add(new Submission()
-        {
-            UserId = "1",
-            EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
-            Reports = new List<Report>()
-            {
-                new Report()
-                {
-                    UserId = "2",
-                    SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc)
-                }
-            }
-        });
-        
-        ModeratorActionOnReportVm modAction = new()
-        {
-            SubmissionUserId = "1",
-            SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
-            Action = ModeratorActions.EraseReport
-        };
-        
-        await _moderationService.ActOnReport(modAction);
-        
-        Assert.That(_submissions[0].Status, Is.EqualTo(SubmissionStatus.Moderated));
+
+        _submissionService.Verify(
+            service => service.AddSubmissionRejecter(
+                It.Is<SubmissionKey>(sk => sk.UserId == modAction.SubmissionUserId
+                                           && sk.EntryTime == modAction.SubmissionEntryTime),
+                modAction.ModeratorId), Times.Once);
     }
 
     /// <summary>
-    ///     If an invalid action is sent, then it is caught
+    ///     If a moderator sends the approve submission action, they are added to list of approvers
+    ///     <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task ReportActionToApproveSubmissionAddsApprover()
+    {
+        ModeratorActionDto modAction = new()
+        {
+            ModeratorId = "0",
+            SubmissionUserId = "1",
+            SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
+            Action = ModeratorActions.ApproveSubmission
+        };
+
+        await _moderationService.ActOnReport(modAction);
+
+        _submissionService.Verify(
+            service => service.AddSubmissionApprover(
+                It.Is<SubmissionKey>(sk => sk.UserId == modAction.SubmissionUserId
+                                           && sk.EntryTime == modAction.SubmissionEntryTime),
+                modAction.ModeratorId), Times.Once);
+    }
+
+    /// <summary>
+    ///     If an invalid action is sent, ArgumentOutOfRangeException is thrown
     ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
     /// </summary>
     [Test]
     public void ReportActionInvalidOrDefaultThrowException()
     {
-        _submissions = new List<Submission>();
-        
-        _submissions.Add(new Submission()
-        {
-            UserId = "1",
-            EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
-            Reports = new List<Report>()
-            {
-                new Report()
-                {
-                    UserId = "2",
-                    SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc)
-                }
-            }
-        });
-        
-        ModeratorActionOnReportVm modAction = new()
+        ModeratorActionDto modAction = new()
         {
             SubmissionUserId = "1",
             SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
             Action = ModeratorActions.Default
         };
 
-        ModeratorActionOnReportVm modAction1 = new()
+        ModeratorActionDto modAction1 = new()
         {
             SubmissionUserId = "1",
             SubmissionEntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc),
-            Action = (ModeratorActions) 3
+            Action = (ModeratorActions)3
         };
-        
+
         Assert.Multiple(() =>
         {
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _moderationService.ActOnReport(modAction));
-            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () => await _moderationService.ActOnReport(modAction1));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(async () =>
+                await _moderationService.ActOnReport(modAction));
+            Assert.ThrowsAsync<ArgumentOutOfRangeException>(
+                async () => await _moderationService.ActOnReport(modAction1));
         });
     }
-    
+
     /// <summary>
     /// Tests that the IsUserPossibleModerator method returns true when the user is in the 'PossibleModerator' role.
     /// </summary>
@@ -411,7 +351,7 @@ public class ModerationServiceTests
         // Act & Assert
         Assert.ThrowsAsync<ArgumentException>(async () => await _moderationService.IsUserPossibleModerator(userId));
     }
-    
+
     /// <summary>
     /// Tests that the DecideOnModeratorRole method successfully adds the 'Moderator' role when the user accepts it.
     /// </summary>
@@ -430,20 +370,26 @@ public class ModerationServiceTests
         _mockUserManagerService.Setup(x => x.IsInRoleAsync(user, RoleNames.PossibleModerator))
             .ReturnsAsync(true);
 
-        _mockUserManagerService.Setup(x => x.AddClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.Moderator)))
+        _mockUserManagerService.Setup(x =>
+                x.AddClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.Moderator)))
             .ReturnsAsync(IdentityResult.Success);
-        
-        _mockUserManagerService.Setup(x => x.DeleteClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.PossibleModerator)))
+
+        _mockUserManagerService.Setup(x => x.DeleteClaimAsync(user,
+                It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.PossibleModerator)))
             .ReturnsAsync(IdentityResult.Success);
 
         // Act
         await _moderationService.DecideOnModeratorRole(userId, didAcceptRole);
 
         // Assert
-        _mockUserManagerService.Verify(x => x.AddClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.Moderator)), Times.Once);
-        _mockUserManagerService.Verify(x => x.DeleteClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.PossibleModerator)), Times.Once);
+        _mockUserManagerService.Verify(
+            x => x.AddClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.Moderator)),
+            Times.Once);
+        _mockUserManagerService.Verify(
+            x => x.DeleteClaimAsync(user,
+                It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.PossibleModerator)), Times.Once);
     }
-    
+
     /// <summary>
     /// Tests that the DecideOnModeratorRole method successfully adds the 'RejectedModeratorRole' when the user declines it.
     /// </summary>
@@ -462,20 +408,27 @@ public class ModerationServiceTests
         _mockUserManagerService.Setup(x => x.IsInRoleAsync(user, RoleNames.PossibleModerator))
             .ReturnsAsync(true);
 
-        _mockUserManagerService.Setup(x => x.AddClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.RejectedModeratorRole)))
+        _mockUserManagerService.Setup(x => x.AddClaimAsync(user,
+                It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.RejectedModeratorRole)))
             .ReturnsAsync(IdentityResult.Success);
-        
-        _mockUserManagerService.Setup(x => x.DeleteClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.PossibleModerator)))
+
+        _mockUserManagerService.Setup(x => x.DeleteClaimAsync(user,
+                It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.PossibleModerator)))
             .ReturnsAsync(IdentityResult.Success);
 
         // Act
         await _moderationService.DecideOnModeratorRole(userId, didAcceptRole);
 
         // Assert
-        _mockUserManagerService.Verify(x => x.AddClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.RejectedModeratorRole)), Times.Once);
-        _mockUserManagerService.Verify(x => x.DeleteClaimAsync(user, It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.PossibleModerator)), Times.Once);
+        _mockUserManagerService.Verify(
+            x => x.AddClaimAsync(user,
+                It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.RejectedModeratorRole)),
+            Times.Once);
+        _mockUserManagerService.Verify(
+            x => x.DeleteClaimAsync(user,
+                It.Is<Claim>(c => c.Type == ClaimTypes.Role && c.Value == RoleNames.PossibleModerator)), Times.Once);
     }
-    
+
     /// <summary>
     /// Tests that the DecideOnModeratorRole method throws an ArgumentException when the user is not found.
     /// </summary>
@@ -491,9 +444,10 @@ public class ModerationServiceTests
             .ReturnsAsync((User)null);
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(async () => await _moderationService.DecideOnModeratorRole(userId, didAcceptRole));
+        Assert.ThrowsAsync<ArgumentException>(async () =>
+            await _moderationService.DecideOnModeratorRole(userId, didAcceptRole));
     }
-    
+
     /// <summary>
     /// Tests that the DecideOnModeratorRole method throws an ArgumentException when the user is not in the 'PossibleModerator' role.
     /// </summary>
@@ -513,6 +467,7 @@ public class ModerationServiceTests
             .ReturnsAsync(false);
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentException>(async () => await _moderationService.DecideOnModeratorRole(userId, didAcceptRole));
+        Assert.ThrowsAsync<ArgumentException>(async () =>
+            await _moderationService.DecideOnModeratorRole(userId, didAcceptRole));
     }
 }

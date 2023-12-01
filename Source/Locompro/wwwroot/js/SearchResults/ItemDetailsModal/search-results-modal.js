@@ -126,10 +126,10 @@ class SearchResultsModal {
 
             // Append the icon to the button
             reportButton.appendChild(icon);
-
+            
             let isModerated = submission.Status === 1;
             let isSubmissionReported = this.isSubmissionReported(submission)
-
+            
             if (!isModerated && this.isUserLoggedIn && !isSubmissionReported) {
                 const submissionId = submission.UserId + submission.NonFormatedEntryTime;
 
@@ -161,7 +161,7 @@ class SearchResultsModal {
             reportCell.style.textAlign = 'center';
             reportCell.appendChild(reportButton);
         }
-
+        
     }
 
     isSubmissionReported(submission) {

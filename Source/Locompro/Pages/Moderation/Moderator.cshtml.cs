@@ -1,14 +1,16 @@
-using System.Drawing.Printing;
+using System.Security.Authentication;
 using Locompro.Common;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
-using Locompro.Common.Search.SearchMethodRegistration;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
+using Locompro.Models.Results;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
+using Locompro.Services;
+using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -20,72 +22,104 @@ namespace Locompro.Pages.Moderation;
 /// </summary>
 public class ModeratorPageModel : BasePageModel
 {
-    public long ItemsAmount { get; set; }
-    
-    public PaginatedList<ModerationSubmissionVm> DisplayItems { get; set; }
-    
-    public List<ModerationSubmissionVm> Items { get; set; }
+    private readonly IAuthService _authService;
+    private readonly IConfiguration _configuration;
+
+    private readonly IModerationService _moderationService;
 
     private readonly ISearchService _searchService;
-    
-    private readonly IModerationService _moderationService;
-    
-    private readonly IConfiguration _configuration;
-    
+    private readonly IUserService _userService;
+
     public ModeratorPageModel(
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
         ISearchService service,
         IModerationService moderationService,
+        IAuthService authService,IUserService userService,
         IConfiguration configuration) : base(loggerFactory, httpContextAccessor)
     {
         _searchService = service;
         _configuration = configuration;
         _moderationService = moderationService;
+        _authService = authService;
+        _userService = userService;
     }
+
+    public PaginatedList<UserReportedSubmissionVm> UserReportDisplayItems { get; set; }
     
+    public List<MostReportedUsersResult> MostReportedUsers { get; set; }
+
+    public PaginatedList<AutoReportVm> AutoReportDisplayItems { get; set; }
+
+    public List<UserReportedSubmissionVm> Items { get; set; }
+
+    public int ItemsAmount { get; set; }
+
     /// <summary>
     /// Creates html for the page on get request
     /// </summary>
     /// <param name="pageIndex"></param>
     public async Task OnGet(int? pageIndex)
     {
-        await PopulatePageData(pageIndex, 1);
+        if (!_authService.IsLoggedIn())
+        {
+            throw new AuthenticationException("No user is logged in");
+        }
+
+        await PopulateUserReportData(pageIndex, 1);
+        await PopulateAutoReportData(pageIndex);
+        try
+        {
+            MostReportedUsers = _userService.GetMostReportedUsersInfo();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("Error obtaining most reported Users in Moderator. Error "+e.Message);
+            MostReportedUsers = new List<MostReportedUsersResult>();
+        }
     }
-    
+
     /// <summary>
     /// On post receives the moderator action on a report
     /// </summary>
     public async Task<PageResult> OnPostActOnReport()
     {
-        ModeratorActionOnReportVm moderatorActionOnReportVm = await GetDataSentByClient<ModeratorActionOnReportVm>();
-        
+        ModeratorActionVm moderatorActionVm = await GetDataSentByClient<ModeratorActionVm>();
+
+        var moderatorActionMapper = new ModeratorActionMapper();
+
+        var moderatorActionDto = moderatorActionMapper.ToDto(moderatorActionVm);
+
+        moderatorActionDto.ModeratorId = _authService.GetUserId();
         try
         {
-            await _moderationService.ActOnReport(moderatorActionOnReportVm);
-        } catch (Exception e)
+            await _moderationService.ActOnReport(moderatorActionDto);
+        }
+        catch (Exception e)
         {
             Logger.LogError(e, "Error while acting on report");
+
+            return Page();
         }
-        
-        Items = GetCachedDataFromSession<List<ModerationSubmissionVm>>("StoredData", false);
-        
-        ModerationSubmissionVm submissionVmToRemove = Items.Find(moderationSubmissionVm =>
-            moderationSubmissionVm.UserId == moderatorActionOnReportVm.SubmissionUserId &&
-            moderationSubmissionVm.EntryTime.Year == moderatorActionOnReportVm.SubmissionEntryTime.Year &&
-            moderationSubmissionVm.EntryTime.Month == moderatorActionOnReportVm.SubmissionEntryTime.Month &&
-            moderationSubmissionVm.EntryTime.Day == moderatorActionOnReportVm.SubmissionEntryTime.Day &&
-            moderationSubmissionVm.EntryTime.Hour == moderatorActionOnReportVm.SubmissionEntryTime.Hour &&
-            moderationSubmissionVm.EntryTime.Minute == moderatorActionOnReportVm.SubmissionEntryTime.Minute &&
-            moderationSubmissionVm.EntryTime.Second == moderatorActionOnReportVm.SubmissionEntryTime.Second);
+
+        Items = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredData", false);
+
+        UserReportedSubmissionVm submissionVmToRemove = Items.Find(userReportedSubmissionVm =>
+            userReportedSubmissionVm.UserId == moderatorActionVm.SubmissionUserId &&
+            userReportedSubmissionVm.EntryTime.Year == moderatorActionVm.SubmissionEntryTime.Year &&
+            userReportedSubmissionVm.EntryTime.Month == moderatorActionVm.SubmissionEntryTime.Month &&
+            userReportedSubmissionVm.EntryTime.Day == moderatorActionVm.SubmissionEntryTime.Day &&
+            userReportedSubmissionVm.EntryTime.Hour == moderatorActionVm.SubmissionEntryTime.Hour &&
+            userReportedSubmissionVm.EntryTime.Minute == moderatorActionVm.SubmissionEntryTime.Minute &&
+            userReportedSubmissionVm.EntryTime.Second == moderatorActionVm.SubmissionEntryTime.Second);
 
         Items.Remove(submissionVmToRemove);
-             
+
         CacheDataInSession(Items, "StoredDataBetweenLoads");
-        
-        DisplayItems =
-            PaginatedList<ModerationSubmissionVm>.Create(
-                Items, 
+
+        UserReportDisplayItems =
+            PaginatedList<UserReportedSubmissionVm>.Create(
+                Items,
                 0,
                 _configuration.GetValue("PageSize", 4));
 
@@ -97,43 +131,90 @@ public class ModeratorPageModel : BasePageModel
     /// </summary>
     /// <param name="pageIndex"></param>
     /// <param name="minAmountOfReports"></param>
-    private async Task PopulatePageData(int? pageIndex, int minAmountOfReports)
+    private async Task PopulateUserReportData(int? pageIndex, int minAmountOfReports)
     {
-        Items = GetCachedDataFromSession<List<ModerationSubmissionVm>>("StoredDataBetweenLoads", false);
-        
+        Items = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredDataBetweenLoads", false);
+
         if (Items == null)
         {
             await GetDataFromDataBase(minAmountOfReports);
         }
-        
+
         ItemsAmount = Items.Count;
-        
-        DisplayItems =
-            PaginatedList<ModerationSubmissionVm>.Create(
-                Items, 
-                pageIndex?? 0,
+
+        UserReportDisplayItems =
+            PaginatedList<UserReportedSubmissionVm>.Create(
+                Items,
+                pageIndex ?? 0,
                 _configuration.GetValue("PageSize", 4));
-        
+
         CacheDataInSession(Items, "StoredData");
     }
-    
-    private async Task GetDataFromDataBase(int minAmountOfReports)
-    {
-        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
-        searchCriteria
-            .AddQueryParameter(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports);
 
-        SubmissionsDto submissionsDto = null;
-        
+    /// <summary>
+    /// Populates the AutoReportDisplayItems with data retrieved from fetchAutoReports.
+    /// </summary>
+    /// <param name="pageIndex">Optional page index for pagination.</param>
+    private async Task PopulateAutoReportData(int? pageIndex)
+    {
+        List<AutoReportVm> autoReports;
         try
         {
-            submissionsDto = await _searchService.GetSearchSubmissionsAsync(searchCriteria);
-        } catch (Exception e)
+            autoReports = await FetchAutoReports();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error while fetching auto reports");
+
+            autoReports = new List<AutoReportVm>();
+        }
+
+        AutoReportDisplayItems =
+            PaginatedList<AutoReportVm>.Create(
+                autoReports,
+                pageIndex ?? 0,
+                _configuration.GetValue("PageSize", 4));
+    }
+
+
+    /// <summary>
+    /// Fetches auto reports from the database using the moderation service
+    /// </summary>
+    /// <returns> List of AutoReportsVm</returns>
+    private async Task<List<AutoReportVm>> FetchAutoReports()
+    {
+        return new List<AutoReportVm> () ;
+    }
+
+    private async Task GetDataFromDataBase(int minAmountOfReports)
+    {
+        string userId = _authService.GetUserId();
+
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            throw new AuthenticationException("Retrieved user ID is not valid");
+        }
+
+       
+        ISearchQueryParameters<Submission> searchQueryParameters = new SearchQueryParameters<Submission>();
+
+        searchQueryParameters
+            .AddQueryParameter(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports)
+            .AddQueryParameter(SearchParameterTypes.SubmissionHasApproverOrRejecter, userId);
+        
+
+        SubmissionsDto submissionsDto = null;
+
+        try
+        {
+            submissionsDto = await _searchService.GetSearchSubmissionsAsync(searchQueryParameters);
+        }
+        catch (Exception e)
         {
             Logger.LogError(e, "Error while getting search results");
         }
-        
-        ModerationSubmissionsMapper mapper = new ();
+
+        ModerationSubmissionsMapper mapper = new();
         Items = mapper.ToVm(submissionsDto);
     }
 }

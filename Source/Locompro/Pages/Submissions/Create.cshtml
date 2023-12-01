@@ -47,7 +47,7 @@
                     <div class="modal-content">
                         <div class="modal-body">
                             <!-- Your partial view content goes here, without the <form> tags -->
-                            @Html.Partial("_AddStore", Model.StoreVm)
+                            <partial name="_AddStore" model="Model.StoreVm" />
                         </div>
                         <div class="modal-footer">
                             <button type="button" id="hideAddStoreBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -89,7 +89,7 @@
                     <div class="modal-content">
                         <div class="modal-body">
                             <!-- Your partial view content goes here, without the <form> tags -->
-                            @Html.Partial("_AddProduct", Model.ProductVm)
+                            <partial name="_AddProduct" model="Model.ProductVm" />
                         </div>
                         <div class="modal-footer">
                             <button type="button" id="hideAddProductBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>

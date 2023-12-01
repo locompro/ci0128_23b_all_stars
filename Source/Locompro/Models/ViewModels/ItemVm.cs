@@ -17,7 +17,7 @@ public class ItemVm
     public ItemVm(
         Submission bestSubmission,
         Func<Submission, string> getFormattedDate)
-    {
+    { 
         LastSubmissionDate = getFormattedDate(bestSubmission);
         Name = bestSubmission.Product.Name ?? "";
         Price = bestSubmission.Price;
@@ -27,11 +27,12 @@ public class ItemVm
         Description = bestSubmission.Description ?? "";
         Model = bestSubmission.Product.Model ?? "";
         Brand = bestSubmission.Product.Brand ?? "";
-        
+        ProductId = bestSubmission.Product.Id;
     }
 
     public string LastSubmissionDate { get; init; }
     public string Name { get; init; }
+    public int ProductId { get; init; }
     public double Price { get; init; }
     public string FormattedPrice => Price.ToString("C0").TrimStart('$');
 

@@ -35,7 +35,7 @@ public class ProfileTest
         {
             Assert.That(_profile.GetUserName(), Is.EqualTo(_loginData.Username));
             Assert.That(_profile.GetEmail(), Is.EqualTo(_loginData.Email));
-            Assert.That(_profile.GetAddress(), Is.Empty.Or.Null);
+            Assert.That(_profile.GetAddress(), Is.EqualTo("No fue proveído"));
             Assert.That(_profile.GetContributions(), Is.EqualTo(0));
             Assert.That(_profile.GetRating(), Is.EqualTo(0));
         });
