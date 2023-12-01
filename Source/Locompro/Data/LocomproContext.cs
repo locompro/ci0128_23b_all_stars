@@ -97,7 +97,7 @@ public class LocomproContext : IdentityDbContext<User>
             .WithMany(u => u.RejectedSubmissions);
 
         builder.Entity<Submission>()
-            .HasMany(s => s.Reports)
+            .HasMany(s => s.UserReports)
             .WithOne(r => r.Submission)
             .IsRequired();
 
@@ -108,7 +108,7 @@ public class LocomproContext : IdentityDbContext<User>
 
         builder.Entity<UserReport>()
             .HasOne(r => r.Submission)
-            .WithMany(s => s.Reports)
+            .WithMany(s => s.UserReports)
             .HasForeignKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime })
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();

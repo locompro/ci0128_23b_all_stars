@@ -59,38 +59,8 @@ public class ModeratorPageModel : BasePageModel
             throw new AuthenticationException("No user is logged in");
         }
 
-        await PopulatePageData(pageIndex, 1);
-        var testAutoReport = new AutoReportVm()
-        {
-            Product = "test",
-            Store = "paoao",
-            Description = "test",
-            Confidence = 0.5f,
-            Price = 100,
-            MinimumPrice = 50,
-            MaximumPrice = 150,
-            AveragePrice = 100
-        };
-        var testAutoReport2 = new AutoReportVm()
-        {
-            Product = "test2",
-            Store = "paoao2",
-            Description = "test2",
-            Confidence = 0.5f,
-            Price = 100,
-            MinimumPrice = 50,
-            MaximumPrice = 150,
-            AveragePrice = 100
-        };
-
-        AutoReportDisplayItems = PaginatedList<AutoReportVm>.Create(
-            new List<AutoReportVm>()
-            {
-                testAutoReport,
-                testAutoReport2
-            },
-            0,
-            _configuration.GetValue("PageSize", 4));
+        await PopulateUserReportData(pageIndex, 1);
+        await PopulateAutoReportData(pageIndex);
     }
 
     /// <summary>
@@ -145,7 +115,7 @@ public class ModeratorPageModel : BasePageModel
     /// </summary>
     /// <param name="pageIndex"></param>
     /// <param name="minAmountOfReports"></param>
-    private async Task PopulatePageData(int? pageIndex, int minAmountOfReports)
+    private async Task PopulateUserReportData(int? pageIndex, int minAmountOfReports)
     {
         Items = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredDataBetweenLoads", false);
 
@@ -163,6 +133,41 @@ public class ModeratorPageModel : BasePageModel
                 _configuration.GetValue("PageSize", 4));
 
         CacheDataInSession(Items, "StoredData");
+    }
+
+    /// <summary>
+    /// Populates the AutoReportDisplayItems with data retrieved from fetchAutoReports.
+    /// </summary>
+    /// <param name="pageIndex">Optional page index for pagination.</param>
+    private async Task PopulateAutoReportData(int? pageIndex)
+    {
+        List<AutoReportVm> autoReports;
+        try
+        {
+            autoReports = await FetchAutoReports();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error while fetching auto reports");
+
+            autoReports = new List<AutoReportVm>();
+        }
+
+        AutoReportDisplayItems =
+            PaginatedList<AutoReportVm>.Create(
+                autoReports,
+                pageIndex ?? 0,
+                _configuration.GetValue("PageSize", 4));
+    }
+
+
+    /// <summary>
+    /// Fetches auto reports from the database using the moderation service
+    /// </summary>
+    /// <returns> List of AutoReportsVm</returns>
+    private async Task<List<AutoReportVm>> FetchAutoReports()
+    {
+        return new List<AutoReportVm> () ;
     }
 
     private async Task GetDataFromDataBase(int minAmountOfReports)

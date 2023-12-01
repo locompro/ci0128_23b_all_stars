@@ -21,7 +21,7 @@ public class ModerationSubmissionsMapper : GenericMapper<SubmissionsDto, List<Us
 
         foreach (Submission submission in dto.Submissions)
         {
-            List<UserReportVm> reports = GetReportVmFromReports(submission.Reports.ToList());
+            List<UserReportVm> reports = GetReportVmFromReports(submission.UserReports.ToList());
 
             UserReportedSubmissionVm newModerationSubmissionVm = new()
             {
