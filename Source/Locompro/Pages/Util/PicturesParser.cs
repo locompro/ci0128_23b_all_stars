@@ -73,6 +73,16 @@ public static class PictureParser
     {
         return pictures.Select(SerializeSinglePicture).ToList();
     }
+    
+    /// <summary>
+    ///     Serializes a list of pictures to a list of strings
+    /// </summary>
+    /// <param name="pictures"></param>
+    /// <returns></returns>
+    public static List<string> Serialize(List<PictureVm> pictures)
+    {
+        return pictures.Select(SerializeSinglePicture).ToList();
+    }
 
     /// <summary>
     ///     Serializes a single picture to a string
@@ -80,6 +90,18 @@ public static class PictureParser
     /// <param name="picture"></param>
     /// <returns></returns>
     private static string SerializeSinglePicture(Picture picture)
+    {
+        var unserializedData = picture.PictureData;
+
+        return SerializeData(unserializedData);
+    }
+    
+    /// <summary>
+    ///     Serializes a single picture to a string
+    /// </summary>
+    /// <param name="picture"></param>
+    /// <returns></returns>
+    private static string SerializeSinglePicture(PictureVm picture)
     {
         var unserializedData = picture.PictureData;
 
