@@ -138,7 +138,7 @@ public class SearchResultsModel : SearchPageModel
         return Content(searchResultsJson);
     }
 
-    public async Task<JsonResult> OnGetGetUsersReportedSubmissions()
+    public async Task<IActionResult> OnGetGetUsersReportedSubmissions()
     {
         if (!_authService.IsLoggedIn())
         {
@@ -155,7 +155,7 @@ public class SearchResultsModel : SearchPageModel
             var reportedSubmissionVms = 
                 reportedSubmissions.Select(rs => new SubmissionVm(rs, GetFormattedDate));
 
-            return new JsonResult(reportedSubmissionVms);
+            return Content(GetJsonFrom(reportedSubmissionVms));
         }
         catch (Exception ex)
         {

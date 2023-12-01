@@ -120,6 +120,6 @@ public abstract class SearchPageModel : BasePageModel
     /// <returns> the serialized Json </returns>
     private string GetCantonsJson()
     {
-        return GetJsonFrom(_advancedSearchServiceHandler.Cantons);
+         return GetJsonFrom(_advancedSearchServiceHandler.Cantons);
     }
 }
