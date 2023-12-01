@@ -133,31 +133,41 @@ public class SearchResultsModel : SearchPageModel
     /// <summary>
     ///     Returns a list of pictures for a given item
     /// </summary>
-    /// <param name="productName"> product name of an item </param>
+    /// <param name="productId"> id name of an item</param>
     /// <param name="storeName"> store name of an item</param>
     /// <returns></returns>
-    public async Task<ContentResult> OnGetGetPicturesAsync(string productName, string storeName)
+    public async Task<ContentResult> OnGetGetPicturesAsync(int productId, string storeName)
     {
-        List<Picture> itemPictures = null;
+        List<PictureDto> pictureDtos = null;
 
         try
         {
-            itemPictures = await _pictureService.GetPicturesForItem(5, productName, storeName);
+            pictureDtos = await _pictureService.GetPicturesForItem(10, productId, storeName);
         }
         catch (Exception e)
         {
             Logger.LogError("Error when attempting to get pictures for item: " + e.Message);
         }
 
-        var formattedPictures = PictureParser.Serialize(itemPictures);
+        List<string> formattedPictures = new();
 
-        if (itemPictures.IsNullOrEmpty())
+        if (pictureDtos == null || pictureDtos.IsNullOrEmpty())
         {
             const string defaultPictureFilePath = "wwwroot/Pictures/No_Image_Picture.png";
 
             var defaultPicture = await System.IO.File.ReadAllBytesAsync(defaultPictureFilePath);
 
             formattedPictures.Add(PictureParser.SerializeData(defaultPicture));
+        }
+        else
+        {
+            IMapper<PictureDto, PictureVm> pictureMapper = new PictureMapper();
+            
+            List<PictureVm> pictureVms = new();
+            
+            pictureVms.AddRange(pictureDtos.Select(pictureDto => pictureMapper.ToVm(pictureDto)));
+
+            formattedPictures = PictureParser.Serialize(pictureVms);
         }
 
         // return list of pictures serialized as json
