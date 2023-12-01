@@ -4,7 +4,6 @@ using Locompro.Data.Repositories;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.Results;
-using Locompro.Models.ViewModels;
 using Locompro.Services;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
@@ -17,13 +16,6 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class ModerationServiceTests
 {
-    private Mock<IUserService> _mockUserService = null!;
-    private Mock<IUserManagerService> _mockUserManagerService = null!;
-    private Mock<ILogger<ModerationService>> _mockLogger = null!;
-    private Mock<ISubmissionService> _submissionService = null!;
-    private ModerationService _moderationService = null!;
-    private Mock<IReportService> _mockReportService = null!;
-
     [SetUp]
     public void SetUp()
     {
@@ -34,6 +26,7 @@ public class ModerationServiceTests
         _mockLogger = new Mock<ILogger<ModerationService>>();
 
         _submissionService = new Mock<ISubmissionService>();
+        _mockSearchService = new Mock<ISearchService>();
 
 
         // Setup mock logger factory to return the mock logger
@@ -43,11 +36,21 @@ public class ModerationServiceTests
 
         // Create an instance of the service to test
         _moderationService = new ModerationService(mockLoggerFactory.Object, _mockUserService.Object,
-            _mockUserManagerService.Object, _submissionService.Object, _mockReportService.Object);
+            _mockUserManagerService.Object, _submissionService.Object, _mockReportService.Object,
+            _mockSearchService.Object);
 
         _mockReportService = new Mock<IReportService>();
     }
-    /// <summary>
+
+    private Mock<IUserService> _mockUserService = null!;
+    private Mock<IUserManagerService> _mockUserManagerService = null!;
+    private Mock<ILogger<ModerationService>> _mockLogger = null!;
+    private Mock<ISubmissionService> _submissionService = null!;
+    private ModerationService _moderationService = null!;
+    private Mock<IReportService> _mockReportService = null!;
+    private Mock<ISearchService> _mockSearchService = null!;
+
+    /// <summary>ss
     ///     Tests that the AssignPossibleModeratorsAsync method successfully assigns the 'PossibleModerator' role
     ///     to all qualified users.
     /// </summary>

@@ -1,5 +1,4 @@
 ﻿using Locompro.Models.Dtos;
-using Locompro.Models.ViewModels;
 
 namespace Locompro.Services;
 
@@ -40,4 +39,9 @@ public interface IModerationService
     /// <param name="userId">ID of user to check for role</param>
     /// <returns>whether the user has the Possible Moderator role</returns>
     Task<bool> IsUserPossibleModerator(string userId);
+
+    /// <summary>
+    /// Fetches auto reports from the database using the moderation service
+    /// </summary>
+    Task<SubmissionsDto> FetchAllSubmissionsWithAutoReport();
 }

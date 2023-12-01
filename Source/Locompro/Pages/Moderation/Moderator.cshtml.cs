@@ -44,23 +44,24 @@ public class ModeratorPageModel : BasePageModel
 
     public PaginatedList<AutoReportVm> AutoReportDisplayItems { get; set; }
 
-    public List<UserReportedSubmissionVm> Items { get; set; }
+    public List<UserReportedSubmissionVm> UserReportedSubmissionItems { get; set; } = new();
 
-    public int ItemsAmount { get; set; }
+    public List<AutoReportVm> AutoReportItems { get; set; } = new();
 
     /// <summary>
     /// Creates html for the page on get request
     /// </summary>
-    /// <param name="pageIndex"></param>
-    public async Task OnGet(int? pageIndex)
+    /// <param name="userReportPageIndex"></param>
+    /// <param name="autoReportPageIndex"></param>
+    public async Task OnGet(int? userReportPageIndex, int? autoReportPageIndex)
     {
         if (!_authService.IsLoggedIn())
         {
             throw new AuthenticationException("No user is logged in");
         }
 
-        await PopulateUserReportData(pageIndex, 1);
-        await PopulateAutoReportData(pageIndex);
+        await PopulateUserReportData(userReportPageIndex, 1);
+        await PopulateAutoReportData(autoReportPageIndex);
     }
 
     /// <summary>
@@ -86,9 +87,9 @@ public class ModeratorPageModel : BasePageModel
             return Page();
         }
 
-        Items = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredData", false);
+        UserReportedSubmissionItems = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredData", false);
 
-        UserReportedSubmissionVm submissionVmToRemove = Items.Find(userReportedSubmissionVm =>
+        UserReportedSubmissionVm submissionVmToRemove = UserReportedSubmissionItems.Find(userReportedSubmissionVm =>
             userReportedSubmissionVm.UserId == moderatorActionVm.SubmissionUserId &&
             userReportedSubmissionVm.EntryTime.Year == moderatorActionVm.SubmissionEntryTime.Year &&
             userReportedSubmissionVm.EntryTime.Month == moderatorActionVm.SubmissionEntryTime.Month &&
@@ -97,13 +98,13 @@ public class ModeratorPageModel : BasePageModel
             userReportedSubmissionVm.EntryTime.Minute == moderatorActionVm.SubmissionEntryTime.Minute &&
             userReportedSubmissionVm.EntryTime.Second == moderatorActionVm.SubmissionEntryTime.Second);
 
-        Items.Remove(submissionVmToRemove);
+        UserReportedSubmissionItems.Remove(submissionVmToRemove);
 
-        CacheDataInSession(Items, "StoredDataBetweenLoads");
+        CacheDataInSession(UserReportedSubmissionItems, "StoredDataBetweenLoads");
 
         UserReportDisplayItems =
             PaginatedList<UserReportedSubmissionVm>.Create(
-                Items,
+                UserReportedSubmissionItems,
                 0,
                 _configuration.GetValue("PageSize", 4));
 
@@ -117,22 +118,21 @@ public class ModeratorPageModel : BasePageModel
     /// <param name="minAmountOfReports"></param>
     private async Task PopulateUserReportData(int? pageIndex, int minAmountOfReports)
     {
-        Items = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredDataBetweenLoads", false);
+        UserReportedSubmissionItems =
+            GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredDataBetweenLoads", false);
 
-        if (Items == null)
+        if (UserReportedSubmissionItems == null)
         {
             await GetDataFromDataBase(minAmountOfReports);
         }
 
-        ItemsAmount = Items.Count;
-
         UserReportDisplayItems =
             PaginatedList<UserReportedSubmissionVm>.Create(
-                Items,
+                UserReportedSubmissionItems,
                 pageIndex ?? 0,
                 _configuration.GetValue("PageSize", 4));
 
-        CacheDataInSession(Items, "StoredData");
+        CacheDataInSession(UserReportedSubmissionItems, "StoredData");
     }
 
     /// <summary>
@@ -167,7 +167,14 @@ public class ModeratorPageModel : BasePageModel
     /// <returns> List of AutoReportsVm</returns>
     private async Task<List<AutoReportVm>> FetchAutoReports()
     {
-        return new List<AutoReportVm> () ;
+        // Call moderation services for dto's on auto reports
+        var submissionsWithAutoReports = await _moderationService.FetchAllSubmissionsWithAutoReport();
+        // Map the dtos to vms 
+        AutoReportSubmissionsMapper mapper = new();
+        var autoReportVms = mapper.ToVm(submissionsWithAutoReports);
+
+        // Return the vms
+        return autoReportVms;
     }
 
     private async Task GetDataFromDataBase(int minAmountOfReports)
@@ -196,7 +203,7 @@ public class ModeratorPageModel : BasePageModel
             Logger.LogError(e, "Error while getting search results");
         }
 
-        ModerationSubmissionsMapper mapper = new();
-        Items = mapper.ToVm(submissionsDto);
+        UserReportSubmissionsMapper mapper = new();
+        UserReportedSubmissionItems = mapper.ToVm(submissionsDto);
     }
 }

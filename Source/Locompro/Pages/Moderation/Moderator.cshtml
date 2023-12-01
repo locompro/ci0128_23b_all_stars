@@ -45,7 +45,7 @@
                 <div class="card border search-results-card" border="5px solid black;">
                     <div>
                         <h2>Reportes</h2>
-                        <h6> @Model.ItemsAmount contribuciones a revisar </h6>
+                        <h6> @Model.UserReportedSubmissionItems.Count contribuciones a revisar </h6>
                         <div class="table-encapsulate-for-results">
                             <table class="table table-hover search-results-table" aria-label="Tabla de reportes">
                                 <thead>
@@ -133,7 +133,8 @@
                                    value="@(Model.UserReportDisplayItems.PageIndex + 1)"
                                    onchange="changeModeratorPage(this)">
                             <a asp-page=""
-                               asp-route-pageIndex="@(Model.UserReportDisplayItems.PageIndex + 1)"
+                               asp-route-userReportPageIndex="@(Model.UserReportDisplayItems.PageIndex + 1)"
+                               asp-route-autoReportPageIndex="@(Model.AutoReportDisplayItems.PageIndex + 1)"
                                class="btn btn-primary @nextDisabled">
                                 Siguiente
                             </a>
@@ -146,7 +147,7 @@
                 <div class="card border search-results-card" border="5px solid black;">
                     <div>
                         <h2>Precios anómalos</h2>
-                        <h6> @Model.ItemsAmount contribuciones a revisar </h6>
+                        <h6> @Model.AutoReportItems.Count contribuciones a revisar </h6>
                         <div class="table-encapsulate-for-results">
                             <table class="table table-hover search-results-table" aria-label="Tabla de precios anómalos">
                                 <thead>
@@ -223,7 +224,8 @@
 
                         <div class="previous-next-button-area">
                             <a asp-page=""
-                               asp-route-pageIndex="@(Model.UserReportDisplayItems.PageIndex - 1)"
+                               asp-route-userReportPageIndex="@(Model.UserReportDisplayItems.PageIndex - 1)"
+                               asp-route-autoReportPageIndex="@(Model.AutoReportDisplayItems.PageIndex - 1)"
                                class="btn btn-primary @prevDisabled">
                                 Previo
                             </a>
@@ -235,7 +237,8 @@
                                    value="@(Model.UserReportDisplayItems.PageIndex + 1)"
                                    onchange="changeModeratorPage(this)">
                             <a asp-page=""
-                               asp-route-pageIndex="@(Model.UserReportDisplayItems.PageIndex + 1)"
+                               asp-route-userReportPageIndex="@(Model.UserReportDisplayItems.PageIndex + 1)"
+                               asp-route-autoReportPageIndex="@(Model.AutoReportDisplayItems.PageIndex + 1)"
                                class="btn btn-primary @nextDisabled">
                                 Siguiente
                             </a>
