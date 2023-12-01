@@ -28,20 +28,30 @@
     }
 }
 
-<div>
-    <h1>Moderación</h1>
-    
-    <link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
-    <link rel="stylesheet" href="~/css/Moderation.css" asp-append-version="true"/>
-    
-    <div class="container" style="margin-top: 15px">
-        <div class="container">
+<div xmlns="http://www.w3.org/1999/html">
+
+
+<link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
+<link rel="stylesheet" href="~/css/Moderation.css" asp-append-version="true"/>
+<link rel="stylesheet" href="~/assets/css/moderation-modal.css" asp-append-version="true">
+<link rel="stylesheet" href="~/assets/css/swiper-icons.css" asp-append-version="true">
+<link rel="stylesheet" href="~/assets/bootstrap/css/bootstrap.min.css" asp-append-version="true">
+
+<div class="container" style="margin-top: 15px">
+    <div class="container">
+        <h1>Moderación</h1>
+        <div class="toggle-buttons" style="padding-left: 1%">
+            <button id="btnReportes" class="btn btn-primary">Reportes</button>
+            <button id="btnPreciosAnomalos" class="btn btn-primary">Precios anómalos</button>
+            <button class="btn btn-primary border" id="OpenMostReportedPeopleBtn" data-bs-target="#MostReportedPeopleModal" data-bs-toggle="modal">Más Reportadas</button>
+        </div>
+        <div class="container" id="reportContainer">
             <div class="card border search-results-card" border="5px solid black;">
                 <div>
                     <h2>Reportes</h2>
                     <h6> @Model.ItemsAmount contribuciones a revisar </h6>
                     <div class="table-encapsulate-for-results">
-                        <table class="table table-hover search-results-table">
+                        <table class="table table-hover search-results-table" aria-label="Tabla de reportes">
                             <thead>
                             <tr>
                                 <th scope="col">Autor</th>
@@ -56,11 +66,11 @@
                             </thead>
                             <tbody>
                             @{
-                                PaginatedList<ModerationSubmissionVm> items = Model.DisplayItems;
-                                var index = 0;
-                                foreach (ModerationSubmissionVm item in Model.DisplayItems)
+                                PaginatedList<UserReportedSubmissionVm> items = Model.UserReportDisplayItems;
+                                var userIndex = 0;
+                                foreach (UserReportedSubmissionVm item in Model.UserReportDisplayItems)
                                 {
-                                    <tr onclick="selectReport(@index)">
+                                    <tr onclick="selectReport(@userIndex)">
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Author)
                                         </td>
@@ -86,57 +96,171 @@
                                             @Html.DisplayFor(modelItem => item.Description)
                                         </td>
                                     </tr>
+                                    userIndex++;
+                                }
+                            }
+                            </tbody>
+                        </table>
+
+                        @for (int modalIndex = 0; modalIndex < Model.UserReportDisplayItems.Count; modalIndex++)
+                        {
+                            string modalName = "ReportsPerSubmissionModal" + modalIndex;
+
+                            <div class="modal search-results-modal" id="@modalName" tabindex="-1" aria-labelledby="UserReportsPerSubmissionModal" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
+                                        <div class="modal-body">
+                                            @await Html.PartialAsync("_ReportsPerSubmission", Model.UserReportDisplayItems[modalIndex])
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    @{
+                        var prevDisabled = !Model.UserReportDisplayItems.HasPreviousPage ? "disabled" : "";
+                        var nextDisabled = !(Model.UserReportDisplayItems.HasPreviousPage) ? "disabled" : "";
+                    }
+
+                    <div class="previous-next-button-area">
+                        <a asp-page=""
+                           asp-route-pageIndex="@(Model.UserReportDisplayItems.PageIndex - 1)"
+                           class="btn btn-primary @prevDisabled">
+                            Previo
+                        </a>
+
+                        <input type="number"
+                               class="number-input-pages"
+                               min=1
+                               max="@Model.UserReportDisplayItems.TotalPages"
+                               value="@(Model.UserReportDisplayItems.PageIndex + 1)"
+                               onchange="changeModeratorPage(this)">
+                        <a asp-page=""
+                           asp-route-pageIndex="@(Model.UserReportDisplayItems.PageIndex + 1)"
+                           class="btn btn-primary @nextDisabled">
+                            Siguiente
+                        </a>
+                        <h6 class="page-amount-text"> @Model.UserReportDisplayItems.TotalPages páginas de reportes </h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container d-none" id="automaticReportContainer">
+            <div class="card border search-results-card" border="5px solid black;">
+                <div>
+                    <h2>Precios anómalos</h2>
+                    <h6> @Model.ItemsAmount contribuciones a revisar </h6>
+                    <div class="table-encapsulate-for-results">
+                        <table class="table table-hover search-results-table" aria-label="Tabla de precios anómalos">
+                            <thead>
+                            <tr>
+                                <th scope="col">Producto</th>
+                                <th scope="col">Precio</th>
+                                <th scope="col">Confiabilidad</th>
+                                <th scope="col">Mínimo</th>
+                                <th scope="col">Máximo</th>
+                                <th scope="col">Promedio</th>
+                                <th scope="col">Tienda</th>
+                                <th scope="col">Descripción</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @{
+                                PaginatedList<AutoReportVm> automaticReports = Model.AutoReportDisplayItems;
+                                var index = 0;
+                                foreach (AutoReportVm item in Model.AutoReportDisplayItems)
+                                {
+                                    <tr onclick="selectReport(@index)">
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Product)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Price)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Confidence)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.MinimumPrice)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.MaximumPrice)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.AveragePrice)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Store)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Description)
+                                        </td>
+                                    </tr>
                                     index++;
                                 }
                             }
                             </tbody>
                         </table>
-                        
-                        @for (int modalIndex = 0; modalIndex < Model.DisplayItems.Count; modalIndex++)
-                            {
-                                string modalName = "ReportsPerSubmissionModal" + modalIndex;
-                                
-                                <div class="modal search-results-modal" id="@modalName" tabindex="-1" aria-labelledby="ReportsPerSubmissionModal" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
-                                            <div class="modal-body">
-                                                @await Html.PartialAsync("_ReportsPerSubmission", Model.DisplayItems[modalIndex])
-                                            </div>
+
+
+                        @for (int modalIndex = 0; modalIndex < Model.AutoReportDisplayItems.Count; modalIndex++)
+                        {
+                            string modalName = "ReportsPerSubmissionModal" + modalIndex;
+
+                            <div class="modal search-results-modal" id="@modalName" tabindex="-1" aria-labelledby="UserReportsPerSubmissionModal" aria-hidden="true">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
+                                        <div class="modal-body">
+
                                         </div>
                                     </div>
                                 </div>
-                            }
+                            </div>
+                        }
                     </div>
-    
+
                     @{
-                        var prevDisabled = !Model.DisplayItems.HasPreviousPage ? "disabled" : "";
-                        var nextDisabled = !(Model.DisplayItems.HasPreviousPage) ? "disabled" : "";
+                        var autoPrevDisabled = !Model.AutoReportDisplayItems.HasPreviousPage ? "disabled" : "";
+                        var autoNextDisabled = !(Model.AutoReportDisplayItems.HasPreviousPage) ? "disabled" : "";
                     }
-    
+
                     <div class="previous-next-button-area">
                         <a asp-page=""
-                           asp-route-pageIndex="@(Model.DisplayItems.PageIndex - 1)"
+                           asp-route-pageIndex="@(Model.UserReportDisplayItems.PageIndex - 1)"
                            class="btn btn-primary @prevDisabled">
                             Previo
                         </a>
-    
+
                         <input type="number"
                                class="number-input-pages"
                                min=1
-                               max="@Model.DisplayItems.TotalPages"
-                               value="@(Model.DisplayItems.PageIndex + 1)"
+                               max="@Model.UserReportDisplayItems.TotalPages"
+                               value="@(Model.UserReportDisplayItems.PageIndex + 1)"
                                onchange="changeModeratorPage(this)">
                         <a asp-page=""
-                           asp-route-pageIndex="@(Model.DisplayItems.PageIndex + 1)"
+                           asp-route-pageIndex="@(Model.UserReportDisplayItems.PageIndex + 1)"
                            class="btn btn-primary @nextDisabled">
                             Siguiente
                         </a>
-                        <h6 class="page-amount-text"> @Model.DisplayItems.TotalPages páginas de reportes </h6>
+                        <h6 class="page-amount-text"> @Model.UserReportDisplayItems.TotalPages páginas de reportes </h6>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<div class="modal fade" role="dialog" tabindex="-1" id="MostReportedPeopleModal">
+    <div class="modal-dialog modal-lg modal-fullscreen-lg-down" role="document">
+        <div class="modal-content rounded-4">
+            @await Html.PartialAsync("_MostReportedUsersInfo", Model.MostReportedUsers)
+        </div>
+    </div>
+</div>
+</div>
 
-<script src="~/js/moderator.js"></script>
+@section Scripts
+{
+    <script src="~/js/moderator.js"></script>
+    <script src="~/assets/bootstrap/js/bootstrap.min.js"></script>
+}

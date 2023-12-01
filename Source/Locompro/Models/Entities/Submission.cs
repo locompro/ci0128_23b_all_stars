@@ -1,3 +1,4 @@
+using System.Collections;
 using Microsoft.Build.Framework;
 
 namespace Locompro.Models.Entities;
@@ -31,7 +32,13 @@ public class Submission
 
     public virtual ICollection<Picture> Pictures { get; set; }
 
-    public virtual ICollection<Report> Reports { get; set; }
+    public virtual ICollection<UserReport> UserReports { get; set; }
+
+    public virtual ICollection<AutoReport> AutoReports { get; set; }
 
     public long NumberOfRatings { get; set; }
+
+    public virtual ICollection<User> Approvers { get; set; }
+    
+    public virtual ICollection<User> Rejecters { get; set; }
 }

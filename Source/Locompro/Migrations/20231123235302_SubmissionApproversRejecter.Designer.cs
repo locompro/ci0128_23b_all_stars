@@ -4,17 +4,18 @@ using Locompro.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NetTopologySuite.Geometries;
 
 #nullable disable
 
 namespace Locompro.Migrations
 {
     [DbContext(typeof(LocomproContext))]
-    partial class LocomproContextModelSnapshot : ModelSnapshot
+    [Migration("20231123235302_SubmissionApproversRejecter")]
+    partial class SubmissionApproversRejecter
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -157,8 +158,7 @@ namespace Locompro.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired()
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("SubmissionUserId", "SubmissionEntryTime", "UserId");
@@ -166,8 +166,6 @@ namespace Locompro.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Reports");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Report");
                 });
 
             modelBuilder.Entity("Locompro.Models.Entities.Store", b =>
@@ -193,8 +191,13 @@ namespace Locompro.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(60)");
 
-                    b.Property<Point>("Location")
-                        .HasColumnType("geography");
+                    b.Property<decimal>("Latitude")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Longitude")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -487,35 +490,6 @@ namespace Locompro.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Locompro.Models.Entities.AutoReport", b =>
-                {
-                    b.HasBaseType("Locompro.Models.Entities.Report");
-
-                    b.Property<float>("AveragePrice")
-                        .HasColumnType("real");
-
-                    b.Property<float>("Confidence")
-                        .HasColumnType("real");
-
-                    b.Property<int>("MaximumPrice")
-                        .HasColumnType("int");
-
-                    b.Property<int>("MinimumPrice")
-                        .HasColumnType("int");
-
-                    b.HasDiscriminator().HasValue("AutoReport");
-                });
-
-            modelBuilder.Entity("Locompro.Models.Entities.UserReport", b =>
-                {
-                    b.HasBaseType("Locompro.Models.Entities.Report");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasDiscriminator().HasValue("UserReport");
-                });
-
             modelBuilder.Entity("SubmissionUser", b =>
                 {
                     b.Property<string>("ApproversId")
@@ -615,6 +589,14 @@ namespace Locompro.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .IsRequired();
+
+                    b.HasOne("Locompro.Models.Entities.Submission", "Submission")
+                        .WithMany("Reports")
+                        .HasForeignKey("SubmissionUserId", "SubmissionEntryTime")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Submission");
 
                     b.Navigation("User");
                 });
@@ -738,28 +720,6 @@ namespace Locompro.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Locompro.Models.Entities.AutoReport", b =>
-                {
-                    b.HasOne("Locompro.Models.Entities.Submission", "Submission")
-                        .WithMany("AutoReports")
-                        .HasForeignKey("SubmissionUserId", "SubmissionEntryTime")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Submission");
-                });
-
-            modelBuilder.Entity("Locompro.Models.Entities.UserReport", b =>
-                {
-                    b.HasOne("Locompro.Models.Entities.Submission", "Submission")
-                        .WithMany("Reports")
-                        .HasForeignKey("SubmissionUserId", "SubmissionEntryTime")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Submission");
-                });
-
             modelBuilder.Entity("Locompro.Models.Entities.Category", b =>
                 {
                     b.Navigation("Children");
@@ -782,8 +742,6 @@ namespace Locompro.Migrations
 
             modelBuilder.Entity("Locompro.Models.Entities.Submission", b =>
                 {
-                    b.Navigation("AutoReports");
-
                     b.Navigation("Pictures");
 
                     b.Navigation("Reports");

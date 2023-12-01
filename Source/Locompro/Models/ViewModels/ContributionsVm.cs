@@ -19,7 +19,7 @@ public class ContributionsVm
         {
             Profile = new ProfileVm(user);
             ItemMapper itemMapper = new();
-            Contributions = itemMapper.ToVm(new SubmissionsDto(user.Submissions, GetLatestSubmission));
+            Contributions = itemMapper.ToVm(new SubmissionsDto(user.CreatedSubmissions, GetLatestSubmission));
         }
         catch (Exception e)
         {

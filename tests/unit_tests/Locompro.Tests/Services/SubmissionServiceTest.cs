@@ -6,6 +6,7 @@ using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models;
 using Locompro.Models.Entities;
+using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
