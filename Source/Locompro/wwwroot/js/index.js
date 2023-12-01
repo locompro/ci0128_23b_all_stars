@@ -3,7 +3,7 @@ var modalShown = false;
 // event listener for the advanced search button
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("advancedSearchButton").addEventListener("click", async function () {
-        // get button for advanced search button
+        // get button for advanced search button 
         const button = document.getElementById("advancedSearchButton");
         const buttonContainer = document.getElementById("advancedSearchButtonContainer");
 

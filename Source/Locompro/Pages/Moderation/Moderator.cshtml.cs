@@ -3,7 +3,9 @@ using Locompro.Common;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
 using Locompro.Services;
@@ -179,26 +181,16 @@ public class ModeratorPageModel : BasePageModel
 
     private async Task GetDataFromDataBase(int minAmountOfReports)
     {
-        string userId = _authService.GetUserId();
-
-        if (string.IsNullOrWhiteSpace(userId))
-        {
-            throw new AuthenticationException("Retrieved user ID is not valid");
-        }
-
-        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
-        {
-            new SearchCriterion<int>(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports),
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionHasApproverOrRejecter, userId)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports);
 
         SubmissionsDto submissionsDto = null;
-
+        
         try
         {
-            submissionsDto = await _searchService.GetSearchResults(searchCriteria);
-        }
-        catch (Exception e)
+            submissionsDto = await _searchService.GetSearchSubmissionsAsync(searchCriteria);
+        } catch (Exception e)
         {
             Logger.LogError(e, "Error while getting search results");
         }

@@ -1,4 +1,5 @@
-﻿using Locompro.Pages.Shared;
+﻿using Locompro.Common;
+using Locompro.Pages.Shared;
 using Locompro.Services;
 
 namespace Locompro.Pages;
@@ -8,10 +9,12 @@ namespace Locompro.Pages;
 /// </summary>
 public class IndexModel : SearchPageModel
 {
-    public IndexModel(ILoggerFactory loggerFactory,
+    public IndexModel(
+        ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
-        AdvancedSearchInputService advancedSearchServiceHandler)
-        : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler)
+        AdvancedSearchInputService advancedSearchServiceHandler,
+        IApiKeyHandler apiKeyHandler)
+        : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler, apiKeyHandler)
     {
     }
 }

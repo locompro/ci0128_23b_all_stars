@@ -1,4 +1,5 @@
 using Locompro.Models.Entities;
+using Locompro.Models.ViewModels;
 
 namespace Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 
@@ -63,6 +64,19 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
         AddSearchParameter<string>(SearchParameterTypes.SubmissionByUserId
             , (submission, userId) => submission.UserId == userId
             , userId => !string.IsNullOrEmpty(userId));
+        
+        // find by distance from the user
+        AddSearchFilter<MapVm>(SearchParameterTypes.SubmissionByLocationFilter
+            , (submission, mapVm) =>
+            {
+                if (submission.Store.Location == null)
+                {
+                    return false;
+                }
+                
+                return MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance;
+            },
+            mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0);
 
         // find if submission has user as approver or rejecter
         AddSearchParameter<string>(SearchParameterTypes.SubmissionHasApproverOrRejecter

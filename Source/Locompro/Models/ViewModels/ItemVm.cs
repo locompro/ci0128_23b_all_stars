@@ -33,15 +33,17 @@ public class ItemVm
     public string LastSubmissionDate { get; init; }
     public string Name { get; init; }
     public double Price { get; init; }
+    public string FormattedPrice => Price.ToString("C0").TrimStart('$');
+
     public string Store { get; init; }
     public string Canton { get; init; }
     public string Province { get; init; }
     public List<string> Categories { get; init; }
+    
     public string Description { get; init; }
 
     [DisplayFormat(NullDisplayText = "N/A")]
     public string Model { get; init; }
-
     public string Brand { get; set; }
     public List<SubmissionVm> Submissions { get; set; }
 }

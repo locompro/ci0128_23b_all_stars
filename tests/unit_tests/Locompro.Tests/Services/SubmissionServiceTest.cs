@@ -1,5 +1,7 @@
 using System.Linq.Expressions;
 using Locompro.Common.Search;
+using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models;

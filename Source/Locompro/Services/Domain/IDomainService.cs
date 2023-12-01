@@ -27,7 +27,7 @@ public interface IDomainService<T, TK> where T : class
     /// </summary>
     /// <param name="searchQueries"></param>
     /// <returns></returns>
-    Task<IEnumerable<T>> GetByDynamicQuery(List<ISearchCriterion> searchQueries);
+    Task<IEnumerable<T>> GetByDynamicQuery(ISearchQueryParameters<T> searchQueries);
 
     /// <summary>
     ///     Adds an entity through the service.
