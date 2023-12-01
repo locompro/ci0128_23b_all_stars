@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 
 #nullable disable
 
@@ -189,13 +190,8 @@ namespace Locompro.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(60)");
 
-                    b.Property<decimal>("Latitude")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("Longitude")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<Point>("Location")
+                        .HasColumnType("geography");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");

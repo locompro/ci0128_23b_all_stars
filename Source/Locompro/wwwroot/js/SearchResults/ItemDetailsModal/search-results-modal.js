@@ -37,7 +37,7 @@ class SearchResultsModal {
                 $('.modal-backdrop').last().css('opacity', '0');
             }, 0);
         });
-        
+
         // Populate the modal with the selected item's details
         this.populateModal();
     }
@@ -55,35 +55,62 @@ class SearchResultsModal {
 
         // Building the picture container with the product images
         this.pictureContainer.buildPictureContainer();
-        
+
+        this.isUserLoggedIn = this.submissionsTable.getAttribute('data-is-user-authenticated') === 'True';
+        console.log(this.isUserLoggedIn);
         // Populating the submissions table with entries
         for (const submission of this.searchResults[this.itemSelected].Submissions) {
             const row = this.submissionsTable.insertRow();
 
-            // Inserting and formatting the date cell
-            const dateCell = row.insertCell(0);
-            dateCell.innerHTML = submission.EntryTime;
-            dateCell.classList.add("text-center");
+            const iconCell = row.insertCell(0);
+            iconCell.style.textAlign = 'center';
 
+            // Prepare "Mis Contribuciones" button
+            const contributionsButton = document.createElement('a');
+            contributionsButton.className = 'btn btn-primary text-center border rounded-pill flex-shrink-1 justify-content-xxl-start';
+            contributionsButton.href = '/Account/Contributions?query=' + submission.UserId; // Set the appropriate URL
+            contributionsButton.id = 'Contributions';
+            let userIcon = document.createElement('i');
+            userIcon.classList.add('fa', 'fa-user');
+
+            // Append the icon to the contributions button
+            contributionsButton.appendChild(userIcon);
+
+
+            // Append the "Mis Contribuciones" button to the date cell
+            iconCell.appendChild(contributionsButton);
+
+            // Inserting and formatting the user cell
+            const userCell = row.insertCell(1);
+            userCell.style.textAlign = 'left';
+
+            // Add the text content to the user cell
+            userCell.innerHTML = submission.Username;
+
+            // Inserting and formatting the date cell
+            const dateCell = row.insertCell(2);
+            dateCell.style.textAlign = 'center';
+            dateCell.innerHTML = submission.EntryTime;
+            
             // Inserting the price cell
-            const priceCell = row.insertCell(1);
-            priceCell.innerHTML = submission.Price;
+            const priceCell = row.insertCell(3);
+            priceCell.innerHTML = submission.FormattedPrice;
 
             // Inserting the description cell
-            const descriptionCell = row.insertCell(2);
+            const descriptionCell = row.insertCell(4);
             descriptionCell.innerHTML = submission.Description;
 
             // Inserting the rating cell
-            const ratingCell = row.insertCell(3);
+            const ratingCell = row.insertCell(5);
             ratingCell.style.textAlign = 'center';
             this.submissionsRatings.push(new SearchResultsSubmissionRating(submission, ratingCell));
-            this.submissionsRatings[this.submissionsRatings.length - 1].buildRating();
+            this.submissionsRatings[this.submissionsRatings.length - 1].buildRating(this.isUserLoggedIn);
 
             // Prepare report button
             const reportButton = document.createElement('button');
             reportButton.className = 'btn btn-primary';
             reportButton.type = 'submit';
-            
+
             // Create the icon element
             let icon = document.createElement('i');
             icon.classList.add('fa', 'fa-flag');
@@ -91,9 +118,9 @@ class SearchResultsModal {
             // Append the icon to the button
             reportButton.appendChild(icon);
 
-            if(submission.Status !== 1) {
+            if (submission.Status !== 1) {
                 const submissionId = submission.UserId + submission.NonFormatedEntryTime;
-                
+
                 reportButton.setAttribute('data-id', submissionId);
                 reportButton.setAttribute('data-bs-toggle', 'modal');
                 reportButton.setAttribute('data-bs-target', '#descriptionModal');
@@ -101,10 +128,10 @@ class SearchResultsModal {
                 reportButton.addEventListener('click', () => {
                     const reportForm = document.getElementById('reportForm');
                     reportForm.reset();
-                    
+
                     const isLoggedInElement = document.getElementById('isLoggedIn');
                     const isLoggedIn = isLoggedInElement.getAttribute('data') === 'True';
-                    
+
                     if (!isLoggedIn) {
                         window.location.href = '/Account/Login'; // Redirect to the login page if not logged in
                         return; // Exit the function to prevent the rest of the code from running
@@ -118,10 +145,11 @@ class SearchResultsModal {
             }
 
             // Inserting the report button cell
-            const reportCell = row.insertCell(4);
+            const reportCell = row.insertCell(6);
             reportCell.style.textAlign = 'center';
             reportCell.appendChild(reportButton);
         }
+        
     }
 
     /**

@@ -76,21 +76,6 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries)
-    {
-        // initiate the query
-        IQueryable<Submission> submissionsResults = Set
-            .Include(submission => submission.Product);
-
-        // append the search queries to the query
-        submissionsResults =
-            searchQueries.SearchQueryFunctions.Aggregate(submissionsResults, (current, query) => current.Where(query));
-
-        // get and return the results
-        return await submissionsResults.ToListAsync();
-    }
-
-    /// <inheritdoc />
     public async Task<IEnumerable<Submission>> GetItemSubmissions(string storeName, string productName)
     {
         var submissionsResults = Set

@@ -1,8 +1,12 @@
 using System.Net;
+using System.Runtime.CompilerServices;
 using Castle.Core.Internal;
+using Locompro.Common;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration;
+using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Models;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
@@ -13,6 +17,7 @@ using Locompro.Services;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Mvc;
+using NetTopologySuite.Geometries;
 
 namespace Locompro.Pages.SearchResults;
 
@@ -34,7 +39,7 @@ public class SearchResultsModel : SearchPageModel
     private readonly IAuthService _authService;
 
     private IConfiguration Configuration { get; set; }
-    
+
     /// <summary>
     ///     Constructor
     /// </summary>
@@ -46,7 +51,10 @@ public class SearchResultsModel : SearchPageModel
     /// <param name="searchService"></param>
     /// <param name="submissionService"></param>
     /// <param name="moderationService"></param>
-    public SearchResultsModel(ILoggerFactory loggerFactory,
+    /// <param name="authService"></param>
+    /// <param name="apiKeyHandler"></param>
+    public SearchResultsModel(
+        ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
         AdvancedSearchInputService advancedSearchServiceHandler,
         IPictureService pictureService,
@@ -54,8 +62,9 @@ public class SearchResultsModel : SearchPageModel
         ISearchService searchService,
         ISubmissionService submissionService,
         IModerationService moderationService,
-        IAuthService authService)
-        : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler)
+        IAuthService authService,
+        IApiKeyHandler apiKeyHandler)
+        : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler, apiKeyHandler)
     {
         _searchService = searchService;
         _pictureService = pictureService;
@@ -95,20 +104,6 @@ public class SearchResultsModel : SearchPageModel
     public async Task<IActionResult> OnGetGetSearchResultsAsync()
     {
         SearchVm = GetCachedDataFromSession<SearchVm>("SearchData", false);
-
-        // get items from search service
-        var searchParameters = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Name, SearchVm.ProductName),
-            new SearchCriterion<string>(SearchParameterTypes.Province, SearchVm.ProvinceSelected),
-            new SearchCriterion<string>(SearchParameterTypes.Canton, SearchVm.CantonSelected),
-            new SearchCriterion<long>(SearchParameterTypes.Minvalue, SearchVm.MinPrice),
-            new SearchCriterion<long>(SearchParameterTypes.Maxvalue, SearchVm.MaxPrice),
-            new SearchCriterion<string>(SearchParameterTypes.Category, SearchVm.CategorySelected),
-            new SearchCriterion<string>(SearchParameterTypes.Model, SearchVm.ModelSelected),
-            new SearchCriterion<string>(SearchParameterTypes.Brand, SearchVm.BrandSelected)
-        };
-
         SearchVm.ResultsPerPage = Configuration.GetValue("PageSize", 4);
 
         List<ItemVm> searchResults = null;
@@ -116,7 +111,7 @@ public class SearchResultsModel : SearchPageModel
         try
         {
             ItemMapper itemMapper = new();
-            SubmissionsDto submissionsDto = await _searchService.GetSearchResults(searchParameters);
+            SubmissionsDto submissionsDto = await _searchService.GetSearchResultsAsync(SearchVm);
             searchResults = itemMapper.ToVm(submissionsDto);
         }
         catch (Exception e)
@@ -129,7 +124,7 @@ public class SearchResultsModel : SearchPageModel
             {
                 SearchResults = searchResults,
                 Data = SearchVm,
-                Redirect = SearchVm.IsEmpty()? "redirect" : null
+                Redirect = SearchVm.IsEmpty() ? "redirect" : null
             });
 
         return Content(searchResultsJson);

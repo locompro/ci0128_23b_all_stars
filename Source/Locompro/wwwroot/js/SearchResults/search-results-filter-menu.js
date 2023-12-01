@@ -21,7 +21,6 @@ class SearchResultsFilterMenu {
      */
     setUpFields() {
         return [
-            new FilterField("productNameFilter", "ProductNames"),
             new FilterField("provinceFilter", "Provinces"),
             new FilterField("cantonFilter", "Cantons"),
             new FilterField("minPriceFilter", "MinPrice"),
@@ -127,7 +126,6 @@ class SearchResultsFilterMenu {
         this.filters = new Map();
         this.filters.set("Provinces", []);
         this.filters.set("Cantons", []);
-        this.filters.set("ProductNames", []);
         this.filters.set("Brands", []);
         this.filters.set("Models", []);
         this.filters.set("Categories", []);
@@ -141,10 +139,6 @@ class SearchResultsFilterMenu {
 
             if (!this.filters.get("Cantons").includes(item.Canton)) {
                 this.filters.get("Cantons").push(item.Canton);
-            }
-
-            if (!this.filters.get("ProductNames").includes(item.Name)) {
-                this.filters.get("ProductNames").push(item.Name);
             }
 
             if (!this.filters.get("Brands").includes(item.Brand)) {
@@ -181,7 +175,7 @@ class FilterField {
      * Constructs a new FilterField.
      *
      * @param id The DOM element ID of the filter field.
-     * @param key The key used for filtering (e.g., "ProductNames").
+     * @param key
      */
     constructor(id, key) {
         this.element = document.getElementById(id);
@@ -220,12 +214,12 @@ class FilterField {
                     this.element.selected = value;
                 }
             }
-
             if (!currentFilters.get(this.optionKey)) {
                 return;
             }
-
             this.element.value = currentFilters.get(this.optionKey);
         }
     }
 }
+
+export {SearchResultsFilterMenu, FilterField};

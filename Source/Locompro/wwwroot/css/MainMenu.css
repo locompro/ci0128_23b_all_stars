@@ -93,13 +93,14 @@
 
 .main-page-input-group-on-advanced-search {
     .card
-;
+    ;
     padding-top: 10px;
     padding-bottom: 10px;
     border-color: #b9deff;
     border-width: 2px;
     border-radius: 30px;
     background-color: #b9deff;
+    max-width: 80%;
 }
 
 .search-bar-default {
@@ -153,4 +154,9 @@
     margin-right: 180px;
     margin-top: 30px;
     margin-bottom: 200px;
+}
+
+.modal-select2 .select2-container--default .select2-selection--single {
+    width: 100%; /* This will make select2 elements as wide as their container */
+    min-width: 100px; /* Override any min-width */
 }
