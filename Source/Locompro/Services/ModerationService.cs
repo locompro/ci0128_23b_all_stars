@@ -96,6 +96,13 @@ public class ModerationService : Service, IModerationService
         return await _userManagerService.IsInRoleAsync(user, RoleNames.PossibleModerator);
     }
 
+    public async Task<IEnumerable<Submission>> GetUsersReportedSubmissions(string userId)
+    {
+        var reports = await _reportService.GetByUserId(userId);
+
+        return reports.Select(r => r.Submission);
+    }
+
     /// <inheritdoc />
     public async Task ActOnReport(ModeratorActionDto moderatorActionDto)
     {

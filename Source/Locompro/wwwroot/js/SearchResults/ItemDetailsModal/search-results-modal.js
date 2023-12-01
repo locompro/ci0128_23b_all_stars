@@ -8,8 +8,9 @@ class SearchResultsModal {
      *
      * @param searchResults An array of search result items.
      * @param itemSelected The index of the selected item within the search results array.
+     * @param reportedSubmissions
      */
-    constructor(searchResults, itemSelected) {
+    constructor(searchResults, itemSelected, reportedSubmissions = []) {
         // DOM element references for displaying product information
         this.modalProductName = document.getElementById("modalProductName");
         this.modalStoreName = document.getElementById("modalStoreName");
@@ -29,7 +30,7 @@ class SearchResultsModal {
                 "SearchResults");
 
         this.submissionsRatings = [];
-        this.reportedSubmissions = [];
+        this.reportedSubmissions = reportedSubmissions;
 
         $('#descriptionModal').on('show.bs.modal', function () {
             // Use a short delay to apply the style change to the backdrop
@@ -57,7 +58,7 @@ class SearchResultsModal {
         this.pictureContainer.buildPictureContainer();
 
         this.isUserLoggedIn = this.submissionsTable.getAttribute('data-is-user-authenticated') === 'True';
-
+      
         // Populating the submissions table with entries
         for (const submission of this.searchResults[this.itemSelected].Submissions) {
             const row = this.submissionsTable.insertRow();
@@ -117,8 +118,11 @@ class SearchResultsModal {
 
             // Append the icon to the button
             reportButton.appendChild(icon);
-
-            if (submission.Status !== 1) {
+            
+            let isModerated = submission.Status === 1;
+            let isSubmissionReported = this.isSubmissionReported(submission)
+            
+            if (!isModerated && this.isUserLoggedIn && !isSubmissionReported) {
                 const submissionId = submission.UserId + submission.NonFormatedEntryTime;
 
                 reportButton.setAttribute('data-id', submissionId);
@@ -150,6 +154,15 @@ class SearchResultsModal {
             reportCell.appendChild(reportButton);
         }
         
+    }
+
+    isSubmissionReported(submission) {
+        for (let sub of this.reportedSubmissions) {
+            if (submission.UserId === sub.UserId && submission.NonFormatedEntryTime === sub.NonFormatedEntryTime) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
