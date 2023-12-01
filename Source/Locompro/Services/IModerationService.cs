@@ -1,4 +1,5 @@
 ﻿using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 
 namespace Locompro.Services;
@@ -40,4 +41,10 @@ public interface IModerationService
     /// <param name="userId">ID of user to check for role</param>
     /// <returns>whether the user has the Possible Moderator role</returns>
     Task<bool> IsUserPossibleModerator(string userId);
+
+    /// <summary>
+    /// Returns all submissions user has reported
+    /// </summary>
+    /// <param name="userId">ID of user for which to retrieve reported submissions</param>
+    Task<IEnumerable<Submission>> GetUsersReportedSubmissions(string userId);
 }
