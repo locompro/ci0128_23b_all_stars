@@ -3,7 +3,7 @@ using Locompro.Services.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace Locompro.Tests;
+namespace Locompro.Tests.Services;
 
 /// <summary>
 ///     A mock scheduled task for unit testing the TaskSchedulerService.

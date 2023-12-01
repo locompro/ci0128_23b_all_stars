@@ -1,6 +1,8 @@
 using Locompro.Data;
 using Locompro.Data.Repositories;
+using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
+using Locompro.Models.Results;
 
 namespace Locompro.Services.Domain;
 
@@ -36,11 +38,14 @@ public class PictureService : DomainService<Picture, PictureKey>, IPictureServic
     ///     Returns the given pictures for an item described by the product name and the store name
     /// </summary>
     /// <param name="pictureAmount"> Max amount of pictures that it is wished to be retrieved</param>
-    /// <param name="productName"> Name of the product that has the pictures</param>
+    /// <param name="productId"> Id of the product that has the pictures</param>
     /// <param name="storeName"> Name of the store where the product is located</param>
     /// <returns> A list of pictures </returns>
-    public async Task<List<Picture>> GetPicturesForItem(int pictureAmount, string productName, string storeName)
+    public async Task<List<PictureDto>> GetPicturesForItem(int pictureAmount, int productId, string storeName)
     {
-        return await _pictureRepository.GetPicturesByItem(pictureAmount, productName, storeName);
+        List<GetPicturesResult> picturesResults =
+            await _pictureRepository.GetPicturesByItem(pictureAmount, productId, storeName);
+
+        return picturesResults.Select(pictureResult => new PictureDto(pictureResult)).ToList();
     }
 }

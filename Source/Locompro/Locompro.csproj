@@ -100,6 +100,11 @@
 	  <Compile Remove="Repositories\StoreRepository.cs" />
 	  <Compile Remove="Repositories\StringIdRepository.cs" />
 	  <Compile Remove="Models\Submission.cs" />
+		<Compile Remove="Pages\Moderation\ModerationIndex.cshtml.cs"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Remove="Pages\Moderation\ModerationIndex.cshtml"/>
 	</ItemGroup>
 
 	<ItemGroup>

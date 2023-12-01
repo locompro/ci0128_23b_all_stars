@@ -16,6 +16,9 @@ public class User : IdentityUser
 
     [Required] public Status Status { get; set; } = Status.Active;
 
-    public virtual ICollection<Submission> Submissions { get; set; }
+    public virtual ICollection<Submission> CreatedSubmissions { get; set; }
     
+    public virtual ICollection<Submission> ApprovedSubmissions { get; set; }
+    
+    public virtual ICollection<Submission> RejectedSubmissions { get; set; }
 }

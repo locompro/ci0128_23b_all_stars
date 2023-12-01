@@ -24,7 +24,7 @@ class SearchResultsModal {
         // Creating a picture container for the selected item's images
         this.pictureContainer =
             new SearchResultsPictureContainer(
-                this.searchResults[this.itemSelected].Name,
+                this.searchResults[this.itemSelected].ProductId,
                 this.searchResults[this.itemSelected].Store,
                 "SearchResults");
 
@@ -57,7 +57,7 @@ class SearchResultsModal {
         this.pictureContainer.buildPictureContainer();
 
         this.isUserLoggedIn = this.submissionsTable.getAttribute('data-is-user-authenticated') === 'True';
-        console.log(this.isUserLoggedIn);
+
         // Populating the submissions table with entries
         for (const submission of this.searchResults[this.itemSelected].Submissions) {
             const row = this.submissionsTable.insertRow();
@@ -137,8 +137,8 @@ class SearchResultsModal {
                         return; // Exit the function to prevent the rest of the code from running
                     }
 
-                    document.querySelector('input[name="ReportVm.SubmissionUserId"]').value = submission.UserId;
-                    document.querySelector('input[name="ReportVm.SubmissionEntryTime"]').value = submission.NonFormatedEntryTime;
+                    document.querySelector('input[name="UserReportVm.SubmissionUserId"]').value = submission.UserId;
+                    document.querySelector('input[name="UserReportVm.SubmissionEntryTime"]').value = submission.NonFormatedEntryTime;
                 });
             } else {
                 reportButton.disabled = true;

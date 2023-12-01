@@ -31,7 +31,7 @@ namespace Locompro.Pages.Account
         {
             RequestedUserId = query;
             var requestedUser = await GetUserRequested(RequestedUserId);
-            if (requestedUser != null && requestedUser.Submissions != null)
+            if (requestedUser != null && requestedUser.CreatedSubmissions != null)
             {
                 RequestedUser = new ContributionsVm(requestedUser);
                 ContributionsToShow = JsonConvert.SerializeObject(RequestedUser.Contributions);

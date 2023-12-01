@@ -27,16 +27,16 @@ namespace Locompro.Pages.SearchResults;
 public class SearchResultsModel : SearchPageModel
 {
     public SearchVm SearchVm { get; set; }
-    
+
+    private readonly IAuthService _authService;
+
+    private readonly IModerationService _moderationService;
+
     private readonly IPictureService _pictureService;
 
     private readonly ISearchService _searchService;
 
     private readonly ISubmissionService _submissionService;
-    
-    private readonly IModerationService _moderationService;
-    
-    private readonly IAuthService _authService;
 
     private IConfiguration Configuration { get; set; }
 
@@ -118,7 +118,7 @@ public class SearchResultsModel : SearchPageModel
         {
             Logger.LogError("Error when attempting to get search results: " + e.Message);
         }
-        
+
         var searchResultsJson = GetJsonFrom(
             new
             {
@@ -133,25 +133,25 @@ public class SearchResultsModel : SearchPageModel
     /// <summary>
     ///     Returns a list of pictures for a given item
     /// </summary>
-    /// <param name="productName"> product name of an item </param>
+    /// <param name="productId"> id name of an item</param>
     /// <param name="storeName"> store name of an item</param>
     /// <returns></returns>
-    public async Task<ContentResult> OnGetGetPicturesAsync(string productName, string storeName)
+    public async Task<ContentResult> OnGetGetPicturesAsync(int productId, string storeName)
     {
-        List<Picture> itemPictures = null;
+        List<PictureDto> pictureDtos = null;
 
         try
         {
-            itemPictures = await _pictureService.GetPicturesForItem(5, productName, storeName);
+            pictureDtos = await _pictureService.GetPicturesForItem(10, productId, storeName);
         }
         catch (Exception e)
         {
             Logger.LogError("Error when attempting to get pictures for item: " + e.Message);
         }
-        
-        var formattedPictures = PictureParser.Serialize(itemPictures);
 
-        if (itemPictures.IsNullOrEmpty())
+        List<string> formattedPictures = new();
+
+        if (pictureDtos == null || pictureDtos.IsNullOrEmpty())
         {
             const string defaultPictureFilePath = "wwwroot/Pictures/No_Image_Picture.png";
 
@@ -159,37 +159,47 @@ public class SearchResultsModel : SearchPageModel
 
             formattedPictures.Add(PictureParser.SerializeData(defaultPicture));
         }
+        else
+        {
+            IMapper<PictureDto, PictureVm> pictureMapper = new PictureMapper();
+            
+            List<PictureVm> pictureVms = new();
+            
+            pictureVms.AddRange(pictureDtos.Select(pictureDto => pictureMapper.ToVm(pictureDto)));
+
+            formattedPictures = PictureParser.Serialize(pictureVms);
+        }
 
         // return list of pictures serialized as json
         return Content(GetJsonFrom(formattedPictures));
     }
 
-    
-    public async Task<JsonResult> OnPostReportSubmissionAsync(ReportVm reportVm)
+
+    public async Task<JsonResult> OnPostReportSubmissionAsync(UserReportVm userReportVm)
     {
         if (!_authService.IsLoggedIn())
         {
             Response.StatusCode = 302; // Redirect status code
             return new JsonResult(new { redirectUrl = "/Account/Login" });
         }
-        
+
         try
         {
             var reportMapper = new ReportMapper();
 
-            var reportDto = reportMapper.ToDto(reportVm);
+            var reportDto = reportMapper.ToDto(userReportVm);
 
             reportDto.UserId = _authService.GetUserId();
 
             await _moderationService.ReportSubmission(reportDto);
-            
-            Logger.LogInformation("Report submitted successfully {}", reportVm);
+
+            Logger.LogInformation("Report submitted successfully {}", userReportVm);
 
             return new JsonResult(new { success = true, message = "Report submitted successfully" });
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to submit report {}", reportVm);
+            Logger.LogError(ex, "Failed to submit report {}", userReportVm);
 
             Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             return new JsonResult(new { success = false, message = ex.Message });
@@ -221,7 +231,7 @@ public class SearchResultsModel : SearchPageModel
             Response.StatusCode = 302; // Redirect status code
             return new JsonResult(new { redirectUrl = "/Account/Login" });
         }
-        
+
         var clientRatingChange = await GetDataSentByClient<RatingVm>();
 
         if (clientRatingChange == null)
