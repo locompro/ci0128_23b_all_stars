@@ -46,13 +46,17 @@ async function loadCantons(response) {
         const data = await response.json();
 
         // Clear existing options in the optgroup
-        const optgroup = document.getElementById('cantonDropdown');
-        optgroup.innerHTML = '';
-
+        const optgroup = document.getElementById("cantonDropdown");
+        optgroup.innerHTML = "";
+        
         // Populate with new options based on fetched data
         data.forEach(function (canton) {
-            const option = document.createElement('option');
-            option.textContent = canton.Name;
+            const option = document.createElement("option");
+            let cantonToAdd = canton.Name;
+            
+            option.value = cantonToAdd;
+            option.innerHTML = cantonToAdd;
+            
             optgroup.appendChild(option);
         });
     } catch (error) {
