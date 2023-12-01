@@ -18,22 +18,18 @@ VALUES ('1', 'Juan Perez', 'San Jose, Costa Rica', 4.5, 0, 'juan.perez@email.com
 
 
 -- Adding stores in San José province
-INSERT INTO Stores (Name, CantonCountryName, CantonProvinceName, CantonName, Address, Telephone, Status, Latitude,
-                    Longitude)
-VALUES ('Super San José', 'Costa Rica', 'San José', 'San José', 'Calle Central, Avenida 2', '2256-7890', 0, 9.93,
-        -84.08),
-       ('Tienda Escazú', 'Costa Rica', 'San José', 'Escazú', 'Calle Los Laureles', '2228-3456', 0, 9.92, -84.14),
-       ('Mercado Moravia', 'Costa Rica', 'San José', 'Moravia', 'Avenida Principal', '2240-5678', 0, 9.96, -84.05),
-       ('Comercio Curri', 'Costa Rica', 'San José', 'Curridabat', 'Calle Freses', '2272-8910', 0, 9.91, -84.03),
-       ('Bodega Tibás', 'Costa Rica', 'San José', 'Tibás', 'Avenida Central', '2236-2345', 0, 9.95, -84.07),
-       ('Almacén Desampa', 'Costa Rica', 'San José', 'Desamparados', 'Calle 5, Avenida 3', '2219-0123', 0, 9.89,
-        -84.09),
-       ('Super Heredia', 'Costa Rica', 'Heredia', 'Heredia', 'Avenida Principal', '2267-8912', 0, 10.00, -84.12),
-       ('Tienda Alajuela', 'Costa Rica', 'Alajuela', 'Alajuela', 'Calle Central', '2440-1234', 0, 10.02, -84.20),
-       ('Bazar Cartago', 'Costa Rica', 'Cartago', 'Cartago', 'Avenida 3, Calle 2', '2550-5678', 0, 9.87, -83.92),
-       ('Mercado Limón', 'Costa Rica', 'Limón', 'Limón', 'Calle 5', '2758-9012', 0, 10.00, -83.03),
-       ('Almacén Puntarenas', 'Costa Rica', 'Puntarenas', 'Puntarenas', 'Avenida Paseo de los Turistas', '2661-2345', 0,
-        9.98, -84.83);
+INSERT INTO Stores (Name, CantonCountryName, CantonProvinceName, CantonName, Address, Telephone, Status)
+VALUES ('Super San José', 'Costa Rica', 'San José', 'San José', 'Calle Central, Avenida 2', '2256-7890', 0),
+       ('Tienda Escazú', 'Costa Rica', 'San José', 'Escazú', 'Calle Los Laureles', '2228-3456', 0),
+       ('Mercado Moravia', 'Costa Rica', 'San José', 'Moravia', 'Avenida Principal', '2240-5678', 0),
+       ('Comercio Curri', 'Costa Rica', 'San José', 'Curridabat', 'Calle Freses', '2272-8910', 0),
+       ('Bodega Tibás', 'Costa Rica', 'San José', 'Tibás', 'Avenida Central', '2236-2345', 0),
+       ('Almacén Desampa', 'Costa Rica', 'San José', 'Desamparados', 'Calle 5, Avenida 3', '2219-0123', 0),
+       ('Super Heredia', 'Costa Rica', 'Heredia', 'Heredia', 'Avenida Principal', '2267-8912', 0),
+       ('Tienda Alajuela', 'Costa Rica', 'Alajuela', 'Alajuela', 'Calle Central', '2440-1234', 0),
+       ('Bazar Cartago', 'Costa Rica', 'Cartago', 'Cartago', 'Avenida 3, Calle 2', '2550-5678', 0),
+       ('Mercado Limón', 'Costa Rica', 'Limón', 'Limón', 'Calle 5', '2758-9012', 0),
+       ('Almacén Puntarenas', 'Costa Rica', 'Puntarenas', 'Puntarenas', 'Avenida Paseo de los Turistas', '2661-2345', 0);
 
 
 -- Adding products

@@ -20,9 +20,9 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<Submission>> GetSearchResults(ISearchQueries searchQueries)
+    public async Task<IEnumerable<Submission>> GetSearchResults(ISearchQueries<Submission> searchQueries)
     {
-        return await _submissionRepository.GetSearchResults(searchQueries);
+        return await _submissionRepository.GetByDynamicQuery(searchQueries);
     }
 
     /// <inheritdoc />

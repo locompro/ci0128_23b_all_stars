@@ -69,9 +69,14 @@
 
 /* Modal-specific select2 styles */
 .modal-select2 .select2-container .select2-selection--single {
-    width: 210px;
+    width: 100%;
 }
 
 .modal-select2 .select2-container--default .select2-selection--single {
     min-width: 210px;
+}
+/* Overriding styles specifically for the store modal */
+#addStoreModal .modal-select2 .select2-container--default .select2-selection--single {
+    width: 100%; /* This will make select2 elements as wide as their container */
+    min-width: 350px; /* Override any min-width */
 }

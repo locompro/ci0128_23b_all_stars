@@ -2,18 +2,26 @@ using Locompro.Common.Search;
 using Locompro.Common.Search.QueryBuilder;
 using Locompro.Common.Search.SearchMethodRegistration;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Models.Entities;
+using Locompro.Models.ViewModels;
+using Microsoft.Extensions.Logging;
+using Moq;
 
 namespace Locompro.Tests.Common.Search;
 
 [TestFixture]
 public class QueryBuilderTest
 {
-    private IQueryBuilder _queryBuilder;
+    private IQueryBuilder<Submission> _queryBuilder;
+    private ILogger _logger;
 
     public QueryBuilderTest()
     {
-        _queryBuilder = new QueryBuilder<Submission>(SubmissionSearchMethods.GetInstance());
+        ILoggerFactory loggerFactoryMock = new LoggerFactory();
+        
+        _logger = loggerFactoryMock.CreateLogger<QueryBuilder<Submission>>();
+        _queryBuilder = new QueryBuilder<Submission>(SubmissionSearchMethods.GetInstance(), _logger);
     }
 
     /// <summary>
@@ -68,7 +76,7 @@ public class QueryBuilderTest
     {
         // Ensure that state is empty for query builder in this test
         var temp = _queryBuilder;
-        _queryBuilder = new QueryBuilder<Submission>(SubmissionSearchMethods.GetInstance());
+        _queryBuilder = new QueryBuilder<Submission>(SubmissionSearchMethods.GetInstance(), _logger);
 
         // Arrange
         ISearchCriterion searchCriterion = new SearchCriterion<string>
@@ -204,5 +212,109 @@ public class QueryBuilderTest
             Assert.That(builtQueries.IsEmpty(), Is.True);
             _queryBuilder.Reset();
         });
+    }
+    
+    /// <summary>
+    ///     
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public void AddSearchFilterWithInvalidParameterFails()
+    {
+        ISearchQueryParameters<Submission> searchQuery = new SearchQueryParameters<Submission>();
+        searchQuery.AddFilterParameter( (SearchParameterTypes)100, "test");
+        
+        _queryBuilder.AddSearchCriteria(searchQuery);
+        var builtQueries = _queryBuilder.GetSearchFunction();
+
+        // Assert
+        Assert.That(builtQueries.IsEmpty(), Is.True);
+
+        // restore query builder state
+        _queryBuilder.Reset();
+    }
+
+    /// <summary>
+    ///     A search with a search query fails when added as filter
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public void AddSearchFilterWithSearchQueryFails()
+    {
+        ISearchQueryParameters<Submission> searchQuery = new SearchQueryParameters<Submission>();
+        searchQuery.AddFilterParameter( SearchParameterTypes.SubmissionByBrand, "test");
+        
+        _queryBuilder.AddSearchCriteria(searchQuery);
+        var builtQueries = _queryBuilder.GetSearchFunction();
+
+        // Assert
+        Assert.That(builtQueries.IsEmpty(), Is.True);
+
+        // restore query builder state
+        _queryBuilder.Reset();
+    }
+    
+    /// <summary>
+    ///     A null parameter on filter fails
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public void AddNullSearchFilterFails()
+    {
+        ISearchQueryParameters<Submission> searchQuery = new SearchQueryParameters<Submission>();
+        searchQuery.AddFilterParameter<string>( SearchParameterTypes.SubmissionByBrand, null);
+        
+        _queryBuilder.AddSearchCriteria(searchQuery);
+        var builtQueries = _queryBuilder.GetSearchFunction();
+
+        // Assert
+        Assert.That(builtQueries.IsEmpty(), Is.True);
+
+        // restore query builder state
+        _queryBuilder.Reset();
+    }
+
+    /// <summary>
+    ///     Search by valid filter works
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public void AddValidFilter()
+    {
+        ISearchQueryParameters<Submission> searchQuery = new SearchQueryParameters<Submission>();
+        MapVm mapVm = new MapVm(9.93801190922732, -84.05199796732124, 5);
+        searchQuery.AddFilterParameter( SearchParameterTypes.SubmissionByLocationFilter, mapVm);
+        
+        _queryBuilder.AddSearchCriteria(searchQuery);
+        var builtQueries = _queryBuilder.GetSearchFunction();
+
+        // Assert
+        Assert.That(builtQueries.IsEmpty(), Is.False);
+
+        // restore query builder state
+        _queryBuilder.Reset();
+    }
+
+    /// <summary>
+    ///     Search by invalid filter fails
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public void AddInvalidFilterFails()
+    {
+        ISearchQueryParameters<Submission> searchQuery = new SearchQueryParameters<Submission>();
+        MapVm mapVm = new MapVm(9.93801190922732, -84.05199796732124, 0);
+        mapVm.Location = null;
+        
+        searchQuery.AddFilterParameter( SearchParameterTypes.SubmissionByLocationFilter, mapVm);
+        
+        _queryBuilder.AddSearchCriteria(searchQuery);
+        var builtQueries = _queryBuilder.GetSearchFunction();
+
+        // Assert
+        Assert.That(builtQueries.IsEmpty(), Is.True);
+
+        // restore query builder state
+        _queryBuilder.Reset();
     }
 }

@@ -3,7 +3,9 @@ using Locompro.Common;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.Results;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
@@ -72,7 +74,7 @@ public class ModeratorPageModel : BasePageModel
         }
         catch (Exception e)
         {
-            Logger.LogError("Error obtaining most reported Users in Moderator", e);
+            Logger.LogError("Error obtaining most reported Users in Moderator. Error "+e.Message);
             MostReportedUsers = new List<MostReportedUsersResult>();
         }
     }
@@ -193,17 +195,19 @@ public class ModeratorPageModel : BasePageModel
             throw new AuthenticationException("Retrieved user ID is not valid");
         }
 
-        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
-        {
-            new SearchCriterion<int>(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports),
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionHasApproverOrRejecter, userId)
-        };
+       
+        ISearchQueryParameters<Submission> searchQueryParameters = new SearchQueryParameters<Submission>();
+
+        searchQueryParameters
+            .AddQueryParameter(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports)
+            .AddQueryParameter(SearchParameterTypes.SubmissionHasApproverOrRejecter, userId);
+        
 
         SubmissionsDto submissionsDto = null;
 
         try
         {
-            submissionsDto = await _searchService.GetSearchResults(searchCriteria);
+            submissionsDto = await _searchService.GetSearchSubmissionsAsync(searchQueryParameters);
         }
         catch (Exception e)
         {

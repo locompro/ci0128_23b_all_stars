@@ -4,6 +4,7 @@ using Locompro.Models.Results;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 
 namespace Locompro.Data;
 
@@ -163,6 +164,12 @@ public class LocomproContext : IdentityDbContext<User>
             .HasForeignKey(p => new { p.SubmissionUserId, p.SubmissionEntryTime })
             .IsRequired();
         builder.Entity<GetPicturesResult>().HasNoKey();
+
+        builder.Entity<Store>(entity =>
+        {
+            entity.Property(e => e.Location)
+                .HasColumnType("geography");
+        });
 
         builder.HasDbFunction(
             typeof(LocomproContext).GetMethod(nameof(GetQualifiedUserIDs)) ??

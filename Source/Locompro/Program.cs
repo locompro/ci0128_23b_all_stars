@@ -1,3 +1,4 @@
+using Locompro.Common;
 using Locompro.Common.ErrorStore;
 using Locompro.Data;
 using Locompro.Data.Repositories;
@@ -7,23 +8,18 @@ using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Locompro.Services.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using NetTopologySuite.Geometries;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
+AddConfigurationFileToBuilder(webApplicationBuilder);
 // Register repositories and services
 RegisterServices(webApplicationBuilder);
-
 // Configure logging
-webApplicationBuilder.Logging.ClearProviders(); // If you want to remove default providers
-webApplicationBuilder.Logging.AddConsole();
-webApplicationBuilder.Logging.AddDebug();
-webApplicationBuilder.Logging.AddEventSourceLogger();
-// Configure log level for Microsoft.EntityFrameworkCore.Database.Command
-webApplicationBuilder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
-webApplicationBuilder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Infrastructure", LogLevel.Warning);
+ConfigureLogging(webApplicationBuilder);
 
 var app = webApplicationBuilder.Build();
-
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -62,54 +58,20 @@ return;
 
 void RegisterServices(WebApplicationBuilder builder)
 {
-    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
-    // Built in services
-    builder.Services.AddLogging();
-    builder.Services.AddRazorPages();
-    builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
-    try
-    {
-        var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
-                                 throw new InvalidOperationException("Env environment variable not found.");
-
-        string connectionString =
-            "Server=localhost\\SQLEXPRESS;Database=Locompro;Trusted_Connection=True;MultipleActiveResultSets=true;Encrypt=False;";
-
-        if (environmentName == "Production")
-        {
-            Console.WriteLine("Please enter the connection string for the Production server:");
-            connectionString = Console.ReadLine();
-        }
-        builder.Services.AddDbContext<LocomproContext>(options =>
-        {
-            if (connectionString != null)
-                options.UseLazyLoadingProxies()
-                    .UseSqlServer(connectionString);
-        });
-        
-    }
-    catch (InvalidOperationException e)
-    {
-        Console.WriteLine(e);
-        Environment.Exit(1);
-    }
-    // Set LocomproContext as the default DbContext
-    builder.Services.AddScoped<DbContext, LocomproContext>();
-
-    builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
-        .AddEntityFrameworkStores<LocomproContext>();
-
+    AddDatabaseServices(builder);
     // Configure application cookie after setting up Identity
     builder.Services.ConfigureApplicationCookie(config =>
     {
         config.Cookie.Name = "Identity.Cookie";
         config.LoginPath = "/Account/Login";
     });
-
+    
+    // Built in services
+    builder.Services.AddLogging();
+    builder.Services.AddRazorPages();
+    builder.Services.AddSingleton<ILoggerFactory, LoggerFactory>();
     // Register Unit of Work
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-    
     // Register domain services
     builder.Services.AddScoped(typeof(INamedEntityDomainService<,>), typeof(NamedEntityDomainService<,>));
     builder.Services.AddScoped(typeof(IDomainService<,>), typeof(DomainService<,>));
@@ -130,9 +92,13 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<IPictureService, PictureService>();
     builder.Services.AddScoped<SearchService>();
     builder.Services.AddScoped<IModerationService, ModerationService>();
-
-
+    
     builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
+    builder.Services.AddSingleton<IApiKeyHandler>(serviceProvider => {
+        var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+        var googleApiKey = configuration["ApiKeys:Google"];
+        return new ApiKeyHandler(googleApiKey);
+    });
 
     // Add session support
     builder.Services.AddSession(options => { options.IdleTimeout = TimeSpan.FromMinutes(5); });
@@ -147,4 +113,73 @@ void RegisterHostedServices(WebApplicationBuilder builder)
     // Moderation tasks
     builder.Services.AddSingleton<IScheduledTask, AddPossibleModeratorsTask>();
     builder.Services.AddHostedService<TaskSchedulerService>();
+}
+
+void AddDatabaseServices(WebApplicationBuilder builder)
+{
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+    try
+    {
+        var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
+                              throw new InvalidOperationException("Env environment variable not found.");
+
+        string connectionString = builder.Configuration["ConnectionString:Development"];
+
+        if (environmentName == "Production")
+        {
+            connectionString = builder.Configuration["ConnectionString:Production"];
+        }
+
+        builder.Services.AddDbContext<LocomproContext>(options =>
+        {
+            if (connectionString != null)
+                options.UseLazyLoadingProxies()
+                    .UseSqlServer(connectionString, sqlOptions =>
+                    {
+                        sqlOptions.UseNetTopologySuite();
+                        sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                    });
+        });
+    }
+    catch (InvalidOperationException e)
+    {
+        Console.WriteLine(e);
+        Environment.Exit(1);
+    }
+
+    // Set LocomproContext as the default DbContext
+    builder.Services.AddScoped<DbContext, LocomproContext>();
+
+    builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
+        .AddEntityFrameworkStores<LocomproContext>();
+}
+
+void AddConfigurationFileToBuilder(WebApplicationBuilder builder)
+{
+
+    var configurationFilePath = "secrets.json";
+
+    try
+    {
+        builder.Configuration.AddJsonFile(configurationFilePath, optional: false, reloadOnChange: true);
+        
+    }
+    catch (Exception e)
+    {
+        Console.WriteLine(e);
+        Console.WriteLine($"Error loading configuration file: {configurationFilePath}");
+        Environment.Exit(1);
+    }
+}
+
+void ConfigureLogging(WebApplicationBuilder builder)
+{
+    builder.Logging.ClearProviders(); // If you want to remove default providers
+    builder.Logging.AddConsole();
+    builder.Logging.AddDebug();
+    builder.Logging.AddEventSourceLogger();
+    // Configure log level for Microsoft.EntityFrameworkCore.Database.Command
+    builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
+    builder.Logging.AddFilter("Microsoft.EntityFrameworkCore.Infrastructure", LogLevel.Warning);
 }

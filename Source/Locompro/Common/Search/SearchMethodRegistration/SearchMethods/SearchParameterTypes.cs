@@ -18,5 +18,6 @@ public enum SearchParameterTypes
     SubmissionByNAmountReports,
     SubmissionByUserId,
     SubmissionHasApproverOrRejecter,
-    SubmissionHasMaxAutoReports
+    SubmissionHasMaxAutoReports,
+    SubmissionByLocationFilter
 }
