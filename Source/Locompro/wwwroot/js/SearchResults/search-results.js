@@ -78,7 +78,7 @@ class SearchResultsTable extends ResultsTable {
      */
     selectItem(index) {
         this.itemSelected = index;
-        this.currentModal = new SearchResultsModal(this.tableData, this.itemSelected);
+        this.currentModal = createSearchResultsModalInstance(this.tableData, this.itemSelected);
     }
 }
 
@@ -164,5 +164,19 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 });
+
+async function createSearchResultsModalInstance(searchResults, itemSelected) {
+    try {
+        const response = await fetch("SearchResults?handler=GetUsersReportedSubmissions");
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const usersReportedSubmissions = await response.json();
+        return new SearchResultsModal(searchResults, itemSelected, usersReportedSubmissions);
+    } catch (error) {
+        console.error('Failed to obtain user reported submissions', error);
+        return new SearchResultsModal(searchResults, itemSelected);
+    }
+}
 
 // export {changeIndexButtonPressed, changeIndexPage, setOrder, selectItem, applyFilter, plusSlides, clearFilters};
