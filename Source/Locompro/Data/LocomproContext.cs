@@ -157,10 +157,12 @@ public class LocomproContext : IdentityDbContext<User>
         builder.HasDbFunction(
             typeof(LocomproContext).GetMethod(nameof(CountRatedSubmissions), new[] { typeof(string) }) ??
             throw new InvalidOperationException($"Method {nameof(CountRatedSubmissions)} not found."));
+        
         builder.HasDbFunction(
             typeof(LocomproContext).GetMethod(nameof(GetPictures),
                 new[] { typeof(string), typeof(int), typeof(int) }) ??
             throw new InvalidOperationException($"Method {nameof(GetPictures)} not found."));
+        
     }
 
     [DbFunction("GetPictures", "dbo")]
@@ -169,6 +171,12 @@ public class LocomproContext : IdentityDbContext<User>
         return FromExpression(() => GetPictures(storeName, productId, maxPictures));
     }
 
+    /// <summary>
+    ///   Represents a database function that counts the number of rated submissions by a specific user.
+    /// </summary>
+    /// <param name="userId"> the id of the user </param>
+    /// <returns> int with count of rated submissions </returns>
+    /// <exception cref="NotSupportedException"></exception>
     [DbFunction("CountRatedSubmissions", "dbo")]
     public int CountRatedSubmissions(string userId)
     {
@@ -182,6 +190,36 @@ public class LocomproContext : IdentityDbContext<User>
     }
 
     /// <summary>
+    /// Represents a database function that counts the number of reported submissions by a specific user.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <returns>The count of reported submissions by the user.</returns>
+    /// <exception cref="NotSupportedException">Thrown when the method is not supported.</exception>
+    [DbFunction("CountReportedSubmissions", "dbo")]
+    public int CountReportedSubmissions(string userId)
+    {
+        throw new NotSupportedException();
+    }
+
+    /// <summary>
+    ///   Represents a database function that counts the number of submissions by a specific user.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    /// <exception cref="NotSupportedException"></exception>
+    [DbFunction("CountSubmissions", "dbo")]
+    public int CountSubmissions(string userId)
+    {
+        throw new NotSupportedException();
+    }
+
+    [DbFunction("MostReportedUsers", "dbo")]
+    public IQueryable<MostReportedUsersResult> GetMostReportedUsersResults()
+    {
+        return FromExpression(() => GetMostReportedUsersResults());
+    }
+
+/// <summary>
     ///     Assigns each parent category of a product to the product.
     /// </summary>
     /// <param name="categoryName"></param>
@@ -198,7 +236,7 @@ public class LocomproContext : IdentityDbContext<User>
         await Database.ExecuteSqlRawAsync("EXECUTE dbo.AddParents @category, @productId", categoryNameParameter,
             productIdParameter);
     }
-
+    
     /// <summary>
     ///     Deletes every submission that has been deemed inappropriate by a moderator.
     /// </summary>

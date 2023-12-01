@@ -19,14 +19,34 @@ public class UserService : DomainService<User, string>, IUserService
     /// <param name="loggerFactory">The factory used to create loggers.</param>
     public UserService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
     {
-        // Retrieves the user repository from the unit of work
         _userRepository = UnitOfWork.GetSpecialRepository<IUserRepository>();
     }
 
     /// <inheritdoc/>
     public List<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
     {
-        // Delegates the call to the user repository
         return _userRepository.GetQualifiedUserIDs();
+    }
+    /// <inheritdoc />
+    public int GetSubmissionsCountByUser(string userId)
+    {
+        return _userRepository.GetSubmissionsCountByUser(userId);
+    }
+    /// <inheritdoc />
+    public int GetReportedSubmissionsCountByUser(string userId)
+    {
+        return _userRepository.GetReportedSubmissionsCountByUser(userId);
+    }
+    /// <inheritdoc />
+    public int GetRatedSubmissionsCountByUser(string userId)
+    {
+        return _userRepository.GetRatedSubmissionsCountByUser(userId);
+    }
+    /// <inheritdoc />
+    public List<MostReportedUsersResult> GetMostReportedUsersInfo()
+    {
+        var results = _userRepository.GetMostReportedUsersInfo();
+        results = results.OrderByDescending(x => x.ReportedSubmissionCount).Take(10).ToList();
+        return results;
     }
 }
