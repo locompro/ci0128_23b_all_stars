@@ -20,7 +20,7 @@ public class ReportRepository : CrudRepository<Report, string>, IReportRepositor
     public async Task UpdateAsync(string submissionUserId, DateTime submissionEntryTime, string userId, Report entity)
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));
-        
+
         var existingEntity = await GetByIdAsync(submissionUserId, submissionEntryTime, userId);
         if (existingEntity != null)
         {
@@ -30,6 +30,26 @@ public class ReportRepository : CrudRepository<Report, string>, IReportRepositor
         else
         {
             await AddAsync(entity);
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task AddOrUpdateManyAutomaticReports(List<AutoReport> autoReports)
+    {
+        if (autoReports == null) throw new ArgumentNullException(nameof(autoReports));
+
+        foreach (var autoReport in autoReports)
+        {
+            var existingEntity = await GetByIdAsync(autoReport.SubmissionUserId, autoReport.SubmissionEntryTime,
+                autoReport.UserId);
+            if (existingEntity != null)
+            {
+                Context.Entry(existingEntity).CurrentValues.SetValues(autoReport);
+            }
+            else
+            {
+                await AddAsync(autoReport);
+            }
         }
     }
 }

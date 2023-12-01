@@ -30,8 +30,8 @@ public interface IModerationService
     /// <summary>
     ///     Adds a report for a given submission
     /// </summary>
-    /// <param name="reportDto">Report to be added</param>
-    Task ReportSubmission(ReportDto reportDto);
+    /// <param name="userReportDto">Report to be added</param>
+    Task ReportSubmission(UserReportDto userReportDto);
 
     /// <summary>
     /// Returns whether the user has the Possible Moderator role

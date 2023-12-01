@@ -9,9 +9,16 @@ namespace Locompro.Services.Domain;
 public interface IReportService : IDomainService<Report, string>
 {
     /// <summary>
-    /// Updates the report based on the provided ReportDto.
+    /// Updates the report based on the provided UserReportDto.
     /// </summary>
-    /// <param name="reportDto">The DTO containing the updated report information.</param>
+    /// <param name="userReportDto">The DTO containing the updated report information.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    Task UpdateAsync(ReportDto reportDto);
+    Task UpdateUserReportAsync(UserReportDto userReportDto);
+
+    /// <summary>
+    /// Adds a list of automatic reports to the database.
+    /// </summary>
+    /// <param name="listOfAutomaticReports"> List of reports to add</param>
+    /// <returns>An async operation</returns>
+    Task AddManyAutomaticReports(List<AutoReportDto> listOfAutomaticReports);
 }

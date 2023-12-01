@@ -152,6 +152,14 @@ VALUES ('Electrónica'),
 
 GO
 
+INSERT INTO dbo.AspNetUsers
+(Id, Name, Address, Rating, Status, UserName, NormalizedUserName, Email, NormalizedEmail, EmailConfirmed, PasswordHash,
+ SecurityStamp, ConcurrencyStamp, PhoneNumber, PhoneNumberConfirmed, TwoFactorEnabled, LockoutEnabled,
+ AccessFailedCount)
+VALUES ('Anomaly_Service', 'Anomaly Detection Service', 'NotAplicable', 0, 0, 'Anomaly Detection Service',
+        'ANOMALY DETECTION SERVICE',
+        'Locompro@email.com', 'LOCOMPRO@EMAIL.COM', 1, 'hashed_password', 'security_stamp', 'concurrency_stamp',
+        '12345678', 1, 0, 1, 0)
 
 -- AS-14
 -- Procedimiento para agregar toda la jerarqu�a de padres para la categor�a que trae un Product al ser insertado.

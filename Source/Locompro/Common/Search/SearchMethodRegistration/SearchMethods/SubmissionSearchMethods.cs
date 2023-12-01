@@ -64,7 +64,7 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
         AddSearchParameter<string>(SearchParameterTypes.SubmissionByUserId
             , (submission, userId) => submission.UserId == userId
             , userId => !string.IsNullOrEmpty(userId));
-        
+
         // find by distance from the user
         AddSearchFilter<MapVm>(SearchParameterTypes.SubmissionByLocationFilter
             , (submission, mapVm) =>
@@ -73,7 +73,7 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
                 {
                     return false;
                 }
-                
+
                 return MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance;
             },
             mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0);
@@ -86,8 +86,8 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
             , userId => !string.IsNullOrWhiteSpace(userId));
 
         // find if submission has more than max auto reports
-        AddSearchParameter<int>(SearchParameterTypes.SubmissionHasMaxAutoReports
-            , (submission, maxAutoReports) => submission.AutoReports.Count >= maxAutoReports
+        AddSearchParameter<int>(SearchParameterTypes.SubmissionHasNAutoReports
+            , (submission, maxAutoReports) => submission.AutoReports.Count == maxAutoReports
             , maxAutoReports => maxAutoReports >= 0);
     }
 }

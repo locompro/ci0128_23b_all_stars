@@ -1,14 +1,8 @@
-using System.Linq.Expressions;
-using Locompro.Common.Search;
-using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
-using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Data;
 using Locompro.Data.Repositories;
-using Locompro.Models;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -17,11 +11,6 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class SubmissionServiceTest
 {
-    private Mock<IUnitOfWork> _unitOfWorkMock = null!;
-    private Mock<ISubmissionRepository> _submissionRepositoryMock = null!;
-    private Mock<ICrudRepository<User, string>> _userRepositoryMock = null!;
-    private SubmissionService _submissionService = null!;
-
     [SetUp]
     public void Setup()
     {
@@ -41,74 +30,10 @@ public class SubmissionServiceTest
         _submissionService = new SubmissionService(_unitOfWorkMock.Object, loggerFactoryMock.Object);
     }
 
-    /// <summary>
-    ///     tests that the search by canton and province returns the expected results when the canton and province are
-    ///     mentioned in the submissions
-    ///     <author> A. Badilla Olivas B80874 </author>
-    /// </summary>
-    [Test]
-    public async Task GetSubmissionsByCantonAndProvince_ValidCantonAndProvince_SubmissionsReturned()
-    {
-        // Arrange
-        var canton = "Canton1";
-        var province = "Province1";
-        MockDataSetup();
-
-        var searchQueries = new SearchQueries<Submission>(
-            new List<Expression<Func<Submission, bool>>>
-            {
-                submission => submission.Store.Canton.Name == canton,
-                submission => submission.Store.Canton.ProvinceName == province
-            }
-        );
-        
-
-        // Act
-        var results = await _submissionService.GetSearchResults(searchQueries);
-
-        // Assert
-        var submissions = results as Submission[] ?? results.ToArray();
-        Assert.That(submissions, Is.Not.Null);
-        Assert.That(submissions.Count(), Is.GreaterThan(0));
-        var all = true;
-        foreach (var sub in submissions)
-            if (sub.Store.Canton.Name != canton || sub.Store.Canton.ProvinceName != province)
-            {
-                all = false;
-                break;
-            }
-
-        Assert.That(all, Is.True);
-    }
-
-    /// <summary>
-    ///     Tests that an empty list is returned when the canton and province are not mentioned in any submission
-    ///     <author> A. Badilla Olivas B80874 </author>
-    /// </summary>
-    [Test]
-    public async Task GetSubmissionsByCantonAndProvince_InvalidCantonAndProvince_EmptyListReturned()
-    {
-        // Arrange
-        var canton = "InvalidCanton";
-        var province = "InvalidProvince";
-        MockDataSetup();
-
-        // Act
-        var searchQueries = new SearchQueries<Submission> (
-            new List<Expression<Func<Submission, bool>>>
-            {
-                submission => submission.Store.Canton.Name == canton,
-                submission => submission.Store.Canton.ProvinceName == province
-            }
-        );
-
-        var results = await _submissionService.GetSearchResults(searchQueries);
-
-        // Assert
-        var submissions = results as Submission[] ?? results.ToArray();
-        Assert.That(submissions, Is.Not.Null);
-        Assert.That(submissions.Count(), Is.EqualTo(0));
-    }
+    private Mock<IUnitOfWork> _unitOfWorkMock = null!;
+    private Mock<ISubmissionRepository> _submissionRepositoryMock = null!;
+    private Mock<ICrudRepository<User, string>> _userRepositoryMock = null!;
+    private SubmissionService _submissionService = null!;
 
     /// <summary>
     /// Tests that the search by store name returns the expected results when
@@ -299,7 +224,6 @@ public class SubmissionServiceTest
     }
 
 
-
     /// <summary>
     ///     
     ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
@@ -364,7 +288,7 @@ public class SubmissionServiceTest
     }
 
     /// <summary>
-    /// Tests that the AddSubmissionApprover method calls the UpdateAsync and SaveChangesAsync methods 
+    /// Tests that the AddSubmissionApprover method calls the UpdateUserReportAsync and SaveChangesAsync methods 
     /// of the repository and unit of work respectively when both the submission and user exist.
     /// </summary>
     /// <author>Ariel Arevalo Alvarado - B50562 - Sprint 3</author>
@@ -421,7 +345,7 @@ public class SubmissionServiceTest
     }
 
     /// <summary>
-    /// Tests that the AddSubmissionRejecter method calls the UpdateAsync and SaveChangesAsync methods 
+    /// Tests that the AddSubmissionRejecter method calls the UpdateUserReportAsync and SaveChangesAsync methods 
     /// of the repository and unit of work respectively when both the submission and user exist.
     /// </summary>
     /// <author>Ariel Arevalo Alvarado - B50562 - Sprint 3</author>
@@ -859,23 +783,6 @@ public class SubmissionServiceTest
                 Product = products[5]
             }
         };
-
-        _submissionRepositoryMock
-            .Setup(repo => repo.GetSearchResults(It.IsAny<ISearchQueries>()))
-            .ReturnsAsync((ISearchQueries searchQueries) =>
-            {
-                // initiate the query
-                IQueryable<Submission>? submissionsResults =
-                    submissions.AsQueryable().Include(submission => submission.Product);
-
-                // append the search queries to the query
-                submissionsResults = searchQueries.ApplySearch(submissionsResults) as IQueryable<Submission>;
-
-                if (submissionsResults == null) return new List<Submission>();
-
-                // get and return the results
-                return submissionsResults.ToList();
-            });
 
         _submissionRepositoryMock
             .Setup(repository => repository.GetByIdAsync(It.IsAny<SubmissionKey>()))

@@ -2,6 +2,7 @@
 using Locompro.Common;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Data.Repositories;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
@@ -84,9 +85,9 @@ public class ModerationService : Service, IModerationService
     }
 
     /// <inheritdoc />
-    public async Task ReportSubmission(ReportDto reportDto)
+    public async Task ReportSubmission(UserReportDto userReportDto)
     {
-        await _reportService.UpdateAsync(reportDto);
+        await _reportService.UpdateUserReportAsync(userReportDto);
     }
 
     public async Task<bool> IsUserPossibleModerator(string userId)
@@ -127,12 +128,13 @@ public class ModerationService : Service, IModerationService
     public async Task<SubmissionsDto> FetchAllSubmissionsWithAutoReport()
     {
         // Create the search criteria
-        List<ISearchCriterion> searchCriteria = new List<ISearchCriterion>()
-        {
-            new SearchCriterion<int>(SearchParameterTypes.SubmissionHasMaxAutoReports, 1)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+
+        // Add the search parameter
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionHasNAutoReports, 1);
+
         // Call the search service to get the submissions
-        SubmissionsDto submissionsDto = await _searchService.GetSearchResults(searchCriteria);
+        SubmissionsDto submissionsDto = await _searchService.GetSearchSubmissionsAsync(searchCriteria);
         // Return the submissions
         return submissionsDto;
     }

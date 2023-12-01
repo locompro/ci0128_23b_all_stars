@@ -9,6 +9,7 @@ public class ContributionsVm
     public ContributionsVm()
     {
     }
+
     /// <summary>
     ///     Constructor of ContributionViewModel based on a User object.
     /// </summary>
@@ -19,15 +20,15 @@ public class ContributionsVm
         {
             Profile = new ProfileVm(user);
             ItemMapper itemMapper = new();
-            Contributions = itemMapper.ToVm(new SubmissionsDto(user.Submissions, GetLatestSubmission));
+            Contributions = itemMapper.ToVm(new SubmissionsDto(user.CreatedSubmissions, GetLatestSubmission));
         }
         catch (Exception e)
         {
             throw new ArgumentNullException(e + "Invalid User used to create a ContributionsVm");
         }
     }
-    
-    public ProfileVm Profile {get; set;}
+
+    public ProfileVm Profile { get; set; }
     public List<ItemVm> Contributions { get; set; }
 
     /// <summary>

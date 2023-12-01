@@ -155,6 +155,8 @@ public class ModeratorPageModel : BasePageModel
             autoReports = new List<AutoReportVm>();
         }
 
+        AutoReportItems = autoReports;
+
         AutoReportDisplayItems =
             PaginatedList<AutoReportVm>.Create(
                 autoReports,
@@ -186,11 +188,12 @@ public class ModeratorPageModel : BasePageModel
             .AddQueryParameter(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports);
 
         SubmissionsDto submissionsDto = null;
-        
+
         try
         {
             submissionsDto = await _searchService.GetSearchSubmissionsAsync(searchCriteria);
-        } catch (Exception e)
+        }
+        catch (Exception e)
         {
             Logger.LogError(e, "Error while getting search results");
         }
