@@ -72,18 +72,12 @@ public class CrudRepository<T, TK> : ICrudRepository<T, TK> where T : class
     }
     
     /// <inheritdoc />
-    public async Task<IEnumerable<T>> GetByDynamicQuery(ISearchQueries searchQueries)
+    public async Task<IEnumerable<T>> GetByDynamicQuery(ISearchQueries<T> searchQueries)
     {
-        IQueryable<T> searchResults = Set;
+        IDynamicQueryable<T> dynamicQueryable = new DynamicQueryable<T>(Set);
 
-        // append the search queries to the query
-        searchResults = searchQueries.ApplySearch(searchResults) as IQueryable<T> ;
-
-        if (searchResults == null)
-        {
-            return await new Task<IEnumerable<T>>(() => new List<T>());
-        }
+        IEnumerable<T> searchResults = await dynamicQueryable.GetResultsByAsync(searchQueries);
         
-        return await searchResults.ToListAsync();
+        return searchResults;
     }
 }

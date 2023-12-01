@@ -51,7 +51,6 @@ async function advancedSearchButtonPressed() {
 
     closeModalButton.classList.remove("close-modal-button-hidden");
     closeModalButton.classList.add("close-modal-button-shown");
-
 }
 
 function performSearchButton() {
@@ -151,29 +150,6 @@ function initSelect2() {
             language: select2SpanishLanguageSettings,
         });
     })
-
-    // $('#dropdown').select2({
-    //     ajax: {
-    //         url: '/Submissions/Create',
-    //         dataType: 'json',
-    //         delay: 100,
-    //         data: function (params) {
-    //             return {
-    //                 handler: 'FetchStores',
-    //                 partialName: params.term
-    //             };
-    //         },
-    //         processResults: function (data) {
-    //             return {
-    //                 results: data
-    //             };
-    //         },
-    //         cache: true
-    //     },
-    //     placeholder: 'Seleccionar',
-    //     minimumInputLength: 1,
-    //     language: select2SpanishLanguageSettings
-    // });
 }
 
 

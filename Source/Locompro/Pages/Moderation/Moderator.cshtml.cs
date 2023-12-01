@@ -3,8 +3,8 @@ using Locompro.Common;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Models.Dtos;
-using Locompro.Models.Results;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
 using Locompro.Services;
@@ -203,7 +203,7 @@ public class ModeratorPageModel : BasePageModel
 
         try
         {
-            submissionsDto = await _searchService.GetSearchResults(searchCriteria);
+            submissionsDto = await _searchService.GetSearchSubmissionsAsync(searchCriteria);
         }
         catch (Exception e)
         {

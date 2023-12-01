@@ -66,7 +66,7 @@
                 </svg>
             </div>
             <div class="px-3">
-                <h4 class="fw-bold mb-0" id="Contributions">@Model.UserProfile.Contributions</h4>
+                <h4 class="fw-bold mb-0" id="Contributions">@Model.UserProfile.ContributionsCount</h4>
                 <p class="mb-0">Contribuciones</p>
             </div>
         </div>
@@ -93,7 +93,7 @@
 <div class="row" id="UserActionsRow">
      <div class="col d-xxl-flex justify-content-xxl-end">
         <a class="btn btn-primary text-center border rounded-pill d-xxl-flex flex-grow-0 flex-shrink-1 justify-content-xxl-start"
-                role="button" asp-page="/SearchResults/Contributions" asp-route-query="@userId" id="Contributions">
+                role="button" asp-page="/Account/Contributions" asp-route-query="@userId" id="Contributions">
             Mis Contribuciones
         </a>
     </div>

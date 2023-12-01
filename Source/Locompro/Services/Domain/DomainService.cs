@@ -3,6 +3,7 @@ using Locompro.Common.Search.QueryBuilder;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 using Locompro.Data;
 using Locompro.Data.Repositories;
+using Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Manage.Internal;
 
 namespace Locompro.Services.Domain;
 
@@ -16,7 +17,7 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
 {
     protected readonly IUnitOfWork UnitOfWork;
     protected readonly ICrudRepository<T, TK> CrudRepository;
-    protected readonly IQueryBuilder QueryBuilder;
+    protected readonly IQueryBuilder<T> QueryBuilder;
 
     /// <summary>
     ///     Constructs a domain service for a given repository.
@@ -28,7 +29,7 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
     {
         UnitOfWork = unitOfWork;
         CrudRepository = UnitOfWork.GetCrudRepository<T, TK>();
-        QueryBuilder = new QueryBuilder<T>(SearchMethodsFactory.GetInstance().Create<T>());
+        QueryBuilder = new QueryBuilder<T>(SearchMethodsFactory.GetInstance().Create<T>(), Logger);
     }
 
     /// <inheritdoc />
@@ -44,27 +45,16 @@ public class DomainService<T, TK> : Service, IDomainService<T, TK>
     }
     
     /// <inheritdoc />
-    public async Task<IEnumerable<T>> GetByDynamicQuery(List<ISearchCriterion> searchQueries)
+    public async Task<IEnumerable<T>> GetByDynamicQuery(ISearchQueryParameters<T> searchQueries)
     {
-        foreach (var criterion in searchQueries)
-        {
-            try
-            {
-                QueryBuilder.AddSearchCriterion(criterion);
-            }
-            catch (ArgumentException exception)
-            {
-                // if the search criterion is invalid, report on it but continue execution
-                Logger.LogWarning(exception.ToString());
-            }
-        }
+        QueryBuilder.AddSearchCriteria(searchQueries);
         
-        ISearchQueries builtQueries = QueryBuilder.GetSearchFunction();
+        ISearchQueries<T> builtQueries = QueryBuilder.GetSearchFunction();
         
         IEnumerable<T> results = builtQueries.IsEmpty()?
             null :
             await CrudRepository.GetByDynamicQuery(builtQueries);
-        
+
         QueryBuilder.Reset();
         
         return results;

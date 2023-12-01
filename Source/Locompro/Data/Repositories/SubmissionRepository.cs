@@ -76,25 +76,6 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<Submission>> GetSearchResults(ISearchQueries searchQueries)
-    {
-        // initiate the query
-        IQueryable<Submission> submissionsResults = Set
-            .Include(submission => submission.Product);
-
-        // append the search queries to the query
-        submissionsResults = searchQueries.ApplySearch(submissionsResults) as IQueryable<Submission> ;
-
-        if (submissionsResults == null)
-        {
-            return await new Task<IEnumerable<Submission>>(() => new List<Submission>());
-        }
-        
-        // get and return the results
-        return await submissionsResults.ToListAsync();
-    }
-
-    /// <inheritdoc />
     public async Task<IEnumerable<Submission>> GetItemSubmissions(string storeName, string productName)
     {
         var submissionsResults = Set

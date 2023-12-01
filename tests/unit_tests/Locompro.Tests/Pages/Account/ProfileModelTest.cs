@@ -121,7 +121,7 @@ public class ProfileModelTest
         var result = await _profileModel.OnGetAsync();
 
         // Assert
-        Assert.That(result, Is.InstanceOf<PageResult>());
+        Assert.That(result, Is.InstanceOf<RedirectToRouteResult>());
     }
 
 
