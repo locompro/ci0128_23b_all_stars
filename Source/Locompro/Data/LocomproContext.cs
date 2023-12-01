@@ -74,32 +74,50 @@ public class LocomproContext : IdentityDbContext<User>
             .HasOne(s => s.Store)
             .WithMany()
             .HasForeignKey(s => s.StoreName)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
         builder.Entity<Submission>()
             .HasOne(s => s.Product)
             .WithMany(p => p.Submissions)
             .HasForeignKey(s => s.ProductId)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
         builder.Entity<Submission>()
             .HasOne(s => s.User)
             .WithMany(u => u.CreatedSubmissions)
             .HasForeignKey(s => s.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
         builder.Entity<Submission>()
             .HasMany(s => s.Approvers)
-            .WithMany(u => u.ApprovedSubmissions);
+            .WithMany(u => u.ApprovedSubmissions)
+            .UsingEntity<Dictionary<string, object>>(
+                "SubmissionApprover", // Name of the join table for approvers
+                j => j.HasOne<User>().WithMany().HasForeignKey("ApproverId").OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne<Submission>().WithMany().HasForeignKey("SubmissionUserId", "SubmissionEntryTime").OnDelete(DeleteBehavior.Cascade)
+            );
 
         builder.Entity<Submission>()
             .HasMany(s => s.Rejecters)
-            .WithMany(u => u.RejectedSubmissions);
+            .WithMany(u => u.RejectedSubmissions)
+            .UsingEntity<Dictionary<string, object>>(
+                "SubmissionRejecter", // Name of the join table for rejecters
+                j => j.HasOne<User>().WithMany().HasForeignKey("RejecterId").OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne<Submission>().WithMany().HasForeignKey("SubmissionUserId", "SubmissionEntryTime").OnDelete(DeleteBehavior.Cascade)
+            );
 
         builder.Entity<Submission>()
             .HasMany(s => s.UserReports)
             .WithOne(r => r.Submission)
             .IsRequired();
+
+        builder.Entity<User>()
+            .HasMany(u => u.CreatedSubmissions)
+            .WithOne(s => s.User)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<Report>()
             .HasKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime, r.UserId });
@@ -135,11 +153,6 @@ public class LocomproContext : IdentityDbContext<User>
             .HasForeignKey(r => r.UserId)
             .OnDelete(DeleteBehavior.ClientSetNull)
             .IsRequired();
-
-
-        builder.Entity<User>()
-            .HasMany(u => u.CreatedSubmissions)
-            .WithOne(s => s.User);
 
         builder.Entity<Picture>()
             .HasKey(p => new { p.SubmissionUserId, p.SubmissionEntryTime, p.Index });

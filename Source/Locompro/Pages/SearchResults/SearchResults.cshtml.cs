@@ -1,5 +1,6 @@
 using System.Net;
 using Castle.Core.Internal;
+using Locompro.Common;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration;
@@ -137,6 +138,34 @@ public class SearchResultsModel : SearchPageModel
         return Content(searchResultsJson);
     }
 
+    public async Task<IActionResult> OnGetGetUsersReportedSubmissions()
+    {
+        if (!_authService.IsLoggedIn())
+        {
+            Response.StatusCode = 302; // Redirect status code
+            return new JsonResult(Array.Empty<object>());
+        }
+
+        try
+        {
+            var userId = _authService.GetUserId();
+
+            var reportedSubmissions = await _moderationService.GetUsersReportedSubmissions(userId);
+
+            var reportedSubmissionVms = 
+                reportedSubmissions.Select(rs => new SubmissionVm(rs, GetFormattedDate));
+
+            return Content(GetJsonFrom(reportedSubmissionVms));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to get user's reported submissions");
+
+            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            return new JsonResult(new { success = false, message = ex.Message });
+        }
+    }
+
     /// <summary>
     ///     Returns a list of pictures for a given item
     /// </summary>
@@ -244,5 +273,16 @@ public class SearchResultsModel : SearchPageModel
         }
 
         return new JsonResult(new { ok = true, message = "Ratings updated submitted successfully" });
+    }
+
+    /// <summary>
+    ///     Extracts from entry time, the date in the format yyyy-mm-dd
+    ///     to be shown in the results page
+    /// </summary>
+    /// <param name="submission"></param>
+    /// <returns></returns>
+    private static string GetFormattedDate(Submission submission)
+    {
+        return DateFormatter.GetFormattedDateFromDateTime(submission.EntryTime);
     }
 }

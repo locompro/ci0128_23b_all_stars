@@ -31,6 +31,20 @@ class SearchResultsModal {
         this.submissionsRatings = [];
         this.reportedSubmissions = [];
 
+        fetch("SearchResults?handler=GetUsersReportedSubmissions")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(usersReportedSubmissions => {
+                this.reportedSubmissions.push(...usersReportedSubmissions)
+            })
+            .catch(error => {
+                console.error('Failed to obtain user reported submissions', error)
+            });
+
         $('#descriptionModal').on('show.bs.modal', function () {
             // Use a short delay to apply the style change to the backdrop
             setTimeout(() => {
@@ -93,7 +107,7 @@ class SearchResultsModal {
             // Append the icon to the button
             reportButton.appendChild(icon);
 
-            if (submission.Status !== 1) {
+            if (submission.Status !== 1 && this.isUserLoggedIn && !this.isSubmissionReported(submission)) {
                 const submissionId = submission.UserId + submission.NonFormatedEntryTime;
 
                 reportButton.setAttribute('data-id', submissionId);
@@ -124,6 +138,15 @@ class SearchResultsModal {
             reportCell.style.textAlign = 'center';
             reportCell.appendChild(reportButton);
         }
+    }
+
+    isSubmissionReported(submission) {
+        for (let sub of this.reportedSubmissions) {
+            if (submission.UserId === sub.UserId && submission.EntryTime === sub.EntryTime) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
