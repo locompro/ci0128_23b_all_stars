@@ -256,7 +256,7 @@ BEGIN
 END;
 GO
 -- Obtiene una cantidad dada de imagenes tomadas de los mejores submissions de un producto
--- Autor: Joseph Stuart Valverde Kong	C18100
+-- Autor: Joseph Stuart Valverde Kong C18100
 CREATE OR ALTER FUNCTION GetPictures(
     @StoreName nvarchar(60),
     @ProductId int,
@@ -284,3 +284,42 @@ CREATE OR ALTER FUNCTION GetPictures(
             );
 
 GO
+-- AS-319 obtiene el numero de submission reportadas de una persona usuaria
+-- Autor: A. Badilla Olivas b80874 
+-- sprint 3
+CREATE OR ALTER FUNCTION CountReportedSubmissions(@UserID NVARCHAR(450))
+    RETURNS INT
+AS
+BEGIN
+    DECLARE @Count INT;
+    SELECT @Count = COUNT(R.SubmissionUserId)
+    FROM Reports AS R
+    WHERE R.SubmissionUserId = @UserID
+    RETURN @Count;
+END;
+GO
+-- AS-319 obtiene el numero de submission de una persona usuaria
+-- Autor: A. Badilla Olivas b80874 
+-- sprint 3
+CREATE OR ALTER FUNCTION CountSubmissions(@UserID NVARCHAR(450))
+    RETURNS INT
+AS
+BEGIN
+    DECLARE @Count INT;
+    SELECT @Count = COUNT(*)
+    FROM Submissions
+    WHERE UserID = @UserID
+    RETURN @Count;
+END;
+GO
+-- AS-319 obtiene una tabla que tiene la información sobre la persona usuaria, número de sus aportes reportados, total de submission hechos y su rating.
+-- Autor: A. Badilla Olivas b80874 
+-- sprint 3
+CREATE OR ALTER FUNCTION MostReportedUsers()
+    RETURNS TABLE
+        AS
+        RETURN
+        SELECT U.UserName AS UserName, dbo.CountReportedSubmissions(U.Id) AS ReportedSubmissionCount, dbo.CountSubmissions(U.Id) AS TotalUserSubmissions, U.Rating AS UserRating
+        FROM AspNetUsers AS U, Submissions AS S
+        WHERE dbo.CountReportedSubmissions(U.Id) > 0
+        GROUP BY U.UserName, U.Id, U.Rating
