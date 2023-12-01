@@ -100,7 +100,6 @@ class SearchResultsTable extends ResultsTable {
         const tableBody =
             new SearchResultsTableBody(pageData.ResultsPerPage, selectItem);
         super(tableBody, searchResults, pageData, pageConfiguration);
-        console.log(tableBody);
     }
 
     /**
