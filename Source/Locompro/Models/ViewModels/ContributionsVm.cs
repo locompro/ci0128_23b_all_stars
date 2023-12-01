@@ -29,7 +29,7 @@ public class ContributionsVm
     
     public ProfileVm Profile {get; set;}
     public List<ItemVm> Contributions { get; set; }
-    
+
     /// <summary>
     ///     Qualifier to organize submissions when grouping into an Item
     /// </summary>
