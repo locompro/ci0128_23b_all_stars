@@ -32,7 +32,7 @@ public class Submission
 
     public virtual ICollection<Picture> Pictures { get; set; }
 
-    public virtual ICollection<UserReport> Reports { get; set; }
+    public virtual ICollection<UserReport> UserReports { get; set; }
 
     public virtual ICollection<AutoReport> AutoReports { get; set; }
 
