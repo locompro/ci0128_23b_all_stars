@@ -1,6 +1,5 @@
 ﻿using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
-using Locompro.Models.ViewModels;
 
 namespace Locompro.Services;
 
@@ -51,5 +50,5 @@ public interface IModerationService
     /// <summary>
     /// Fetches auto reports from the database using the moderation service
     /// </summary>
-    Task<SubmissionsDto> FetchAllSubmissionsWithAutoReport();
+    Task<SubmissionsDto> FetchAllSubmissionsWithAutoReport(string userId);
 }

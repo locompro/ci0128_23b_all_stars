@@ -132,16 +132,17 @@ public class ModerationService : Service, IModerationService
         }
     }
 
-    public async Task<SubmissionsDto> FetchAllSubmissionsWithAutoReport()
+    public async Task<SubmissionsDto> FetchAllSubmissionsWithAutoReport(string userId)
     {
         // Create the search criteria
         ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
 
         // Add the search parameter
-        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionHasNAutoReports, 1);
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionHasNAutoReports, 1)
+            .AddQueryParameter(SearchParameterTypes.SubmissionHasApproverOrRejecter, userId);
 
         // Call the search service to get the submissions
-        SubmissionsDto submissionsDto = await _searchService.GetSearchSubmissionsAsync(searchCriteria);
+        var submissionsDto = await _searchService.GetSearchSubmissionsAsync(searchCriteria);
         // Return the submissions
         return submissionsDto;
     }
@@ -180,7 +181,7 @@ public class ModerationService : Service, IModerationService
     ///     Retrieves a list of user IDs for users who are qualified to be moderators.
     /// </summary>
     /// <returns>A list of qualified user IDs.</returns>
-    private List<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
+    private IEnumerable<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
     {
         return _userService.GetQualifiedUserIDs();
     }

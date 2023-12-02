@@ -74,9 +74,10 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
 
         // find if submission has more than max auto reports
         AddSearchParameter<int>(SearchParameterTypes.SubmissionHasNAutoReports
-            , (submission, maxAutoReports) => submission.AutoReports.Count == maxAutoReports
+            , (submission, maxAutoReports) =>
+                submission.AutoReports != null && submission.AutoReports.Count == maxAutoReports
             , maxAutoReports => maxAutoReports >= 0);
-        
+
         // find by distance from the user
         AddSearchFilter<MapVm>(SearchParameterTypes.SubmissionByLocationFilter
             , (submission, mapVm) =>
@@ -85,7 +86,7 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
                 {
                     return false;
                 }
-                
+
                 return MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance;
             },
             mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0);
