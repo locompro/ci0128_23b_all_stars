@@ -67,7 +67,7 @@ public class ModeratorPageModel : BasePageModel
             throw new AuthenticationException("No user is logged in");
         }
 
-        await BuildPageContents(userReportPageIndex ?? 0, 1);
+        await BuildPageContents(userReportPageIndex ?? 0);
     }
 
     /// <summary>
@@ -194,8 +194,10 @@ public class ModeratorPageModel : BasePageModel
     /// <returns> List of AutoReportsVm</returns>
     private async Task<List<AutoReportVm>> FetchAutoReports()
     {
+        var userId = _authService.GetUserId();
+
         // Call moderation services for dto's on auto reports
-        var submissionsWithAutoReports = await _moderationService.FetchAllSubmissionsWithAutoReport();
+        var submissionsWithAutoReports = await _moderationService.FetchAllSubmissionsWithAutoReport(userId);
         // Map the dtos to vms 
         AutoReportSubmissionsMapper mapper = new();
         var autoReportVms = mapper.ToVm(submissionsWithAutoReports);
@@ -206,7 +208,7 @@ public class ModeratorPageModel : BasePageModel
 
     private async Task GetUserReports(int minAmountOfReports = 1)
     {
-        string userId = _authService.GetUserId();
+        var userId = _authService.GetUserId();
 
         if (string.IsNullOrWhiteSpace(userId))
         {

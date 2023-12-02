@@ -55,7 +55,8 @@ public class AnomalyDetectionService : Service, IAnomalyDetectionService
     /// </summary>
     /// <param name="submissions">The enumerable collection of submissions to be grouped.</param>
     /// <returns>A list of grouped submissions, where each group represents a unique combination of store and product.</returns>
-    private List<GroupedSubmissions> GroupSubmissionsByStoreAndProduct(IEnumerable<Submission> submissions) =>
+    private static IEnumerable<GroupedSubmissions> GroupSubmissionsByStoreAndProduct(
+        IEnumerable<Submission> submissions) =>
         submissions.GroupBy(submission => new { submission.StoreName, submission.Product.Name })
             .Select(group => new GroupedSubmissions
             {
@@ -100,12 +101,12 @@ public class AnomalyDetectionService : Service, IAnomalyDetectionService
     /// <param name="minPrice">The minimum price among submissions.</param>
     /// <param name="maxPrice">The maximum price among submissions.</param>
     /// <returns>A task that represents the asynchronous operation and returns an AutoReportDto.</returns>
-    private Task<AutoReportDto> ReportAnAnomalousSubmission(Submission submission, double mean,
+    private static Task<AutoReportDto> ReportAnAnomalousSubmission(Submission submission, double mean,
         double standardDeviation,
         int minPrice, int maxPrice)
     {
         // Create an AutoReportDto instance to store the report data.
-        var autoReportDto = new AutoReportDto()
+        var autoReportDto = new AutoReportDto
         {
             SubmissionUserId = submission.UserId,
             SubmissionEntryTime = submission.EntryTime,
@@ -129,7 +130,7 @@ public class AnomalyDetectionService : Service, IAnomalyDetectionService
     /// </summary>
     /// <param name="zScore">The Z-score of the submission's price.</param>
     /// <returns>The confidence value as a percentage.</returns>
-    private double CalculateConfidence(double zScore)
+    private static double CalculateConfidence(double zScore)
     {
         // Calculate the confidence using the Z-score and the normal cumulative distribution function.
         var confidence = Normal.CDF(0, 1, zScore);
@@ -143,7 +144,7 @@ public class AnomalyDetectionService : Service, IAnomalyDetectionService
     /// <param name="mean">The mean price of submissions.</param>
     /// <param name="standardDeviation">The standard deviation of submission prices.</param>
     /// <returns>The Z-score of the submission's price.</returns>
-    private double CalculateZScore(Submission submission, double mean, double standardDeviation) =>
+    private static double CalculateZScore(Submission submission, double mean, double standardDeviation) =>
         Math.Abs((submission.Price - mean) / standardDeviation);
 
     /// <summary>
@@ -151,7 +152,7 @@ public class AnomalyDetectionService : Service, IAnomalyDetectionService
     /// </summary>
     /// <param name="submissions">The list of submissions.</param>
     /// <returns>A tuple containing the minimum and maximum prices.</returns>
-    private (int minPrice, int maxPrice) CalculateMinMaxPrice(List<Submission> submissions)
+    private static (int minPrice, int maxPrice) CalculateMinMaxPrice(IReadOnlyCollection<Submission> submissions)
     {
         if (submissions == null || !submissions.Any())
         {
@@ -175,7 +176,7 @@ public class AnomalyDetectionService : Service, IAnomalyDetectionService
     /// </summary>
     /// <param name="submissions">The list of submissions.</param>
     /// <returns>The mean price.</returns>
-    private double CalculateMean(List<Submission> submissions) =>
+    private static double CalculateMean(IEnumerable<Submission> submissions) =>
         submissions.Average(submission => submission.Price);
 
     /// <summary>
@@ -184,7 +185,7 @@ public class AnomalyDetectionService : Service, IAnomalyDetectionService
     /// <param name="submissions">The list of submissions.</param>
     /// <param name="mean">The mean price of submissions.</param>
     /// <returns>The standard deviation of submission prices.</returns>
-    private double CalculateStandardDeviation(List<Submission> submissions, double mean)
+    private static double CalculateStandardDeviation(IReadOnlyCollection<Submission> submissions, double mean)
     {
         // Calculate the sum of squared differences from the mean.
         var sumOfSquaredDifferences = submissions
@@ -199,10 +200,10 @@ public class AnomalyDetectionService : Service, IAnomalyDetectionService
     /// <summary>
     /// Represents a group of submissions for a store and product combination.
     /// </summary>
-    class GroupedSubmissions
+    public class GroupedSubmissions
     {
         public string StoreName { get; set; }
         public string ProductName { get; set; }
-        public List<Submission> Submissions { get; set; }
+        public List<Submission> Submissions { get; init; }
     }
 }

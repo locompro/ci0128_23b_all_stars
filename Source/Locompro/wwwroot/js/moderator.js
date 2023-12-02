@@ -3,6 +3,11 @@ function selectReport(index) {
     $(modalId).modal('show');
 }
 
+function selectAutoReport(index) {
+    let modalId = "#AutoReportsPerSubmissionModal" + index;
+    $(modalId).modal('show');
+}
+
 function reportAction(reportActions, userId, entryTime) {
     let url = window.location.pathname;
     url += "?handler=ActOnReport";
