@@ -11,11 +11,6 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class ReportServiceTest
 {
-    private Mock<IUnitOfWork> _unitOfWork;
-    private Mock<IReportRepository> _reportRepository;
-    private ILoggerFactory _loggerFactory;
-    private ReportService _reportService;
-
     [SetUp]
     public void Setup()
     {
@@ -28,12 +23,17 @@ public class ReportServiceTest
         _reportService = new ReportService(_unitOfWork.Object, _loggerFactory);
     }
 
+    private Mock<IUnitOfWork> _unitOfWork;
+    private Mock<IReportRepository> _reportRepository;
+    private ILoggerFactory _loggerFactory;
+    private ReportService _reportService;
+
     /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
     [Test]
     public async Task UpdateAsync_CreatesReportFromDtoAndSavesToDatabase()
     {
         // Arrange
-        var reportDto = new ReportDto
+        var reportDto = new UserReportDto
         {
             SubmissionUserId = "User123",
             SubmissionEntryTime = DateTime.Now,
@@ -45,7 +45,7 @@ public class ReportServiceTest
         _unitOfWork.Setup(u => u.SaveChangesAsync()).Returns(Task.CompletedTask);
 
         // Act
-        await _reportService.UpdateAsync(reportDto);
+        await _reportService.UpdateUserReportAsync(reportDto);
 
         // Assert
         _reportRepository.Verify(repo => repo.UpdateAsync(reportDto.SubmissionUserId, reportDto.SubmissionEntryTime,

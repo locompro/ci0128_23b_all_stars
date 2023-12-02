@@ -51,32 +51,23 @@ public class ModeratorPageModel : BasePageModel
 
     public PaginatedList<AutoReportVm> AutoReportDisplayItems { get; set; }
 
-    public List<UserReportedSubmissionVm> Items { get; set; }
+    public List<UserReportedSubmissionVm> UserReportedSubmissionItems { get; set; } = new();
 
-    public int ItemsAmount { get; set; }
+    public List<AutoReportVm> AutoReportItems { get; set; } = new();
 
     /// <summary>
     /// Creates html for the page on get request
     /// </summary>
-    /// <param name="pageIndex"></param>
-    public async Task OnGet(int? pageIndex)
+    /// <param name="userReportPageIndex"></param>
+    /// <param name="autoReportPageIndex"></param>
+    public async Task OnGet(int? userReportPageIndex, int? autoReportPageIndex)
     {
         if (!_authService.IsLoggedIn())
         {
             throw new AuthenticationException("No user is logged in");
         }
-
-        await PopulateUserReportData(pageIndex, 1);
-        await PopulateAutoReportData(pageIndex);
-        try
-        {
-            MostReportedUsers = _userService.GetMostReportedUsersInfo();
-        }
-        catch (Exception e)
-        {
-            Logger.LogError("Error obtaining most reported Users in Moderator. Error "+e.Message);
-            MostReportedUsers = new List<MostReportedUsersResult>();
-        }
+        
+        await BuildPageContents(userReportPageIndex?? 0, 1);
     }
 
     /// <summary>
@@ -98,13 +89,14 @@ public class ModeratorPageModel : BasePageModel
         catch (Exception e)
         {
             Logger.LogError(e, "Error while acting on report");
-
+            
+            await BuildPageContents();
             return Page();
         }
+        
+        //UserReportedSubmissionItems = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredData", false);
 
-        Items = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredData", false);
-
-        UserReportedSubmissionVm submissionVmToRemove = Items.Find(userReportedSubmissionVm =>
+        /*UserReportedSubmissionVm submissionVmToRemove = UserReportedSubmissionItems.Find(userReportedSubmissionVm =>
             userReportedSubmissionVm.UserId == moderatorActionVm.SubmissionUserId &&
             userReportedSubmissionVm.EntryTime.Year == moderatorActionVm.SubmissionEntryTime.Year &&
             userReportedSubmissionVm.EntryTime.Month == moderatorActionVm.SubmissionEntryTime.Month &&
@@ -113,17 +105,19 @@ public class ModeratorPageModel : BasePageModel
             userReportedSubmissionVm.EntryTime.Minute == moderatorActionVm.SubmissionEntryTime.Minute &&
             userReportedSubmissionVm.EntryTime.Second == moderatorActionVm.SubmissionEntryTime.Second);
 
-        Items.Remove(submissionVmToRemove);
+        UserReportedSubmissionItems.Remove(submissionVmToRemove);*/
 
-        CacheDataInSession(Items, "StoredDataBetweenLoads");
+        /*CacheDataInSession(UserReportedSubmissionItems, "StoredDataBetweenLoads");*/
 
-        UserReportDisplayItems =
-            PaginatedList<UserReportedSubmissionVm>.Create(
-                Items,
-                0,
-                _configuration.GetValue("PageSize", 4));
-
+        await BuildPageContents();
         return Page();
+    }
+
+    private async Task BuildPageContents(int pageIndex = 0, int minReports = 1)
+    {
+        await PopulateUserReportData(pageIndex, minReports);
+        await PopulateAutoReportData(pageIndex);
+        PopulateMostReportedModal();
     }
 
     /// <summary>
@@ -131,31 +125,30 @@ public class ModeratorPageModel : BasePageModel
     /// </summary>
     /// <param name="pageIndex"></param>
     /// <param name="minAmountOfReports"></param>
-    private async Task PopulateUserReportData(int? pageIndex, int minAmountOfReports)
+    private async Task PopulateUserReportData(int? pageIndex = 0, int minAmountOfReports = 1)
     {
-        Items = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredDataBetweenLoads", false);
+        UserReportedSubmissionItems =
+            GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredDataBetweenLoads", false);
 
-        if (Items == null)
+        if (UserReportedSubmissionItems == null)
         {
-            await GetDataFromDataBase(minAmountOfReports);
+            await GetUserReports(minAmountOfReports);
         }
-
-        ItemsAmount = Items.Count;
 
         UserReportDisplayItems =
             PaginatedList<UserReportedSubmissionVm>.Create(
-                Items,
+                UserReportedSubmissionItems,
                 pageIndex ?? 0,
                 _configuration.GetValue("PageSize", 4));
 
-        CacheDataInSession(Items, "StoredData");
+        CacheDataInSession(UserReportedSubmissionItems, "StoredData");
     }
 
     /// <summary>
     /// Populates the AutoReportDisplayItems with data retrieved from fetchAutoReports.
     /// </summary>
     /// <param name="pageIndex">Optional page index for pagination.</param>
-    private async Task PopulateAutoReportData(int? pageIndex)
+    private async Task PopulateAutoReportData(int? pageIndex = 0)
     {
         List<AutoReportVm> autoReports;
         try
@@ -169,6 +162,8 @@ public class ModeratorPageModel : BasePageModel
             autoReports = new List<AutoReportVm>();
         }
 
+        AutoReportItems = autoReports;
+
         AutoReportDisplayItems =
             PaginatedList<AutoReportVm>.Create(
                 autoReports,
@@ -176,6 +171,18 @@ public class ModeratorPageModel : BasePageModel
                 _configuration.GetValue("PageSize", 4));
     }
 
+    private void PopulateMostReportedModal()
+    {
+        try
+        {
+            MostReportedUsers = _userService.GetMostReportedUsersInfo();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("Error obtaining most reported Users in Moderator. Error "+e.Message);
+            MostReportedUsers = new List<MostReportedUsersResult>();
+        }
+    }
 
     /// <summary>
     /// Fetches auto reports from the database using the moderation service
@@ -183,10 +190,17 @@ public class ModeratorPageModel : BasePageModel
     /// <returns> List of AutoReportsVm</returns>
     private async Task<List<AutoReportVm>> FetchAutoReports()
     {
-        return new List<AutoReportVm> () ;
+        // Call moderation services for dto's on auto reports
+        var submissionsWithAutoReports = await _moderationService.FetchAllSubmissionsWithAutoReport();
+        // Map the dtos to vms 
+        AutoReportSubmissionsMapper mapper = new();
+        var autoReportVms = mapper.ToVm(submissionsWithAutoReports);
+
+        // Return the vms
+        return autoReportVms;
     }
 
-    private async Task GetDataFromDataBase(int minAmountOfReports)
+    private async Task GetUserReports(int minAmountOfReports = 1)
     {
         string userId = _authService.GetUserId();
 
@@ -194,15 +208,12 @@ public class ModeratorPageModel : BasePageModel
         {
             throw new AuthenticationException("Retrieved user ID is not valid");
         }
-
-       
+        
         ISearchQueryParameters<Submission> searchQueryParameters = new SearchQueryParameters<Submission>();
-
         searchQueryParameters
             .AddQueryParameter(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports)
             .AddQueryParameter(SearchParameterTypes.SubmissionHasApproverOrRejecter, userId);
         
-
         SubmissionsDto submissionsDto = null;
 
         try
@@ -214,7 +225,7 @@ public class ModeratorPageModel : BasePageModel
             Logger.LogError(e, "Error while getting search results");
         }
 
-        ModerationSubmissionsMapper mapper = new();
-        Items = mapper.ToVm(submissionsDto);
+        UserReportSubmissionsMapper mapper = new();
+        UserReportedSubmissionItems = mapper.ToVm(submissionsDto);
     }
 }

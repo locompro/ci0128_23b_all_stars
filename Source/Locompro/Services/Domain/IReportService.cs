@@ -18,8 +18,15 @@ public interface IReportService : IDomainService<Report, string>
     /// <summary>
     /// Updates an existing report or adds a new one based on the provided <see cref="ReportDto"/>.
     /// </summary>
-    /// <param name="reportDto">The data transfer object containing the report data to update or add.</param>
+    /// <param name="userReportDto">The data transfer object containing the report data to update or add.</param>
     /// <returns>A task that represents the asynchronous update operation.</returns>
     /// <exception cref="Exception">Thrown when the update fails.</exception>
-    Task UpdateAsync(ReportDto reportDto);
+    Task UpdateUserReportAsync(UserReportDto userReportDto);
+
+    /// <summary>
+    /// Adds a list of automatic reports to the database.
+    /// </summary>
+    /// <param name="listOfAutomaticReports"> List of reports to add</param>
+    /// <returns>An async operation</returns>
+    Task AddManyAutomaticReports(List<AutoReportDto> listOfAutomaticReports);
 }
