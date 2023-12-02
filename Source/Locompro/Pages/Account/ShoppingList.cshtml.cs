@@ -1,43 +1,31 @@
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
+using Locompro.Services;
 using Locompro.Services.Auth;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Locompro.Pages.Account;
 
-public class ShoppingListPageModel : PageModel
+public class ShoppingListModel : PageModel
 {
-    private readonly IUserManagerService _userManagerService;
-    public readonly int PageSize;
-    public string RequestedUserId { get; set; }
-    public ContributionsVm RequestedUser { get; set; }
-        
-    public ShoppingListPageModel(IUserManagerService userManagerService, 
-        IConfiguration configuration)
+    private readonly IShoppingListService _shoppingListService;
+
+    public ShoppingListModel(IShoppingListService shoppingListService)
     {
-        _userManagerService = userManagerService;
-        PageSize = configuration.GetValue("PageSize", 4);
+        _shoppingListService = shoppingListService;
     }
 
-    // Reacts to the userId given, checks their user data and gives all the submissions done by them
-    public async Task OnGetAsync(int? pageIndex)
+    public ShoppingList ShoppingList { get; set; }
+
+    public async Task<IActionResult> OnGetAsync()
     {
-        var requestedUser = await GetUserRequested("1");
-        if (requestedUser != null)
+        ShoppingList = await _shoppingListService.GetShoppingList();
+        if (ShoppingList == null)
         {
-            RequestedUser = new ContributionsVm (requestedUser);
-            var contributionsData = Newtonsoft.Json.JsonConvert.SerializeObject(RequestedUser.Contributions);
-            ViewData["ContributionsData"] = contributionsData;
+            return NotFound();
         }
-    }
-        
-    /// <summary>
-    ///     Asynchronously retrieves the current user.
-    /// </summary>
-    /// <returns> the current user </returns>
-    private async Task<User> GetUserRequested(string userIdRequested)
-    {
-        return await _userManagerService.FindByIdAsync(userIdRequested);
-    }
 
+        return Page();
+    }
 }

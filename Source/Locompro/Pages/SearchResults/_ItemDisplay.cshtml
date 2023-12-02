@@ -29,13 +29,23 @@
             </h4>
             <h6 id="modalBrand" class="col-10" style="margin-top: 6px"></h6>
         </div>
-        <div class="row card-title" style="margin-bottom: 20px;">
-            <h4 class="col-2" style="display: flex; justify-content: center; align-items: center;">
-                <i class="fa fa-bookmark" style="color: #0a53be; font-size: 33px;"></i>
-            </h4>
-            <h6 style="margin-bottom: 20px"> </h6>
-        </div>
-
+        @if (isLoggedIn)
+        {
+            <form method="post" asp-page-handler="AddToShoppingList" asp-route-productId="1">
+                <button type="submit">Add to Shopping List</button>
+            </form>
+@*             <div class="row card-title" style="margin-bottom: 20px;">
+                <h4 class="col-2" style="display: flex; justify-content: center; align-items: center;">
+                    <form id="addToShoppingListForm" method="post" asp-page-handler="OnPostAddToShoppingList" asp-route-productId="123">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" id="ShoppingListButtonId" onclick="addToShoppingList(event)">
+                            <i class="fa fa-bookmark" style="color: #0a53be; font-size: 33px;"></i>
+                        </button>
+                    </form>
+                </h4>
+                <h6 style="margin-bottom: 20px"> </h6>
+            </div>
+ *@        }
     </div>
     <div class="slideshow-container col-6" style="width: 380px; height: 220px; text-align: center;">
         <a class="prev col"
@@ -106,3 +116,4 @@
         </div>
     </div>
 </div>
+

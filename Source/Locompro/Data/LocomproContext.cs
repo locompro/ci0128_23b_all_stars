@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using System.Reflection.Emit;
 
 namespace Locompro.Data;
 
@@ -33,8 +34,8 @@ public class LocomproContext : IdentityDbContext<User>
     public DbSet<Store> Stores { get; set; } = default!;
     public DbSet<Product> Products { get; set; } = default!;
     public DbSet<Picture> Pictures { get; set; } = default!;
-
-    /// <inheritdoc />
+    public DbSet<ShoppingList> ShoppingLists { get; set; }
+    public DbSet<ShoppingListProduct> ShoppingListProducts { get; set; }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -64,9 +65,45 @@ public class LocomproContext : IdentityDbContext<User>
             .HasOne(c => c.Parent)
             .WithMany(c => c.Children);
 
+        builder.Entity<ShoppingList>()
+            .HasKey(sl => sl.ShoppingListId);
+
         builder.Entity<Product>()
-            .HasMany(p => p.Categories)
-            .WithMany(c => c.Products);
+            .HasKey(p => p.Id);
+
+        builder.Entity<User>()
+            .HasKey(u => u.Id);
+
+        builder.Entity<ShoppingList>()
+            .HasOne(sl => sl.User)
+            .WithOne(u => u.ShoppingList)
+            .HasForeignKey<ShoppingList>(sl => sl.UserId);
+
+
+        builder.Entity<ShoppingListProduct>()
+            .HasKey(sp => new { sp.ShoppingListId, sp.ProductId });
+
+        builder.Entity<ShoppingListProduct>()
+            .HasOne(sp => sp.ShoppingList)
+            .WithMany(sl => sl.ShoppingListProducts)
+            .HasForeignKey(sp => sp.ShoppingListId);
+
+        builder.Entity<ShoppingListProduct>()
+            .HasOne(sp => sp.Product)
+            .WithMany(p => p.ShoppingListProducts)
+            .HasForeignKey(sp => sp.ProductId);
+
+        // Define many-to-many relationship between Product and ShoppingList
+        builder.Entity<Product>()
+            .HasMany(p => p.ShoppingListProducts)
+            .WithOne(sp => sp.Product)
+            .HasForeignKey(sp => sp.ProductId);
+
+        builder.Entity<ShoppingList>()
+            .HasMany(sl => sl.ShoppingListProducts)
+            .WithOne(sp => sp.ShoppingList)
+            .HasForeignKey(sp => sp.ShoppingListId);
+
 
         builder.Entity<Submission>()
             .HasKey(s => new { s.UserId, s.EntryTime });
@@ -120,7 +157,9 @@ public class LocomproContext : IdentityDbContext<User>
             .WithOne(s => s.User)
             .OnDelete(DeleteBehavior.NoAction);
 
-        builder.Entity<Report>()
+
+
+    builder.Entity<Report>()
             .HasKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime, r.UserId });
 
         builder.Entity<UserReport>().HasBaseType<Report>();
@@ -239,7 +278,7 @@ public class LocomproContext : IdentityDbContext<User>
         return FromExpression(() => GetMostReportedUsersResults());
     }
 
-/// <summary>
+    /// <summary>
     ///     Assigns each parent category of a product to the product.
     /// </summary>
     /// <param name="categoryName"></param>
@@ -263,5 +302,41 @@ public class LocomproContext : IdentityDbContext<User>
     public virtual async Task DeleteModeratedSubmissions()
     {
         await Database.ExecuteSqlRawAsync("EXECUTE dbo.DeleteModeratedSubmissions");
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        // Check for added and modified entities
+        var addedOrModifiedEntities = ChangeTracker.Entries()
+            .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified)
+            .Select(e => e.Entity)
+            .ToList();
+
+        // Create a ShoppingList for each newly added or modified User
+        foreach (var entity in addedOrModifiedEntities)
+        {
+            if (entity is User user)
+            {
+                // Check if the user has a ShoppingList
+                var hasShoppingList = ShoppingLists.Any(sl => sl.UserId == user.Id);
+
+                if (!hasShoppingList)
+                {
+                    var shoppingList = new ShoppingList
+                    {
+                        UserId = user.Id,
+                        ShoppingListProducts = new List<ShoppingListProduct>(),
+                        // Avoid setting the User property to prevent circular reference
+                    };
+
+                    ShoppingLists.Add(shoppingList);
+                }
+            }
+        }
+
+        // Save changes to the database
+        var result = await base.SaveChangesAsync(cancellationToken);
+
+        return result;
     }
 }
