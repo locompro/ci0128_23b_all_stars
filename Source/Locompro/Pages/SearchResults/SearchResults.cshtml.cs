@@ -130,6 +130,10 @@ public class SearchResultsModel : SearchPageModel
         return Content(searchResultsJson);
     }
 
+    /// <summary>
+    ///     On GET, retrieves all submissions the currently logged in user has reported
+    /// </summary>
+    /// <returns>All submissions the currently logged in user has reported.</returns>
     public async Task<IActionResult> OnGetGetUsersReportedSubmissions()
     {
         if (!_authService.IsLoggedIn())
@@ -152,6 +156,38 @@ public class SearchResultsModel : SearchPageModel
         catch (Exception ex)
         {
             Logger.LogError(ex, "Failed to get user's reported submissions");
+
+            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            return new JsonResult(new { success = false, message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    ///     On GET, retrieves all submissions the currently logged in user has created
+    /// </summary>
+    /// <returns>All submissions the currently logged in user has created.</returns>
+    public async Task<IActionResult> OnGetGetUsersCreatedSubmissions()
+    {
+        if (!_authService.IsLoggedIn())
+        {
+            Response.StatusCode = 302; // Redirect status code
+            return new JsonResult(Array.Empty<object>());
+        }
+
+        try
+        {
+            var userId = _authService.GetUserId();
+
+            var createdSubmissions = await _moderationService.GetUsersCreatedSubmissions(userId);
+
+            var createdSubmissionVms = 
+                createdSubmissions.Select(rs => new SubmissionVm(rs, GetFormattedDate));
+
+            return Content(GetJsonFrom(createdSubmissionVms));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to get user's created submissions");
 
             Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             return new JsonResult(new { success = false, message = ex.Message });
