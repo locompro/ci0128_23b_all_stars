@@ -19,7 +19,7 @@ public class ContributionsVm
         {
             Profile = new ProfileVm(user);
             ItemMapper itemMapper = new();
-            Contributions = itemMapper.ToVm(new SubmissionsDto(user.Submissions, GetLatestSubmission));
+            Contributions = itemMapper.ToVm(new SubmissionsDto(user.CreatedSubmissions, GetLatestSubmission));
         }
         catch (Exception e)
         {
@@ -29,7 +29,7 @@ public class ContributionsVm
     
     public ProfileVm Profile {get; set;}
     public List<ItemVm> Contributions { get; set; }
-    
+
     /// <summary>
     ///     Qualifier to organize submissions when grouping into an Item
     /// </summary>

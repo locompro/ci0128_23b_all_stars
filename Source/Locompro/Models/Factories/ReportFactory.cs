@@ -6,12 +6,12 @@ namespace Locompro.Models.Factories;
 /// <summary>
 /// A factory for converting between <see cref="ReportDto"/> and <see cref="Report"/> objects.
 /// </summary>
-public class ReportFactory : GenericEntityFactory<ReportDto, Report>
+public class ReportFactory : GenericEntityFactory<ReportDto, UserReport>
 {
     /// <inheritdoc />
-    protected override Report BuildEntity(ReportDto dto)
+    protected override UserReport BuildEntity(ReportDto dto)
     {
-        return new Report
+        return new UserReport
         {
             SubmissionUserId = dto.SubmissionUserId,
             SubmissionEntryTime = dto.SubmissionEntryTime,
@@ -21,7 +21,7 @@ public class ReportFactory : GenericEntityFactory<ReportDto, Report>
     }
 
     /// <inheritdoc />
-    protected override ReportDto BuildDto(Report entity)
+    protected override ReportDto BuildDto(UserReport entity)
     {
         return new ReportDto
         {

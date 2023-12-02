@@ -26,6 +26,39 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 });
 
+window.addEventListener('beforeunload', function (e) {
+    /*alert("leaving page!!!!");
+    if (searchResultsPage.requestSent) {
+        searchResultsPage.requestSent = false;
+        e.returnValue = '';
+        return;
+    }*/
+    /*
+    let url = window.location.pathname;
+    let handler = '?handler=ReturnResults';
+    let location = url + handler;
+
+    let data = searchResultsPage.pageSearchData;
+
+    fetch(location, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => {
+
+            alert("leaving page");
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+        });*/
+
+    e.returnValue = '';
+});
+
 /**
  * This class represents the search results page and encapsulates the operations
  * associated with it such as initializing the page with data, populating the
@@ -77,7 +110,7 @@ class SearchResultsTable extends ResultsTable {
      */
     selectItem(index) {
         this.itemSelected = index;
-        this.currentModal = new SearchResultsModal(this.tableData, this.itemSelected);
+        this.currentModal = createSearchResultsModalInstance(this.tableData, this.itemSelected);
     }
 }
 
@@ -87,35 +120,7 @@ window.getPage = () => {
 
 window.modal = document.getElementById('ItemModal');
 
-window.addEventListener('beforeunload', function (e) {
-    if (searchResultsPage.requestSent) {
-        searchResultsPage.requestSent = false;
-        e.returnValue = '';
-        return;
-    }
 
-    let url = window.location.pathname;
-    let handler = '?handler=ReturnResults';
-    let location = url + handler;
-
-    let data = searchResultsPage.pageSearchData;
-
-    fetch(location, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-        },
-        body: JSON.stringify(data)
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-        });
-    
-    e.returnValue = '';
-});
 
 // Inside your document ready function, when setting up the form submission listener:
 document.addEventListener('DOMContentLoaded', function () {
@@ -124,8 +129,8 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault(); // Prevent the default form submit
 
         // Get the submission ID from the form (assuming you set it somewhere on click before form submit)
-        const submissionUserId = reportForm.querySelector('input[name="ReportVm.SubmissionUserId"]').value;
-        const submissionEntryTime = reportForm.querySelector('input[name="ReportVm.SubmissionEntryTime"]').value;
+        const submissionUserId = reportForm.querySelector('input[name="UserReportVm.SubmissionUserId"]').value;
+        const submissionEntryTime = reportForm.querySelector('input[name="UserReportVm.SubmissionEntryTime"]').value;
         const submissionId = submissionUserId + submissionEntryTime;
 
         // Send the form data using fetch API
@@ -163,5 +168,19 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 });
+
+async function createSearchResultsModalInstance(searchResults, itemSelected) {
+    try {
+        const response = await fetch("SearchResults?handler=GetUsersReportedSubmissions");
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const usersReportedSubmissions = await response.json();
+        return new SearchResultsModal(searchResults, itemSelected, usersReportedSubmissions);
+    } catch (error) {
+        console.error('Failed to obtain user reported submissions', error);
+        return new SearchResultsModal(searchResults, itemSelected);
+    }
+}
 
 // export {changeIndexButtonPressed, changeIndexPage, setOrder, selectItem, applyFilter, plusSlides, clearFilters};

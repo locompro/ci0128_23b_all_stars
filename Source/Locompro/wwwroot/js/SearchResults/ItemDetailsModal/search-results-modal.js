@@ -8,8 +8,9 @@ class SearchResultsModal {
      *
      * @param searchResults An array of search result items.
      * @param itemSelected The index of the selected item within the search results array.
+     * @param reportedSubmissions
      */
-    constructor(searchResults, itemSelected) {
+    constructor(searchResults, itemSelected, reportedSubmissions = []) {
         // DOM element references for displaying product information
         this.modalProductName = document.getElementById("modalProductName");
         this.modalStoreName = document.getElementById("modalStoreName");
@@ -24,12 +25,12 @@ class SearchResultsModal {
         // Creating a picture container for the selected item's images
         this.pictureContainer =
             new SearchResultsPictureContainer(
-                this.searchResults[this.itemSelected].Name,
+                this.searchResults[this.itemSelected].ProductId,
                 this.searchResults[this.itemSelected].Store,
                 "SearchResults");
 
         this.submissionsRatings = [];
-        this.reportedSubmissions = [];
+        this.reportedSubmissions = reportedSubmissions;
 
         $('#descriptionModal').on('show.bs.modal', function () {
             // Use a short delay to apply the style change to the backdrop
@@ -57,7 +58,7 @@ class SearchResultsModal {
         this.pictureContainer.buildPictureContainer();
 
         this.isUserLoggedIn = this.submissionsTable.getAttribute('data-is-user-authenticated') === 'True';
-        console.log(this.isUserLoggedIn);
+      
         // Populating the submissions table with entries
         for (const submission of this.searchResults[this.itemSelected].Submissions) {
             const row = this.submissionsTable.insertRow();
@@ -117,8 +118,11 @@ class SearchResultsModal {
 
             // Append the icon to the button
             reportButton.appendChild(icon);
-
-            if (submission.Status !== 1) {
+            
+            let isModerated = submission.Status === 1;
+            let isSubmissionReported = this.isSubmissionReported(submission)
+            
+            if (!isModerated && this.isUserLoggedIn && !isSubmissionReported) {
                 const submissionId = submission.UserId + submission.NonFormatedEntryTime;
 
                 reportButton.setAttribute('data-id', submissionId);
@@ -137,8 +141,8 @@ class SearchResultsModal {
                         return; // Exit the function to prevent the rest of the code from running
                     }
 
-                    document.querySelector('input[name="ReportVm.SubmissionUserId"]').value = submission.UserId;
-                    document.querySelector('input[name="ReportVm.SubmissionEntryTime"]').value = submission.NonFormatedEntryTime;
+                    document.querySelector('input[name="UserReportVm.SubmissionUserId"]').value = submission.UserId;
+                    document.querySelector('input[name="UserReportVm.SubmissionEntryTime"]').value = submission.NonFormatedEntryTime;
                 });
             } else {
                 reportButton.disabled = true;
@@ -150,6 +154,15 @@ class SearchResultsModal {
             reportCell.appendChild(reportButton);
         }
         
+    }
+
+    isSubmissionReported(submission) {
+        for (let sub of this.reportedSubmissions) {
+            if (submission.UserId === sub.UserId && submission.NonFormatedEntryTime === sub.NonFormatedEntryTime) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

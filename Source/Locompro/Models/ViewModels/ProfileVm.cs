@@ -17,7 +17,7 @@ public class ProfileVm
         Name = user.Name ?? "N/A";
         Address = user.Address ?? "No fue proveído";
         Rating = user.Rating;
-        ContributionsCount = user.Submissions.Count;
+        ContributionsCount = user.CreatedSubmissions != null ? user.CreatedSubmissions.Count : 0;
         Email = user.Email;
     }
 

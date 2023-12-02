@@ -3,6 +3,8 @@
 
 @section Head {
     <title>Agregar contribución</title>
+    <link rel="stylesheet" type="text/css" href="~/css/submission.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 }
 
 <div class="card-body d-flex flex-column align-items-center" style="padding-bottom: 50px;">
@@ -41,11 +43,11 @@
 
             <!-- Store Modal -->
             <div class="modal fade" id="addStoreModal" tabindex="-1" aria-labelledby="addStoreModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-body">
                             <!-- Your partial view content goes here, without the <form> tags -->
-                            @Html.Partial("_AddStore", Model.StoreVm)
+                            <partial name="_AddStore" model="Model.StoreVm" />
                         </div>
                         <div class="modal-footer">
                             <button type="button" id="hideAddStoreBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -87,7 +89,7 @@
                     <div class="modal-content">
                         <div class="modal-body">
                             <!-- Your partial view content goes here, without the <form> tags -->
-                            @Html.Partial("_AddProduct", Model.ProductVm)
+                            <partial name="_AddProduct" model="Model.ProductVm" />
                         </div>
                         <div class="modal-footer">
                             <button type="button" id="hideAddProductBtn" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -143,10 +145,10 @@
             </button>
         </div>
     </form>
-
 </div>
 
-@section Scripts {
-    <script type="module" src="~/js/modal-manager.js"></script>
-    <script type="module" src="~/js/create.js"></script>
+@section Scripts {    
+    <script type="module" src="~/js/maps/init-map-submission.js"></script>
+    <script type="module" src="~/js/submissions/modal-manager.js"></script>
+    <script type="module" src="~/js/submissions/create.js"></script>
 }

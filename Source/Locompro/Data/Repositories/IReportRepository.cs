@@ -15,6 +15,13 @@ public interface IReportRepository : ICrudRepository<Report, string>
     Task<Report> GetByIdAsync(string submissionUserId, DateTime submissionEntryTime, string userId);
     
     /// <summary>
+    ///     Gets all entities for a given user ID asynchronously.
+    /// </summary>
+    /// <param name="userId">User Id for which to get all entities</param>
+    /// <returns>Entity for the passed ID.</returns>
+    Task<IEnumerable<Report>> GetByUserIdAsync(string userId);
+    
+    /// <summary>
     /// Updates an entity for this repository asynchronously. If the entity does not exist, adds it.
     /// </summary>
     /// <param name="entity">The entity to add or update.</param>

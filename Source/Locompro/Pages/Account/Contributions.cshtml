@@ -127,7 +127,9 @@ else
 <script>
     let currentPage = 1;
     const pageSize = @Model.PageSize;
-    const contributionsData = @Html.Raw(ViewData["ContributionsData"] ?? "[]");
+    const contributionsData = @Html.Raw(Model.ContributionsToShow ?? "[]");
+    console.log(contributionsData)
+
     function switchPage(pageIndex) {
         $('#contributionsBody').empty();
     

@@ -6,12 +6,12 @@ class SearchResultsPictureContainer {
     /**
      * Constructs a new SearchResultsPictureContainer with specific product and store names, along with the page URL to fetch images from.
      *
-     * @param productName the name of the product to display images for
+     * @param productId   the id of the product to display images for
      * @param storeName   the name of the store where the product is available
      * @param page        the URL of the page to send the request for images
      */
-    constructor(productName, storeName, page) {
-        this.pictureDataRequest = `${page}?handler=GetPictures&productName=${productName}&storeName=${storeName}`;
+    constructor(productId, storeName, page) {
+        this.pictureDataRequest = `${page}?handler=GetPictures&productId=${productId}&storeName=${storeName}`;
         this.slides = document.getElementsByClassName("mySlides");
         this.picturesContainer = document.getElementById("picturesContainer");
         this.currentSlideIndex = 1;

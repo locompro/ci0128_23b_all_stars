@@ -1,4 +1,5 @@
 using Locompro.Models.Entities;
+using Locompro.Models.ViewModels;
 
 namespace Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
 
@@ -48,20 +49,45 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
 
         // find if price is less than max value
         AddSearchParameter<long>(SearchParameterTypes.SubmissionByMaxvalue
-            ,  (submission, maxVal) => submission.Price < maxVal
+            , (submission, maxVal) => submission.Price < maxVal
             , maxVal => maxVal != 0);
-        
+
         // find if submission has been reported an specific amount of times at minimum
         AddSearchParameter<int>(SearchParameterTypes.SubmissionByNAmountReports
-            , (Submission submission, int minReportAmount) =>
-                submission.Reports != null
-                && submission.Reports.Count >= minReportAmount
+            , (submission, minReportAmount) =>
+                submission.UserReports != null
+                && submission.UserReports.Count >= minReportAmount
                 && submission.Status != SubmissionStatus.Moderated
             , minReportAmount => minReportAmount >= 0);
-        
+
         // find by user id
         AddSearchParameter<string>(SearchParameterTypes.SubmissionByUserId
             , (submission, userId) => submission.UserId == userId
             , userId => !string.IsNullOrEmpty(userId));
+
+        // find if submission has user as approver or rejecter
+        AddSearchParameter<string>(SearchParameterTypes.SubmissionHasApproverOrRejecter
+            , (submission, userId) =>
+                submission.Approvers.All(u => u.Id != userId)
+                && submission.Rejecters.All(u => u.Id != userId)
+            , userId => !string.IsNullOrWhiteSpace(userId));
+
+        // find if submission has more than max auto reports
+        AddSearchParameter<int>(SearchParameterTypes.SubmissionHasMaxAutoReports
+            , (submission, maxAutoReports) => submission.AutoReports.Count >= maxAutoReports
+            , maxAutoReports => maxAutoReports >= 0);
+        
+        // find by distance from the user
+        AddSearchFilter<MapVm>(SearchParameterTypes.SubmissionByLocationFilter
+            , (submission, mapVm) =>
+            {
+                if (submission.Store.Location == null)
+                {
+                    return false;
+                }
+                
+                return MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance;
+            },
+            mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0);
     }
 }

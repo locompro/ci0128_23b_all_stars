@@ -1,8 +1,8 @@
-﻿using Locompro.Common;
+﻿using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 
-using Locompro.Models.Dtos;
-using Locompro.Models.ViewModels;
+namespace Locompro.Services;
 
 /// <summary>
 ///     Defines a contract for a service that handles the assignment of moderators within the application.
@@ -25,9 +25,9 @@ public interface IModerationService
     /// <summary>
     /// Acts on a report
     /// </summary>
-    /// <param name="moderatorActionOnReportVm"> Report action information</param>
+    /// <param name="moderatorActionDto"></param>
     /// <returns></returns>
-    Task ActOnReport(ModeratorActionOnReportVm moderatorActionOnReportVm);
+    Task ActOnReport(ModeratorActionDto moderatorActionDto);
 
     /// <summary>
     ///     Adds a report for a given submission
@@ -41,4 +41,10 @@ public interface IModerationService
     /// <param name="userId">ID of user to check for role</param>
     /// <returns>whether the user has the Possible Moderator role</returns>
     Task<bool> IsUserPossibleModerator(string userId);
+
+    /// <summary>
+    /// Returns all submissions user has reported
+    /// </summary>
+    /// <param name="userId">ID of user for which to retrieve reported submissions</param>
+    Task<IEnumerable<Submission>> GetUsersReportedSubmissions(string userId);
 }

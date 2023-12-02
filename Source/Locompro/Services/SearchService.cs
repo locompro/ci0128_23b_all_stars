@@ -2,12 +2,14 @@ using Locompro.Common;
 using Locompro.Common.Search;
 using Locompro.Common.Search.QueryBuilder;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
+using NetTopologySuite.Geometries;
 
 namespace Locompro.Services;
 
@@ -36,10 +38,31 @@ public class SearchService : Service, ISearchService
     ///     canton/province.
     ///     It then returns a list of items that match all the criteria.
     /// </summary>
-    public async Task<SubmissionsDto> GetSearchResults(List<ISearchCriterion> searchCriteria)
+    public async Task<SubmissionsDto> GetSearchSubmissionsAsync(ISearchQueryParameters<Submission> searchCriteria)
     {
         var submissions = await _submissionDomainService.GetByDynamicQuery(searchCriteria);
+    
+        return new SubmissionsDto(submissions, GetBestSubmission);
+    }
 
+    public async Task<SubmissionsDto> GetSearchResultsAsync(SearchVm searchVm)
+    {   
+        MapVm mapVm = new(searchVm.Latitude, searchVm.Longitude, searchVm.Distance);
+
+        ISearchQueryParameters<Submission> searchParameters = new SearchQueryParameters<Submission>();
+        searchParameters
+            .AddQueryParameter(SearchParameterTypes.SubmissionByName, searchVm.ProductName)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByProvince, searchVm.ProvinceSelected)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCanton, searchVm.CantonSelected)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByMinvalue, searchVm.MinPrice)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByMaxvalue, searchVm.MaxPrice)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, searchVm.CategorySelected)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByModel, searchVm.ModelSelected)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, searchVm.BrandSelected)
+            .AddFilterParameter(SearchParameterTypes.SubmissionByLocationFilter, mapVm);
+        
+        var submissions = await _submissionDomainService.GetByDynamicQuery(searchParameters);
+    
         return new SubmissionsDto(submissions, GetBestSubmission);
     }
 

@@ -17,6 +17,12 @@ public class ReportRepository : CrudRepository<Report, string>, IReportRepositor
     }
 
     /// <inheritdoc />
+    public async Task<IEnumerable<Report>> GetByUserIdAsync(string userId)
+    {
+        return await Set.Where(e => e.UserId == userId).ToListAsync();
+    }
+
+    /// <inheritdoc />
     public async Task UpdateAsync(string submissionUserId, DateTime submissionEntryTime, string userId, Report entity)
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));

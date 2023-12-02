@@ -3,6 +3,8 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+**/secrets.json
+
 # User-specific files
 *.rsuser
 *.suo
@@ -476,3 +478,4 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+Source/Locompro/secrets.json

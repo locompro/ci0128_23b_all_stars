@@ -24,12 +24,12 @@ public class ReportService : DomainService<Report, string>, IReportService
     }
 
     /// <inheritdoc />
-    /// <summary>
-    /// Updates an existing report or adds a new one based on the provided <see cref="ReportDto"/>.
-    /// </summary>
-    /// <param name="reportDto">The data transfer object containing the report data to update or add.</param>
-    /// <returns>A task that represents the asynchronous update operation.</returns>
-    /// <exception cref="Exception">Thrown when the update fails.</exception>
+    public async Task<IEnumerable<Report>> GetByUserId(string userId)
+    {
+        return await _reportRepository.GetByUserIdAsync(userId);
+    }
+
+    /// <inheritdoc />
     public async Task UpdateAsync(ReportDto reportDto)
     {
         var reportFactory = new ReportFactory();

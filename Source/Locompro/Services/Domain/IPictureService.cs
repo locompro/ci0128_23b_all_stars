@@ -1,3 +1,4 @@
+using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 
 namespace Locompro.Services.Domain;
@@ -14,5 +15,5 @@ public interface IPictureService : IDomainService<Picture, PictureKey>
     /// <param name="productName"> Name of the product that has the pictures</param>
     /// <param name="storeName"> Name of the store where the product is located</param>
     /// <returns> A list of pictures </returns>
-    public Task<List<Picture>> GetPicturesForItem(int pictureAmount, string productName, string storeName);
+    public Task<List<PictureDto>> GetPicturesForItem(int pictureAmount, int productId, string storeName);
 }
