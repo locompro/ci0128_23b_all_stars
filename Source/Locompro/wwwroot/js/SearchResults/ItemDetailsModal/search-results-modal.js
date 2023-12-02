@@ -41,22 +41,23 @@ class SearchResultsModal {
 
         // Populate the modal with the selected item's details
         this.populateModal();
-
-        new DataTable('#SubmissionsPerItem', {
-            info: false,
-            paging: false,
-            searching: false,
-            scrollCollapse: true,
-            scrollY: '50vh',
-            "columnDefs": [{
-                "targets": [3, 5],
-                "orderable": false,
-            }],
-            "bDestroy": true
-        });
-
-
-
+        try {
+            new DataTable('#SubmissionsPerItem', {
+                info: false,
+                paging: false,
+                searching: false,
+                scrollCollapse: true,
+                scrollY: '50vh',
+                "columnDefs": [{
+                    "targets": [3, 5],
+                    "orderable": false,
+                }],
+                "bDestroy": true
+            });
+        } catch (e) {
+            console.error('An error occurred while initializing DataTable:', e);
+            alert('An error occurred while initializing the DataTable. Please try again.');
+        }
     }
 
     /**
