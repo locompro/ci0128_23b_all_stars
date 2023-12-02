@@ -1,0 +1,38 @@
+﻿.rounded-modal-map {
+    border-radius: 15px;
+    height: 400px; 
+    width: 100%;
+}
+
+.wide-modal {
+    width: 400%;
+}
+
+.suggestions-container {
+    position: absolute;
+    border: 1px solid #ddd;
+    border-top: none;
+    z-index: 1000;
+    list-style: none;
+    padding: 0;
+    margin-top: 0;
+    width: calc(100% - 2px); /* Account for border */
+    background: white;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.suggestion-item {
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.suggestion-item:hover {
+    background-color: #f0f0f0;
+}
+
+.form-control, .form-select {
+    width: 100%;
+    box-sizing: border-box; /* This ensures padding and border are included in the width */
+}

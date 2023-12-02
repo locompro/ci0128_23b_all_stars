@@ -179,9 +179,10 @@ Para hacer un aporte la persona usuaria puede presionar el botón de **Aportar**
 
 **Agregar una tienda nueva**
 
-![AportesAgregarTienda](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/de7fbb88-e6b1-4a10-a246-841813a5d178)
+![AportesAgregarTienda](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/a82d4234-48ec-495f-af92-778ebd691165)
 
-Cuando la tienda no existe ya en la base de datos de lo compro, la persona usuaria puede usar el formulario de agregar tienda para introducirla al sistema y al finalizar, continuar justo donde estaba en la creación de su aporte.
+
+Cuando la tienda no existe ya en la base de datos de lo compro, la persona usuaria puede usar el formulario de agregar tienda para introducirla al sistema y al finalizar, continuar justo donde estaba en la creación de su aporte. Por defecto la tienda se creara con la posición actual de la persona usuaria, pero puede cambiarse usando el mapa y los seleccionadores de provincia y cantón.
 
 **Agregar un producto nuevo**
 
@@ -293,18 +294,31 @@ Usar el `Doxyfile` que se encuentra en  `Source/Locompro`, abrirlo con doxygenwi
 - Microsoft.EntityFrameworkCore.InMemory: Versión 6.0.22
 - NUnit3TestAdapter: Versión 4.2.0
 
-
 Además, necesita instalar la herramienta dotcover para generar los reportes. Para instalar la herramienta, desde la raiz del repositorio, en la terminal.
-     ```
-     dotnet tool install --global JetBrains.dotCover.GlobalTool
-     ```
-  
+
+
+ ```
+ dotnet tool install --global JetBrains.dotCover.GlobalTool
+ ```
+
+     
+Por otra parte, para **las pruebas de javascript** necesitara tener instalado node.js y el framework de pruebas unitarias en javascript jest. Para instalar presione el siguiente enlace: [Descargar Node.js](https://nodejs.org/en/download/current) y elija la versión adaptada a su sistema operativo.
+
+Luego asegurese de **instalar las dependencias de jest necesarias**, las cuales puede instalar con los siguientes comandos:
+
+```
+npm install --save-dev jest
+npm install --save-dev jest-environment-jsdom
+npm install --save-dev @babel/core @babel/preset-env babel-jest
+```
+    
+
 #### Ejecutar pruebas unitarias
 
 Para correr las pruebas unitarias y generar un reporte, desde la raiz del repositorio, puede utilizar el siguiente comando en terminal:
-   ```
-   dotnet dotcover test .\tests\unit_tests\Locompro.Tests\Locompro.Tests.csproj --dcReportType=HTML
-   ```
+```
+dotnet dotcover test .\tests\unit_tests\Locompro.Tests\Locompro.Tests.csproj --dcReportType=HTML
+```
 Esto contruye la solución de test unitarios, ejecuta estas pruebas y genera en la raiz de la carpeta un archivo "dotCover.Output.html" que muestra la cobertura de las pruebas. Este reporte muestra con la cobertura de pruebas sobre le proyecto.
 
 También puede ejecutar las pruebas funcionales sin generar el documento de reporte usando el comando en terminal:
@@ -314,6 +328,21 @@ También puede ejecutar las pruebas funcionales sin generar el documento de repo
  ```
 
 Esto contruye la solución de test funcionales, ejecuta estas pruebas y muestra los resultados en terminal de cuantas pruebas fallaron, fueron exitosas o fueron ignoradas.
+
+### Ejecutar pruebas unitarias de javascript
+
+Para ejecutar las pruebas unitarias de javascript, dirijase al folder con todo el javascript del proyecto y abra una terminal. Este folder es, desde la raiz del repositorio:
+
+```
+Source/Locompro/wwwroot/js
+```
+
+Allí puede ejecutar el siguiente comando en terminal para ver la ejecución de las pruebas unitarias:
+```
+npm test
+
+```
+
 
 #### Ejecutar pruebas funcionales
 

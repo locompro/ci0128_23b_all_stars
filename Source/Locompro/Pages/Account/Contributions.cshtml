@@ -1,0 +1,212 @@
+﻿@page
+@using Locompro.Services.Auth
+@inject IAuthService AuthService
+@model Locompro.Pages.Account.ContributionsPageModel
+@{
+    var userId = AuthService.GetUserId();
+    var myContributions = false;
+    if (userId == Model.RequestedUserId)
+    {
+        myContributions = true;
+    }
+    
+}
+
+<link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
+<div class="container">
+@if (Model != null && Model.RequestedUser != null && Model.RequestedUser.Profile != null)
+{
+     <div class="card border search-results-card">
+    @if (!myContributions)
+    {
+        <h3 class="text-center">Historial de contribuciones</h3>
+            <div class="card border search-results-card" style="padding-top: 10px; padding-bottom: 0px; padding-left: 35px; padding-right: 25px; border-radius: 30px;">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-sm-2 d-flex justify-content-center align-items-center">
+                                <div class="bs-icon-md bs-icon-circle bs-icon-primary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-2 bs-icon lg"
+                                     id="UserIcon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor"
+                                         viewBox="0 0 16 16" class="bi bi-person-fill text-center d-lg-flex justify-content-lg-center"
+                                         style="font-size: 33px;">
+                                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <h5 class="card-title"> <strong>Usuario:</strong> @Model.RequestedUser.Profile.Username</h5>
+                                <h6 class="card-subtitle mb-2"> <strong>Email:</strong> @Model.RequestedUser.Profile.Email</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="row">
+                            <div class="col-sm-2 d-flex justify-content-center align-items-center">
+                                <div class="bs-icon-md bs-icon-circle bs-icon-primary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-2 bs-icon lg"
+                                     id="RatingIcon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-star-fill">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z">
+                                        </path>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <p class="card-text">
+                                    <strong>Calificación:</strong> @Model.RequestedUser.Profile.Rating <br>
+                                    <strong>Contribuciones:</strong> @Model.RequestedUser.Profile.ContributionsCount <br>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="row">
+                            <div class="col-sm-2 d-flex justify-content-center align-items-center">
+                                <div class="bs-icon-md bs-icon-circle bs-icon-primary d-flex flex-shrink-0 justify-content-center align-items-center d-inline-block mb-2 bs-icon lg"
+                                        id="MailIcon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-envelope-fill">
+                                        <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555ZM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757Zm3.436-.586L16 11.801V4.697l-5.803 3.546Z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <p class="card-text">
+                                    <strong>Nombre:</strong> @Model.RequestedUser.Profile.Name <br>
+                                    <strong>Dirección:</strong> @Model.RequestedUser.Profile.Address <br>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h3>Mis Contribuciones</h3>
+        <h6> @(Model.RequestedUser?.Profile?.ContributionsCount ?? 0) contribuciones totales </h6>
+    }
+        <div class="table-encapsulate-for-results">
+            <table class="table table-hover search-results-table">
+                <caption></caption>
+                <thead>
+                <tr>
+                    <th scope="col" style="text-align: center;">Fecha</th>
+                    <th scope="col">Producto</th>
+                    <th scope="col">Modelo</th>
+                    <th scope="col">Marca</th>
+                    <th scope="col">Descripción</th>
+                    <th scope="col" style="text-align: center;">Precio</th>
+                    <th scope="col" style="text-align: center;">Calificación</th>
+                    <th scope="col">Tienda</th>
+                    <th scope="col">Provincia</th>
+                    <th scope="col">Cantón</th>
+                </tr>
+                </thead>
+                <tbody id="contributionsBody"></tbody>
+            </table>
+        </div>
+        <div class="previous-next-button-area">
+            <button class="btn btn-primary" onclick="prevPage()" id="prevButton">Previo</button>
+            <input type="number" class="number-input-pages" min="1" value="1" onchange="changeIndexPage(this)">
+            <button class="btn btn-primary" onclick="nextPage()" id="nextButton">Siguiente</button>
+            <h6 class="page-amount-text" id="totalPagesText"></h6>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-danger text-center mt-3">
+        <strong>Error:</strong> Usuario no encontrado.
+    </div>
+}
+</div>
+
+<script src="~/lib/jquery/jquery.js"></script>
+<script>
+    let currentPage = 1;
+    const pageSize = @Model.PageSize;
+    const contributionsData = @Html.Raw(Model.ContributionsToShow ?? "[]");
+    console.log(contributionsData)
+
+    function switchPage(pageIndex) {
+        $('#contributionsBody').empty();
+    
+        const startIndex = (pageIndex - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+        
+        // Divide item and submission data into several pages
+        const pageData = contributionsData.slice(startIndex, endIndex);
+        pageData.forEach((item) => {
+            item.Submissions.forEach((submission) => {
+                $('#contributionsBody').append(`
+                    <tr>
+                        <td style="text-align: center;">${submission.EntryTime}</td>
+                        <td>${item.Name}</td>
+                        <td>${item.Model}</td>
+                        <td>${item.Brand}</td>
+                        <td>${submission.Description}</td>
+                        <td style="text-align: right;">${submission.FormattedPrice}</td>
+                        <td style="text-align: center;">${submission.Rating}</td>
+                        <td>${item.Store}</td>
+                        <td>${item.Province}</td>
+                        <td>${item.Canton}</td>
+                    </tr>
+                `);
+            });
+        });
+    
+        // Update the input value
+        $('.number-input-pages').val(pageIndex);
+    
+        // Update the total pages text
+        const totalPages = Math.ceil(contributionsData.length / pageSize);
+        $('#totalPagesText').text(`${totalPages} páginas de resultados`);
+    
+        // Update button disabled state
+        const hasPrev = pageIndex > 1;
+        const hasNext = pageIndex < totalPages;
+    
+        $('#prevButton').prop('disabled', !hasPrev);
+        $('#nextButton').prop('disabled', !hasNext);
+    
+        // Hide or disable the entire pagination section if there's only one page
+        if (totalPages === 1) {
+            $('.previous-next-button-area').hide();
+        } else {
+            $('.previous-next-button-area').show();
+        }
+    }
+    
+    function prevPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            switchPage(currentPage);
+        }
+    }
+    
+    function nextPage() {
+        const totalPages = Math.ceil(contributionsData.length / pageSize);
+        if (currentPage < totalPages) {
+            currentPage++;
+            switchPage(currentPage);
+        }
+    }
+    
+    function changeIndexPage(input) {
+        const pageIndex = $(input).val();
+        const totalPages = Math.ceil(contributionsData.length / pageSize);
+        if (pageIndex >= 1 && pageIndex <= totalPages) {
+            currentPage = pageIndex;
+            switchPage(currentPage);
+        }
+    }
+    
+    // Initial page load
+    $(document).ready(function () {
+        // Assuming that your initial data is loaded on the page
+        switchPage(currentPage);
+    });
+
+</script>

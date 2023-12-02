@@ -1,5 +1,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 
 namespace Locompro.Models.ViewModels;
 
@@ -25,7 +27,7 @@ public class StoreVm
     [DisplayName("Teléfono")]
     public string Telephone { get; set; }
 
-    // Selected Province and SubmissionByCanton
+    // Selected Province and Canton
     [Required(ErrorMessage = "Seleccionar la provincia de la tienda.")]
     [DisplayName("Provincia")]
     public string Province { get; set; }
@@ -34,6 +36,16 @@ public class StoreVm
     [DisplayName("Cantón")]
     public string Canton { get; set; }
 
+    [Required(ErrorMessage = "Debe seleccionar la ubicación de la tienda.")]
+    
+    [Precision(18, 2)]
+    public double Latitude { get; set; } = 0;
+
+    [Precision(18, 2)]
+    public double Longitude { get; set; } = 0;
+    
+    public string MapGeneratedAddress { get; set; } = string.Empty;
+
     public bool IsExistingStore()
     {
         return !string.IsNullOrEmpty(SName) &&
@@ -41,5 +53,10 @@ public class StoreVm
                string.IsNullOrEmpty(Telephone) &&
                string.IsNullOrEmpty(Province) &&
                string.IsNullOrEmpty(Canton);
+    }
+    
+    public Point GetLocation()
+    {
+        return new Point(Latitude, Longitude) {SRID = 4326};
     }
 }

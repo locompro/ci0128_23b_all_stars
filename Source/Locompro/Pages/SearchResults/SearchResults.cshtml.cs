@@ -1,10 +1,12 @@
 using System.Net;
+using System.Runtime.CompilerServices;
 using Castle.Core.Internal;
 using Locompro.Common;
 using Locompro.Common.Mappers;
 using Locompro.Common.Search;
 using Locompro.Common.Search.SearchMethodRegistration;
 using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Models;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
@@ -15,6 +17,7 @@ using Locompro.Services;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Mvc;
+using NetTopologySuite.Geometries;
 
 namespace Locompro.Pages.SearchResults;
 
@@ -49,7 +52,9 @@ public class SearchResultsModel : SearchPageModel
     /// <param name="submissionService"></param>
     /// <param name="moderationService"></param>
     /// <param name="authService"></param>
-    public SearchResultsModel(ILoggerFactory loggerFactory,
+    /// <param name="apiKeyHandler"></param>
+    public SearchResultsModel(
+        ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
         AdvancedSearchInputService advancedSearchServiceHandler,
         IPictureService pictureService,
@@ -57,8 +62,9 @@ public class SearchResultsModel : SearchPageModel
         ISearchService searchService,
         ISubmissionService submissionService,
         IModerationService moderationService,
-        IAuthService authService)
-        : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler)
+        IAuthService authService,
+        IApiKeyHandler apiKeyHandler)
+        : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler, apiKeyHandler)
     {
         _searchService = searchService;
         _pictureService = pictureService;
@@ -98,20 +104,6 @@ public class SearchResultsModel : SearchPageModel
     public async Task<IActionResult> OnGetGetSearchResultsAsync()
     {
         SearchVm = GetCachedDataFromSession<SearchVm>("SearchData", false);
-
-        // get items from search service
-        var searchParameters = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByName, SearchVm.ProductName),
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByProvince, SearchVm.ProvinceSelected),
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByCanton, SearchVm.CantonSelected),
-            new SearchCriterion<long>(SearchParameterTypes.SubmissionByMinvalue, SearchVm.MinPrice),
-            new SearchCriterion<long>(SearchParameterTypes.SubmissionByMaxvalue, SearchVm.MaxPrice),
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByCategory, SearchVm.CategorySelected),
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByModel, SearchVm.ModelSelected),
-            new SearchCriterion<string>(SearchParameterTypes.SubmissionByBrand, SearchVm.BrandSelected)
-        };
-
         SearchVm.ResultsPerPage = Configuration.GetValue("PageSize", 4);
 
         List<ItemVm> searchResults = null;
@@ -119,7 +111,7 @@ public class SearchResultsModel : SearchPageModel
         try
         {
             ItemMapper itemMapper = new();
-            SubmissionsDto submissionsDto = await _searchService.GetSearchResults(searchParameters);
+            SubmissionsDto submissionsDto = await _searchService.GetSearchResultsAsync(SearchVm);
             searchResults = itemMapper.ToVm(submissionsDto);
         }
         catch (Exception e)
@@ -169,31 +161,41 @@ public class SearchResultsModel : SearchPageModel
     /// <summary>
     ///     Returns a list of pictures for a given item
     /// </summary>
-    /// <param name="productName"> product name of an item </param>
+    /// <param name="productId"> id name of an item</param>
     /// <param name="storeName"> store name of an item</param>
     /// <returns></returns>
-    public async Task<ContentResult> OnGetGetPicturesAsync(string productName, string storeName)
+    public async Task<ContentResult> OnGetGetPicturesAsync(int productId, string storeName)
     {
-        List<Picture> itemPictures = null;
+        List<PictureDto> pictureDtos = null;
 
         try
         {
-            itemPictures = await _pictureService.GetPicturesForItem(5, productName, storeName);
+            pictureDtos = await _pictureService.GetPicturesForItem(10, productId, storeName);
         }
         catch (Exception e)
         {
             Logger.LogError("Error when attempting to get pictures for item: " + e.Message);
         }
 
-        var formattedPictures = PictureParser.Serialize(itemPictures);
+        List<string> formattedPictures = new();
 
-        if (itemPictures.IsNullOrEmpty())
+        if (pictureDtos == null || pictureDtos.IsNullOrEmpty())
         {
             const string defaultPictureFilePath = "wwwroot/Pictures/No_Image_Picture.png";
 
             var defaultPicture = await System.IO.File.ReadAllBytesAsync(defaultPictureFilePath);
 
             formattedPictures.Add(PictureParser.SerializeData(defaultPicture));
+        }
+        else
+        {
+            IMapper<PictureDto, PictureVm> pictureMapper = new PictureMapper();
+            
+            List<PictureVm> pictureVms = new();
+            
+            pictureVms.AddRange(pictureDtos.Select(pictureDto => pictureMapper.ToVm(pictureDto)));
+
+            formattedPictures = PictureParser.Serialize(pictureVms);
         }
 
         // return list of pictures serialized as json

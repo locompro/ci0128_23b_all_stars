@@ -9,7 +9,11 @@ const invalidAdvancedSearch =
     + "&maxValue=0"
     + "&category="
     + "&model="
-    + "&brand=";
+    + "&brand="
+    + "&latitude=0"
+    + "&longitude=0"
+    + "&distance=25"
+    + "&mapGeneratedAddress=";
 
 // activated when province is changed in the dropdown menu
 async function loadProvinceShared(optionSelected, sourceName) {
@@ -42,13 +46,17 @@ async function loadCantons(response) {
         const data = await response.json();
 
         // Clear existing options in the optgroup
-        const optgroup = document.getElementById('cantonDropdown');
-        optgroup.innerHTML = '';
-
+        const optgroup = document.getElementById("cantonDropdown");
+        optgroup.innerHTML = "";
+        
         // Populate with new options based on fetched data
         data.forEach(function (canton) {
-            const option = document.createElement('option');
-            option.textContent = canton.Name;
+            const option = document.createElement("option");
+            let cantonToAdd = canton.Name;
+            
+            option.value = cantonToAdd;
+            option.innerHTML = cantonToAdd;
+            
             optgroup.appendChild(option);
         });
     } catch (error) {
@@ -75,20 +83,33 @@ function getDataToSend(modalShownParam) {
     let redirect = "/SearchResults/SearchResults?query=";
     let searchValue = document.getElementById("searchBox").value.valueOf();
 
-    let provinceValue, cantonValue, minValue, maxValue, categoryValue, modelValue, brandValue = "";
-
+    let provinceValue, cantonValue, minValue, maxValue, categoryValue, modelValue, brandValue,
+        distance, latitude, longitude, mapGeneratedAddress = "";
+    
     if (!modalShownParam) {
         if (searchValue.localeCompare("") === 0) {
             return null;
         }
     } else {
-        provinceValue = document.getElementById("provinceDropdown").value;
-        cantonValue = document.getElementById("cantonDropdown").value;
-        minValue = document.getElementById("minValue").value;
-        maxValue = document.getElementById("maxValue").value;
-        categoryValue = document.getElementById("categoryDropdown").value;
-        modelValue = document.getElementById("modelDropdown").value;
-        brandValue = document.getElementById("brandDropdown").value;
+        provinceValue = document.getElementById("provinceDropdown").value.valueOf();
+        cantonValue = document.getElementById("cantonDropdown").value.valueOf();
+        minValue = document.getElementById("minValue").value.valueOf();
+        maxValue = document.getElementById("maxValue").value.valueOf();
+        categoryValue = document.getElementById("categoryDropdown").value.valueOf();
+        modelValue = document.getElementById("modelDropdown").value.valueOf();
+        brandValue = document.getElementById("brandDropdown").value.valueOf();
+        
+        if (document.getElementById("latitude") !== null) {
+            latitude = document.getElementById("latitude").value.valueOf();
+            longitude = document.getElementById("longitude").value.valueOf();
+            distance = document.getElementById("distanceRangeSlider").value.valueOf();
+            mapGeneratedAddress = document.getElementById("MapGeneratedAddress").value.valueOf();
+        } else {
+            latitude = 0;
+            longitude = 0;
+            distance = 0;
+            mapGeneratedAddress = "";
+        }
 
         redirect += searchValue
             + "&province=" + provinceValue
@@ -97,9 +118,11 @@ function getDataToSend(modalShownParam) {
             + "&maxValue=" + maxValue
             + "&category=" + categoryValue
             + "&model=" + modelValue
-            + "&brand=" + brandValue;
-        
-        console.log(redirect  + "\n" + invalidAdvancedSearch);  
+            + "&brand=" + brandValue
+            + "&latitude=" + latitude
+            + "&longitude=" + longitude
+            + "&distance=" + distance
+            + "&mapGeneratedAddress=" + mapGeneratedAddress;
 
         if (redirect.localeCompare(invalidAdvancedSearch) === 0) {
             return null;
@@ -114,7 +137,11 @@ function getDataToSend(modalShownParam) {
         MaxPrice: maxValue,
         ModelSelected: modelValue,
         BrandSelected: brandValue,
-        CategorySelected: categoryValue
+        CategorySelected: categoryValue,
+        Latitude: latitude,
+        Longitude: longitude,
+        Distance: distance,
+        MapGeneratedAddress: mapGeneratedAddress
     };
 }
 
@@ -122,7 +149,7 @@ function sendSearchRequest(dataToSend) {
     let url = window.location.pathname;
     let handler = '?handler=ReturnResults';
     let location = url + handler;
-
+    
     fetch(location, {
         method: 'POST',
         headers: {
@@ -144,7 +171,6 @@ function sendSearchRequest(dataToSend) {
         });
 }
 
-
 // makes sure the min field is less than the max field
 function validatePriceInput(button) {
     // get the fields
@@ -159,6 +185,7 @@ function validatePriceInput(button) {
             maxButton.value = parseInt(minButton.value, 10) + 1;
         }
     }
+    
     // field is the max field
     if (button === maxButton) {
         // if the value is less or equal than the min field
@@ -167,9 +194,11 @@ function validatePriceInput(button) {
             minButton.value = parseInt(maxButton.value, 10) - 1;
         }
     }
+    
     if (minButton.value < 0) {
         minButton.value = 0;
     }
+    
     if (maxButton.value < 0) {
         maxButton.value = 0;
     }
@@ -182,3 +211,11 @@ document.addEventListener("keyup", function (event) {
         document.getElementById("searchButton").click();
     }
 });
+
+function updateDistanceDisplay(slider) {
+    let distance = slider.value;
+    const displayElement = document.getElementById("mapDistanceSelected");
+
+    displayElement.innerHTML = distance + " km";
+    displayElement.value = distance;
+}

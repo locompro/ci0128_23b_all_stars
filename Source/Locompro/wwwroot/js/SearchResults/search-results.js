@@ -1,10 +1,10 @@
 import SearchResultsTableBody from './search-results-table.js';
-import {TableHead, HeaderField} from "../Common/table-head.js";
-import {ResultsTable, ResultsPageConfiguration, OrderingField} from '../Common/results-table.js';
+import {HeaderField} from "../Common/table-head.js";
+import {ResultsTable, ResultsPageConfiguration} from '../Common/results-table.js';
 
 
 var searchResultsPage;
-
+  
 document.addEventListener("DOMContentLoaded", function () {
     let url = `SearchResults?handler=GetSearchResults`;
 
@@ -26,6 +26,39 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 });
 
+window.addEventListener('beforeunload', function (e) {
+    /*alert("leaving page!!!!");
+    if (searchResultsPage.requestSent) {
+        searchResultsPage.requestSent = false;
+        e.returnValue = '';
+        return;
+    }*/
+    /*
+    let url = window.location.pathname;
+    let handler = '?handler=ReturnResults';
+    let location = url + handler;
+
+    let data = searchResultsPage.pageSearchData;
+
+    fetch(location, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        },
+        body: JSON.stringify(data)
+    })
+        .then(response => {
+
+            alert("leaving page");
+            if (!response.ok) {
+                throw new Error('Network response was not ok.');
+            }
+        });*/
+
+    e.returnValue = '';
+});
+
 /**
  * This class represents the search results page and encapsulates the operations
  * associated with it such as initializing the page with data, populating the
@@ -44,7 +77,7 @@ class SearchResultsTable extends ResultsTable {
         
         const headerFields = [
             new HeaderField("Producto", true, 'Name'),
-            new HeaderField("Precio", true, 'Price'),
+            new HeaderField("Precio", true, 'FormattedPrice'),
             new HeaderField("Categorías", true, 'Categories'),
             storeField,
             new HeaderField("Marca", true, 'Brand'),
@@ -52,7 +85,7 @@ class SearchResultsTable extends ResultsTable {
             new HeaderField("Provincia", true, 'Province'),
             new HeaderField("Cantón", true, 'Canton'),
             new HeaderField("Descripción", false, 'Description'),
-            new HeaderField("Última Contribución", true, 'LastSubmissionDate')
+            new HeaderField("Último aporte", true, 'LastSubmissionDate')
         ];
         
         const pageConfiguration
@@ -66,7 +99,6 @@ class SearchResultsTable extends ResultsTable {
         
         const tableBody =
             new SearchResultsTableBody(pageData.ResultsPerPage, selectItem);
-
         super(tableBody, searchResults, pageData, pageConfiguration);
     }
 
@@ -88,35 +120,7 @@ window.getPage = () => {
 
 window.modal = document.getElementById('ItemModal');
 
-window.addEventListener('beforeunload', function (e) {
-    if (searchResultsPage.requestSent) {
-        searchResultsPage.requestSent = false;
-        e.returnValue = '';
-        return;
-    }
 
-    let url = window.location.pathname;
-    let handler = '?handler=ReturnResults';
-    let location = url + handler;
-
-    let data = searchResultsPage.pageSearchData;
-
-    fetch(location, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-        },
-        body: JSON.stringify(data)
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-        });
-    
-    e.returnValue = '';
-});
 
 // Inside your document ready function, when setting up the form submission listener:
 document.addEventListener('DOMContentLoaded', function () {

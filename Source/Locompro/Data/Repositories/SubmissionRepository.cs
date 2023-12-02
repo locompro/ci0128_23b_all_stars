@@ -1,4 +1,3 @@
-using Locompro.Common.Search;
 using Locompro.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -35,10 +34,11 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
 
         if (submission == null)
         {
-            throw new InvalidOperationException("Error loading submission! No submission for user:" + id.UserId + " and entry time: " +
+            throw new InvalidOperationException("Error loading submission! No submission for user:" + id.UserId +
+                                                " and entry time: " +
                                                 id.EntryTime + " was found.");
         }
-        
+
         return submission;
     }
 
@@ -57,7 +57,7 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     public async Task UpdateAsync(string userId, DateTime entryTime, Submission entity)
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));
-        
+
         var existingEntity = await GetByIdAsync(userId, entryTime);
         if (existingEntity != null)
         {
@@ -68,25 +68,6 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
         {
             await AddAsync(entity);
         }
-    }
-
-    /// <inheritdoc />
-    public async Task<IEnumerable<Submission>> GetSearchResults(ISearchQueries searchQueries)
-    {
-        // initiate the query
-        IQueryable<Submission> submissionsResults = Set
-            .Include(submission => submission.Product);
-
-        // append the search queries to the query
-        submissionsResults = searchQueries.ApplySearch(submissionsResults) as IQueryable<Submission> ;
-
-        if (submissionsResults == null)
-        {
-            return await new Task<IEnumerable<Submission>>(() => new List<Submission>());
-        }
-        
-        // get and return the results
-        return await submissionsResults.ToListAsync();
     }
 
     /// <inheritdoc />
