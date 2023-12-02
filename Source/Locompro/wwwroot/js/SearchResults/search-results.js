@@ -4,7 +4,7 @@ import {ResultsTable, ResultsPageConfiguration} from '../Common/results-table.js
 
 
 var searchResultsPage;
-
+  
 document.addEventListener("DOMContentLoaded", function () {
     let url = `SearchResults?handler=GetSearchResults`;
 
