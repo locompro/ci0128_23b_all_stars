@@ -156,7 +156,7 @@ public class AnomalyDetectionService : Service, IAnomalyDetectionService
     {
         if (submissions == null || !submissions.Any())
         {
-            throw new ArgumentException("Submissions list is empty or null.");
+            return (0, 0);
         }
 
         // Use Aggregate to find the minimum and maximum prices in the list of submissions.

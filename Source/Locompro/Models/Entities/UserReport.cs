@@ -6,5 +6,5 @@ public class UserReport : Report
     /// Gets or sets the description of the report, detailing the reasons for the report.
     /// </summary>
     /// <value>The description of the report.</value>
-    public string Description { get; set; }
+    public new string Description { get; set; }
 }
