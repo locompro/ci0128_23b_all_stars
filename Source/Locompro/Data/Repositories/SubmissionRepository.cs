@@ -49,6 +49,12 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
         if (entity != null) Set.Remove(entity);
     }
 
+    /// <inheritdoc />
+    public async Task<IEnumerable<Submission>> GetByUserIdAsync(string userId)
+    {
+        return await Set.Where(e => e.UserId == userId).ToListAsync();
+    }
+
     public async Task<Submission> GetByIdAsync(string userId, DateTime entryTime)
     {
         return await Set.FindAsync(userId, entryTime);

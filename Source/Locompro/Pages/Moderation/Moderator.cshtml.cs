@@ -212,7 +212,9 @@ public class ModeratorPageModel : BasePageModel
         ISearchQueryParameters<Submission> searchQueryParameters = new SearchQueryParameters<Submission>();
         searchQueryParameters
             .AddQueryParameter(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports)
-            .AddQueryParameter(SearchParameterTypes.SubmissionHasApproverOrRejecter, userId);
+            .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveApproverOrRejecter, userId)
+            .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveCreator, userId)
+            .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveReporter, userId);
         
         SubmissionsDto submissionsDto = null;
 
