@@ -1,0 +1,96 @@
+﻿@page
+@using Locompro.Services.Auth
+@inject IAuthService AuthService
+@model Locompro.Pages.TestFrontTableModel
+@{
+    var userId = AuthService.GetUserId();
+
+}
+<link rel="stylesheet" href="~/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="~/css/bootstrap.min.css">
+
+<div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Dropdown button
+    </button>
+    <div class="dropdown-menu dropdown-menu-lg-end">
+        <div class="d-flex justify-content-between align-items-center px-4 py-3">
+            <h4>Lista de compras</h4>
+            <form class="text-end">
+                <button type="submit" class="btn btn-primary" onclick="redirectToSearchStores()">Buscar tiendas</button>
+            </form>
+        </div>
+        <div class="mx-3">
+            <table id="example" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Modelo</th>
+                        <th>Marca</th>
+                        <th>Mínimo</th>
+                        <th>Máximo</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Laptop</td>
+                        <td>2ad</td>
+                        <td>Edinburgh</td>
+                        <td class="text-center">61,000</td>
+                        <td class="text-center">70,000</td>
+                        <td class="text-center"><button>X</button></td>
+                    </tr>
+                    <tr>
+                        <td>Cámara</td>
+                        <td>EOS 2000D</td>
+                        <td>Canon</td>
+                        <td class ="text-center">15,000</td>
+                        <td class="text-center">20,000</td>
+                        <td class="text-center"><button>X</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/jquery/jquery.dataTables.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.css"></script>
+    <script src="~/js/bootstrap.min.css"></script>
+    <script src="~/js/search.js"></script>
+    <script src="~/js/index.js"></script>
+    <script>
+        new DataTable('#example', {
+            info: false,
+            paging: false,
+            searching: false,
+            ordering: false,
+            scrollCollapse: true,
+            scrollY: '50vh'
+        });
+        function redirectToSearchStores() {
+            window.location.href = '/SearchStores';
+        }
+    </script>
+}
+
+@* <div class="mb-3">
+    <label for="exampleDropdownFormEmail1" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="exampleDropdownFormEmail1" placeholder="email@example.com">
+</div>
+<div class="mb-3">
+    <label for="exampleDropdownFormPassword1" class="form-label">Password</label>
+    <input type="password" class="form-control" id="exampleDropdownFormPassword1" placeholder="Password">
+</div>
+<div class="mb-3">
+    <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="dropdownCheck">
+        <label class="form-check-label" for="dropdownCheck">
+            Remember me
+        </label>
+    </div>
+</div>
+ *@
