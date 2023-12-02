@@ -109,6 +109,13 @@ public class ModerationService : Service, IModerationService
         return reports.Select(r => r.Submission);
     }
 
+    public async Task<IEnumerable<Submission>> GetUsersCreatedSubmissions(string userId)
+    {
+        var createdSubmissions = await _submissionService.GetByUserId(userId);
+
+        return createdSubmissions;
+    }
+
     /// <inheritdoc />
     public async Task ActOnReport(ModeratorActionDto moderatorActionDto)
     {
