@@ -2,7 +2,7 @@
     var isLoggedIn = User.Identity is {IsAuthenticated: true };
 }
 
-<div class="row">
+<div class="row pt-3">
     <div class="col-5">
         <div class="row card-title">
             <h4 class="col-2" style="display: flex; justify-content: center; align-items: center;">
@@ -54,25 +54,23 @@
     </div>
 </div>
 <div>
-    <div class="table-responsive d-xxl-flex table mb-0 pt-3 pe-2">
-        <table class="table table-striped table-sm my-0 mydatatable">
+    <div class="pt-4">
+        <table id="SubmissionsPerItem" class="display compact mb-0 pe-2" style="width:100%">
+            <caption></caption>
             <thead>
             <tr>
-                <th class="text-center">Perfil&nbsp;</th>
-                <th class="text-left">Usuario&nbsp;</th>
+                <th>Usuario&nbsp;</th>
                 <th class="text-center">Fecha&nbsp;</th>
                 <th>Precio&nbsp;</th>
                 <th>Descripción&nbsp;</th>
-                <th class="text-center">Calificación</th>
+                <th>Calificación</th>
                 <th class="text-center">Reportar</th>
             </tr>
             </thead>
-            <div> </div>
             <tbody id="ItemModalSubmissionsTable" data-is-user-authenticated="@isLoggedIn">
             </tbody>
         </table>
     </div>
-
     <div class="modal fade no-backdrop-opacity" id="descriptionModal" tabindex="-1" role="dialog" aria-labelledby="descriptionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius: 15px; padding: 5px 6px 10px 5px;">

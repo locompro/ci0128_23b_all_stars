@@ -9,8 +9,8 @@ namespace Locompro.FunctionalTests.Tests.Submissions;
 [TestFixture]
 public class CreatePageTests
 {
-    private IWebDriver _driver;
-    private CreatePage _createPage;
+    private IWebDriver? _driver;
+    private CreatePage? _createPage;
     private readonly TestUserData _loginData = new();
     private bool _isRegistered;
 

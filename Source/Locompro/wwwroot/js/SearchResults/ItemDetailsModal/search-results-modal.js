@@ -41,6 +41,23 @@ class SearchResultsModal {
 
         // Populate the modal with the selected item's details
         this.populateModal();
+        try {
+            new DataTable('#SubmissionsPerItem', {
+                info: false,
+                paging: false,
+                searching: false,
+                scrollCollapse: true,
+                scrollY: '50vh',
+                "columnDefs": [{
+                    "targets": [3, 5],
+                    "orderable": false,
+                }],
+                "bDestroy": true
+            });
+        } catch (e) {
+            console.error('An error occurred while initializing DataTable:', e);
+            alert('An error occurred while initializing the DataTable. Please try again.');
+        }
     }
 
     /**
@@ -58,13 +75,10 @@ class SearchResultsModal {
         this.pictureContainer.buildPictureContainer();
 
         this.isUserLoggedIn = this.submissionsTable.getAttribute('data-is-user-authenticated') === 'True';
-      
+
         // Populating the submissions table with entries
         for (const submission of this.searchResults[this.itemSelected].Submissions) {
             const row = this.submissionsTable.insertRow();
-
-            const iconCell = row.insertCell(0);
-            iconCell.style.textAlign = 'center';
 
             // Prepare "Mis Contribuciones" button
             const contributionsButton = document.createElement('a');
@@ -76,34 +90,29 @@ class SearchResultsModal {
 
             // Append the icon to the contributions button
             contributionsButton.appendChild(userIcon);
+            contributionsButton.style.marginLeft = '15px';
 
-
-            // Append the "Mis Contribuciones" button to the date cell
-            iconCell.appendChild(contributionsButton);
-
-            // Inserting and formatting the user cell
-            const userCell = row.insertCell(1);
-            userCell.style.textAlign = 'left';
-
-            // Add the text content to the user cell
-            userCell.innerHTML = submission.Username;
+            // Create a cell and append both the contributions button and the user profile
+            const combinedCell = row.insertCell(0);
+            combinedCell.appendChild(contributionsButton);
+            combinedCell.innerHTML += "   " + submission.Username; // Add a space between the button and username
 
             // Inserting and formatting the date cell
-            const dateCell = row.insertCell(2);
-            dateCell.style.textAlign = 'center';
+            const dateCell = row.insertCell(1);
             dateCell.innerHTML = submission.EntryTime;
-            
+            dateCell.style.textAlign = 'center';
+
             // Inserting the price cell
-            const priceCell = row.insertCell(3);
+            const priceCell = row.insertCell(2);
             priceCell.innerHTML = submission.FormattedPrice;
 
             // Inserting the description cell
-            const descriptionCell = row.insertCell(4);
+            const descriptionCell = row.insertCell(3);
             descriptionCell.innerHTML = submission.Description;
 
             // Inserting the rating cell
-            const ratingCell = row.insertCell(5);
-            ratingCell.style.textAlign = 'center';
+            const ratingCell = row.insertCell(4);
+            ratingCell.innerHTML += '<span style="display: none;">' + submission.Rating;
             this.submissionsRatings.push(new SearchResultsSubmissionRating(submission, ratingCell));
             this.submissionsRatings[this.submissionsRatings.length - 1].buildRating(this.isUserLoggedIn);
 
@@ -149,7 +158,7 @@ class SearchResultsModal {
             }
 
             // Inserting the report button cell
-            const reportCell = row.insertCell(6);
+            const reportCell = row.insertCell(5);
             reportCell.style.textAlign = 'center';
             reportCell.appendChild(reportButton);
         }
