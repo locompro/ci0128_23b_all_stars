@@ -35,7 +35,7 @@ public class ModeratorPageModel : BasePageModel
         IHttpContextAccessor httpContextAccessor,
         ISearchService service,
         IModerationService moderationService,
-        IAuthService authService,IUserService userService,
+        IAuthService authService, IUserService userService,
         IConfiguration configuration) : base(loggerFactory, httpContextAccessor)
     {
         _searchService = service;
@@ -46,7 +46,7 @@ public class ModeratorPageModel : BasePageModel
     }
 
     public PaginatedList<UserReportedSubmissionVm> UserReportDisplayItems { get; set; }
-    
+
     public List<MostReportedUsersResult> MostReportedUsers { get; set; }
 
     public PaginatedList<AutoReportVm> AutoReportDisplayItems { get; set; }
@@ -66,34 +66,38 @@ public class ModeratorPageModel : BasePageModel
         {
             throw new AuthenticationException("No user is logged in");
         }
-        
-        await BuildPageContents(userReportPageIndex?? 0, 1);
+
+        await BuildPageContents(userReportPageIndex ?? 0, 1);
     }
 
     /// <summary>
     /// On post receives the moderator action on a report
     /// </summary>
-    public async Task<PageResult> OnPostActOnReport()
+    public async Task<PageResult> OnPostActOnReport(ModeratorActionVm moderatorActionVm)
     {
-        ModeratorActionVm moderatorActionVm = await GetDataSentByClient<ModeratorActionVm>();
-
-        var moderatorActionMapper = new ModeratorActionMapper();
-
-        var moderatorActionDto = moderatorActionMapper.ToDto(moderatorActionVm);
-
-        moderatorActionDto.ModeratorId = _authService.GetUserId();
         try
         {
+            if (moderatorActionVm == null)
+            {
+                throw new Exception("Moderator action sent is null");
+            }
+            
+            var moderatorActionMapper = new ModeratorActionMapper();
+
+            var moderatorActionDto = moderatorActionMapper.ToDto(moderatorActionVm);
+
+            moderatorActionDto.ModeratorId = _authService.GetUserId();
+
             await _moderationService.ActOnReport(moderatorActionDto);
         }
         catch (Exception e)
         {
             Logger.LogError(e, "Error while acting on report");
-            
+
             await BuildPageContents();
             return Page();
         }
-        
+
         //UserReportedSubmissionItems = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredData", false);
 
         /*UserReportedSubmissionVm submissionVmToRemove = UserReportedSubmissionItems.Find(userReportedSubmissionVm =>
@@ -179,7 +183,7 @@ public class ModeratorPageModel : BasePageModel
         }
         catch (Exception e)
         {
-            Logger.LogError("Error obtaining most reported Users in Moderator. Error "+e.Message);
+            Logger.LogError("Error obtaining most reported Users in Moderator. Error " + e.Message);
             MostReportedUsers = new List<MostReportedUsersResult>();
         }
     }
@@ -208,14 +212,14 @@ public class ModeratorPageModel : BasePageModel
         {
             throw new AuthenticationException("Retrieved user ID is not valid");
         }
-        
+
         ISearchQueryParameters<Submission> searchQueryParameters = new SearchQueryParameters<Submission>();
         searchQueryParameters
             .AddQueryParameter(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports)
             .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveApproverOrRejecter, userId)
             .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveCreator, userId)
             .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveReporter, userId);
-        
+
         SubmissionsDto submissionsDto = null;
 
         try

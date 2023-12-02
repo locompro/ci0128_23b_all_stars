@@ -19,6 +19,7 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
         _userRepository = unitOfWork.GetCrudRepository<User, string>();
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<Submission>> GetByUserId(string userId)
     {
         return await _submissionRepository.GetByUserIdAsync(userId);

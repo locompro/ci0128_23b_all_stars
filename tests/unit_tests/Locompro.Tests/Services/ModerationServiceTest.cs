@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Locompro.Common;
+using Locompro.Common.Search;
 using Locompro.Data.Repositories;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
@@ -25,7 +26,7 @@ public class ModerationServiceTests
         _mockReportService = new Mock<IReportService>();
         _mockLogger = new Mock<ILogger<ModerationService>>();
 
-        _submissionService = new Mock<ISubmissionService>();
+        _mockSubmissionService = new Mock<ISubmissionService>();
         _mockSearchService = new Mock<ISearchService>();
 
 
@@ -36,16 +37,14 @@ public class ModerationServiceTests
 
         // Create an instance of the service to test
         _moderationService = new ModerationService(mockLoggerFactory.Object, _mockUserService.Object,
-            _mockUserManagerService.Object, _submissionService.Object, _mockReportService.Object,
+            _mockUserManagerService.Object, _mockSubmissionService.Object, _mockReportService.Object,
             _mockSearchService.Object);
-
-        _mockReportService = new Mock<IReportService>();
     }
 
     private Mock<IUserService> _mockUserService = null!;
     private Mock<IUserManagerService> _mockUserManagerService = null!;
     private Mock<ILogger<ModerationService>> _mockLogger = null!;
-    private Mock<ISubmissionService> _submissionService = null!;
+    private Mock<ISubmissionService> _mockSubmissionService = null!;
     private ModerationService _moderationService = null!;
     private Mock<IReportService> _mockReportService = null!;
     private Mock<ISearchService> _mockSearchService = null!;
@@ -229,7 +228,7 @@ public class ModerationServiceTests
 
         await _moderationService.ActOnReport(modAction);
 
-        _submissionService.Verify(
+        _mockSubmissionService.Verify(
             service => service.AddSubmissionRejecter(
                 It.Is<SubmissionKey>(sk => sk.UserId == modAction.SubmissionUserId
                                            && sk.EntryTime == modAction.SubmissionEntryTime),
@@ -253,7 +252,7 @@ public class ModerationServiceTests
 
         await _moderationService.ActOnReport(modAction);
 
-        _submissionService.Verify(
+        _mockSubmissionService.Verify(
             service => service.AddSubmissionApprover(
                 It.Is<SubmissionKey>(sk => sk.UserId == modAction.SubmissionUserId
                                            && sk.EntryTime == modAction.SubmissionEntryTime),
@@ -349,7 +348,7 @@ public class ModerationServiceTests
         string userId = "user1";
 
         _mockUserManagerService.Setup(x => x.FindByIdAsync(userId))
-            .ReturnsAsync((User)null);
+            .ReturnsAsync(null as User);
 
         // Act & Assert
         Assert.ThrowsAsync<ArgumentException>(async () => await _moderationService.IsUserPossibleModerator(userId));
@@ -444,7 +443,7 @@ public class ModerationServiceTests
         bool didAcceptRole = true;
 
         _mockUserManagerService.Setup(x => x.FindByIdAsync(userId))
-            .ReturnsAsync((User)null);
+            .ReturnsAsync((null as User));
 
         // Act & Assert
         Assert.ThrowsAsync<ArgumentException>(async () =>
@@ -472,5 +471,96 @@ public class ModerationServiceTests
         // Act & Assert
         Assert.ThrowsAsync<ArgumentException>(async () =>
             await _moderationService.DecideOnModeratorRole(userId, didAcceptRole));
+    }
+
+    /// <summary>
+    /// Tests that the ReportSubmission method calls the UpdateUserReportAsync method in IReportService with the correct UserReportDto.
+    /// </summary>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public async Task ReportSubmission_CallsUpdateUserReportAsync_WithCorrectUserReportDto()
+    {
+        // Arrange
+        var userReportDto = new UserReportDto();
+
+        _mockReportService.Setup(x => x.UpdateUserReportAsync(It.IsAny<UserReportDto>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _moderationService.ReportSubmission(userReportDto);
+
+        // Assert
+        _mockReportService.Verify(x => x.UpdateUserReportAsync(It.Is<UserReportDto>(dto => dto == userReportDto)),
+            Times.Once);
+    }
+
+    /// <summary>
+    /// Tests that the GetUsersReportedSubmissions method retrieves submissions reported by a specific user.
+    /// </summary>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public async Task GetUsersReportedSubmissions_ReturnsSubmissionsReportedByUser()
+    {
+        // Arrange
+        string userId = "testUserId";
+        var mockReports = new List<UserReport>
+        {
+            new UserReport { Submission = new Submission() },
+            new UserReport { Submission = new Submission() }
+        };
+
+        _mockReportService.Setup(x => x.GetByUserId(userId))
+            .ReturnsAsync(mockReports);
+
+        // Act
+        var result = await _moderationService.GetUsersReportedSubmissions(userId);
+
+        // Assert
+        Assert.That(result, Is.EqualTo(mockReports.Select(r => r.Submission)));
+    }
+
+    /// <summary>
+    /// Tests that the GetUsersCreatedSubmissions method retrieves submissions created by a specific user.
+    /// </summary>
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public async Task GetUsersCreatedSubmissions_ReturnsSubmissionsCreatedByUser()
+    {
+        // Arrange
+        string userId = "testUserId";
+        var mockSubmissions = new List<Submission>
+        {
+            new Submission(),
+            new Submission()
+        };
+
+        _mockSubmissionService.Setup(x => x.GetByUserId(userId))
+            .ReturnsAsync(mockSubmissions);
+
+        // Act
+        var result = await _moderationService.GetUsersCreatedSubmissions(userId);
+
+        // Assert
+        Assert.That(result, Is.EqualTo(mockSubmissions));
+    }
+
+    /// <summary>
+    /// Tests that the FetchAllSubmissionsWithAutoReport method retrieves all submissions with automatic reports.
+    /// </summary>
+    [Test]
+    public async Task FetchAllSubmissionsWithAutoReport_ReturnsSubmissionsWithAutoReports()
+    {
+        // Arrange
+        var expectedSubmissionsDto = new SubmissionsDto(new List<Submission>(), _ => new Submission());
+
+        _mockSearchService.Setup(x
+                => x.GetSearchSubmissionsAsync(It.IsAny<ISearchQueryParameters<Submission>>()))
+            .ReturnsAsync(expectedSubmissionsDto);
+
+        // Act
+        var result = await _moderationService.FetchAllSubmissionsWithAutoReport();
+
+        // Assert
+        Assert.That(result, Is.EqualTo(expectedSubmissionsDto));
     }
 }
