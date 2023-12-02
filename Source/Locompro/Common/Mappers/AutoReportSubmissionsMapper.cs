@@ -16,15 +16,9 @@ public class AutoReportSubmissionsMapper : GenericMapper<SubmissionsDto, List<Au
         // Create a list of AutoReportVms
         var autoReportVms = new List<AutoReportVm>();
         // If the dto is null, return an empty list
-        if (dto == null) return autoReportVms;
-        // For each submission in the dto, map every atribute to its corresponding vm attribute
-        foreach (var submission in dto.Submissions)
-        {
-            // Create a new AutoReportVm
-            var autoReportVm = GetAutoReportVm(submission);
-            // Add the AutoReportVm to the list
-            autoReportVms.Add(autoReportVm);
-        }
+        if (dto?.Submissions == null) return autoReportVms;
+        // For each submission in the dto, map every attribute to its corresponding vm attribute
+        autoReportVms.AddRange(dto.Submissions.Select(GetAutoReportVm));
 
         // Return the list of AutoReportVms
         return autoReportVms;
@@ -40,7 +34,7 @@ public class AutoReportSubmissionsMapper : GenericMapper<SubmissionsDto, List<Au
     /// </summary>
     /// <param name="submission"></param>
     /// <returns></returns>
-    private AutoReportVm GetAutoReportVm(Submission submission)
+    private static AutoReportVm GetAutoReportVm(Submission submission)
     {
         return new AutoReportVm
         {
