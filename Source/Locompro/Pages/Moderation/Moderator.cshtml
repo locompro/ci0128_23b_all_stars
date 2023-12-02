@@ -169,7 +169,7 @@
                             var index = 0;
                             foreach (AutoReportVm item in Model.AutoReportDisplayItems)
                             {
-                                <tr onclick="selectReport(@index)">
+                                <tr onclick="selectAutoReport(@index)">
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Product)
                                     </td>
@@ -204,13 +204,13 @@
 
                     @for (int modalIndex = 0; modalIndex < Model.AutoReportDisplayItems.Count; modalIndex++)
                     {
-                        string modalName = "ReportsPerSubmissionModal" + modalIndex;
+                        string modalName = "AutoReportsPerSubmissionModal" + modalIndex;
 
-                        <div class="modal search-results-modal" id="@modalName" tabindex="-1" aria-labelledby="UserReportsPerSubmissionModal" aria-hidden="true">
+                        <div class="modal search-results-modal" id="@modalName" tabindex="-1" aria-labelledby="AutoReportsModal" aria-hidden="true">
                             <div class="modal-dialog modal-lg">
                                 <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
                                     <div class="modal-body">
-
+                                        @Html.Partial("_AcceptOrRejectAnomaly", Model.AutoReportItems[modalIndex])
                                     </div>
                                 </div>
                             </div>

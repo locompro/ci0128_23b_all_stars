@@ -35,7 +35,7 @@ public class ModeratorPageModel : BasePageModel
         IHttpContextAccessor httpContextAccessor,
         ISearchService service,
         IModerationService moderationService,
-        IAuthService authService,IUserService userService,
+        IAuthService authService, IUserService userService,
         IConfiguration configuration) : base(loggerFactory, httpContextAccessor)
     {
         _searchService = service;
@@ -46,7 +46,7 @@ public class ModeratorPageModel : BasePageModel
     }
 
     public PaginatedList<UserReportedSubmissionVm> UserReportDisplayItems { get; set; }
-    
+
     public List<MostReportedUsersResult> MostReportedUsers { get; set; }
 
     public PaginatedList<AutoReportVm> AutoReportDisplayItems { get; set; }
@@ -66,8 +66,8 @@ public class ModeratorPageModel : BasePageModel
         {
             throw new AuthenticationException("No user is logged in");
         }
-        
-        await BuildPageContents(userReportPageIndex?? 0, 1);
+
+        await BuildPageContents(userReportPageIndex ?? 0);
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ public class ModeratorPageModel : BasePageModel
     /// </summary>
     public async Task<PageResult> OnPostActOnReport()
     {
-        ModeratorActionVm moderatorActionVm = await GetDataSentByClient<ModeratorActionVm>();
+        var moderatorActionVm = await GetDataSentByClient<ModeratorActionVm>();
 
         var moderatorActionMapper = new ModeratorActionMapper();
 
@@ -89,11 +89,11 @@ public class ModeratorPageModel : BasePageModel
         catch (Exception e)
         {
             Logger.LogError(e, "Error while acting on report");
-            
+
             await BuildPageContents();
             return Page();
         }
-        
+
         //UserReportedSubmissionItems = GetCachedDataFromSession<List<UserReportedSubmissionVm>>("StoredData", false);
 
         /*UserReportedSubmissionVm submissionVmToRemove = UserReportedSubmissionItems.Find(userReportedSubmissionVm =>
@@ -179,7 +179,7 @@ public class ModeratorPageModel : BasePageModel
         }
         catch (Exception e)
         {
-            Logger.LogError("Error obtaining most reported Users in Moderator. Error "+e.Message);
+            Logger.LogError("Error obtaining most reported Users in Moderator. Error " + e.Message);
             MostReportedUsers = new List<MostReportedUsersResult>();
         }
     }
@@ -190,8 +190,10 @@ public class ModeratorPageModel : BasePageModel
     /// <returns> List of AutoReportsVm</returns>
     private async Task<List<AutoReportVm>> FetchAutoReports()
     {
+        var userId = _authService.GetUserId();
+
         // Call moderation services for dto's on auto reports
-        var submissionsWithAutoReports = await _moderationService.FetchAllSubmissionsWithAutoReport();
+        var submissionsWithAutoReports = await _moderationService.FetchAllSubmissionsWithAutoReport(userId);
         // Map the dtos to vms 
         AutoReportSubmissionsMapper mapper = new();
         var autoReportVms = mapper.ToVm(submissionsWithAutoReports);
@@ -202,20 +204,19 @@ public class ModeratorPageModel : BasePageModel
 
     private async Task GetUserReports(int minAmountOfReports = 1)
     {
-        string userId = _authService.GetUserId();
+        var userId = _authService.GetUserId();
 
         if (string.IsNullOrWhiteSpace(userId))
         {
             throw new AuthenticationException("Retrieved user ID is not valid");
         }
-        
+
         ISearchQueryParameters<Submission> searchQueryParameters = new SearchQueryParameters<Submission>();
         searchQueryParameters
             .AddQueryParameter(SearchParameterTypes.SubmissionByNAmountReports, minAmountOfReports)
             .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveApproverOrRejecter, userId)
             .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveCreator, userId)
             .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveReporter, userId);
-        
         SubmissionsDto submissionsDto = null;
 
         try
