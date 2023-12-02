@@ -1,12 +1,12 @@
 ﻿using System.Security.Claims;
 using Locompro.Common;
-using Locompro.Data;
+using Locompro.Common.Search;
+using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Data.Repositories;
-using Locompro.Common.Mappers;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.Results;
-using Locompro.Models.ViewModels;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 
@@ -17,24 +17,29 @@ namespace Locompro.Services;
 /// </summary>
 public class ModerationService : Service, IModerationService
 {
+    private readonly IReportService _reportService;
+
     private readonly string[] _rolesIncompatibleWithPossibleModerator =
         { RoleNames.Moderator, RoleNames.RejectedModeratorRole, RoleNames.PossibleModerator };
 
+    private readonly ISearchService _searchService;
+    private readonly ISubmissionService _submissionService;
+
     private readonly IUserManagerService _userManagerService;
     private readonly IUserService _userService;
-    private readonly ISubmissionService _submissionService;
-    private readonly IReportService _reportService; 
 
     public ModerationService(ILoggerFactory loggerFactory,
         IUserService userService,
         IUserManagerService userManagerService,
         ISubmissionService submissionService,
-        IReportService reportService) : base(loggerFactory)
+        IReportService reportService,
+        ISearchService searchService) : base(loggerFactory)
     {
         _userService = userService;
         _userManagerService = userManagerService;
         _submissionService = submissionService;
         _reportService = reportService;
+        _searchService = searchService;
     }
 
     /// <summary>
@@ -60,12 +65,13 @@ public class ModerationService : Service, IModerationService
         {
             throw new ArgumentException($"'{userId}' is not a valid user ID", nameof(userId));
         }
-        
+
         if (!await _userManagerService.IsInRoleAsync(user, RoleNames.PossibleModerator))
         {
-            throw new ArgumentException($"User with ID '{userId}' is not in necessary role '{RoleNames.PossibleModerator}'", nameof(userId));
+            throw new ArgumentException(
+                $"User with ID '{userId}' is not in necessary role '{RoleNames.PossibleModerator}'", nameof(userId));
         }
-        
+
         if (didAcceptRole)
         {
             await AddRoleAsync(user, RoleNames.Moderator);
@@ -77,11 +83,11 @@ public class ModerationService : Service, IModerationService
 
         await DeleteRoleAsync(user, RoleNames.PossibleModerator);
     }
-    
+
     /// <inheritdoc />
-    public async Task ReportSubmission(ReportDto reportDto)
+    public async Task ReportSubmission(UserReportDto userReportDto)
     {
-        await _reportService.UpdateAsync(reportDto);
+        await _reportService.UpdateUserReportAsync(userReportDto);
     }
 
     public async Task<bool> IsUserPossibleModerator(string userId)
@@ -103,15 +109,22 @@ public class ModerationService : Service, IModerationService
         return reports.Select(r => r.Submission);
     }
 
+    public async Task<IEnumerable<Submission>> GetUsersCreatedSubmissions(string userId)
+    {
+        var createdSubmissions = await _submissionService.GetByUserId(userId);
+
+        return createdSubmissions;
+    }
+
     /// <inheritdoc />
     public async Task ActOnReport(ModeratorActionDto moderatorActionDto)
     {
-        SubmissionKey submissionKey = new ()
+        SubmissionKey submissionKey = new()
         {
             UserId = moderatorActionDto.SubmissionUserId,
             EntryTime = moderatorActionDto.SubmissionEntryTime
         };
-        
+
         switch (moderatorActionDto.Action)
         {
             case ModeratorActions.RejectSubmission:
@@ -124,6 +137,21 @@ public class ModerationService : Service, IModerationService
             default:
                 throw new ArgumentOutOfRangeException(nameof(moderatorActionDto));
         }
+    }
+
+    public async Task<SubmissionsDto> FetchAllSubmissionsWithAutoReport(string userId)
+    {
+        // Create the search criteria
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+
+        // Add the search parameter
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionHasNAutoReports, 1)
+            .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveApproverOrRejecter, userId);
+
+        // Call the search service to get the submissions
+        var submissionsDto = await _searchService.GetSearchSubmissionsAsync(searchCriteria);
+        // Return the submissions
+        return submissionsDto;
     }
 
     private async Task AddRoleAsync(User user, string roleName)
@@ -140,14 +168,14 @@ public class ModerationService : Service, IModerationService
         else
             Logger.LogInformation("Assigned '{}' role to user with ID '{}'", roleName, user.Id);
     }
-    
+
     private async Task DeleteRoleAsync(User user, string roleName)
     {
         if (user == null)
         {
             throw new ArgumentNullException(nameof(user));
         }
-        
+
         var result = await _userManagerService.DeleteClaimAsync(user, new Claim(ClaimTypes.Role, roleName));
 
         if (!result.Succeeded)
@@ -160,7 +188,7 @@ public class ModerationService : Service, IModerationService
     ///     Retrieves a list of user IDs for users who are qualified to be moderators.
     /// </summary>
     /// <returns>A list of qualified user IDs.</returns>
-    private List<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
+    private IEnumerable<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
     {
         return _userService.GetQualifiedUserIDs();
     }

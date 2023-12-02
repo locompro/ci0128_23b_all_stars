@@ -1,10 +1,8 @@
-﻿using Locompro.Models;
-using Locompro.Models.Entities;
+﻿using Locompro.Models.Entities;
 using Locompro.Pages.Account;
 using Locompro.Services.Auth;
 using Microsoft.Extensions.Configuration;
 using Moq;
-using System.Xml.Linq;
 
 namespace Locompro.Tests.Pages.Account
 {
@@ -14,17 +12,18 @@ namespace Locompro.Tests.Pages.Account
     [TestFixture]
     public class ContributionsPageModelTest
     {
-        private Mock<IUserManagerService>? _userManagerServiceMock;
-        private Mock<IConfiguration>? _configurationMock;
-        private ContributionsPageModel? _contributionsPageModel;
-
         [SetUp]
         public void SetUp()
         {
             _userManagerServiceMock = new Mock<IUserManagerService>();
             _configurationMock = new Mock<IConfiguration>();
-            _contributionsPageModel = new ContributionsPageModel(_userManagerServiceMock.Object, _configurationMock.Object);
+            _contributionsPageModel =
+                new ContributionsPageModel(_userManagerServiceMock.Object, _configurationMock.Object);
         }
+
+        private Mock<IUserManagerService> _userManagerServiceMock;
+        private Mock<IConfiguration> _configurationMock;
+        private ContributionsPageModel _contributionsPageModel;
 
         /// <summary>
         /// Verifies that OnGetAsync correctly sets up the requested user for a valid user ID.
@@ -39,9 +38,11 @@ namespace Locompro.Tests.Pages.Account
 
             await _contributionsPageModel.OnGetAsync(userId);
 
-            Assert.That(_contributionsPageModel.RequestedUserId, Is.EqualTo(userId), $"Expected user ID: {userId}, Actual user ID: {_contributionsPageModel.RequestedUserId}");
+            Assert.That(_contributionsPageModel.RequestedUserId, Is.EqualTo(userId),
+                $"Expected user ID: {userId}, Actual user ID: {_contributionsPageModel.RequestedUserId}");
             Assert.That(_contributionsPageModel.RequestedUser, Is.Not.Null, "Requested user should not be null");
-            Assert.That(_contributionsPageModel.RequestedUser.Profile.Username, Is.EqualTo("temp"), "Unexpected user name");
+            Assert.That(_contributionsPageModel.RequestedUser.Profile.Username, Is.EqualTo("temp"),
+                "Unexpected user name");
         }
 
         /// <summary>
@@ -57,8 +58,10 @@ namespace Locompro.Tests.Pages.Account
             await _contributionsPageModel.OnGetAsync(invalidUserId);
 
             Assert.That(invalidUserId, Is.EqualTo(_contributionsPageModel.RequestedUserId));
-            Assert.That(_contributionsPageModel.RequestedUser, Is.Null, "Requested user should be null, since it doesn't exist");
-            Assert.That(_contributionsPageModel.ContributionsToShow, Is.Null, "ContributionsToShow should be null for missing user ID");
+            Assert.That(_contributionsPageModel.RequestedUser, Is.Null,
+                "Requested user should be null, since it doesn't exist");
+            Assert.That(_contributionsPageModel.ContributionsToShow, Is.Null,
+                "ContributionsToShow should be null for missing user ID");
         }
 
         /// <summary>
@@ -74,8 +77,10 @@ namespace Locompro.Tests.Pages.Account
 
             await _contributionsPageModel.OnGetAsync(userId);
 
-            Assert.That(_contributionsPageModel.ContributionsToShow, Is.EqualTo("[]"), "ContributionsToShow should not be null");
-            Assert.That(_contributionsPageModel.RequestedUser.Contributions, Is.Empty, "RequestedUser Contributions should not be empty but not null");
+            Assert.That(_contributionsPageModel.ContributionsToShow, Is.EqualTo("[]"),
+                "ContributionsToShow should not be null");
+            Assert.That(_contributionsPageModel.RequestedUser.Contributions, Is.Empty,
+                "RequestedUser Contributions should not be empty but not null");
         }
 
         /// <summary>
@@ -91,10 +96,13 @@ namespace Locompro.Tests.Pages.Account
 
             await _contributionsPageModel.OnGetAsync(userId);
 
-            Assert.That(_contributionsPageModel.RequestedUserId, Is.EqualTo(userId), $"Expected user ID: {userId}, Actual user ID: {_contributionsPageModel.RequestedUserId}");
+            Assert.That(_contributionsPageModel.RequestedUserId, Is.EqualTo(userId),
+                $"Expected user ID: {userId}, Actual user ID: {_contributionsPageModel.RequestedUserId}");
             Assert.That(_contributionsPageModel.RequestedUser, Is.Not.Null, "Requested user should not be null");
-            Assert.That(_contributionsPageModel.ContributionsToShow, Is.Not.Null.And.Not.Empty, "ContributionsToShow should not be null or empty");
-            Assert.That(_contributionsPageModel.RequestedUser.Contributions.Count, Is.EqualTo(2), "Contributions should only have the ones done by the user");
+            Assert.That(_contributionsPageModel.ContributionsToShow, Is.Not.Null.And.Not.Empty,
+                "ContributionsToShow should not be null or empty");
+            Assert.That(_contributionsPageModel.RequestedUser.Contributions.Count, Is.EqualTo(2),
+                "Contributions should only have the ones done by the user");
         }
 
         /// <summary>
@@ -110,15 +118,20 @@ namespace Locompro.Tests.Pages.Account
 
             await _contributionsPageModel.OnGetAsync(userId);
 
-            Assert.That(_contributionsPageModel.RequestedUserId, Is.EqualTo(userId), $"Expected user ID: {userId}, Actual user ID: {_contributionsPageModel.RequestedUserId}");
+            Assert.That(_contributionsPageModel.RequestedUserId, Is.EqualTo(userId),
+                $"Expected user ID: {userId}, Actual user ID: {_contributionsPageModel.RequestedUserId}");
             Assert.That(_contributionsPageModel.RequestedUser, Is.Not.Null, "Requested user should not be null");
             Assert.That(_contributionsPageModel.RequestedUser.Profile, Is.Not.Null, "Profile should not be null");
-            Assert.That(_contributionsPageModel.RequestedUser.Profile.Username, Is.EqualTo("temp"), "Unexpected user name");
+            Assert.That(_contributionsPageModel.RequestedUser.Profile.Username, Is.EqualTo("temp"),
+                "Unexpected user name");
             Assert.That(_contributionsPageModel.RequestedUser.Profile.Name, Is.EqualTo("N/A"), "Unexpected user name");
-            Assert.That(_contributionsPageModel.RequestedUser.Profile.Address, Is.EqualTo("No fue proveído"), "Unexpected adress name, it should be empty since it wasn't defined");
+            Assert.That(_contributionsPageModel.RequestedUser.Profile.Address, Is.EqualTo("No fue proveído"),
+                "Unexpected adress name, it should be empty since it wasn't defined");
             Assert.That(_contributionsPageModel.RequestedUser.Profile.Rating, Is.EqualTo(0), "Unexpected rating");
-            Assert.That(_contributionsPageModel.RequestedUser.Profile.ContributionsCount, Is.EqualTo(2), "Unexpected ContributionsCount, user given has two");
-            Assert.That(_contributionsPageModel.RequestedUser.Profile.Email, Is.EqualTo("anEmail@email.com"), "Unexpected email name");
+            Assert.That(_contributionsPageModel.RequestedUser.Profile.ContributionsCount, Is.EqualTo(2),
+                "Unexpected ContributionsCount, user given has two");
+            Assert.That(_contributionsPageModel.RequestedUser.Profile.Email, Is.EqualTo("anEmail@email.com"),
+                "Unexpected email name");
         }
 
         /// <summary>
@@ -136,7 +149,6 @@ namespace Locompro.Tests.Pages.Account
                 CreatedSubmissions = new List<Submission>()
             };
             return user;
-
         }
 
         /// <summary>
@@ -155,58 +167,59 @@ namespace Locompro.Tests.Pages.Account
             var user = CreateFakeUserDefault();
             user.CreatedSubmissions = new List<Submission>
             {
-            new()
-            {
-                UserId = "newUser",
-                EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
-                Price = 100,
-                Rating = 4,
-                Description = "Description for Submission 1",
-                StoreName = "Store1",
-                ProductId = 1,
-                User = user,
-                Store = new()
+                new()
                 {
-                    Name = "Store1",
-                    Canton = canton1,
-                    Address = "Address1",
-                    Telephone = "Telephone1"
+                    UserId = "newUser",
+                    EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+                    Price = 100,
+                    Rating = 4,
+                    Description = "Description for Submission 1",
+                    StoreName = "Store1",
+                    ProductId = 1,
+                    User = user,
+                    Store = new()
+                    {
+                        Name = "Store1",
+                        Canton = canton1,
+                        Address = "Address1",
+                        Telephone = "Telephone1"
+                    },
+                    Product = new()
+                    {
+                        Id = 1,
+                        Name = "Product1",
+                        Model = "Model1",
+                        Brand = "Brand1",
+                        Categories = new List<Category> { category1, category2, category3 }
+                    }
                 },
-                Product = new()
+                new()
                 {
-                    Id = 1,
-                    Name = "Product1",
-                    Model = "Model1",
-                    Brand = "Brand1",
-                    Categories = new List<Category> { category1, category2, category3 }
+                    UserId = "newUser",
+                    EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+                    Price = 100,
+                    Rating = 4,
+                    Description = "Description for Submission 1",
+                    StoreName = "Store1",
+                    ProductId = 1,
+                    User = user,
+                    Store = new()
+                    {
+                        Name = "Store1",
+                        Canton = canton1,
+                        Address = "Address1",
+                        Telephone = "Telephone1"
+                    },
+                    Product = new()
+                    {
+                        Id = 1,
+                        Name = "Product1",
+                        Model = "Model1",
+                        Brand = "Brand1",
+                        Categories = new List<Category> { category2, category3 }
+                    }
                 }
-            },
-            new()
-            {
-                UserId = "newUser",
-                EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
-                Price = 100,
-                Rating = 4,
-                Description = "Description for Submission 1",
-                StoreName = "Store1",
-                ProductId = 1,
-                User = user,
-                Store = new()
-                {
-                    Name = "Store1",
-                    Canton = canton1,
-                    Address = "Address1",
-                    Telephone = "Telephone1"
-                },
-                Product = new()
-                {
-                    Id = 1,
-                    Name = "Product1",
-                    Model = "Model1",
-                    Brand = "Brand1",
-                    Categories = new List<Category> { category2, category3 }
-                }
-            }};
+            };
 
             return user;
         }

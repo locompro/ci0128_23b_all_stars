@@ -5,7 +5,7 @@ public class AutoReport : Report
     /// <summary>
     /// The confidence of the price anomaly
     /// </summary>
-    public float Confidence { get; set; }
+    public double Confidence { get; set; }
 
     /// <summary>
     /// The minimum price of the product in the store
@@ -20,5 +20,5 @@ public class AutoReport : Report
     /// <summary>
     /// The average price, used to compare with the price of the product in the store
     /// </summary>
-    public float AveragePrice { get; set; }
+    public double AveragePrice { get; set; }
 }

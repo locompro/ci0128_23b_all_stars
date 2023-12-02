@@ -12,7 +12,7 @@ namespace Locompro.Services.Domain;
 public class ReportService : DomainService<Report, string>, IReportService
 {
     private readonly IReportRepository _reportRepository;
-    
+
     /// <summary>
     /// Initializes a new instance of the <see cref="ReportService"/> class.
     /// </summary>
@@ -28,17 +28,17 @@ public class ReportService : DomainService<Report, string>, IReportService
     {
         return await _reportRepository.GetByUserIdAsync(userId);
     }
-
+    
     /// <inheritdoc />
-    public async Task UpdateAsync(ReportDto reportDto)
+    public async Task UpdateUserReportAsync(UserReportDto userReportDto)
     {
         var reportFactory = new ReportFactory();
 
-        var submissionUserId = reportDto.SubmissionUserId;
-        var submissionEntryTime = reportDto.SubmissionEntryTime;
-        var userId = reportDto.UserId;
-        var report = reportFactory.FromDto(reportDto);
-        
+        var submissionUserId = userReportDto.SubmissionUserId;
+        var submissionEntryTime = userReportDto.SubmissionEntryTime;
+        var userId = userReportDto.UserId;
+        var report = reportFactory.FromDto(userReportDto);
+
         try
         {
             await _reportRepository.UpdateAsync(submissionUserId, submissionEntryTime, userId, report);
@@ -47,6 +47,27 @@ public class ReportService : DomainService<Report, string>, IReportService
         catch (Exception e)
         {
             Logger.LogError(e, "Failed to update or add entity");
+            throw;
+        }
+    }
+
+    /// <summary>
+    /// Adds multiple automatic reports to the system.
+    /// </summary>
+    /// <param name="listOfAutomaticReports">The list of automatic reports to add.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    public async Task AddManyAutomaticReports(List<AutoReportDto> listOfAutomaticReports)
+    {
+        var reportFactory = new AutoReportFactory();
+        var reports = listOfAutomaticReports.Select(reportFactory.FromDto).ToList();
+        try
+        {
+            await _reportRepository.AddOrUpdateManyAutomaticReports(reports);
+            await UnitOfWork.SaveChangesAsync();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Failed to add automatic reports");
             throw;
         }
     }

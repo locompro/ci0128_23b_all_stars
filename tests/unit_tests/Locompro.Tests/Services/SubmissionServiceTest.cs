@@ -1,14 +1,8 @@
-using System.Linq.Expressions;
-using Locompro.Common.Search;
-using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
-using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Data;
 using Locompro.Data.Repositories;
-using Locompro.Models;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -222,7 +216,6 @@ public class SubmissionServiceTest
 
         Assert.That(changedSubmission.Rating, Is.EqualTo(3.6500001f));
     }
-
 
 
     /// <summary>

@@ -66,17 +66,28 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
             , userId => !string.IsNullOrEmpty(userId));
 
         // find if submission has user as approver or rejecter
-        AddSearchParameter<string>(SearchParameterTypes.SubmissionHasApproverOrRejecter
+        AddSearchParameter<string>(SearchParameterTypes.SubmissionDoesNotHaveApproverOrRejecter
             , (submission, userId) =>
                 submission.Approvers.All(u => u.Id != userId)
                 && submission.Rejecters.All(u => u.Id != userId)
             , userId => !string.IsNullOrWhiteSpace(userId));
 
+        // find if submission has user as creator
+        AddSearchParameter<string>(SearchParameterTypes.SubmissionDoesNotHaveCreator
+            , (submission, userId) => submission.UserId != userId
+            , userId => !string.IsNullOrWhiteSpace(userId));
+
+        // find if submission has user as reporter
+        AddSearchParameter<string>(SearchParameterTypes.SubmissionDoesNotHaveReporter
+            , (submission, userId) => submission.UserReports.All(r => r.UserId != userId)
+            , userId => !string.IsNullOrWhiteSpace(userId));
+
         // find if submission has more than max auto reports
-        AddSearchParameter<int>(SearchParameterTypes.SubmissionHasMaxAutoReports
-            , (submission, maxAutoReports) => submission.AutoReports.Count >= maxAutoReports
+        AddSearchParameter<int>(SearchParameterTypes.SubmissionHasNAutoReports
+            , (submission, maxAutoReports) =>
+                submission.AutoReports != null && submission.AutoReports.Count == maxAutoReports
             , maxAutoReports => maxAutoReports >= 0);
-        
+
         // find by distance from the user
         AddSearchFilter<MapVm>(SearchParameterTypes.SubmissionByLocationFilter
             , (submission, mapVm) =>
@@ -85,7 +96,7 @@ public class SubmissionSearchMethods : SearchMethods<Submission, SubmissionSearc
                 {
                     return false;
                 }
-                
+
                 return MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance;
             },
             mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0);
