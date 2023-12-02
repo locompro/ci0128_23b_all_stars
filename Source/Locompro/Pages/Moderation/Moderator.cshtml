@@ -227,7 +227,7 @@
                     <a asp-page=""
                        asp-route-userReportPageIndex="@(Model.UserReportDisplayItems.PageIndex - 1)"
                        asp-route-autoReportPageIndex="@(Model.AutoReportDisplayItems.PageIndex - 1)"
-                       class="btn btn-primary @prevDisabled">
+                       class="btn btn-primary @autoPrevDisabled">
                         Previo
                     </a>
 
@@ -240,7 +240,7 @@
                     <a asp-page=""
                        asp-route-userReportPageIndex="@(Model.UserReportDisplayItems.PageIndex + 1)"
                        asp-route-autoReportPageIndex="@(Model.AutoReportDisplayItems.PageIndex + 1)"
-                       class="btn btn-primary @nextDisabled">
+                       class="btn btn-primary @autoNextDisabled">
                         Siguiente
                     </a>
                     <h6 class="page-amount-text"> @Model.UserReportDisplayItems.TotalPages páginas de reportes </h6>
