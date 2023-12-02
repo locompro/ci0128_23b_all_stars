@@ -31,12 +31,7 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     {
         Submission submission = await Set.FirstOrDefaultAsync(submission =>
             submission.UserId == id.UserId &&
-            submission.EntryTime.Year == id.EntryTime.Year &&
-            submission.EntryTime.Month == id.EntryTime.Month &&
-            submission.EntryTime.Day == id.EntryTime.Day &&
-            submission.EntryTime.Hour == id.EntryTime.Hour &&
-            submission.EntryTime.Minute == id.EntryTime.Minute &&
-            submission.EntryTime.Second == id.EntryTime.Second);
+            submission.EntryTime == id.EntryTime);
 
         if (submission == null)
         {
