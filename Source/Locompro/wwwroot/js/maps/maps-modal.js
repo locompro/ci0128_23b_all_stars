@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function getAdvancedSearchMapsModal(elementId) {
-    var mapModal = new MapsModal(elementId, country, provinceDropdownId, cantonDropdownId, distanceElementId,
+    let mapModal = new MapsModal(elementId, country, provinceDropdownId, cantonDropdownId, distanceElementId,
         latitudeElementId, longitudeElementId, addressInputId);
 
     window.GetModalMap = () => {

@@ -27,35 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 window.addEventListener('beforeunload', function (e) {
-    /*alert("leaving page!!!!");
-    if (searchResultsPage.requestSent) {
-        searchResultsPage.requestSent = false;
-        e.returnValue = '';
-        return;
-    }*/
-    /*
-    let url = window.location.pathname;
-    let handler = '?handler=ReturnResults';
-    let location = url + handler;
-
-    let data = searchResultsPage.pageSearchData;
-
-    fetch(location, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-        },
-        body: JSON.stringify(data)
-    })
-        .then(response => {
-
-            alert("leaving page");
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-        });*/
-
     e.returnValue = '';
 });
 
@@ -182,5 +153,3 @@ async function createSearchResultsModalInstance(searchResults, itemSelected) {
         return new SearchResultsModal(searchResults, itemSelected);
     }
 }
-
-// export {changeIndexButtonPressed, changeIndexPage, setOrder, selectItem, applyFilter, plusSlides, clearFilters};

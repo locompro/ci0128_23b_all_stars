@@ -14,9 +14,9 @@ namespace Locompro.Tests.Pages.Account
     [TestFixture]
     public class ContributionsPageModelTest
     {
-        private Mock<IUserManagerService> _userManagerServiceMock;
-        private Mock<IConfiguration> _configurationMock;
-        private ContributionsPageModel _contributionsPageModel;
+        private Mock<IUserManagerService>? _userManagerServiceMock;
+        private Mock<IConfiguration>? _configurationMock;
+        private ContributionsPageModel? _contributionsPageModel;
 
         [SetUp]
         public void SetUp()

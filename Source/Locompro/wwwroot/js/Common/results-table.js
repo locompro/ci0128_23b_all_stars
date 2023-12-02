@@ -184,7 +184,7 @@ class ResultsTable {
         }
 
         this.setFilter(filterType, filterValue);
-        filterField.value = filterValue ? filterValue : "Todos";
+        filterField.value = filterValue ?? "Todos";
     }
 }
 
