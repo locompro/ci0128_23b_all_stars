@@ -558,7 +558,7 @@ public class ModerationServiceTests
             .ReturnsAsync(expectedSubmissionsDto);
 
         // Act
-        var result = await _moderationService.FetchAllSubmissionsWithAutoReport();
+        var result = await _moderationService.FetchAllSubmissionsWithAutoReport("userId");
 
         // Assert
         Assert.That(result, Is.EqualTo(expectedSubmissionsDto));
