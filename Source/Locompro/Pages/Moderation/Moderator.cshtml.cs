@@ -73,8 +73,10 @@ public class ModeratorPageModel : BasePageModel
     /// <summary>
     /// On post receives the moderator action on a report
     /// </summary>
-    public async Task<PageResult> OnPostActOnReport(ModeratorActionVm moderatorActionVm)
+    public async Task<PageResult> OnPostActOnReport()
     {
+        ModeratorActionVm moderatorActionVm = await GetDataSentByClient<ModeratorActionVm>();
+        
         try
         {
             if (moderatorActionVm == null)
