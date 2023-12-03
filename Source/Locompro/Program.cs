@@ -89,6 +89,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<IPictureService, PictureService>();
     builder.Services.AddScoped<SearchService>();
     builder.Services.AddScoped<IModerationService, ModerationService>();
+    builder.Services.AddScoped<IShoppingListService, ShoppingListService>();
 
 
     builder.Services.AddScoped<IAnomalyDetectionService, AnomalyDetectionService>();

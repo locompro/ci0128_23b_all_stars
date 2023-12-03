@@ -21,4 +21,6 @@ public class User : IdentityUser
     public virtual ICollection<Submission> ApprovedSubmissions { get; set; }
     
     public virtual ICollection<Submission> RejectedSubmissions { get; set; }
+    
+    public virtual ICollection<Product> ShoppedProducts { get; set; }
 }
