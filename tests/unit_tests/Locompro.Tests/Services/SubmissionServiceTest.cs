@@ -1,3 +1,4 @@
+using Locompro.Common.Search;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models.Entities;
@@ -16,17 +17,23 @@ public class SubmissionServiceTest
     {
         var loggerFactoryMock = new Mock<ILoggerFactory>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
-        _submissionCrudRepositoryMock = new Mock<ISubmissionRepository>();
+        _submissionRepositoryMock = new Mock<ISubmissionRepository>();
+        _userRepositoryMock = new Mock<ICrudRepository<User, string>>();
 
         _unitOfWorkMock
             .Setup(unit => unit.GetSpecialRepository<ISubmissionRepository>())
-            .Returns(_submissionCrudRepositoryMock.Object);
+            .Returns(_submissionRepositoryMock.Object);
+
+        _unitOfWorkMock
+            .Setup(unit => unit.GetCrudRepository<User, string>())
+            .Returns(_userRepositoryMock.Object);
 
         _submissionService = new SubmissionService(_unitOfWorkMock.Object, loggerFactoryMock.Object);
     }
 
     private Mock<IUnitOfWork> _unitOfWorkMock = null!;
-    private Mock<ISubmissionRepository> _submissionCrudRepositoryMock = null!;
+    private Mock<ISubmissionRepository> _submissionRepositoryMock = null!;
+    private Mock<ICrudRepository<User, string>> _userRepositoryMock = null!;
     private SubmissionService _submissionService = null!;
 
     /// <summary>
@@ -47,7 +54,7 @@ public class SubmissionServiceTest
 
         await _submissionService.UpdateSubmissionRating(newRating);
 
-        var changedSubmission = await _submissionCrudRepositoryMock.Object.GetByIdAsync(new SubmissionKey
+        var changedSubmission = await _submissionRepositoryMock.Object.GetByIdAsync(new SubmissionKey
         {
             UserId = "User1",
             EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
@@ -76,7 +83,7 @@ public class SubmissionServiceTest
         newRating.Rating = "3";
         await _submissionService.UpdateSubmissionRating(newRating);
 
-        var changedSubmission = await _submissionCrudRepositoryMock.Object.GetByIdAsync(new SubmissionKey
+        var changedSubmission = await _submissionRepositoryMock.Object.GetByIdAsync(new SubmissionKey
         {
             UserId = "User1",
             EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
@@ -127,7 +134,7 @@ public class SubmissionServiceTest
         newRating.Rating = null;
         Assert.ThrowsAsync<ArgumentException>(async () => await _submissionService.UpdateSubmissionRating(newRating));
     }
-    
+
     /// <summary>
     /// Tests that an exception is thrown when the rating view model is null or
     /// the rating string is not a number between 1 and 5
@@ -208,7 +215,7 @@ public class SubmissionServiceTest
 
         await _submissionService.UpdateSubmissionRating(newRating);
 
-        var changedSubmission = await _submissionCrudRepositoryMock.Object.GetByIdAsync(new SubmissionKey
+        var changedSubmission = await _submissionRepositoryMock.Object.GetByIdAsync(new SubmissionKey
         {
             UserId = "User8",
             EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc)
@@ -226,19 +233,19 @@ public class SubmissionServiceTest
     public async Task DeleteSubmissionDeletesSubmission()
     {
         MockDataSetup();
-        
+
         var submissionKey = new SubmissionKey
         {
             UserId = "User1",
             EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
         };
-        
+
         await _submissionService.DeleteSubmissionAsync(submissionKey);
-        _submissionCrudRepositoryMock.Verify(repo => repo.DeleteAsync(submissionKey), Times.Once);
-        
-        Assert.That(await _submissionCrudRepositoryMock.Object.GetByIdAsync(submissionKey), Is.Null);
+        _submissionRepositoryMock.Verify(repo => repo.DeleteAsync(submissionKey), Times.Once);
+
+        Assert.That(await _submissionRepositoryMock.Object.GetByIdAsync(submissionKey), Is.Null);
     }
-    
+
     /// <summary>
     ///     
     ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
@@ -247,20 +254,38 @@ public class SubmissionServiceTest
     public async Task UpdateSubmissionStatusUpdatesSubmissionStatus()
     {
         MockDataSetup();
-        
+
         var submissionKey = new SubmissionKey
         {
             UserId = "User1",
             EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
         };
-        
+
         await _submissionService.UpdateSubmissionStatusAsync(submissionKey, SubmissionStatus.Moderated);
-        
-        Submission submissionToCheck = await _submissionCrudRepositoryMock.Object.GetByIdAsync(submissionKey);
-        
+
+        Submission submissionToCheck = await _submissionRepositoryMock.Object.GetByIdAsync(submissionKey);
+
         Assert.That(submissionToCheck.Status, Is.EqualTo(SubmissionStatus.Moderated));
     }
-    
+
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public Task UpdateSubmissionStatus_ThrowsForBadSubmissionKey()
+    {
+        var submissionKey = new SubmissionKey
+        {
+            UserId = "User1",
+            EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc)
+        };
+
+        _submissionRepositoryMock.Setup(s => s.GetByIdAsync(It.IsAny<SubmissionKey>()))
+            .ReturnsAsync(null as Submission);
+
+        Assert.ThrowsAsync<ArgumentException>(() =>
+            _submissionService.UpdateSubmissionStatusAsync(submissionKey, SubmissionStatus.Moderated));
+        return Task.CompletedTask;
+    }
+
     /// <summary>
     ///     
     ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 2</author>
@@ -269,16 +294,153 @@ public class SubmissionServiceTest
     public async Task GetItemSubmissionsReturnsSubmissions()
     {
         MockDataSetup();
-        
+
         var storeName = "Store1";
-        var productId = 1;
         var productName = "Product1";
-        
+
         var submission = await _submissionService.GetItemSubmissions(storeName, productName);
 
         var submissions = submission as Submission[] ?? submission.ToArray();
         Assert.That(submissions, Is.Not.Null);
         Assert.That(submissions.Length, Is.EqualTo(2));
+    }
+
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public async Task GetByUserId_ReturnsExpectedSubmissions()
+    {
+        // Arrange
+        string userId = "User1";
+        var expectedSubmissions = new List<Submission>
+        {
+            new Submission(),
+            new Submission()
+        };
+
+        _submissionRepositoryMock
+            .Setup(repo => repo.GetByUserIdAsync(userId))
+            .ReturnsAsync(expectedSubmissions);
+
+        // Act
+        var result = await _submissionService.GetByUserId(userId);
+
+        // Assert
+        Assert.That(result, Is.EqualTo(expectedSubmissions));
+        _submissionRepositoryMock.Verify(repo => repo.GetByUserIdAsync(userId), Times.Once);
+    }
+
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public async Task GetSearchResults_ReturnsExpectedSubmissions()
+    {
+        // Arrange
+        var searchQueries = new Mock<ISearchQueries<Submission>>();
+        var expectedSubmissions = new List<Submission>
+        {
+            new Submission(),
+            new Submission()
+        };
+
+        _submissionRepositoryMock
+            .Setup(repo => repo.GetByDynamicQuery(searchQueries.Object))
+            .ReturnsAsync(expectedSubmissions);
+
+        // Act
+        var result = await _submissionService.GetSearchResults(searchQueries.Object);
+
+        // Assert
+        Assert.That(result, Is.EqualTo(expectedSubmissions));
+        _submissionRepositoryMock.Verify(repo => repo.GetByDynamicQuery(searchQueries.Object), Times.Once);
+    }
+
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public async Task AddSubmissionApprover_ValidSubmissionAndUser_AddsApproverSuccessfully()
+    {
+        // Arrange
+        var submissionKey = new SubmissionKey();
+        
+        string userId = "ValidUserId";
+        var submission = new Submission { Approvers = new List<User>() };
+        var user = new User();
+
+        _submissionRepositoryMock.Setup(repo => repo.GetByIdAsync(submissionKey)).ReturnsAsync(submission);
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+
+        // Act
+        await _submissionService.AddSubmissionApprover(submissionKey, userId);
+
+        // Assert
+        _submissionRepositoryMock.Verify(
+            repo => repo.UpdateAsync(
+                submissionKey,
+                It.Is<Submission>(s => s.Approvers.Contains(user))
+            ),
+            Times.Once
+        );
+    }
+
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public void AddSubmissionApprover_InvalidSubmissionKey_ThrowsArgumentException()
+    {
+        // Arrange
+        var invalidSubmissionKey = new SubmissionKey();
+        
+        string userId = "ValidUserId";
+
+        _submissionRepositoryMock.Setup(repo => repo.GetByIdAsync(invalidSubmissionKey))
+            .ReturnsAsync(null as Submission);
+
+        // Act & Assert
+        Assert.ThrowsAsync<ArgumentException>(
+            () => _submissionService.AddSubmissionApprover(invalidSubmissionKey, userId));
+    }
+
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public async Task AddSubmissionRejecter_ValidSubmissionAndUser_AddsRejecterSuccessfully()
+    {
+        // Arrange
+        var submissionKey = new SubmissionKey();
+
+        string userId = "ValidUserId";
+        var submission = new Submission { Rejecters = new List<User>() };
+        var user = new User();
+
+        _submissionRepositoryMock.Setup(repo => repo.GetByIdAsync(submissionKey)).ReturnsAsync(submission);
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+
+        // Act
+        await _submissionService.AddSubmissionRejecter(submissionKey, userId);
+
+        // Assert
+        _submissionRepositoryMock.Verify(
+            repo => repo.UpdateAsync(
+                submissionKey,
+                It.Is<Submission>(s => s.Rejecters.Contains(user))
+            ),
+            Times.Once
+        );
+    }
+
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public void AddSubmissionRejecter_InvalidUserId_ThrowsArgumentException()
+    {
+        // Arrange
+        var submissionKey = new SubmissionKey();
+
+        string invalidUserId = "InvalidUserId";
+
+        var submission = new Submission();
+
+        _submissionRepositoryMock.Setup(repo => repo.GetByIdAsync(submissionKey)).ReturnsAsync(submission);
+        _userRepositoryMock.Setup(repo => repo.GetByIdAsync(invalidUserId))!.ReturnsAsync(null as User);
+
+        // Act & Assert
+        Assert.ThrowsAsync<ArgumentException>(() =>
+            _submissionService.AddSubmissionRejecter(submissionKey, invalidUserId));
     }
 
 
@@ -664,7 +826,7 @@ public class SubmissionServiceTest
             }
         };
 
-        _submissionCrudRepositoryMock
+        _submissionRepositoryMock
             .Setup(repository => repository.GetByIdAsync(It.IsAny<SubmissionKey>()))
             .ReturnsAsync((SubmissionKey submissionKey) =>
             {
@@ -672,7 +834,7 @@ public class SubmissionServiceTest
                                                                  submission.EntryTime == submissionKey.EntryTime);
             });
 
-        _submissionCrudRepositoryMock
+        _submissionRepositoryMock
             .Setup(repository => repository.DeleteAsync(It.IsAny<SubmissionKey>()))
             .Returns((SubmissionKey submissionKey) =>
             {
@@ -680,24 +842,25 @@ public class SubmissionServiceTest
                                                                            submission.EntryTime ==
                                                                            submissionKey.EntryTime);
                 if (submission != null) submissions.Remove(submission);
-                
+
                 return Task.CompletedTask;
             });
 
-        _submissionCrudRepositoryMock
+        _submissionRepositoryMock
             .Setup(repository => repository.GetByIdAsync(It.IsAny<SubmissionKey>()))
             .ReturnsAsync((SubmissionKey submissionKey) =>
             {
                 return submissions.SingleOrDefault(submission => submission.UserId == submissionKey.UserId &&
                                                                  submission.EntryTime == submissionKey.EntryTime);
             });
-        
-        
-        _submissionCrudRepositoryMock
+
+
+        _submissionRepositoryMock
             .Setup(repository => repository.GetItemSubmissions(It.IsAny<string>(), It.IsAny<string>()))
             .ReturnsAsync((string storeName, string productName) =>
             {
-                return submissions.Where(submission => submission.Store.Name == storeName && submission.Product.Name == productName);
+                return submissions.Where(submission =>
+                    submission.Store.Name == storeName && submission.Product.Name == productName);
             });
     }
 }
