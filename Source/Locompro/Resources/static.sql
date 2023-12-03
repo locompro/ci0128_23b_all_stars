@@ -167,19 +167,34 @@ VALUES ('Anomaly_Service', 'Anomaly Detection Service', 'NotAplicable', 0, 0, 'A
 GO
 CREATE OR ALTER PROCEDURE AddParents @category NVARCHAR(60), @productId int
 AS
-WITH ascendants AS (SELECT c.Name, c.ParentName
-                    FROM Categories c
-                    WHERE @category = c.Name
-                    UNION ALL
+BEGIN
+    SET TRANSACTION ISOLATION LEVEL READ COMMITTED;
 
-                    SELECT Categories.Name, Categories.ParentName
-                    FROM Categories
-                             INNER JOIN ascendants ON Categories.Name = ascendants.ParentName)
+    BEGIN TRY
+        BEGIN TRANSACTION;
 
-INSERT
-INTO CategoryProduct
-SELECT c.Name, @productId
-FROM Categories c
+        WITH ascendants AS (SELECT c.Name, c.ParentName
+                            FROM Categories c
+                            WHERE @category = c.Name
+                            UNION ALL
+                            SELECT Categories.Name, Categories.ParentName
+                            FROM Categories
+                                     INNER JOIN ascendants ON Categories.Name = ascendants.ParentName)
+
+        INSERT
+        INTO CategoryProduct
+        SELECT c.Name, @productId
+        FROM Categories c
+        WHERE c.Name IN (SELECT Name FROM ascendants);
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+
+        THROW;
+    END CATCH
+END;
 GO
 
 -- AS-76
@@ -245,22 +260,33 @@ CREATE OR ALTER TRIGGER UpdateUserRating
     AFTER UPDATE
     AS
 BEGIN
+    SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+    
     DECLARE @UpdatedUsername NVARCHAR(255);
     DECLARE @NewRating DECIMAL(5, 2);
+    BEGIN TRY
+        IF UPDATE(Rating)
+            BEGIN
+                -- Retrieve the updated user's ID
+                SELECT @UpdatedUsername = i.UserId
+                FROM inserted i;
 
-    IF UPDATE(Rating)
-        BEGIN
-            SELECT @UpdatedUsername = i.UserId
-            FROM inserted i;
+                -- Calculate the new average rating
+                SELECT @NewRating = AVG(s.Rating)
+                FROM Submissions s
+                WHERE s.UserId = @UpdatedUsername;
 
-            SELECT @NewRating = AVG(s.Rating)
-            FROM Submissions s
-            WHERE s.UserId = @UpdatedUsername;
+                -- Update the user's rating in AspNetUsers table
+                UPDATE AspNetUsers
+                SET Rating = @NewRating
+                WHERE Id = @UpdatedUsername;
+            END
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
 
-            UPDATE AspNetUsers
-            SET Rating = @NewRating
-            WHERE Id = @UpdatedUsername;
-        END
+        THROW;
+    END CATCH
 END;
 GO
 -- Obtiene una cantidad dada de imagenes tomadas de los mejores submissions de un producto
@@ -327,7 +353,19 @@ CREATE OR ALTER FUNCTION MostReportedUsers()
     RETURNS TABLE
         AS
         RETURN
-        SELECT U.UserName AS UserName, dbo.CountReportedSubmissions(U.Id) AS ReportedSubmissionCount, dbo.CountSubmissions(U.Id) AS TotalUserSubmissions, U.Rating AS UserRating
-        FROM AspNetUsers AS U, Submissions AS S
+        SELECT U.UserName                         AS UserName,
+               dbo.CountReportedSubmissions(U.Id) AS ReportedSubmissionCount,
+               dbo.CountSubmissions(U.Id)         AS TotalUserSubmissions,
+               U.Rating                           AS UserRating
+        FROM AspNetUsers AS U,
+             Submissions AS S
         WHERE dbo.CountReportedSubmissions(U.Id) > 0
         GROUP BY U.UserName, U.Id, U.Rating
+
+-- Indices --
+
+-- Se utiliza en la búsqueda por precio máx y min -- 
+CREATE Index PriceIndex On dbo.Submissions (Price);
+
+-- Se utiliza para diversas búsquedas al hacer Join de la tabla Products
+Create Index ProductIdIndex on dbo.Submissions (ProductId);

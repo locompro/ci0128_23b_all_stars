@@ -41,11 +41,11 @@ public class ContributionServiceTests
 
     /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
     [Test]
-    public async Task AddSubmission_CreatesNewSubmission()
+    public async Task AddSubmission_WithExistings_CreatesNewSubmission()
     {
         // Arrange
         var storeViewModel = new StoreVm();
-        var productViewModel = new ProductVm();
+        var productViewModel = new ProductVm { Id = 1 };
 
         // Setup mock behavior
         _storeService.Setup(s => s.Get(It.IsAny<string>())).ReturnsAsync(new Store());
@@ -62,6 +62,84 @@ public class ContributionServiceTests
 
         // Act
         await _contributionService.AddSubmission(storeViewModel, productViewModel, submissionVM, pictureVM);
+
+        // Assert
+        _submissionService.Verify(s => s.Add(It.Is<Submission>(sub =>
+            sub.UserId == submissionVM.UserId &&
+            sub.Price == submissionVM.Price &&
+            sub.Description == submissionVM.Description &&
+            sub.Store != null &&
+            sub.Product != null &&
+            sub.Pictures != null
+        )), Times.Once);
+    }
+    
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public async Task AddSubmission_WithNonExistingStore_CreatesNewStoreAndSubmission()
+    {
+        // Arrange
+        var nonExistingStoreVm = new StoreVm
+        {
+            SName = "SName",
+            Address = "Address",
+            Telephone = "Telephone",
+            Province = "Province",
+            Canton = "Canton"
+        };
+        
+        var productViewModel = new ProductVm();
+        
+        _productService.Setup(p => p.Get(It.IsAny<int>())).ReturnsAsync(new Product());
+        _cantonService.Setup(c 
+                => c.Get(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(new Canton());
+
+        var submissionVM = new SubmissionVm
+        {
+            Description = "Test Description",
+            Price = 100,
+            UserId = "TestUser"
+        };
+        
+        var pictureVM = new List<PictureVm>();
+
+        // Act
+        await _contributionService.AddSubmission(nonExistingStoreVm, productViewModel, submissionVM, pictureVM);
+
+        // Assert
+        _submissionService.Verify(s => s.Add(It.Is<Submission>(sub =>
+            sub.UserId == submissionVM.UserId &&
+            sub.Price == submissionVM.Price &&
+            sub.Description == submissionVM.Description &&
+            sub.Store != null &&
+            sub.Product != null &&
+            sub.Pictures != null
+        )), Times.Once);
+    }
+
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public async Task AddSubmission_WithNonExistingProduct_CreatesNewProductAndSubmission()
+    {
+        // Arrange
+        var storeViewModel = new StoreVm();
+        var nonExistingProductVm = new ProductVm { Id = -1 };
+
+        _storeService.Setup(s => s.Get(It.IsAny<string>())).ReturnsAsync(new Store());
+        _categoryService.Setup(c => c.Get(It.IsAny<string>())).ReturnsAsync(new Category());
+
+        var submissionVM = new SubmissionVm
+        {
+            Description = "Test Description",
+            Price = 100,
+            UserId = "TestUser"
+        };
+        
+        var pictureVM = new List<PictureVm>();
+
+        // Act
+        await _contributionService.AddSubmission(storeViewModel, nonExistingProductVm, submissionVM, pictureVM);
 
         // Assert
         _submissionService.Verify(s => s.Add(It.Is<Submission>(sub =>
