@@ -90,6 +90,7 @@ public class ModerationService : Service, IModerationService
         await _reportService.UpdateUserReportAsync(userReportDto);
     }
 
+    /// <inheritdoc />
     public async Task<bool> IsUserPossibleModerator(string userId)
     {
         var user = await _userManagerService.FindByIdAsync(userId);
@@ -102,6 +103,7 @@ public class ModerationService : Service, IModerationService
         return await _userManagerService.IsInRoleAsync(user, RoleNames.PossibleModerator);
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<Submission>> GetUsersReportedSubmissions(string userId)
     {
         var reports = await _reportService.GetByUserId(userId);
@@ -109,6 +111,7 @@ public class ModerationService : Service, IModerationService
         return reports.Select(r => r.Submission);
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<Submission>> GetUsersCreatedSubmissions(string userId)
     {
         var createdSubmissions = await _submissionService.GetByUserId(userId);
@@ -139,6 +142,7 @@ public class ModerationService : Service, IModerationService
         }
     }
 
+    /// <inheritdoc />
     public async Task<SubmissionsDto> FetchAllSubmissionsWithAutoReport(string userId)
     {
         // Create the search criteria
