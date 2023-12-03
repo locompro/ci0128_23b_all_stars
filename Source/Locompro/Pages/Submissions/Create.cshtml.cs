@@ -88,6 +88,12 @@ public class CreateModel : PageModel
             ModelState.Remove("StoreVm.Province");
             ModelState.Remove("StoreVm.Canton");
         }
+
+        if (!StoreVm.IsExistingStore() && await _storeService.Get(StoreVm.SName) != null)
+        {
+            // Entity exists, add a model error
+            ModelState.AddModelError("StoreVm.SName", "Esta tienda ya existe.");
+        }
         
         if (!ModelState.IsValid) return Page();
 

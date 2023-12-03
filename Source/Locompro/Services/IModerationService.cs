@@ -1,6 +1,5 @@
 ﻿using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
-using Locompro.Models.ViewModels;
 
 namespace Locompro.Services;
 
@@ -32,8 +31,8 @@ public interface IModerationService
     /// <summary>
     ///     Adds a report for a given submission
     /// </summary>
-    /// <param name="reportDto">Report to be added</param>
-    Task ReportSubmission(ReportDto reportDto);
+    /// <param name="userReportDto">Report to be added</param>
+    Task ReportSubmission(UserReportDto userReportDto);
 
     /// <summary>
     /// Returns whether the user has the Possible Moderator role
@@ -47,4 +46,15 @@ public interface IModerationService
     /// </summary>
     /// <param name="userId">ID of user for which to retrieve reported submissions</param>
     Task<IEnumerable<Submission>> GetUsersReportedSubmissions(string userId);
+
+    /// <summary>
+    /// Returns all submissions user has created
+    /// </summary>
+    /// <param name="userId">ID of user for which to retrieve created submissions</param>
+    Task<IEnumerable<Submission>> GetUsersCreatedSubmissions(string userId);
+
+    /// <summary>
+    /// Fetches auto reports from the database using the moderation service
+    /// </summary>
+    Task<SubmissionsDto> FetchAllSubmissionsWithAutoReport(string userId);
 }
