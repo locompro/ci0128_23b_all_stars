@@ -118,6 +118,7 @@ public class CreatePageTests
         _createPage.WaitForHideStoreModalToBeClickable();
         _createPage.ClickHideAddStore();
     }
+
     /// <summary>
     /// Checks if the product modal opens when the user clicks the 'Add Product' button.
     /// </summary>

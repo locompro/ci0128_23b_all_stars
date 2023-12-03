@@ -19,7 +19,7 @@
      <div class="card border search-results-card">
     @if (!myContributions)
     {
-        <h3 class="text-center">Historial de contribuciones</h3>
+        <h3 id="ContributionsTitle" class="text-center">Historial de contribuciones</h3>
             <div class="card border search-results-card" style="padding-top: 10px; padding-bottom: 0px; padding-left: 35px; padding-right: 25px; border-radius: 30px;">
             <div class="card-body">
                 <div class="row align-items-center">
@@ -36,8 +36,8 @@
                                 </div>
                             </div>
                             <div class="col">
-                                <h5 class="card-title"> <strong>Usuario:</strong> @Model.RequestedUser.Profile.Username</h5>
-                                <h6 class="card-subtitle mb-2"> <strong>Email:</strong> @Model.RequestedUser.Profile.Email</h6>
+                                <h5 id="Username" class="card-title"> <strong>Usuario:</strong> @Model.RequestedUser.Profile.Username</h5>
+                                <h6 id="Email" class="card-subtitle mb-2"> <strong>Email:</strong> @Model.RequestedUser.Profile.Email</h6>
                             </div>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
                                 </div>
                             </div>
                             <div class="col">
-                                <p class="card-text">
+                                 <p id="RatingAndContributions" class="card-text">
                                     <strong>Calificación:</strong> @Model.RequestedUser.Profile.Rating <br>
                                     <strong>Contribuciones:</strong> @Model.RequestedUser.Profile.ContributionsCount <br>
                                 </p>
@@ -71,7 +71,7 @@
                                 </div>
                             </div>
                             <div class="col">
-                                <p class="card-text">
+                                <p id="NameAndAddress" class="card-text">
                                     <strong>Nombre:</strong> @Model.RequestedUser.Profile.Name <br>
                                     <strong>Dirección:</strong> @Model.RequestedUser.Profile.Address <br>
                                 </p>
@@ -84,7 +84,7 @@
     }
     else
     {
-        <h3>Mis Contribuciones</h3>
+        <h3 id="ContributionsTitle">Mis Contribuciones</h3>
         <h6> @(Model.RequestedUser?.Profile?.ContributionsCount ?? 0) contribuciones totales </h6>
     }
         <div class="table-encapsulate-for-results">
@@ -172,7 +172,7 @@ else
         $('#nextButton').prop('disabled', !hasNext);
     
         // Hide or disable the entire pagination section if there's only one page
-        if (totalPages === 1) {
+        if (totalPages < 2) {
             $('.previous-next-button-area').hide();
         } else {
             $('.previous-next-button-area').show();
