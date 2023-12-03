@@ -53,16 +53,4 @@ public class UserService : DomainService<User, string>, IUserService
         results = results.OrderByDescending(x => x.ReportedSubmissionCount).Take(10).ToList();
         return results;
     }
-
-    /// <inheritdoc />
-    public Task AddProductToShoppingList(string userId, int productId)
-    {
-        throw new NotImplementedException();
-    }
-    
-    /// <inheritdoc />
-    public Task DeleteProductFromShoppingList(string userId, int productId)
-    {
-        throw new NotImplementedException();
-    }
 }

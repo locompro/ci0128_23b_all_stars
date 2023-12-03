@@ -15,6 +15,8 @@ public class ShoppingListService : Service, IShoppingListService
     private readonly IUserManagerService _userManagerService;
     
     private readonly IUserService _userService;
+    
+    private readonly IDomainService<Product, int> _productService;
 
     /// <summary>
     /// 
@@ -23,24 +25,31 @@ public class ShoppingListService : Service, IShoppingListService
     /// <param name="submissionService"></param>
     /// <param name="authService"></param>
     /// <param name="managerService"></param>
+    /// <param name="userService"></param>
+    /// <param name="productService"></param>
     public ShoppingListService(ILoggerFactory loggerFactory,
         ISubmissionService submissionService,
         IAuthService authService,
         IUserManagerService managerService,
-        IUserService userService)
+        IUserService userService,
+        IDomainService<Product, int> productService)
         : base(loggerFactory)
     {
         _submissionService = submissionService;
         _authService = authService;
         _userManagerService = managerService;
         _userService = userService;
+        _productService = productService;
     }
 
     /// <inheritdoc />
     public async Task<ShoppingListDto> Get()
     {
         var userId = _authService.GetUserId();
+        if (userId == null) throw new Exception("User not found");
+        
         User user = await _userManagerService.FindByIdAsync(userId);
+        if (user == null) throw new Exception("User not found");
         
         List<Product> shoppingList = user.ShoppedProducts.ToList();
         
@@ -63,16 +72,31 @@ public class ShoppingListService : Service, IShoppingListService
     public async Task AddProduct(int productId)
     {
         var userId = _authService.GetUserId();
-        User user = await _userManagerService.FindByIdAsync(userId);
-
+        if (userId == null) throw new Exception("User not found");
         
+        User user = await _userManagerService.FindByIdAsync(userId);
+        if (user == null) throw new Exception("User not found");
+        
+        Product product = await _productService.Get(productId);
+        if (product == null) throw new Exception("Product not found");
+        
+        user.ShoppedProducts.Add(product);
+        await _userService.Update(userId, user);
     }
 
     /// <inheritdoc />
     public async Task DeleteProduct(int productId)
     {
         var userId = _authService.GetUserId();
-        User user = await _userManagerService.FindByIdAsync(userId);
+        if (userId == null) throw new Exception("User not found");
         
+        User user = await _userManagerService.FindByIdAsync(userId);
+        if (user == null) throw new Exception("User not found");
+        
+        Product product = await _productService.Get(productId);
+        if (product == null) throw new Exception("Product not found");
+        
+        user.ShoppedProducts.Remove(product);
+        await _userService.Update(userId, user);
     }
 }
