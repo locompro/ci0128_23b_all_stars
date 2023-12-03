@@ -379,11 +379,6 @@ namespace Locompro.Migrations
                 columns: new[] { "CantonCountryName", "CantonProvinceName", "CantonName" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Submissions_ProductId",
-                table: "Submissions",
-                column: "ProductId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Submissions_StoreName",
                 table: "Submissions",
                 column: "StoreName");
