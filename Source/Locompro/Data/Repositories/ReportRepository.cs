@@ -40,7 +40,7 @@ public class ReportRepository : CrudRepository<Report, string>, IReportRepositor
     }
 
     /// <inheritdoc />
-    public async Task AddOrUpdateManyAutomaticReports(List<AutoReport> autoReports)
+    public async Task AddOrUpdateManyAutomaticReports(IEnumerable<AutoReport> autoReports)
     {
         if (autoReports == null) throw new ArgumentNullException(nameof(autoReports));
 

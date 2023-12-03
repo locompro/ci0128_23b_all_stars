@@ -13,7 +13,7 @@ function reportAction(reportActions, userId, entryTime) {
     url += "?handler=ActOnReport";
 
     let dataToSend = {
-        Action: "" + reportActions,
+        Action: reportActions,
         SubmissionUserId: userId,
         SubmissionEntryTime: entryTime
     };
