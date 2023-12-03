@@ -56,8 +56,9 @@ public class AnomalyDetectionService : Service, IAnomalyDetectionService
     /// <param name="submissions">The enumerable collection of submissions to be grouped.</param>
     /// <returns>A list of grouped submissions, where each group represents a unique combination of store and product.</returns>
     private static IEnumerable<GroupedSubmissions> GroupSubmissionsByStoreAndProduct(
-        IEnumerable<Submission> submissions) =>
-        submissions.GroupBy(submission => new { submission.StoreName, submission.Product.Name })
+        IEnumerable<Submission> submissions)
+    {
+        var result = submissions.GroupBy(submission => new { submission.StoreName, submission.Product.Name })
             .Select(group => new GroupedSubmissions
             {
                 StoreName = group.Key.StoreName,
@@ -66,12 +67,15 @@ public class AnomalyDetectionService : Service, IAnomalyDetectionService
             })
             .ToList();
 
+        return result;
+    }
+
     /// <summary>
     /// Creates reports for submissions identified as anomalies based on their pricing.
     /// </summary>
     /// <param name="groupedSubmissions">The group of submissions containing submissions of the same product from the same store.</param>
     /// <returns>A list of <see cref="AutoReportDto"/> objects representing the reports for anomalous submissions.</returns>
-    private List<AutoReportDto> MakeReportsOnAnomalousSubmissions(GroupedSubmissions groupedSubmissions)
+    private static List<AutoReportDto> MakeReportsOnAnomalousSubmissions(GroupedSubmissions groupedSubmissions)
     {
         var mean = CalculateMean(groupedSubmissions.Submissions);
         var minMaxPrice = CalculateMinMaxPrice(groupedSubmissions.Submissions);
@@ -200,7 +204,7 @@ public class AnomalyDetectionService : Service, IAnomalyDetectionService
     /// <summary>
     /// Represents a group of submissions for a store and product combination.
     /// </summary>
-    public class GroupedSubmissions
+    internal class GroupedSubmissions
     {
         public string StoreName { get; set; }
         public string ProductName { get; set; }

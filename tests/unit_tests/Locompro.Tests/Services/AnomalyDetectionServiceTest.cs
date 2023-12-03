@@ -126,16 +126,6 @@ public class AnomalyDetectionServiceTests
         };
         var submissions = new List<Submission> { submission1, submission2 };
 
-        var groupedSubmissions = new List<AnomalyDetectionService.GroupedSubmissions>
-        {
-            new()
-            {
-                StoreName = "Store 1",
-                ProductName = "Product 1",
-                Submissions = new List<Submission> { submission1, submission2 }
-            }
-        };
-
         // Mock the submission service to return the test submissions
         _submissionServiceMock.Setup(service => service.GetAll()).ReturnsAsync(submissions);
 
@@ -265,6 +255,7 @@ public class AnomalyDetectionServiceTests
     public async Task FindPriceAnomalies_EmptySubmissionList()
     {
         var submissions = new List<Submission>();
+        if (submissions == null) throw new ArgumentNullException(nameof(submissions));
 
         // Mock the submission service to return the test submissions
 
