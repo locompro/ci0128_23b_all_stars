@@ -1,4 +1,6 @@
 using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
+using Locompro.Models.Factories;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 
@@ -6,31 +8,49 @@ namespace Locompro.Services;
 
 public class ShoppingListService : Service, IShoppingListService
 {
-    private IUserService _userService;
+    private readonly ISubmissionService _submissionService;
 
-    private ISubmissionService _submissionService;
-
-    private IAuthService _authService;
+    private readonly IAuthService _authService;
+    
+    private readonly IUserManagerService _userManagerService;
+    
+    private readonly IUserService _userService;
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="loggerFactory"></param>
-    /// <param name="userService"></param>
     /// <param name="submissionService"></param>
     /// <param name="authService"></param>
-    public ShoppingListService(ILoggerFactory loggerFactory, IUserService userService,
-        ISubmissionService submissionService, IAuthService authService) : base(loggerFactory)
+    /// <param name="managerService"></param>
+    public ShoppingListService(ILoggerFactory loggerFactory,
+        ISubmissionService submissionService,
+        IAuthService authService,
+        IUserManagerService managerService,
+        IUserService userService)
+        : base(loggerFactory)
     {
-        _userService = userService;
         _submissionService = submissionService;
         _authService = authService;
+        _userManagerService = managerService;
+        _userService = userService;
     }
 
     /// <inheritdoc />
-    public Task<ShoppingListDto> Get()
+    public async Task<ShoppingListDto> Get()
     {
-        throw new NotImplementedException();
+        var userId = _authService.GetUserId();
+        User user = await _userManagerService.FindByIdAsync(userId);
+        
+        List<Product> shoppingList = user.ShoppedProducts.ToList();
+        
+        ShoppingListProductFactory factory = new ShoppingListProductFactory();
+        
+        return new ShoppingListDto
+        {
+            UserId = userId,
+            Products = shoppingList.Select(product => factory.ToDto(product)).ToList()
+        };
     }
 
     /// <inheritdoc />
@@ -40,14 +60,19 @@ public class ShoppingListService : Service, IShoppingListService
     }
 
     /// <inheritdoc />
-    public Task AddProduct()
+    public async Task AddProduct(int productId)
     {
-        throw new NotImplementedException();
+        var userId = _authService.GetUserId();
+        User user = await _userManagerService.FindByIdAsync(userId);
+
+        
     }
 
     /// <inheritdoc />
-    public Task DeleteProduct()
+    public async Task DeleteProduct(int productId)
     {
-        throw new NotImplementedException();
+        var userId = _authService.GetUserId();
+        User user = await _userManagerService.FindByIdAsync(userId);
+        
     }
 }

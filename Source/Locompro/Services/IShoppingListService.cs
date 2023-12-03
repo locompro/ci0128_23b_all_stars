@@ -8,7 +8,7 @@ public interface IShoppingListService
 
     public Task<StoreSummaryDto> GetStoreSummary();
 
-    public Task AddProduct();
+    public Task AddProduct(int productId);
     
-    public Task DeleteProduct();
+    public Task DeleteProduct(int productId);
 }

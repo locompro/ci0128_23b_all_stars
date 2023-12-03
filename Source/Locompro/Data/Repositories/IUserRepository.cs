@@ -41,4 +41,8 @@ public interface IUserRepository : ICrudRepository<User, string>
     /// </summary>
     /// <returns></returns>
     List<MostReportedUsersResult> GetMostReportedUsersInfo();
+    
+    Task AddProductToShoppingList(string userId, int productId);
+    
+    Task DeleteProductFromShoppingList(string userId, int productId);
 }

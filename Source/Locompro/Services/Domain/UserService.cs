@@ -27,26 +27,42 @@ public class UserService : DomainService<User, string>, IUserService
     {
         return _userRepository.GetQualifiedUserIDs();
     }
+    
     /// <inheritdoc />
     public int GetSubmissionsCountByUser(string userId)
     {
         return _userRepository.GetSubmissionsCountByUser(userId);
     }
+    
     /// <inheritdoc />
     public int GetReportedSubmissionsCountByUser(string userId)
     {
         return _userRepository.GetReportedSubmissionsCountByUser(userId);
     }
+    
     /// <inheritdoc />
     public int GetRatedSubmissionsCountByUser(string userId)
     {
         return _userRepository.GetRatedSubmissionsCountByUser(userId);
     }
+    
     /// <inheritdoc />
     public List<MostReportedUsersResult> GetMostReportedUsersInfo()
     {
         var results = _userRepository.GetMostReportedUsersInfo();
         results = results.OrderByDescending(x => x.ReportedSubmissionCount).Take(10).ToList();
         return results;
+    }
+
+    /// <inheritdoc />
+    public Task AddProductToShoppingList(string userId, int productId)
+    {
+        throw new NotImplementedException();
+    }
+    
+    /// <inheritdoc />
+    public Task DeleteProductFromShoppingList(string userId, int productId)
+    {
+        throw new NotImplementedException();
     }
 }

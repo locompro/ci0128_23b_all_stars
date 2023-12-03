@@ -96,4 +96,14 @@ public class UserRepository : CrudRepository<User, string>, IUserRepository
             throw;
         }
     }
+
+    public Task AddProductToShoppingList(string userId, int productId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeleteProductFromShoppingList(string userId, int productId)
+    {
+        throw new NotImplementedException();
+    }
 }
