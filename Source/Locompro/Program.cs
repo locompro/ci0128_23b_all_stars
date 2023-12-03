@@ -90,6 +90,7 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<SearchService>();
     builder.Services.AddScoped<IModerationService, ModerationService>();
 
+
     builder.Services.AddScoped<IAnomalyDetectionService, AnomalyDetectionService>();
 
 

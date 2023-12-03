@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MathNet.Numerics" Version="5.0.0"/>
+		<PackageReference Include="MathNet.Numerics" Version="5.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.21" />
 		<PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.21" />
@@ -101,11 +101,11 @@
 	  <Compile Remove="Repositories\StoreRepository.cs" />
 	  <Compile Remove="Repositories\StringIdRepository.cs" />
 	  <Compile Remove="Models\Submission.cs" />
-		<Compile Remove="Pages\Moderation\ModerationIndex.cshtml.cs"/>
+		<Compile Remove="Pages\Moderation\ModerationIndex.cshtml.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Remove="Pages\Moderation\ModerationIndex.cshtml"/>
+		<Content Remove="Pages\Moderation\ModerationIndex.cshtml" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -97,6 +97,22 @@ public class SearchResultsModel : SearchPageModel
         CacheDataInSession(SearchVm, "SearchData");
     }
 
+    public async Task<IActionResult> OnPostAddToShoppingList(int productId)
+    {
+        try
+        {
+            // Perform the logic to add the product to the shopping list
+            // await _shoppingListService.AddToShoppingList(productId);
+            return new JsonResult(new { success = true });
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("Error when attempting to add to the shopping list: " + e.Message);
+            // Return an appropriate error response
+            return new JsonResult(new { success = false, error = "An error occurred." });
+        }
+    }
+
     /// <summary>
     ///     When requesting search results, fetches search query data and returns search results
     /// </summary>

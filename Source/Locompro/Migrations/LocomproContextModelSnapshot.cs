@@ -173,6 +173,41 @@ namespace Locompro.Migrations
                     b.HasDiscriminator<string>("Discriminator").HasValue("Report");
                 });
 
+            modelBuilder.Entity("Locompro.Models.Entities.ShoppingList", b =>
+                {
+                    b.Property<int>("ShoppingListId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ShoppingListId"), 1L, 1);
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ShoppingListId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("ShoppingLists");
+                });
+
+            modelBuilder.Entity("Locompro.Models.Entities.ShoppingListProduct", b =>
+                {
+                    b.Property<int>("ShoppingListId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShoppingListId", "ProductId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ShoppingListProducts");
+                });
+
             modelBuilder.Entity("Locompro.Models.Entities.Store", b =>
                 {
                     b.Property<string>("Name")
@@ -353,6 +388,23 @@ namespace Locompro.Migrations
                     b.ToTable("GetQualifiedUserIDsResult");
                 });
 
+            modelBuilder.Entity("Locompro.Models.Results.MostReportedUsersResult", b =>
+                {
+                    b.Property<int>("ReportedSubmissionCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalUserSubmissions")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("UserRating")
+                        .HasColumnType("real");
+
+                    b.ToTable("MostReportedUsersResult");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -530,11 +582,11 @@ namespace Locompro.Migrations
                 {
                     b.HasBaseType("Locompro.Models.Entities.Report");
 
-                    b.Property<float>("AveragePrice")
-                        .HasColumnType("real");
+                    b.Property<double>("AveragePrice")
+                        .HasColumnType("float");
 
-                    b.Property<float>("Confidence")
-                        .HasColumnType("real");
+                    b.Property<double>("Confidence")
+                        .HasColumnType("float");
 
                     b.Property<int>("MaximumPrice")
                         .HasColumnType("int");
@@ -617,6 +669,36 @@ namespace Locompro.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Locompro.Models.Entities.ShoppingList", b =>
+                {
+                    b.HasOne("Locompro.Models.Entities.User", "User")
+                        .WithOne("ShoppingList")
+                        .HasForeignKey("Locompro.Models.Entities.ShoppingList", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Locompro.Models.Entities.ShoppingListProduct", b =>
+                {
+                    b.HasOne("Locompro.Models.Entities.Product", "Product")
+                        .WithMany("ShoppingListProducts")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Locompro.Models.Entities.ShoppingList", "ShoppingList")
+                        .WithMany("ShoppingListProducts")
+                        .HasForeignKey("ShoppingListId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ShoppingList");
                 });
 
             modelBuilder.Entity("Locompro.Models.Entities.Store", b =>
@@ -772,12 +854,19 @@ namespace Locompro.Migrations
 
             modelBuilder.Entity("Locompro.Models.Entities.Product", b =>
                 {
+                    b.Navigation("ShoppingListProducts");
+
                     b.Navigation("Submissions");
                 });
 
             modelBuilder.Entity("Locompro.Models.Entities.Province", b =>
                 {
                     b.Navigation("Cantons");
+                });
+
+            modelBuilder.Entity("Locompro.Models.Entities.ShoppingList", b =>
+                {
+                    b.Navigation("ShoppingListProducts");
                 });
 
             modelBuilder.Entity("Locompro.Models.Entities.Submission", b =>
@@ -792,6 +881,8 @@ namespace Locompro.Migrations
             modelBuilder.Entity("Locompro.Models.Entities.User", b =>
                 {
                     b.Navigation("CreatedSubmissions");
+
+                    b.Navigation("ShoppingList");
                 });
 #pragma warning restore 612, 618
         }

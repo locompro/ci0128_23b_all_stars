@@ -177,12 +177,12 @@ public class LocomproContext : IdentityDbContext<User>
         builder.HasDbFunction(
             typeof(LocomproContext).GetMethod(nameof(CountRatedSubmissions), new[] { typeof(string) }) ??
             throw new InvalidOperationException($"Method {nameof(CountRatedSubmissions)} not found."));
-        
+
         builder.HasDbFunction(
             typeof(LocomproContext).GetMethod(nameof(GetPictures),
                 new[] { typeof(string), typeof(int), typeof(int) }) ??
             throw new InvalidOperationException($"Method {nameof(GetPictures)} not found."));
-        
+
     }
 
     [DbFunction("GetPictures", "dbo")]
@@ -239,7 +239,7 @@ public class LocomproContext : IdentityDbContext<User>
         return FromExpression(() => GetMostReportedUsersResults());
     }
 
-/// <summary>
+    /// <summary>
     ///     Assigns each parent category of a product to the product.
     /// </summary>
     /// <param name="categoryName"></param>
@@ -256,7 +256,7 @@ public class LocomproContext : IdentityDbContext<User>
         await Database.ExecuteSqlRawAsync("EXECUTE dbo.AddParents @category, @productId", categoryNameParameter,
             productIdParameter);
     }
-    
+
     /// <summary>
     ///     Deletes every submission that has been deemed inappropriate by a moderator.
     /// </summary>
