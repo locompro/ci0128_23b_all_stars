@@ -9,14 +9,12 @@ namespace Locompro.Pages;
 
 public class TestFrontTableModel : PageModel
 {
-    private readonly IShoppingListService _shoppingListService;
 
-    public TestFrontTableModel(IShoppingListService shoppingListService)
+    public TestFrontTableModel()
     {
         //_shoppingListService = shoppingListService;
     }
 
-    public ShoppingList ShoppingList { get; set; }
 
     public async Task<IActionResult> OnGetAsync()
     {

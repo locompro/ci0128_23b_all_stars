@@ -22,5 +22,4 @@ public class Product
     public virtual ICollection<Category> Categories { get; set; }
 
     public virtual ICollection<Submission> Submissions { get; set; }
-    public virtual ICollection<ShoppingListProduct> ShoppingListProducts { get; set; }
 }
