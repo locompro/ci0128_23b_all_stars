@@ -737,10 +737,9 @@ public class SearchServiceTest
     }
 
     /// <summary>
-    ///     SPRINT 2
     ///     Searches for an item with a specific userId and the search is empty
     /// </summary>
-    /// <author> Gabriel Molina Bulgarelli C15179 </author>
+    /// <author> Gabriel Molina Bulgarelli C14826 - SPRINT 3</author>
     [Test]
     public async Task SearchByUserId_InvalidSearchEmptyString_EmptyResults()
     {
@@ -766,10 +765,9 @@ public class SearchServiceTest
     }
 
     /// <summary>
-    ///     SPRINT 2
     ///     Searches for an item with a specific invalid userId and the search is empty
     /// </summary>
-    /// <author> Gabriel Molina Bulgarelli C15179 </author>
+    /// <author> Gabriel Molina Bulgarelli C14826 - SPRINT 3 </author>
     [Test]
     public async Task SearchByInvalidUserId_SubmissionsFound()
     {
@@ -790,10 +788,9 @@ public class SearchServiceTest
     }
 
     /// <summary>
-    ///     SPRINT 2
     ///     Searches for an item with a specific invalid userId and the search is empty
     /// </summary>
-    /// <author> Gabriel Molina Bulgarelli C15179 </author>
+    /// <author> Gabriel Molina Bulgarelli C14826 - SPRINT 3 </author>
     [Test]
     public async Task SearchByUserId_SubmissionsFound()
     {
@@ -814,10 +811,9 @@ public class SearchServiceTest
     }
 
     /// <summary>
-    ///     SPRINT 2
     ///     Searching for an item with a specific user and brand, but no results
     /// </summary>
-    /// <author> Gabriel Molina Bulgarelli C15179 </author>
+    /// <author> Gabriel Molina Bulgarelli C14826 - SPRINT 3 </author>
     [Test]
     public async Task SearchByUserAndBrand_NoResults()
     {
@@ -843,10 +839,9 @@ public class SearchServiceTest
 
 
     /// <summary>
-    ///     SPRINT 2
     ///     Searching for an item with a specific user and brand, but no results
     /// </summary>
-    /// <author> Gabriel Molina Bulgarelli C15179 </author>
+    /// <author> Gabriel Molina Bulgarelli C14826 - SPRINT 3 </author>
     [Test]
     public async Task SearchByPriceRangeAndBrand_ValidResults()
     {
@@ -873,10 +868,9 @@ public class SearchServiceTest
     }
 
     /// <summary>
-    ///     SPRINT 2
     ///     Searching for an item with several different criteria to be certain that it holds several at once
     /// </summary>
-    /// <author> Gabriel Molina Bulgarelli C15179 </author>
+    /// <author> Gabriel Molina Bulgarelli C14826 - SPRINT 3 </author>
     [Test]
     public async Task SearchWithMultipleCriteria_ValidResults()
     {
