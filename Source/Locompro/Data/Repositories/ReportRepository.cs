@@ -17,10 +17,16 @@ public class ReportRepository : CrudRepository<Report, string>, IReportRepositor
     }
 
     /// <inheritdoc />
+    public async Task<IEnumerable<Report>> GetByUserIdAsync(string userId)
+    {
+        return await Set.Where(e => e.UserId == userId).ToListAsync();
+    }
+
+    /// <inheritdoc />
     public async Task UpdateAsync(string submissionUserId, DateTime submissionEntryTime, string userId, Report entity)
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));
-        
+
         var existingEntity = await GetByIdAsync(submissionUserId, submissionEntryTime, userId);
         if (existingEntity != null)
         {
@@ -30,6 +36,26 @@ public class ReportRepository : CrudRepository<Report, string>, IReportRepositor
         else
         {
             await AddAsync(entity);
+        }
+    }
+
+    /// <inheritdoc />
+    public async Task AddOrUpdateManyAutomaticReports(IEnumerable<AutoReport> autoReports)
+    {
+        if (autoReports == null) throw new ArgumentNullException(nameof(autoReports));
+
+        foreach (var autoReport in autoReports)
+        {
+            var existingEntity = await GetByIdAsync(autoReport.SubmissionUserId, autoReport.SubmissionEntryTime,
+                autoReport.UserId);
+            if (existingEntity != null)
+            {
+                Context.Entry(existingEntity).CurrentValues.SetValues(autoReport);
+            }
+            else
+            {
+                await AddAsync(autoReport);
+            }
         }
     }
 }

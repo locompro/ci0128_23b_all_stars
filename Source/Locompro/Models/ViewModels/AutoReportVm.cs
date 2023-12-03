@@ -12,9 +12,14 @@ public class AutoReportVm
     public string Product { get; set; }
     public string Store { get; set; }
     public string Description { get; set; }
-    public float Confidence { get; set; }
+
+    [DisplayFormat(DataFormatString = "{0:F4}%")]
+    public double Confidence { get; set; }
+
     public int Price { get; set; }
     public int MinimumPrice { get; set; }
     public int MaximumPrice { get; set; }
-    public float AveragePrice { get; set; }
+
+    [DisplayFormat(DataFormatString = "{0:F0}")]
+    public double AveragePrice { get; set; }
 }

@@ -3,12 +3,17 @@ function selectReport(index) {
     $(modalId).modal('show');
 }
 
+function selectAutoReport(index) {
+    let modalId = "#AutoReportsPerSubmissionModal" + index;
+    $(modalId).modal('show');
+}
+
 function reportAction(reportActions, userId, entryTime) {
     let url = window.location.pathname;
     url += "?handler=ActOnReport";
 
     let dataToSend = {
-        Action: "" + reportActions,
+        Action: reportActions,
         SubmissionUserId: userId,
         SubmissionEntryTime: entryTime
     };
@@ -41,10 +46,10 @@ function changeModeratorPage(element) {
 
 document.addEventListener("DOMContentLoaded", function () {
     // Get buttons and containers
-    reportButton = document.getElementById("btnReportes");
-    reportContainer = document.getElementById("reportContainer");
-    autoReportButton = document.getElementById("btnPreciosAnomalos");
-    autoReportContainer = document.getElementById("automaticReportContainer");
+    let reportButton = document.getElementById("btnReportes");
+    let reportContainer = document.getElementById("reportContainer");
+    let autoReportButton = document.getElementById("btnPreciosAnomalos");
+    let autoReportContainer = document.getElementById("automaticReportContainer");
 
     // Add event listener to the button
     reportButton.addEventListener("click", function () {

@@ -1,15 +1,12 @@
 using Locompro.Common;
 using Locompro.Common.ErrorStore;
 using Locompro.Data;
-using Locompro.Data.Repositories;
 using Locompro.Models.Entities;
 using Locompro.Services;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Locompro.Services.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NetTopologySuite.Geometries;
 
 var webApplicationBuilder = WebApplication.CreateBuilder(args);
 
@@ -65,7 +62,7 @@ void RegisterServices(WebApplicationBuilder builder)
         config.Cookie.Name = "Identity.Cookie";
         config.LoginPath = "/Account/Login";
     });
-    
+
     // Built in services
     builder.Services.AddLogging();
     builder.Services.AddRazorPages();
@@ -92,9 +89,13 @@ void RegisterServices(WebApplicationBuilder builder)
     builder.Services.AddScoped<IPictureService, PictureService>();
     builder.Services.AddScoped<SearchService>();
     builder.Services.AddScoped<IModerationService, ModerationService>();
-    
+
+    builder.Services.AddScoped<IAnomalyDetectionService, AnomalyDetectionService>();
+
+
     builder.Services.AddSingleton<IErrorStoreFactory, ErrorStoreFactory>();
-    builder.Services.AddSingleton<IApiKeyHandler>(serviceProvider => {
+    builder.Services.AddSingleton<IApiKeyHandler>(serviceProvider =>
+    {
         var configuration = serviceProvider.GetRequiredService<IConfiguration>();
         var googleApiKey = configuration["ApiKeys:Google"];
         return new ApiKeyHandler(googleApiKey);
@@ -112,6 +113,10 @@ void RegisterHostedServices(WebApplicationBuilder builder)
 {
     // Moderation tasks
     builder.Services.AddSingleton<IScheduledTask, AddPossibleModeratorsTask>();
+    builder.Services.AddHostedService<TaskSchedulerService>();
+
+    // Anomaly detection tasks
+    builder.Services.AddSingleton<IScheduledTask, FindPriceAnomaliesTask>();
     builder.Services.AddHostedService<TaskSchedulerService>();
 }
 
@@ -157,13 +162,11 @@ void AddDatabaseServices(WebApplicationBuilder builder)
 
 void AddConfigurationFileToBuilder(WebApplicationBuilder builder)
 {
-
     var configurationFilePath = "secrets.json";
 
     try
     {
         builder.Configuration.AddJsonFile(configurationFilePath, optional: false, reloadOnChange: true);
-        
     }
     catch (Exception e)
     {

@@ -8,7 +8,7 @@ namespace Locompro.Common.Mappers;
 /// Mapper than takes a Submission DTO and maps it to a list of ModerationSubmissionViewModels
 /// Each submission has a number of reports, which are mapped to a list of ReportViewModels
 /// </summary>
-public class ModerationSubmissionsMapper : GenericMapper<SubmissionsDto, List<UserReportedSubmissionVm>>
+public class UserReportSubmissionsMapper : GenericMapper<SubmissionsDto, List<UserReportedSubmissionVm>>
 {
     protected override List<UserReportedSubmissionVm> BuildVm(SubmissionsDto dto)
     {

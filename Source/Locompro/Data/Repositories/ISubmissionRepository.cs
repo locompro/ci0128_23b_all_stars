@@ -6,6 +6,13 @@ namespace Locompro.Data.Repositories;
 public interface ISubmissionRepository : ICrudRepository<Submission, SubmissionKey>
 {
     /// <summary>
+    ///     Gets all submissions matching a given user Id
+    /// </summary>
+    /// <param name="userId">User Id for which to get all submissions</param>
+    /// <returns>Submissions create by a given user</returns>
+    Task<IEnumerable<Submission>> GetByUserIdAsync(string userId);
+    
+    /// <summary>
     ///     Gets an entity based on its ID asynchronously.
     /// </summary>
     /// <param name="userId">First part of the primary key</param>

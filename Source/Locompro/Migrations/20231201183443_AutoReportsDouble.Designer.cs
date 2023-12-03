@@ -4,17 +4,18 @@ using Locompro.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NetTopologySuite.Geometries;
 
 #nullable disable
 
 namespace Locompro.Migrations
 {
     [DbContext(typeof(LocomproContext))]
-    partial class LocomproContextModelSnapshot : ModelSnapshot
+    [Migration("20231201183443_AutoReportsDouble")]
+    partial class AutoReportsDouble
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -196,8 +197,13 @@ namespace Locompro.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(60)");
 
-                    b.Property<Point>("Location")
-                        .HasColumnType("geography");
+                    b.Property<decimal>("Latitude")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("Longitude")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -490,51 +496,51 @@ namespace Locompro.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("SubmissionApprover", b =>
+            modelBuilder.Entity("SubmissionUser", b =>
                 {
-                    b.Property<string>("ApproverId")
+                    b.Property<string>("ApproversId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SubmissionUserId")
+                    b.Property<string>("ApprovedSubmissionsUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("SubmissionEntryTime")
+                    b.Property<DateTime>("ApprovedSubmissionsEntryTime")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("ApproverId", "SubmissionUserId", "SubmissionEntryTime");
+                    b.HasKey("ApproversId", "ApprovedSubmissionsUserId", "ApprovedSubmissionsEntryTime");
 
-                    b.HasIndex("SubmissionUserId", "SubmissionEntryTime");
+                    b.HasIndex("ApprovedSubmissionsUserId", "ApprovedSubmissionsEntryTime");
 
-                    b.ToTable("SubmissionApprover");
+                    b.ToTable("SubmissionUser");
                 });
 
-            modelBuilder.Entity("SubmissionRejecter", b =>
+            modelBuilder.Entity("SubmissionUser1", b =>
                 {
-                    b.Property<string>("RejecterId")
+                    b.Property<string>("RejectersId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("SubmissionUserId")
+                    b.Property<string>("RejectedSubmissionsUserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<DateTime>("SubmissionEntryTime")
+                    b.Property<DateTime>("RejectedSubmissionsEntryTime")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("RejecterId", "SubmissionUserId", "SubmissionEntryTime");
+                    b.HasKey("RejectersId", "RejectedSubmissionsUserId", "RejectedSubmissionsEntryTime");
 
-                    b.HasIndex("SubmissionUserId", "SubmissionEntryTime");
+                    b.HasIndex("RejectedSubmissionsUserId", "RejectedSubmissionsEntryTime");
 
-                    b.ToTable("SubmissionRejecter");
+                    b.ToTable("SubmissionUser1");
                 });
 
             modelBuilder.Entity("Locompro.Models.Entities.AutoReport", b =>
                 {
                     b.HasBaseType("Locompro.Models.Entities.Report");
 
-                    b.Property<float>("AveragePrice")
-                        .HasColumnType("real");
+                    b.Property<double>("AveragePrice")
+                        .HasColumnType("float");
 
-                    b.Property<float>("Confidence")
-                        .HasColumnType("real");
+                    b.Property<double>("Confidence")
+                        .HasColumnType("float");
 
                     b.Property<int>("MaximumPrice")
                         .HasColumnType("int");
@@ -647,7 +653,7 @@ namespace Locompro.Migrations
                     b.HasOne("Locompro.Models.Entities.User", "User")
                         .WithMany("CreatedSubmissions")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -708,32 +714,32 @@ namespace Locompro.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SubmissionApprover", b =>
+            modelBuilder.Entity("SubmissionUser", b =>
                 {
                     b.HasOne("Locompro.Models.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("ApproverId")
+                        .HasForeignKey("ApproversId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Locompro.Models.Entities.Submission", null)
                         .WithMany()
-                        .HasForeignKey("SubmissionUserId", "SubmissionEntryTime")
+                        .HasForeignKey("ApprovedSubmissionsUserId", "ApprovedSubmissionsEntryTime")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("SubmissionRejecter", b =>
+            modelBuilder.Entity("SubmissionUser1", b =>
                 {
                     b.HasOne("Locompro.Models.Entities.User", null)
                         .WithMany()
-                        .HasForeignKey("RejecterId")
+                        .HasForeignKey("RejectersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Locompro.Models.Entities.Submission", null)
                         .WithMany()
-                        .HasForeignKey("SubmissionUserId", "SubmissionEntryTime")
+                        .HasForeignKey("RejectedSubmissionsUserId", "RejectedSubmissionsEntryTime")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

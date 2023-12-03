@@ -1,4 +1,5 @@
 @using System.Globalization
+@using Locompro.Common
 @model Locompro.Models.ViewModels.UserReportedSubmissionVm
 
 <div>
@@ -33,12 +34,16 @@
     </div>
     <div style="margin-top: 40px; margin-bottom: 20px; text-align: center">
         <button class="btn btn-primary green-button"
-                onclick="reportAction(2, '@Model.UserId', '@Model.EntryTime.ToString(CultureInfo.InvariantCulture)')">
+                onclick="reportAction('@(ModeratorActions.ApproveSubmission.ToString())'
+                , '@Model.UserId'
+                , '@Model.EntryTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture)')">
             Aceptar Contribución
         </button>
         <button class="btn btn-primary red-button"
-                onclick="reportAction(1, '@Model.UserId', '@Model.EntryTime.ToString(CultureInfo.InvariantCulture)')">
-            Borrar Contribución
+                onclick="reportAction('@(ModeratorActions.RejectSubmission.ToString())'
+                , '@Model.UserId'
+                , '@Model.EntryTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture)')">
+            Rechazar Contribución
         </button>
     </div>
 </div>

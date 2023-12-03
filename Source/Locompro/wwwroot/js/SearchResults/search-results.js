@@ -4,7 +4,7 @@ import {ResultsTable, ResultsPageConfiguration} from '../Common/results-table.js
 
 
 var searchResultsPage;
-
+  
 document.addEventListener("DOMContentLoaded", function () {
     let url = `SearchResults?handler=GetSearchResults`;
 
@@ -27,35 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 window.addEventListener('beforeunload', function (e) {
-    /*alert("leaving page!!!!");
-    if (searchResultsPage.requestSent) {
-        searchResultsPage.requestSent = false;
-        e.returnValue = '';
-        return;
-    }*/
-    /*
-    let url = window.location.pathname;
-    let handler = '?handler=ReturnResults';
-    let location = url + handler;
-
-    let data = searchResultsPage.pageSearchData;
-
-    fetch(location, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-        },
-        body: JSON.stringify(data)
-    })
-        .then(response => {
-
-            alert("leaving page");
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-        });*/
-
     e.returnValue = '';
 });
 
@@ -110,7 +81,7 @@ class SearchResultsTable extends ResultsTable {
      */
     selectItem(index) {
         this.itemSelected = index;
-        this.currentModal = new SearchResultsModal(this.tableData, this.itemSelected);
+        this.currentModal = createSearchResultsModalInstance(this.tableData, this.itemSelected);
     }
 }
 
@@ -169,4 +140,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// export {changeIndexButtonPressed, changeIndexPage, setOrder, selectItem, applyFilter, plusSlides, clearFilters};
+async function createSearchResultsModalInstance(searchResults, itemSelected) {
+    try {
+        const response = await fetch("SearchResults?handler=GetUsersReportedSubmissions");
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const usersReportedSubmissions = await response.json();
+        return new SearchResultsModal(searchResults, itemSelected, usersReportedSubmissions);
+    } catch (error) {
+        console.error('Failed to obtain user reported submissions', error);
+        return new SearchResultsModal(searchResults, itemSelected);
+    }
+}

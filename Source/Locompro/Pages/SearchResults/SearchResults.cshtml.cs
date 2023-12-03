@@ -131,6 +131,70 @@ public class SearchResultsModel : SearchPageModel
     }
 
     /// <summary>
+    ///     On GET, retrieves all submissions the currently logged in user has reported
+    /// </summary>
+    /// <returns>All submissions the currently logged in user has reported.</returns>
+    public async Task<IActionResult> OnGetGetUsersReportedSubmissions()
+    {
+        if (!_authService.IsLoggedIn())
+        {
+            Response.StatusCode = 302; // Redirect status code
+            return new JsonResult(Array.Empty<object>());
+        }
+
+        try
+        {
+            var userId = _authService.GetUserId();
+
+            var reportedSubmissions = await _moderationService.GetUsersReportedSubmissions(userId);
+
+            var reportedSubmissionVms = 
+                reportedSubmissions.Select(rs => new SubmissionVm(rs, GetFormattedDate));
+
+            return Content(GetJsonFrom(reportedSubmissionVms));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to get user's reported submissions");
+
+            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            return new JsonResult(new { success = false, message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    ///     On GET, retrieves all submissions the currently logged in user has created
+    /// </summary>
+    /// <returns>All submissions the currently logged in user has created.</returns>
+    public async Task<IActionResult> OnGetGetUsersCreatedSubmissions()
+    {
+        if (!_authService.IsLoggedIn())
+        {
+            Response.StatusCode = 302; // Redirect status code
+            return new JsonResult(Array.Empty<object>());
+        }
+
+        try
+        {
+            var userId = _authService.GetUserId();
+
+            var createdSubmissions = await _moderationService.GetUsersCreatedSubmissions(userId);
+
+            var createdSubmissionVms = 
+                createdSubmissions.Select(rs => new SubmissionVm(rs, GetFormattedDate));
+
+            return Content(GetJsonFrom(createdSubmissionVms));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to get user's created submissions");
+
+            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            return new JsonResult(new { success = false, message = ex.Message });
+        }
+    }
+
+    /// <summary>
     ///     Returns a list of pictures for a given item
     /// </summary>
     /// <param name="productId"> id name of an item</param>
@@ -247,5 +311,16 @@ public class SearchResultsModel : SearchPageModel
         }
 
         return new JsonResult(new { ok = true, message = "Ratings updated submitted successfully" });
+    }
+
+    /// <summary>
+    ///     Extracts from entry time, the date in the format yyyy-mm-dd
+    ///     to be shown in the results page
+    /// </summary>
+    /// <param name="submission"></param>
+    /// <returns></returns>
+    private static string GetFormattedDate(Submission submission)
+    {
+        return DateFormatter.GetFormattedDateFromDateTime(submission.EntryTime);
     }
 }

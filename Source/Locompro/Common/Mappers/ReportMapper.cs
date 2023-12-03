@@ -3,9 +3,9 @@ using Locompro.Models.ViewModels;
 
 namespace Locompro.Common.Mappers;
 
-public class ReportMapper : GenericMapper<ReportDto, UserReportVm>
+public class ReportMapper : GenericMapper<UserReportDto, UserReportVm>
 {
-    protected override UserReportVm BuildVm(ReportDto dto)
+    protected override UserReportVm BuildVm(UserReportDto dto)
     {
         return new UserReportVm
         {
@@ -16,9 +16,9 @@ public class ReportMapper : GenericMapper<ReportDto, UserReportVm>
         };
     }
 
-    protected override ReportDto BuildDto(UserReportVm vm)
+    protected override UserReportDto BuildDto(UserReportVm vm)
     {
-        return new ReportDto
+        return new UserReportDto
         {
             SubmissionUserId = vm.SubmissionUserId,
             SubmissionEntryTime = vm.SubmissionEntryTime,
