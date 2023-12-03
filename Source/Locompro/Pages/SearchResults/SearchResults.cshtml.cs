@@ -38,6 +38,7 @@ public class SearchResultsModel : SearchPageModel
 
     private readonly ISubmissionService _submissionService;
 
+    private readonly IShoppingListService _shoppingListService;
     private IConfiguration Configuration { get; set; }
 
     /// <summary>
@@ -63,7 +64,8 @@ public class SearchResultsModel : SearchPageModel
         ISubmissionService submissionService,
         IModerationService moderationService,
         IAuthService authService,
-        IApiKeyHandler apiKeyHandler)
+        IApiKeyHandler apiKeyHandler,
+        IShoppingListService shoppingListService)
         : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler, apiKeyHandler)
     {
         _searchService = searchService;
@@ -79,6 +81,7 @@ public class SearchResultsModel : SearchPageModel
         _submissionService = submissionService;
         _moderationService = moderationService;
         _authService = authService;
+        _shoppingListService = shoppingListService;
     }
 
     /// <summary>
@@ -95,6 +98,22 @@ public class SearchResultsModel : SearchPageModel
         ValidateInput();
 
         CacheDataInSession(SearchVm, "SearchData");
+    }
+
+    public async Task<IActionResult> OnPostAddToShoppingList(int productId)
+    {
+        try
+        {
+            // Perform the logic to add the product to the shopping list
+            await _shoppingListService.AddToShoppingList(productId);
+            return new JsonResult(new { success = true });
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("Error when attempting to add to the shopping list: " + e.Message);
+            // Return an appropriate error response
+            return new JsonResult(new { success = false, error = "An error occurred." });
+        }
     }
 
     /// <summary>

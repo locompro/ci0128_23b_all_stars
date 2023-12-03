@@ -1,0 +1,82 @@
+﻿@page
+@using Locompro.Services.Auth
+@inject IAuthService AuthService
+@model Locompro.Pages.TestFrontTableModel
+@{
+    var userId = AuthService.GetUserId();
+}
+
+<link rel="stylesheet" href="~/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="~/css/bootstrap.min.css">
+
+<div class="mx-3">
+    <table id="example" class="display" style="width:100%">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Modelo</th>
+                <th>Marca</th>
+                <th>Mínimo</th>
+                <th>Máximo</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr data-id="1">
+                <td>Laptop</td>
+                <td>2ad</td>
+                <td>Edinburgh</td>
+                <td class="text-center">61,000</td>
+                <td class="text-center">70,000</td>
+                <td class="text-center"><button class="delete-btn" data-id="1">X</button></td>
+            </tr>
+            <tr data-id="2">
+                <td>Cámara</td>
+                <td>EOS 2000D</td>
+                <td>Canon</td>
+                <td class="text-center">15,000</td>
+                <td class="text-center">20,000</td>
+                <td class="text-center"><button class="delete-btn" data-id="2">X</button></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div id="deleted-rows-info">
+    <!-- Display deleted row IDs here -->
+</div>
+
+@section Scripts {
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/jquery/jquery.dataTables.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/search.js"></script>
+    <script src="~/js/index.js"></script>
+    <script>
+        var example = new DataTable('#example', {
+            info: false,
+            paging: false,
+            searching: false,
+            ordering: false,
+            scrollCollapse: true,
+            scrollY: '50vh'
+        });
+
+        var deletedRowIds = [];
+
+        $('#example').on('click', '.delete-btn', function () {
+            var rowId = $(this).data('id');
+            example.row($('tr[data-id="' + rowId + '"]')).remove().draw();
+            deletedRowIds.push(rowId);
+            updateDeletedRowsInfo();
+        });
+
+        function updateDeletedRowsInfo() {
+            var deletedRowsInfo = deletedRowIds.length > 0
+                ? 'Deleted rows: ' + deletedRowIds.join(', ')
+                : 'No rows deleted';
+
+            $('#deleted-rows-info').text(deletedRowsInfo);
+        }
+    </script>
+}

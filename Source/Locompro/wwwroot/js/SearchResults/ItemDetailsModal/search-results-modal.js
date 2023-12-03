@@ -60,6 +60,16 @@ class SearchResultsModal {
         }
     }
 
+    setupAddToShoppingListButton(productId) {
+        const addToShoppingListButton = document.getElementById('ShoppingListButtonId');
+
+        if (addToShoppingListButton) {
+            addToShoppingListButton.onclick = function () {
+                OnPostAddToShoppingList(productId);
+            };
+        }
+    }
+
     /**
      * This method populates the modal with the selected item's details, including product name, store name, model, brand, and submissions.
      * It also initializes the picture container with the item's images.
@@ -70,6 +80,7 @@ class SearchResultsModal {
         this.modalStoreName.innerHTML = this.searchResults[this.itemSelected].Store;
         this.modalModel.innerHTML = "Modelo: " + this.searchResults[this.itemSelected].Model;
         this.modalBrand.innerHTML = "Marca: " + this.searchResults[this.itemSelected].Brand;
+        this.setupAddToShoppingListButton(this.searchResults[this.itemSelected].ProductId);
 
         // Building the picture container with the product images
         this.pictureContainer.buildPictureContainer();
