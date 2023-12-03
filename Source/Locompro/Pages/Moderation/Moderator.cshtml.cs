@@ -75,15 +75,21 @@ public class ModeratorPageModel : BasePageModel
     /// </summary>
     public async Task<PageResult> OnPostActOnReport()
     {
-        var moderatorActionVm = await GetDataSentByClient<ModeratorActionVm>();
-
-        var moderatorActionMapper = new ModeratorActionMapper();
-
-        var moderatorActionDto = moderatorActionMapper.ToDto(moderatorActionVm);
-
-        moderatorActionDto.ModeratorId = _authService.GetUserId();
+        ModeratorActionVm moderatorActionVm = await GetDataSentByClient<ModeratorActionVm>();
+        
         try
         {
+            if (moderatorActionVm == null)
+            {
+                throw new Exception("Moderator action sent is null");
+            }
+            
+            var moderatorActionMapper = new ModeratorActionMapper();
+
+            var moderatorActionDto = moderatorActionMapper.ToDto(moderatorActionVm);
+
+            moderatorActionDto.ModeratorId = _authService.GetUserId();
+
             await _moderationService.ActOnReport(moderatorActionDto);
         }
         catch (Exception e)
@@ -217,6 +223,7 @@ public class ModeratorPageModel : BasePageModel
             .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveApproverOrRejecter, userId)
             .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveCreator, userId)
             .AddQueryParameter(SearchParameterTypes.SubmissionDoesNotHaveReporter, userId);
+
         SubmissionsDto submissionsDto = null;
 
         try

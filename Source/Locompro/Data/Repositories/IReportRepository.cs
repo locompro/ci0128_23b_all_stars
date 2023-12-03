@@ -34,7 +34,8 @@ public interface IReportRepository : ICrudRepository<Report, string>
     /// <summary>
     /// Updates a list of entities for this repository asynchronously. If the entity does not exist, adds it.
     /// </summary>
+    /// <param name="autoReports"></param>
     /// <param name="reports"> A list of reports to add</param>
     /// <returns>An async operation</returns>
-    Task AddOrUpdateManyAutomaticReports(List<AutoReport> autoReports);
+    Task AddOrUpdateManyAutomaticReports(IEnumerable<AutoReport> autoReports);
 }

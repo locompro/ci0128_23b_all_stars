@@ -13,12 +13,14 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
 
     private readonly ICrudRepository<User, string> _userRepository;
 
+    /// <inheritdoc />
     public SubmissionService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
     {
         _submissionRepository = UnitOfWork.GetSpecialRepository<ISubmissionRepository>();
         _userRepository = unitOfWork.GetCrudRepository<User, string>();
     }
 
+    /// <inheritdoc />
     public async Task<IEnumerable<Submission>> GetByUserId(string userId)
     {
         return await _submissionRepository.GetByUserIdAsync(userId);

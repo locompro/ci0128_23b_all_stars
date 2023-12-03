@@ -35,7 +35,7 @@ public class ReportServiceTest
 
     /// <author>Ariel Arevalo Alvarado B50562 - Sprint 2</author>
     [Test]
-    public async Task UpdateAsync_CreatesReportFromDtoAndSavesToDatabase()
+    public async Task UpdateUserReportAsync_CreatesReportFromDtoAndSavesToDatabase()
     {
         // Arrange
         var reportDto = new UserReportDto
@@ -61,6 +61,82 @@ public class ReportServiceTest
                 r.UserId == reportDto.UserId &&
                 r.Description == reportDto.Description
             )), Times.Once);
+    }
+
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public void UpdateUserReportAsync_ThrowsException_WhenUpdateFails()
+    {
+        // Arrange
+        var userReportDto = new UserReportDto();
+
+        _reportRepository.Setup(repo =>
+                repo.UpdateAsync(It.IsAny<string>(), It.IsAny<DateTime>(), It.IsAny<string>(), It.IsAny<UserReport>()))
+            .ThrowsAsync(new Exception());
+
+        // Act & Assert
+        var actualException = Assert.ThrowsAsync<Exception>(async () =>
+            await _reportService.UpdateUserReportAsync(userReportDto));
+    }
+
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public async Task GetByUserIdAsync_ReturnsReportsForSpecificUser()
+    {
+        // Arrange
+        var userId = "TestUserId";
+        var expectedReports = new List<Report> { new Report(), new Report() };
+
+        _reportRepository.Setup(repo => repo.GetByUserIdAsync(userId))
+            .ReturnsAsync(expectedReports);
+
+        // Act
+        var actualReports = await _reportService.GetByUserId(userId);
+
+        // Assert
+        Assert.That(actualReports, Is.EqualTo(expectedReports));
+    }
+
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public async Task AddManyAutomaticReportsAsync_AddsReportsToDatabase()
+    {
+        // Arrange
+        var listOfAutomaticReports = new List<AutoReportDto>
+        {
+            new AutoReportDto(),
+            new AutoReportDto()
+        };
+
+        _reportRepository.Setup(repo => repo.AddOrUpdateManyAutomaticReports(It.IsAny<IEnumerable<AutoReport>>()))
+            .Returns(Task.CompletedTask);
+        _unitOfWork.Setup(u => u.SaveChangesAsync()).Returns(Task.CompletedTask);
+
+        // Act
+        await _reportService.AddManyAutomaticReports(listOfAutomaticReports);
+
+        // Assert
+        _reportRepository.Verify(repo => repo.AddOrUpdateManyAutomaticReports(
+            It.Is<IEnumerable<AutoReport>>(reports => reports.Count() == listOfAutomaticReports.Count)), Times.Once);
+    }
+
+    /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
+    [Test]
+    public void AddManyAutomaticReportsAsync_ThrowsException_WhenRepositoryOperationFails()
+    {
+        // Arrange
+        var listOfAutomaticReports = new List<AutoReportDto>
+        {
+            new AutoReportDto(),
+            new AutoReportDto()
+        };
+
+        _reportRepository.Setup(repo => repo.AddOrUpdateManyAutomaticReports(It.IsAny<IEnumerable<AutoReport>>()))
+            .ThrowsAsync(new Exception());
+
+        // Act & Assert
+        var actualException = Assert.ThrowsAsync<Exception>(async () =>
+            await _reportService.AddManyAutomaticReports(listOfAutomaticReports));
     }
 
     /// <author>Brandon Mora Umaña C15179 - Sprint 3</author>
