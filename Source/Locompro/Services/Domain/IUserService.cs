@@ -1,11 +1,13 @@
-﻿using Locompro.Models.Results;
+﻿using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
+using Locompro.Models.Results;
 
 namespace Locompro.Services.Domain;
 
 /// <summary>
 ///     Defines the contract for services handling user-related operations.
 /// </summary>
-public interface IUserService
+public interface IUserService : IDomainService<User, string>
 {
     /// <summary>
     ///     Retrieves a list of qualified user IDs for users who are qualified to be moderators.
@@ -41,18 +43,25 @@ public interface IUserService
     List<MostReportedUsersResult> GetMostReportedUsersInfo();
     
     /// <summary>
-    ///     Adds a product to the shopping list of a user
+    /// Gets the shopping list associated to an user
     /// </summary>
-    /// <param name="userId"> of the owner of the shopping list </param>
-    /// <param name="productId"> of the product to be added </param>
+    /// <param name="userId"> The ID of the user who is owner of the shopping list </param>
+    /// <returns> the shopping list </returns>
+    Task<ShoppingListDto> GetShoppingList(string userId);
+    
+    /// <summary>
+    /// Adds a product to the shopping list of an user
+    /// </summary>
+    /// <param name="userId"> The ID of the user who is owner of the shopping list </param>
+    /// <param name="productId"> ID of the product to be added </param>
     /// <returns></returns>
     Task AddProductToShoppingList(string userId, int productId);
     
     /// <summary>
-    ///     Removes a product from the shopping list of a user
+    /// 
     /// </summary>
-    /// <param name="userId"> of the owner of the shopping list </param>
-    /// <param name="productId"> of the product to be added </param>
-    /// <returns></returns>
+    /// <param name="userId"> The ID of the user who is owner of the shopping list </param>
+    /// <param name="productId"> The ID of the product to be removed </param>
+    /// <returns> ID of the product to be removed </returns>
     Task DeleteProductFromShoppingList(string userId, int productId);
 }
