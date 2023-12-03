@@ -13,6 +13,7 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
 
     private readonly ICrudRepository<User, string> _userRepository;
 
+    /// <inheritdoc />
     public SubmissionService(IUnitOfWork unitOfWork, ILoggerFactory loggerFactory) : base(unitOfWork, loggerFactory)
     {
         _submissionRepository = UnitOfWork.GetSpecialRepository<ISubmissionRepository>();
