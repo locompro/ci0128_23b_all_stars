@@ -6,7 +6,7 @@ public interface IShoppingListService
 {
     public Task<ShoppingListDto> Get();
 
-    public Task<StoreSummaryDto> GetStoreSummary();
+    public Task<ShoppingListSummaryDto> GetStoreSummary();
 
     public Task AddProduct();
     

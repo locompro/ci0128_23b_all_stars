@@ -34,7 +34,7 @@ public class ShoppingListService : Service, IShoppingListService
     }
 
     /// <inheritdoc />
-    public Task<StoreSummaryDto> GetStoreSummary()
+    public Task<ShoppingListSummaryDto> GetStoreSummary()
     {
         throw new NotImplementedException();
     }
