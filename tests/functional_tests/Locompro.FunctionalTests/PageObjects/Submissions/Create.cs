@@ -15,7 +15,7 @@ public class CreatePage: BasePage
 
     public IWebElement AddProductButton => Driver.FindElement(By.Id("showAddProductBtn"));
     
-    public IWebElement hideAddStoreBtn => Driver.FindElement(By.Id("hideAddStoreBtn"));
+    public IWebElement HideAddStoreBtn => Driver.FindElement(By.Id("hideAddStoreBtn"));
 
     public IWebElement DescriptionTextArea => Driver.FindElement(By.Id("mainDescription"));
 
@@ -38,7 +38,7 @@ public class CreatePage: BasePage
     public IWebElement PartialProductBrand => Driver.FindElement(By.Id("Brand"));
     public IWebElement PartialProductCategory => Driver.FindElement(By.Id("partialProductCategory"));
     
-    public IWebElement hideAddProductBtn => Driver.FindElement(By.Id("hideAddProductBtn"));
+    public IWebElement HideAddProductBtn => Driver.FindElement(By.Id("hideAddProductBtn"));
 
     // Constructor
     public CreatePage(IWebDriver driver): base (driver)
@@ -57,11 +57,11 @@ public class CreatePage: BasePage
     
     public void ClickHideAddStore()
     {
-        hideAddStoreBtn.Click();
+        HideAddStoreBtn.Click();
     }
     public void ClickHideAddProduct()
     {
-        hideAddProductBtn.Click();
+        HideAddProductBtn.Click();
     }
     public void SelectProduct(string productName)
     {
@@ -137,6 +137,7 @@ public class CreatePage: BasePage
     {
         PartialProductCategory.SendKeys(category);
     }
+    
     public bool WaitForElementToBeVisible(By locator, int timeoutInSeconds)
     {
         var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeoutInSeconds));
