@@ -1,4 +1,6 @@
 using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
+using Locompro.Models.Factories;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 
@@ -6,31 +8,39 @@ namespace Locompro.Services;
 
 public class ShoppingListService : Service, IShoppingListService
 {
-    private IUserService _userService;
-
-    private ISubmissionService _submissionService;
-
-    private IAuthService _authService;
+    private readonly IAuthService _authService;
+    
+    private readonly IUserService _userService;
+    
+    private readonly IDomainService<Product, int> _productService;
 
     /// <summary>
     /// 
     /// </summary>
     /// <param name="loggerFactory"></param>
-    /// <param name="userService"></param>
     /// <param name="submissionService"></param>
     /// <param name="authService"></param>
-    public ShoppingListService(ILoggerFactory loggerFactory, IUserService userService,
-        ISubmissionService submissionService, IAuthService authService) : base(loggerFactory)
+    /// <param name="managerService"></param>
+    /// <param name="userService"></param>
+    /// <param name="productService"></param>
+    public ShoppingListService(ILoggerFactory loggerFactory,
+        IAuthService authService,
+        IUserService userService,
+        IDomainService<Product, int> productService)
+        : base(loggerFactory)
     {
-        _userService = userService;
-        _submissionService = submissionService;
         _authService = authService;
+        _userService = userService;
+        _productService = productService;
     }
 
     /// <inheritdoc />
-    public Task<ShoppingListDto> Get()
+    public async Task<ShoppingListDto> Get()
     {
-        throw new NotImplementedException();
+        var userId = _authService.GetUserId();
+        if (userId == null) throw new Exception("User not found");
+
+        return await _userService.GetShoppingList(userId);
     }
 
     /// <inheritdoc />
@@ -40,14 +50,20 @@ public class ShoppingListService : Service, IShoppingListService
     }
 
     /// <inheritdoc />
-    public Task AddProduct()
+    public async Task AddProduct(int productId)
     {
-        throw new NotImplementedException();
+        var userId = _authService.GetUserId();
+        if (userId == null) throw new Exception("User not found");
+        
+        await _userService.AddProductToShoppingList(userId, productId);
     }
 
     /// <inheritdoc />
-    public Task DeleteProduct()
+    public async Task DeleteProduct(int productId)
     {
-        throw new NotImplementedException();
+        var userId = _authService.GetUserId();
+        if (userId == null) throw new Exception("User not found");
+        
+        await _userService.DeleteProductFromShoppingList(userId, productId);
     }
 }

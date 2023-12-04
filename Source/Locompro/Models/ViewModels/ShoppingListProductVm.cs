@@ -1,6 +1,6 @@
-namespace Locompro.Models.Dtos;
+namespace Locompro.Models.ViewModels;
 
-public class ShoppingListProductDto
+public class ShoppingListProductVm
 {
     public int Id { get; set; }
     

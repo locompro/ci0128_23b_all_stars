@@ -52,11 +52,31 @@ public class ShoppingListModel : BasePageModel
 
     public async Task<IActionResult> OnPostAddProduct(int productId)
     {
+        try
+        {
+            await _shoppingListService.AddProduct(productId);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error while adding product to shopping list");
+            return new JsonResult(new { success = false, message = "Error while adding product to shopping list" });
+        }
+        
         return new JsonResult(new { success = true, message = "Product successfully added to shopping list" });
     }
 
     public async Task<IActionResult> OnPostDeleteProduct(int productId)
     {
+        try
+        {
+            await _shoppingListService.DeleteProduct(productId);
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error while deleting product from shopping list");
+            return new JsonResult(new { success = false, message = "Error while deleting product from shopping list" });
+        }
+        
         return new JsonResult(new { success = true, message = "Product successfully deleted from shopping list" });
     }
 }
