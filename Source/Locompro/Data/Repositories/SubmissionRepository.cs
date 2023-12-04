@@ -1,4 +1,3 @@
-using Locompro.Common.Search;
 using Locompro.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,19 +30,15 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     {
         Submission submission = await Set.FirstOrDefaultAsync(submission =>
             submission.UserId == id.UserId &&
-            submission.EntryTime.Year == id.EntryTime.Year &&
-            submission.EntryTime.Month == id.EntryTime.Month &&
-            submission.EntryTime.Day == id.EntryTime.Day &&
-            submission.EntryTime.Hour == id.EntryTime.Hour &&
-            submission.EntryTime.Minute == id.EntryTime.Minute &&
-            submission.EntryTime.Second == id.EntryTime.Second);
+            submission.EntryTime == id.EntryTime);
 
         if (submission == null)
         {
-            throw new InvalidOperationException("Error loading submission! No submission for user:" + id.UserId + " and entry time: " +
+            throw new InvalidOperationException("Error loading submission! No submission for user:" + id.UserId +
+                                                " and entry time: " +
                                                 id.EntryTime + " was found.");
         }
-        
+
         return submission;
     }
 
@@ -54,6 +49,12 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
         if (entity != null) Set.Remove(entity);
     }
 
+    /// <inheritdoc />
+    public async Task<IEnumerable<Submission>> GetByUserIdAsync(string userId)
+    {
+        return await Set.Where(e => e.UserId == userId).ToListAsync();
+    }
+
     public async Task<Submission> GetByIdAsync(string userId, DateTime entryTime)
     {
         return await Set.FindAsync(userId, entryTime);
@@ -62,7 +63,7 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     public async Task UpdateAsync(string userId, DateTime entryTime, Submission entity)
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));
-        
+
         var existingEntity = await GetByIdAsync(userId, entryTime);
         if (existingEntity != null)
         {

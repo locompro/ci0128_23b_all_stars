@@ -4,14 +4,14 @@ using Locompro.Models.Entities;
 namespace Locompro.Models.Factories;
 
 /// <summary>
-/// A factory for converting between <see cref="ReportDto"/> and <see cref="Report"/> objects.
+/// A factory for converting between <see cref="UserReportDto"/> and <see cref="Report"/> objects.
 /// </summary>
-public class ReportFactory : GenericEntityFactory<ReportDto, Report>
+public class ReportFactory : GenericEntityFactory<UserReportDto, UserReport>
 {
     /// <inheritdoc />
-    protected override Report BuildEntity(ReportDto dto)
+    protected override UserReport BuildEntity(UserReportDto dto)
     {
-        return new Report
+        return new UserReport
         {
             SubmissionUserId = dto.SubmissionUserId,
             SubmissionEntryTime = dto.SubmissionEntryTime,
@@ -21,9 +21,9 @@ public class ReportFactory : GenericEntityFactory<ReportDto, Report>
     }
 
     /// <inheritdoc />
-    protected override ReportDto BuildDto(Report entity)
+    protected override UserReportDto BuildDto(UserReport entity)
     {
-        return new ReportDto
+        return new UserReportDto
         {
             SubmissionUserId = entity.SubmissionUserId,
             SubmissionEntryTime = entity.SubmissionEntryTime,

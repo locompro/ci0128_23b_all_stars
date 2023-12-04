@@ -4,6 +4,7 @@ using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Account;
+using Locompro.Services;
 using Locompro.Services.Auth;
 using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Http;
@@ -106,7 +107,10 @@ public class ProfileModelTest
     {
         // Arrange
         var user = CreateFakeUserDefault();
+        
         _userManagerServiceMock.Setup(ums => ums.FindByIdAsync(It.IsAny<string>())).ReturnsAsync(user);
+        _authServiceMock.Setup(aus => aus.GetUserId()).Returns(user.Id);
+        
         // Instantiate a new TempDataDictionary
         var tempData = new TempDataDictionary(new DefaultHttpContext(), Mock.Of<ITempDataProvider>());
 
@@ -117,7 +121,7 @@ public class ProfileModelTest
         var result = await _profileModel.OnGetAsync();
 
         // Assert
-        Assert.That(result, Is.InstanceOf<RedirectToRouteResult>());
+        Assert.That(result, Is.InstanceOf<PageResult>());
     }
 
 
@@ -485,7 +489,7 @@ public class ProfileModelTest
         var user = new User
         {
             Id = "user1", Email = "some@email.com", Rating = 1, Name = "Name", Address = "some address",
-            Submissions = new List<Submission>()
+            CreatedSubmissions = new List<Submission>()
         };
         return user;
     }

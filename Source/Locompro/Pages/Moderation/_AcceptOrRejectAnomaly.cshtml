@@ -1,0 +1,33 @@
+@using System.Globalization
+@using Locompro.Common
+@model Locompro.Models.ViewModels.AutoReportVm
+
+
+<!DOCTYPE html>
+
+<div>
+    <div class="row">
+        <div class="row card-title">
+            <h4 class="col-10" style="margin-top: 6px"> Reportes de Contribución </h4>
+        </div>
+        <div class="" style="margin-bottom: 20px;">
+            <h4 id="modalStoreName" class="col-10" style="margin-top: 6px"> Producto: @Model.Product </h4>
+        </div>
+        <h6 id="modalModel"> </h6>
+        <h6 id="modalBrand" style="margin-bottom: 0px"> </h6>
+    </div>
+    <div style="margin-top: 40px; margin-bottom: 20px; text-align: center">
+        <button class="btn btn-primary green-button"
+                onclick="reportAction(2,
+                 '@Model.SubmissionUserId',
+                 '@Model.SubmissionEntryTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture)')">
+            Aceptar Contribución
+        </button>
+        <button class="btn btn-primary red-button"
+                onclick="reportAction(1,
+                 '@Model.SubmissionUserId',
+                 '@Model.SubmissionEntryTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture)')">
+            Borrar Contribución
+        </button>
+    </div>
+</div>
