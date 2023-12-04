@@ -11,6 +11,8 @@ class SearchResultsModal {
      * @param reportedSubmissions
      */
     constructor(searchResults, itemSelected, reportedSubmissions = []) {
+        this.generateTable();
+        
         // DOM element references for displaying product information
         this.modalProductName = document.getElementById("modalProductName");
         this.modalStoreName = document.getElementById("modalStoreName");
@@ -22,6 +24,7 @@ class SearchResultsModal {
         this.searchResults = searchResults;
         this.itemSelected = itemSelected;
 
+        // Creating a picture container for the selected item's images
         // Creating a picture container for the selected item's images
         this.pictureContainer =
             new SearchResultsPictureContainer(
@@ -41,8 +44,13 @@ class SearchResultsModal {
 
         // Populate the modal with the selected item's details
         this.populateModal();
+        
         try {
-            new DataTable('#SubmissionsPerItem', {
+            if ($.fn.DataTable.isDataTable('#SubmissionsPerItem')) {
+                $('#SubmissionsPerItem').DataTable().clear().destroy();
+            }
+
+            new DataTable('#SubmissionsPerItem', { 
                 info: false,
                 paging: false,
                 searching: false,
@@ -58,6 +66,32 @@ class SearchResultsModal {
             console.error('An error occurred while initializing DataTable:', e);
             alert('An error occurred while initializing the DataTable. Please try again.');
         }
+    }
+    
+    generateTable() {
+        // Define the table HTML
+        let tableHTML = `
+        <table id="SubmissionsPerItem" class="display compact mb-0 pe-2" style="width:100%">
+            <caption></caption>
+            <thead>
+                <tr>
+                    <th>Usuario&nbsp;</th>
+                    <th class="text-center">Fecha&nbsp;</th>
+                    <th>Precio&nbsp;</th>
+                    <th>Descripción&nbsp;</th>
+                    <th>Calificación</th>
+                    <th class="text-center">Reportar</th>
+                </tr>
+            </thead>
+            <tbody id="ItemModalSubmissionsTable" data-is-user-authenticated="@isLoggedIn">
+            </tbody>
+        </table>`;
+
+        // Select the container div
+        let containerDiv = document.getElementById('submissionsModalTableContainer');
+
+        // Append the table to the div
+        containerDiv.innerHTML = tableHTML;
     }
 
     setupAddToShoppingListButton(productId) {
@@ -84,13 +118,14 @@ class SearchResultsModal {
 
         // Building the picture container with the product images
         this.pictureContainer.buildPictureContainer();
-
-        this.isUserLoggedIn = this.submissionsTable.getAttribute('data-is-user-authenticated') === 'True';
+        
+        let tableWithAuth = document.getElementById("submissionsModalTableContainer");
+        this.isUserLoggedIn = tableWithAuth.getAttribute('data-is-user-authenticated') === 'True';
 
         // Populating the submissions table with entries
         for (const submission of this.searchResults[this.itemSelected].Submissions) {
             const row = this.submissionsTable.insertRow();
-
+            console.log(submission);
             // Prepare "Mis Contribuciones" button
             const contributionsButton = document.createElement('a');
             contributionsButton.className = 'btn btn-primary text-center border rounded-pill flex-shrink-1 justify-content-xxl-start';
@@ -139,7 +174,7 @@ class SearchResultsModal {
             // Append the icon to the button
             reportButton.appendChild(icon);
             
-            let isModerated = submission.Status === 1;
+            let isModerated = submission["Status"] === 1;
             let isSubmissionReported = this.isSubmissionReported(submission)
             
             if (!isModerated && this.isUserLoggedIn && !isSubmissionReported) {
@@ -175,7 +210,7 @@ class SearchResultsModal {
         }
         
     }
-
+    
     isSubmissionReported(submission) {
         for (let sub of this.reportedSubmissions) {
             if (submission.UserId === sub.UserId && submission.NonFormatedEntryTime === sub.NonFormatedEntryTime) {
