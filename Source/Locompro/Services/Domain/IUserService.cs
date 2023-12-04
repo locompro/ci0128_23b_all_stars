@@ -1,4 +1,3 @@
-﻿using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.Results;
 

@@ -11,6 +11,8 @@ public class ShoppingListService : Service, IShoppingListService
     private readonly IAuthService _authService;
     
     private readonly IUserService _userService;
+    
+    private readonly IDomainService<Product, int> _productService;
 
     /// <summary>
     /// 
@@ -23,11 +25,13 @@ public class ShoppingListService : Service, IShoppingListService
     /// <param name="productService"></param>
     public ShoppingListService(ILoggerFactory loggerFactory,
         IAuthService authService,
-        IUserService userService)
+        IUserService userService,
+        IDomainService<Product, int> productService)
         : base(loggerFactory)
     {
         _authService = authService;
         _userService = userService;
+        _productService = productService;
     }
 
     /// <inheritdoc />
