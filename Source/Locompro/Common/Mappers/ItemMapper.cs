@@ -104,6 +104,6 @@ public class ItemMapper : GenericMapper<SubmissionsDto, List<ItemVm>>
     /// <returns></returns>
     private static string GetFormattedDate(Submission submission)
     {
-        return submission.EntryTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture);
+        return submission.EntryTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
     }
 }

@@ -22,6 +22,7 @@ public class SubmissionVm
         Rating = submission.Rating;
         NonFormatedEntryTime =
             submission.EntryTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture);
+        NumberOfRatings = submission.NumberOfRatings;
     }
 
     [BindProperty] [StringLength(120)] public string Description { get; init; }
@@ -44,4 +45,6 @@ public class SubmissionVm
     public string NonFormatedEntryTime { get; set; }
 
     public float Rating { get; set; }
+
+    public long NumberOfRatings { get; set; }
 }

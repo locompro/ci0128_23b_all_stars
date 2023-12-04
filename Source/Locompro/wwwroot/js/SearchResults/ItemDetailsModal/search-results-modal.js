@@ -18,6 +18,9 @@ class SearchResultsModal {
         this.modalStoreName = document.getElementById("modalStoreName");
         this.modalModel = document.getElementById("modalModel");
         this.modalBrand = document.getElementById("modalBrand");
+        this.bookmarkIcon = document.getElementById('bookmarkIcon');
+        this.iconText = document.getElementById('iconText');
+
         this.submissionsTable = document.getElementById("ItemModalSubmissionsTable");
 
         // The search results array and the index of the selected item
@@ -102,11 +105,16 @@ class SearchResultsModal {
         // Setting the text content for the product details in the modal
         this.modalProductName.innerHTML = this.searchResults[this.itemSelected].Name;
         this.modalStoreName.innerHTML = this.searchResults[this.itemSelected].Store;
-        this.modalModel.innerHTML = "Modelo: " + this.searchResults[this.itemSelected].Model;
-        this.modalBrand.innerHTML = "Marca: " + this.searchResults[this.itemSelected].Brand;
-        const addToShoppingListButton = document.getElementById('ShoppingListButtonId');
-        addToShoppingListButton.addEventListener('click', () => { this.AddToShoppingList(this.searchResults[this.itemSelected].ProductId); });
+        this.modalModel.innerHTML = this.searchResults[this.itemSelected].Model;
+        this.modalBrand.innerHTML = this.searchResults[this.itemSelected].Brand;
+        this.bookmarkIcon = document.getElementById('bookmarkIcon');
+        this.iconText = document.getElementById('iconText');
 
+        if (this.bookmarkIcon && this.iconText) {
+            this.bookmarkIcon.addEventListener('click', () => {
+                this.triggerBookmarkButton(this.searchResults[this.itemSelected].ProductId);
+            });
+        }
         // Building the picture container with the product images
         this.pictureContainer.buildPictureContainer();
         
@@ -150,6 +158,7 @@ class SearchResultsModal {
             // Inserting the rating cell
             const ratingCell = row.insertCell(4);
             ratingCell.innerHTML += '<span style="display: none;">' + submission.Rating;
+            ratingCell.innerHTML += submission.NumberOfRatings;
             this.submissionsRatings.push(new SearchResultsSubmissionRating(submission, ratingCell));
             this.submissionsRatings[this.submissionsRatings.length - 1].buildRating(this.isUserLoggedIn);
 
@@ -211,6 +220,7 @@ class SearchResultsModal {
         return false;
     }
 
+
     /**
      * This method controls the navigation between different slides (images) in the modal.
      *
@@ -221,12 +231,34 @@ class SearchResultsModal {
         this.pictureContainer.plusSlides(slideIndex);
     }
 
+    triggerBookmarkButton(productId) {
+        this.AddToShoppingList(productId);
+
+        // Set initial opacity to 0
+        this.iconText.style.opacity = '0';
+
+        // Set display property to inline
+        this.iconText.style.display = 'inline';
+
+        // Set transition duration (e.g., 0.5 seconds)
+        this.iconText.style.transition = 'opacity 0.5s';
+
+        // After a delay (e.g., 100 milliseconds), set opacity to 1
+        setTimeout(() => {
+            this.iconText.style.opacity = '1';
+
+            // After another delay (e.g., 1500 milliseconds), set opacity back to 0
+            setTimeout(() => {
+                this.iconText.style.opacity = '0';
+            }, 1500);
+        }, 100);
+    }
+
     /**
      * This method triggers a fetch to add a product to the users's shopping list
      *
      * @param productId The id of the product to add
      */
-
     AddToShoppingList(productSendId) {
         let url = window.location.pathname;
         url += "?handler=AddToShoppingList";
