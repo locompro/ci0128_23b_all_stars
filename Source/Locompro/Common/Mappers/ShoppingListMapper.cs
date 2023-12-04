@@ -7,7 +7,7 @@ public class ShoppingListMapper : GenericMapper<ShoppingListDto, ShoppingListVm>
 {
     protected override ShoppingListVm BuildVm(ShoppingListDto dto)
     {
-        ShoppingListVm vm = new ShoppingListVm()
+        ShoppingListVm vm = new ShoppingListVm
         {
             UserId = dto.UserId,
             Products = dto.Products.Select(p => new ShoppingListProductVm()
@@ -27,7 +27,7 @@ public class ShoppingListMapper : GenericMapper<ShoppingListDto, ShoppingListVm>
 
     protected override ShoppingListDto BuildDto(ShoppingListVm vm)
     {
-        ShoppingListDto dto = new ShoppingListDto()
+        ShoppingListDto dto = new ShoppingListDto
         {
             UserId = vm.UserId,
             Products = vm.Products.Select(p => new ShoppingListProductDto()

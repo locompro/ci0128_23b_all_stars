@@ -94,16 +94,6 @@ class SearchResultsModal {
         containerDiv.innerHTML = tableHTML;
     }
 
-    setupAddToShoppingListButton(productId) {
-        const addToShoppingListButton = document.getElementById('ShoppingListButtonId');
-
-        if (addToShoppingListButton) {
-            addToShoppingListButton.onclick = function () {
-                OnPostAddToShoppingList(productId);
-            };
-        }
-    }
-
     /**
      * This method populates the modal with the selected item's details, including product name, store name, model, brand, and submissions.
      * It also initializes the picture container with the item's images.
@@ -114,7 +104,8 @@ class SearchResultsModal {
         this.modalStoreName.innerHTML = this.searchResults[this.itemSelected].Store;
         this.modalModel.innerHTML = "Modelo: " + this.searchResults[this.itemSelected].Model;
         this.modalBrand.innerHTML = "Marca: " + this.searchResults[this.itemSelected].Brand;
-        this.setupAddToShoppingListButton(this.searchResults[this.itemSelected].ProductId);
+        const addToShoppingListButton = document.getElementById('ShoppingListButtonId');
+        addToShoppingListButton.addEventListener('click', () => { this.AddToShoppingList(this.searchResults[this.itemSelected].ProductId); });
 
         // Building the picture container with the product images
         this.pictureContainer.buildPictureContainer();
@@ -228,5 +219,30 @@ class SearchResultsModal {
     plusSlides(slideIndex) {
         // Delegating the slide navigation to the picture container's method
         this.pictureContainer.plusSlides(slideIndex);
+    }
+
+    /**
+     * This method triggers a fetch to add a product to the users's shopping list
+     *
+     * @param productId The id of the product to add
+     */
+
+    AddToShoppingList(productSendId) {
+        let url = window.location.pathname;
+        url += "?handler=AddToShoppingList";
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: productSendId
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            });
     }
 }
