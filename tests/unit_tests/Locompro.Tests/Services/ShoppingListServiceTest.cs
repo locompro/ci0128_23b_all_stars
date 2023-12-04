@@ -105,7 +105,8 @@ public class ShoppingListServiceTest
     }
     
     /// <summary>
-    /// 
+    ///     Returns the complete shopping list of the user.
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
     /// </summary>
     [Test]
     public async Task GetReturnsShoppingList()
@@ -135,7 +136,8 @@ public class ShoppingListServiceTest
     }
     
     /// <summary>
-    /// 
+    ///     Throws an exception if the user is not found.
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
     /// </summary>
     [Test]
     public void GetOnNullUserThrowsException()
@@ -150,7 +152,8 @@ public class ShoppingListServiceTest
     }
     
     /// <summary>
-    /// 
+    ///     Gets an empty shopping list if the user has no products in the shopping list.
+    ///     <author>Joseph Stuart Valverde Kong C18100</author>
     /// </summary>
     [Test]
     public async Task GetReturnsEmptyShoppingList()
@@ -171,7 +174,8 @@ public class ShoppingListServiceTest
     }
 
     /// <summary>
-    /// 
+    ///     Adds a product to the shopping list successfully.
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
     /// </summary>
     [Test]
     public async Task AddProductAddsProductToShoppingList()
@@ -184,7 +188,8 @@ public class ShoppingListServiceTest
     }
     
     /// <summary>
-    /// 
+    ///     Throws an exception if the user is not found.
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
     /// </summary>
     [Test]
     public void AddProductOnNullUserThrowsException()
@@ -199,7 +204,8 @@ public class ShoppingListServiceTest
     }
     
     /// <summary>
-    /// 
+    ///     Deletes a product from the shopping list successfully.
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
     /// </summary>
     [Test]
     public async Task DeleteProductDeletesProductFromShoppingList()
@@ -221,7 +227,8 @@ public class ShoppingListServiceTest
     }
     
     /// <summary>
-    /// 
+    ///     Throws an exception if the user is not found.
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
     /// </summary>
     [Test]
     public void DeleteProductOnNullUserThrowsException()
@@ -235,9 +242,6 @@ public class ShoppingListServiceTest
         Assert.ThrowsAsync<Exception>(async () => await _shoppingListService.DeleteProduct(1));
     }
     
-    /// <summary>
-    /// 
-    /// </summary>
     private void ClearUsersShoppingLists()
     {
         foreach (var user in _users)
