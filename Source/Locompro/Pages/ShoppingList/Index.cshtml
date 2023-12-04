@@ -25,8 +25,7 @@
                             <th style="text-align: right">Máximo</th>
                             <th style="text-align: center">Contribuciones</th>
                             <th style="text-align: center">
-                                    <button type="button" id="showSummaryBtn" onclick="createSummaryModal()" 
-                                            data-bs-toggle="modal" data-bs-target="#summaryModal"
+                                    <button type="button" id="showSummaryBtn" data-bs-toggle="modal" data-bs-target="#summaryModal"
                                             class="btn btn-primary btn-md"
                                             style="padding-right: 15px;">
                                         Mostrar tiendas
@@ -41,9 +40,9 @@
                                 <td>@product.Name</td>
                                 <td>@product.Model</td>
                                 <td>@product.Brand</td>
-                                <td style="text-align: right">@product.MinPrice</td>
-                                <td style="text-align: right">@product.MaxPrice</td>
-                                <td style="text-align: center">@product.TotalSubmissions</td>
+                                <td style="text-align: right">@product.MinPrice.ToString("#,###,##0")</td>
+                                <td style="text-align: right">@product.MaxPrice.ToString("#,###,##0")</td>
+                                <td style="text-align: center">@product.TotalSubmissions.ToString("#,###,##0")</td>
                                 <td style="text-align: center">
                                     <button class="btn btn-primary btn-danger delete-at" type="button" data-id=@product.Id>
                                         <svg class="d-flex" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24" width="1em" fill="currentColor">
@@ -71,11 +70,23 @@
 </div>
 @if (Model.ShoppingListSummaryVm != null && Model.ShoppingListSummaryVm.Stores.Any())
 {
-    <div class="modal search-results-modal fade" id="summaryModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div id="summaryModal"  class="modal search-results-modal fade">
         <div class="modal-dialog modal-lg">
             <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
                 <div class="modal-body">
-                    <partial name="_Summary" model="Model.ShoppingListSummaryVm" />
+                    <h3 style="text-align: center" id="ShoppingListTitle">Resumen de tiendas</h3>
+                    @if (Model.ShoppingListSummaryVm.Stores != null)
+                    {
+                        <partial name="_Summary" model="Model.ShoppingListSummaryVm" />
+                    }
+                    else
+                    {
+                        <div>
+                            <p style="font-size: 24px; text-align: center; margin-top: 30px; margin-bottom: 30px; color: #888; opacity: 0.6;">
+                                No se encontraron tiendas con los productos brindados
+                            </p>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
@@ -95,10 +106,32 @@
             ordering: false,
             scrollCollapse: true,
             scrollX: true,
-            scrollY: '50vh',
+            scrollY: '60vh',
             "language": {
                 "emptyTable": "No hay más productos en la lista de compras"
             }
+        });
+
+        let summaryResults = new DataTable('#summaryResults', {
+            info: false,
+            paging: false,
+            searching: false,
+            deferRender: true,
+            scrollCollapse: true,
+            scrollX: true,
+            scrollY: '70vh',
+            order: [[5, 'asc']],
+            bDestroy: true
+        });
+
+        $('#summaryModal').on('shown.bs.modal', function () {
+            $('#summaryResults').DataTable().columns.adjust();
+        });
+
+        document.getElementById('showSummaryBtn').addEventListener('click', function () {
+            setTimeout(function () {
+                $('#summaryModal').modal('show');
+            }, 1000);
         });
 
         $('#shoppingResults').on('click', '.delete-at', function () {
@@ -107,19 +140,6 @@
             deleteFromShoppingList(rowId);
         });
 
-
-        function createSummaryModal() {
-            let summaryResults = new DataTable('#summaryResults', {
-                info: false,
-                paging: false,
-                searching: false,
-                scrollCollapse: true,
-                scrollX: true,
-                scrollY: '70vh',
-                order: [[5, 'asc']],
-                bDestroy: true
-            });
-        }
 
         function updateSummaryShoppingList() {
             let url = window.location.pathname;
@@ -153,7 +173,6 @@
                     if (shoppingResults.rows().count() === 0) {
                         location.reload();
                     }
-                    updateSummaryShoppingList();
                 });
         }
     </script>

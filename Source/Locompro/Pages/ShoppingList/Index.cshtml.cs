@@ -111,16 +111,12 @@ public class ShoppingListModel : BasePageModel
 
     public async Task<IActionResult> OnGetPartial()
     {
-        Logger.LogInformation("Partial got here and its willing to be made");
-
         var shoppingListSummaryDto = await _shoppingListService.GetSummary();
-
         var shoppingListSummaryMapper = new ShoppingListSummaryMapper();
 
         ShoppingListSummaryVm = shoppingListSummaryMapper.ToVm(shoppingListSummaryDto);
 
         Logger.LogInformation("Built shopping list summary for {}", ShoppingListSummaryVm.UserId);
-
         Logger.LogInformation("Shopping list summary size is {}", ShoppingListSummaryVm.Stores.Count);
         return Partial("_Summary", ShoppingListSummaryVm);
     }
