@@ -91,11 +91,24 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     {
         int totalProductCount = productIds.Count;
 
-        return await Set
+        var storeProductCounts = await Set
             .Include(s => s.Product)
             .Include(s => s.Store)
-            .Where(s => productIds.Contains(s.ProductId)) // Filtering submissions based on the productIds
-            .GroupBy(s => new { s.Store.Name, s.Store.Canton.Province, s.Store.Canton })
+            .ThenInclude(store => store.Canton)
+            .Where(s => productIds.Contains(s.ProductId))
+            .Select(s => new
+            {
+                s.Store.Name,
+                Province = s.Store.Canton.Province,
+                s.Store.Canton,
+                s.ProductId,
+                s.Price,
+                s.EntryTime
+            })
+            .ToListAsync();
+
+        var groupedData = storeProductCounts
+            .GroupBy(s => new { s.Name, s.Province, s.Canton })
             .Select(group => new ProductSummaryStore
             {
                 Name = group.Key.Name,
@@ -103,11 +116,13 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
                 Canton = group.Key.Canton,
                 ProductsAvailable = group.Select(g => g.ProductId).Distinct().Count(),
                 PercentageProductsAvailable = 
-                    (int)(group.Select(g => g.ProductId).Distinct().Count() / (float)totalProductCount) * 100,
+                    (int)(group.Select(g => g.ProductId).Distinct().Count() / (float)totalProductCount * 100),
                 TotalCost = group
                     .GroupBy(g => g.ProductId)
                     .Select(g => g.OrderByDescending(sub => sub.EntryTime).FirstOrDefault())
                     .Sum(sub => sub.Price)
-            }).ToListAsync();
+            }).ToList();
+
+        return groupedData;
     }
 }

@@ -13,7 +13,7 @@ using NetTopologySuite.Geometries;
 namespace Locompro.Migrations
 {
     [DbContext(typeof(LocomproContext))]
-    [Migration("20231203205430_ShoppingList")]
+    [Migration("20231204024530_ShoppingList")]
     partial class ShoppingList
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
