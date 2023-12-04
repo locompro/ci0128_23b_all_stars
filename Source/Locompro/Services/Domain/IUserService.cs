@@ -43,11 +43,18 @@ public interface IUserService : IDomainService<User, string>
     List<MostReportedUsersResult> GetMostReportedUsersInfo();
     
     /// <summary>
-    /// Gets the shopping list associated to an user
+    /// Gets the shopping list associated with a user
     /// </summary>
     /// <param name="userId"> The ID of the user who is owner of the shopping list </param>
     /// <returns> the shopping list </returns>
     Task<ShoppingListDto> GetShoppingList(string userId);
+    
+    /// <summary>
+    /// Gets a store summary of the shopping list associated with a user
+    /// </summary>
+    /// <param name="userId"> The ID of the user who is owner of the shopping list </param>
+    /// <returns> the shopping list store summary </returns>
+    Task<ShoppingListSummaryDto> GetShoppingListSummary(string userId);
     
     /// <summary>
     /// Adds a product to the shopping list of an user

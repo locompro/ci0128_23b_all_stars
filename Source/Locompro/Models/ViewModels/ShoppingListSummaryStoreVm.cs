@@ -10,7 +10,7 @@ public class ShoppingListSummaryStoreVm
 
     public int ProductsAvailable { get; set; }
     
-    public float PercentageProductsAvailable { get; set; }
+    public int PercentageProductsAvailable { get; set; }
     
     public int TotalCost { get; set; }
 }

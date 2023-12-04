@@ -1,12 +1,12 @@
-namespace Locompro.Models.Dtos;
+namespace Locompro.Models.Entities;
 
-public class ShoppingListSummaryStoreDto
+public class ProductSummaryStore
 {
     public string Name { get; set; }
     
-    public string Province { get; set; }
+    public Province Province { get; set; }
     
-    public string Canton { get; set; }
+    public Canton Canton { get; set; }
 
     public int ProductsAvailable { get; set; }
     

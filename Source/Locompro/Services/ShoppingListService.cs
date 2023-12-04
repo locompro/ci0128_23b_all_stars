@@ -44,9 +44,12 @@ public class ShoppingListService : Service, IShoppingListService
     }
 
     /// <inheritdoc />
-    public Task<ShoppingListSummaryDto> GetStoreSummary()
+    public async Task<ShoppingListSummaryDto> GetSummary()
     {
-        throw new NotImplementedException();
+        var userId = _authService.GetUserId();
+        if (userId == null) throw new Exception("User not found");
+
+        return await _userService.GetShoppingListSummary(userId);
     }
 
     /// <inheritdoc />
