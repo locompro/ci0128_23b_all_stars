@@ -212,7 +212,7 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
     }
     
     /// <inheritdoc />
-    public Task<List<SummaryStoreDto>> GetStoreSummary(List<ProductDto> products)
+    public Task<List<ShoppingListSummaryStoreDto>> GetStoreSummary(List<ProductDto> products)
     {
         throw new NotImplementedException();
     }
