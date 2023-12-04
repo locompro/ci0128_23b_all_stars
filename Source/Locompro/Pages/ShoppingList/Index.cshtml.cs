@@ -1,9 +1,11 @@
 using Locompro.Common.Mappers;
 using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Shared;
 using Locompro.Services;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Locompro.Pages.ShoppingList;
 
@@ -44,23 +46,14 @@ public class ShoppingListModel : BasePageModel
             Logger.LogInformation("Built shopping list for {}", ShoppingListVm.UserId);
             
             Logger.LogInformation("Shopping list size is {}", ShoppingListVm.Products.Count);
-
-            var shoppingListSummaryDto = await _shoppingListService.GetSummary();
-
-            var shoppingListSummaryMapper = new ShoppingListSummaryMapper();
-
-            ShoppingListSummaryVm = shoppingListSummaryMapper.ToVm(shoppingListSummaryDto);
             
-            Logger.LogInformation("Built shopping list summary for {}", ShoppingListSummaryVm.UserId);
-            
-            Logger.LogInformation("Shopping list summary size is {}", ShoppingListSummaryVm.Stores.Count);
+            await OnGetPartial();
         } catch (Exception e)
         {
             Logger.LogError(e, "Error while getting shopping list");
             ShoppingListVm = new ShoppingListVm();
             ShoppingListSummaryVm = new ShoppingListSummaryVm();
         }
-
         return Page();
     }
 
@@ -83,7 +76,6 @@ public class ShoppingListModel : BasePageModel
                 StatusCode = 500
             };
         }
-        
         return new JsonResult(new { success = true, message = "Product successfully added to shopping list" })
         {
             StatusCode = 200
@@ -95,8 +87,9 @@ public class ShoppingListModel : BasePageModel
     /// </summary>
     /// <param name="productId">ID for the product to delete from the user's shopping list</param>
     /// <returns>Json result for success or failure</returns>
-    public async Task<JsonResult> OnPostDeleteProduct(int productId)
+    public async Task<JsonResult> OnPostDeleteProduct()
     {
+        int productId = await GetDataSentByClient<int>();
         try
         {
             await _shoppingListService.DeleteProduct(productId);
@@ -114,5 +107,21 @@ public class ShoppingListModel : BasePageModel
         {
             StatusCode = 200
         };
+    }
+
+    public async Task<IActionResult> OnGetPartial()
+    {
+        Logger.LogInformation("Partial got here and its willing to be made");
+
+        var shoppingListSummaryDto = await _shoppingListService.GetSummary();
+
+        var shoppingListSummaryMapper = new ShoppingListSummaryMapper();
+
+        ShoppingListSummaryVm = shoppingListSummaryMapper.ToVm(shoppingListSummaryDto);
+
+        Logger.LogInformation("Built shopping list summary for {}", ShoppingListSummaryVm.UserId);
+
+        Logger.LogInformation("Shopping list summary size is {}", ShoppingListSummaryVm.Stores.Count);
+        return Partial("_Summary", ShoppingListSummaryVm);
     }
 }
