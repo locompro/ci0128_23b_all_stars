@@ -30,7 +30,6 @@ function reportAction(reportActions, userId, entryTime) {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-            
             location.href = location.href;
         });
 }

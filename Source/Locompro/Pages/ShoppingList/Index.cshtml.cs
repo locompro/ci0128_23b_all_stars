@@ -12,10 +12,10 @@ namespace Locompro.Pages.ShoppingList;
 /// </summary>
 public class ShoppingListModel : BasePageModel
 {
-    public ShoppingListVm ShoppingListVm { get; set; }
-    
-    public ShoppingListSummaryVm ShoppingListSummaryVm { get; set; }
+    public ShoppingListVm ShoppingList { get; set; }
 
+    public StoreSummaryVm StoreSummaryVm { get; set; }
+    
     private readonly IShoppingListService _shoppingListService;
 
     public ShoppingListModel(
@@ -39,48 +39,22 @@ public class ShoppingListModel : BasePageModel
 
             ShoppingListMapper shoppingListMapper = new ShoppingListMapper();
 
-            ShoppingListVm = shoppingListMapper.ToVm(shoppingListDto);
-
-            ShoppingListSummaryDto shoppingListSummaryDto = await _shoppingListService.GetSummary();
-
-            ShoppingListSummaryMapper shoppingListSummaryMapper = new ShoppingListSummaryMapper();
-
-            ShoppingListSummaryVm = shoppingListSummaryMapper.ToVm(shoppingListSummaryDto);
-        } catch (Exception e)
+            ShoppingList = mapper.ToVm(shoppingListDto);
+            Logger.LogInformation("ShoppingList UserId:" + ShoppingList.UserId );
+            Logger.LogInformation("ShoppingList ProductCount:" + ShoppingList.Products.Count);
+        }
+        catch (Exception e)
         {
             Logger.LogError(e, "Error while getting shopping list");
-            ShoppingListVm = new ShoppingListVm();
-            ShoppingListSummaryVm = new ShoppingListSummaryVm();
+            ShoppingList = new ShoppingListVm();
         }
+        
+        return Page();
+    }
 
         return Page();
     }
 
-    /// <summary>
-    /// On POST, adds a product by ID to the current user's shopping list
-    /// </summary>
-    /// <param name="productId">ID for the product to add to the user's shopping list</param>
-    /// <returns>Json result for success or failure</returns>
-    public async Task<IActionResult> OnPostAddProduct(int productId)
-    {
-        try
-        {
-            await _shoppingListService.AddProduct(productId);
-        }
-        catch (Exception e)
-        {
-            Logger.LogError(e, "Error while adding product to shopping list");
-            return new JsonResult(new { success = false, message = "Error while adding product to shopping list" });
-        }
-        
-        return new JsonResult(new { success = true, message = "Product successfully added to shopping list" });
-    }
-
-    /// <summary>
-    /// On POST, deletes a product by ID from the current user's shopping list
-    /// </summary>
-    /// <param name="productId">ID for the product to delete from the user's shopping list</param>
-    /// <returns>Json result for success or failure</returns>
     public async Task<IActionResult> OnPostDeleteProduct(int productId)
     {
         try
