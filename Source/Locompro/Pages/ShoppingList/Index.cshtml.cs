@@ -10,7 +10,7 @@ namespace Locompro.Pages.ShoppingList;
 
 public class ShoppingListModel : BasePageModel
 {
-    public ShoppingListVm ShoppingListVm { get; set; }
+    public ShoppingListVm ShoppingList { get; set; }
 
     public StoreSummaryVm StoreSummaryVm { get; set; }
     
@@ -33,11 +33,14 @@ public class ShoppingListModel : BasePageModel
         
             ShoppingListMapper mapper = new ShoppingListMapper();
 
-            ShoppingListVm = mapper.ToVm(shoppingListDto);
-        } catch (Exception e)
+            ShoppingList = mapper.ToVm(shoppingListDto);
+            Logger.LogInformation("ShoppingList UserId:" + ShoppingList.UserId );
+            Logger.LogInformation("ShoppingList ProductCount:" + ShoppingList.Products.Count);
+        }
+        catch (Exception e)
         {
             Logger.LogError(e, "Error while getting shopping list");
-            ShoppingListVm = new ShoppingListVm();
+            ShoppingList = new ShoppingListVm();
         }
         
         return Page();
@@ -46,21 +49,6 @@ public class ShoppingListModel : BasePageModel
     public async Task<IActionResult> OnGetStoreSummaryAsync()
     {
         return Page();
-    }
-
-    public async Task<IActionResult> OnPostAddProduct(int productId)
-    {
-        try
-        {
-            await _shoppingListService.AddProduct(productId);
-        }
-        catch (Exception e)
-        {
-            Logger.LogError(e, "Error while adding product to shopping list");
-            return new JsonResult(new { success = false, message = "Error while adding product to shopping list" });
-        }
-        
-        return new JsonResult(new { success = true, message = "Product successfully added to shopping list" });
     }
 
     public async Task<IActionResult> OnPostDeleteProduct(int productId)

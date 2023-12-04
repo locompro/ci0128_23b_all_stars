@@ -1,3 +1,4 @@
+using Locompro.Migrations;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.Factories;
@@ -54,7 +55,9 @@ public class ShoppingListService : Service, IShoppingListService
         List<Product> shoppingList = user.ShoppedProducts.ToList();
         
         ShoppingListProductFactory factory = new ShoppingListProductFactory();
-        
+
+        Logger.LogInformation("shoppingList products: " + shoppingList.Count);
+
         return new ShoppingListDto
         {
             UserId = userId,
@@ -81,6 +84,8 @@ public class ShoppingListService : Service, IShoppingListService
         if (product == null) throw new Exception("Product not found");
         
         user.ShoppedProducts.Add(product);
+        Logger.LogInformation("user.ShoppedProducts.Count: " + user.ShoppedProducts.Count);
+
         await _userService.Update(userId, user);
     }
 

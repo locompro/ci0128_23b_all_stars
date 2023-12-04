@@ -56,7 +56,7 @@ public class ItemMapper : GenericMapper<SubmissionsDto, List<ItemVm>>
     /// <param name="itemGrouping"></param>
     /// <param name="bestSubmissionQualifier"></param>
     /// <returns></returns>
-    private static  ItemVm GetItem(
+    private static ItemVm GetItem(
         IGrouping<Product, Submission> itemGrouping,
         Func<IEnumerable<Submission>, Submission> bestSubmissionQualifier)
     {
