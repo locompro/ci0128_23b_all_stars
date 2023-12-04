@@ -85,4 +85,29 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
 
         return await submissionsResults.ToListAsync();
     }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<ProductSummaryStore>> GetProductSummaryByStore(List<int> productIds)
+    {
+        int totalProductCount = productIds.Count;
+
+        return await Set
+            .Include(s => s.Product)
+            .Include(s => s.Store)
+            .Where(s => productIds.Contains(s.ProductId)) // Filtering submissions based on the productIds
+            .GroupBy(s => new { s.Store.Name, s.Store.Canton.Province, s.Store.Canton })
+            .Select(group => new ProductSummaryStore
+            {
+                Name = group.Key.Name,
+                Province = group.Key.Province,
+                Canton = group.Key.Canton,
+                ProductsAvailable = group.Select(g => g.ProductId).Distinct().Count(),
+                PercentageProductsAvailable = 
+                    (int)(group.Select(g => g.ProductId).Distinct().Count() / (float)totalProductCount) * 100,
+                TotalCost = group
+                    .GroupBy(g => g.ProductId)
+                    .Select(g => g.OrderByDescending(sub => sub.EntryTime).FirstOrDefault())
+                    .Sum(sub => sub.Price)
+            }).ToListAsync();
+    }
 }

@@ -69,5 +69,5 @@ public interface ISubmissionService : IDomainService<Submission, SubmissionKey>
 
     Task<List<ShoppingListProductDto>> GetProductSummary(List<ProductDto> products);
 
-    Task<List<SummaryStoreDto>> GetStoreSummary(List<ProductDto> products);
+    Task<List<ShoppingListSummaryStoreDto>> GetStoreSummary(List<ProductDto> products);
 }

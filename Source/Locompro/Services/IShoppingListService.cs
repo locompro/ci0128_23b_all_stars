@@ -14,7 +14,7 @@ public interface IShoppingListService
     /// 
     /// </summary>
     /// <returns></returns>
-    public Task<StoreSummaryDto> GetStoreSummary();
+    public Task<ShoppingListSummaryDto> GetSummary();
     
     /// <summary>
     /// Adds a product to the shopping list of an user

@@ -16,6 +16,8 @@ public class UserService : DomainService<User, string>, IUserService
     
     private readonly IProductRepository _productRepository;
 
+    private readonly ISubmissionRepository _submissionRepository;
+
     /// <summary>
     ///     Initializes a new instance of the <see cref="UserService" /> class.
     /// </summary>
@@ -28,6 +30,7 @@ public class UserService : DomainService<User, string>, IUserService
     {
         _userRepository = UnitOfWork.GetSpecialRepository<IUserRepository>();
         _productRepository = UnitOfWork.GetSpecialRepository<IProductRepository>();
+        _submissionRepository = UnitOfWork.GetSpecialRepository<ISubmissionRepository>();
     }
 
     /// <inheritdoc/>
@@ -76,6 +79,26 @@ public class UserService : DomainService<User, string>, IUserService
         {
             UserId = userId,
             Products = shoppingList.Select(product => factory.ToDto(product)).ToList()
+        };
+    }
+
+    /// <inheritdoc />
+    public async Task<ShoppingListSummaryDto> GetShoppingListSummary(string userId)
+    {
+        User user = await _userRepository.GetByIdAsync(userId);
+        if (user == null) throw new Exception("User not found");
+        
+        List<int> shoppingListIds = user.ShoppedProducts.Select(p => p.Id).ToList();
+
+        IEnumerable<ProductSummaryStore> productSummaryStores =
+            await _submissionRepository.GetProductSummaryByStore(shoppingListIds);
+        
+        var factory = new ShoppingListSummaryStoreFactory();
+        
+        return new ShoppingListSummaryDto()
+        {
+            UserId = userId,
+            Stores = productSummaryStores.Select(pss => factory.ToDto(pss)).ToList()
         };
     }
 
