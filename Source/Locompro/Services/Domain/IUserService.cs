@@ -1,4 +1,5 @@
-﻿using Locompro.Models.Entities;
+using Locompro.Models.Dtos;
+using Locompro.Models.Entities;
 using Locompro.Models.Results;
 
 namespace Locompro.Services.Domain;
@@ -40,4 +41,27 @@ public interface IUserService : IDomainService<User, string>
     /// </summary>
     /// <returns> a list of the information </returns>
     List<MostReportedUsersResult> GetMostReportedUsersInfo();
+    
+    /// <summary>
+    /// Gets the shopping list associated to an user
+    /// </summary>
+    /// <param name="userId"> The ID of the user who is owner of the shopping list </param>
+    /// <returns> the shopping list </returns>
+    Task<ShoppingListDto> GetShoppingList(string userId);
+    
+    /// <summary>
+    /// Adds a product to the shopping list of an user
+    /// </summary>
+    /// <param name="userId"> The ID of the user who is owner of the shopping list </param>
+    /// <param name="productId"> ID of the product to be added </param>
+    /// <returns></returns>
+    Task AddProductToShoppingList(string userId, int productId);
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userId"> The ID of the user who is owner of the shopping list </param>
+    /// <param name="productId"> The ID of the product to be removed </param>
+    /// <returns> ID of the product to be removed </returns>
+    Task DeleteProductFromShoppingList(string userId, int productId);
 }
