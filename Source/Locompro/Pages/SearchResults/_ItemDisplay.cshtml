@@ -56,7 +56,7 @@
     </div>
 </div>
 <div>
-    <div class="pt-4">
+    <div id="submissionsModalTableContainer" class="pt-4" data-is-user-authenticated="@isLoggedIn">
         <table id="SubmissionsPerItem" class="display compact mb-0 pe-2" style="width:100%">
             <caption></caption>
             <thead>
@@ -69,7 +69,7 @@
                 <th class="text-center">Reportar</th>
             </tr>
             </thead>
-            <tbody id="ItemModalSubmissionsTable" data-is-user-authenticated="@isLoggedIn">
+            <tbody id="ItemModalSubmissionsTable">
             </tbody>
         </table>
     </div>
