@@ -13,7 +13,7 @@ public class UserService : DomainService<User, string>, IUserService
     ///     The repository for performing user-related operations.
     /// </summary>
     private readonly IUserRepository _userRepository;
-    
+
     private readonly IProductRepository _productRepository;
 
     private readonly ISubmissionRepository _submissionRepository;
@@ -33,30 +33,30 @@ public class UserService : DomainService<User, string>, IUserService
         _submissionRepository = UnitOfWork.GetSpecialRepository<ISubmissionRepository>();
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public List<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
     {
         return _userRepository.GetQualifiedUserIDs();
     }
-    
+
     /// <inheritdoc />
     public int GetSubmissionsCountByUser(string userId)
     {
         return _userRepository.GetSubmissionsCountByUser(userId);
     }
-    
+
     /// <inheritdoc />
     public int GetReportedSubmissionsCountByUser(string userId)
     {
         return _userRepository.GetReportedSubmissionsCountByUser(userId);
     }
-    
+
     /// <inheritdoc />
     public int GetRatedSubmissionsCountByUser(string userId)
     {
         return _userRepository.GetRatedSubmissionsCountByUser(userId);
     }
-    
+
     /// <inheritdoc />
     public List<MostReportedUsersResult> GetMostReportedUsersInfo()
     {
@@ -68,13 +68,13 @@ public class UserService : DomainService<User, string>, IUserService
     /// <inheritdoc />
     public async Task<ShoppingListDto> GetShoppingList(string userId)
     {
-        User user = await _userRepository.GetByIdAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId);
         if (user == null) throw new Exception("User not found");
-        
-        List<Product> shoppingList = user.ShoppedProducts.ToList();
-        
-        ShoppingListProductFactory factory = new ShoppingListProductFactory();
-        
+
+        var shoppingList = user.ShoppedProducts.ToList();
+
+        var factory = new ShoppingListProductFactory();
+
         return new ShoppingListDto
         {
             UserId = userId,
@@ -85,17 +85,17 @@ public class UserService : DomainService<User, string>, IUserService
     /// <inheritdoc />
     public async Task<ShoppingListSummaryDto> GetShoppingListSummary(string userId)
     {
-        User user = await _userRepository.GetByIdAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId);
         if (user == null) throw new Exception("User not found");
-        
-        List<int> shoppingListIds = user.ShoppedProducts.Select(p => p.Id).ToList();
 
-        IEnumerable<ProductSummaryStore> productSummaryStores =
+        var shoppingListIds = user.ShoppedProducts.Select(p => p.Id).ToList();
+
+        var productSummaryStores =
             await _submissionRepository.GetProductSummaryByStore(shoppingListIds);
-        
+
         var factory = new ShoppingListSummaryStoreFactory();
-        
-        return new ShoppingListSummaryDto()
+
+        return new ShoppingListSummaryDto
         {
             UserId = userId,
             Stores = productSummaryStores.Select(pss => factory.ToDto(pss)).ToList()
@@ -105,12 +105,12 @@ public class UserService : DomainService<User, string>, IUserService
     /// <inheritdoc />
     public async Task AddProductToShoppingList(string userId, int productId)
     {
-        User user = await _userRepository.GetByIdAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId);
         if (user == null) throw new Exception("User not found");
-        
-        Product product = await _productRepository.GetByIdAsync(productId);
+
+        var product = await _productRepository.GetByIdAsync(productId);
         if (product == null) throw new Exception("Product not found");
-        
+
         user.ShoppedProducts.Add(product);
         await _userRepository.UpdateAsync(userId, user);
         await UnitOfWork.SaveChangesAsync();
@@ -119,12 +119,12 @@ public class UserService : DomainService<User, string>, IUserService
     /// <inheritdoc />
     public async Task DeleteProductFromShoppingList(string userId, int productId)
     {
-        User user = await _userRepository.GetByIdAsync(userId);
+        var user = await _userRepository.GetByIdAsync(userId);
         if (user == null) throw new Exception("User not found");
-        
-        Product product = await _productRepository.GetByIdAsync(productId);
+
+        var product = await _productRepository.GetByIdAsync(productId);
         if (product == null) throw new Exception("Product not found");
-        
+
         user.ShoppedProducts.Remove(product);
         await _userRepository.UpdateAsync(userId, user);
         await UnitOfWork.SaveChangesAsync();

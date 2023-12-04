@@ -35,17 +35,25 @@ public class ShoppingListModel : BasePageModel
     {
         try
         {
-            ShoppingListDto shoppingListDto = await _shoppingListService.Get();
+            var shoppingListDto = await _shoppingListService.Get();
 
-            ShoppingListMapper shoppingListMapper = new ShoppingListMapper();
+            var shoppingListMapper = new ShoppingListMapper();
 
             ShoppingListVm = shoppingListMapper.ToVm(shoppingListDto);
+            
+            Logger.LogInformation("Built shopping list for {}", ShoppingListVm.UserId);
+            
+            Logger.LogInformation("Shopping list size is {}", ShoppingListVm.Products.Count);
 
-            ShoppingListSummaryDto shoppingListSummaryDto = await _shoppingListService.GetSummary();
+            var shoppingListSummaryDto = await _shoppingListService.GetSummary();
 
-            ShoppingListSummaryMapper shoppingListSummaryMapper = new ShoppingListSummaryMapper();
+            var shoppingListSummaryMapper = new ShoppingListSummaryMapper();
 
             ShoppingListSummaryVm = shoppingListSummaryMapper.ToVm(shoppingListSummaryDto);
+            
+            Logger.LogInformation("Built shopping list summary for {}", ShoppingListSummaryVm.UserId);
+            
+            Logger.LogInformation("Shopping list summary size is {}", ShoppingListSummaryVm.Stores.Count);
         } catch (Exception e)
         {
             Logger.LogError(e, "Error while getting shopping list");
@@ -61,7 +69,7 @@ public class ShoppingListModel : BasePageModel
     /// </summary>
     /// <param name="productId">ID for the product to add to the user's shopping list</param>
     /// <returns>Json result for success or failure</returns>
-    public async Task<IActionResult> OnPostAddProduct(int productId)
+    public async Task<JsonResult> OnPostAddProduct(int productId)
     {
         try
         {
@@ -70,10 +78,16 @@ public class ShoppingListModel : BasePageModel
         catch (Exception e)
         {
             Logger.LogError(e, "Error while adding product to shopping list");
-            return new JsonResult(new { success = false, message = "Error while adding product to shopping list" });
+            return new JsonResult(new { success = false, message = "Error while adding product to shopping list" })
+            {
+                StatusCode = 500
+            };
         }
         
-        return new JsonResult(new { success = true, message = "Product successfully added to shopping list" });
+        return new JsonResult(new { success = true, message = "Product successfully added to shopping list" })
+        {
+            StatusCode = 200
+        };
     }
 
     /// <summary>
@@ -81,7 +95,7 @@ public class ShoppingListModel : BasePageModel
     /// </summary>
     /// <param name="productId">ID for the product to delete from the user's shopping list</param>
     /// <returns>Json result for success or failure</returns>
-    public async Task<IActionResult> OnPostDeleteProduct(int productId)
+    public async Task<JsonResult> OnPostDeleteProduct(int productId)
     {
         try
         {
@@ -90,9 +104,15 @@ public class ShoppingListModel : BasePageModel
         catch (Exception e)
         {
             Logger.LogError(e, "Error while deleting product from shopping list");
-            return new JsonResult(new { success = false, message = "Error while deleting product from shopping list" });
+            return new JsonResult(new { success = false, message = "Error while deleting product from shopping list" })
+            {
+                StatusCode = 500
+            };
         }
         
-        return new JsonResult(new { success = true, message = "Product successfully deleted from shopping list" });
+        return new JsonResult(new { success = true, message = "Product successfully deleted from shopping list" })
+        {
+            StatusCode = 200
+        };
     }
 }
