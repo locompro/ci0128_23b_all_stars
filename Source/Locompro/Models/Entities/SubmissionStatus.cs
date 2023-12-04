@@ -7,5 +7,6 @@ public enum SubmissionStatus
 {
     New,
     Moderated,
-    Deleted
+    Deleted,
+    SuspectedAnomaly
 }

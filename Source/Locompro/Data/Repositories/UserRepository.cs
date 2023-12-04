@@ -31,4 +31,69 @@ public class UserRepository : CrudRepository<User, string>, IUserRepository
             select p;
         return result.ToList();
     }
+
+    /// <inheritdoc />
+    public int GetSubmissionsCountByUser(string userId)
+    {
+        try
+        {
+            var locomproContext = (LocomproContext)Context;
+            var result = locomproContext.CountSubmissions(userId);
+            return result;
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error getting submissions count by user {userId}", userId);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public int GetReportedSubmissionsCountByUser(string userId)
+    {
+        try
+        {
+            var locomproContext = (LocomproContext)Context;
+            var result = locomproContext.CountReportedSubmissions(userId);
+            return result;
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error getting reported submissions count by user {userId}", userId);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public int GetRatedSubmissionsCountByUser(string userId)
+    {
+        try
+        {
+            var locomproContext = (LocomproContext)Context;
+            var result = locomproContext.CountRatedSubmissions(userId);
+            return result;
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error getting rated submissions count by user {userId}", userId);
+            throw;
+        }
+    }
+
+    /// <inheritdoc />
+    public List<MostReportedUsersResult> GetMostReportedUsersInfo()
+    {
+        try
+        {
+            var locomproContext = (LocomproContext)Context;
+            var results = from result in locomproContext.GetMostReportedUsersResults()
+                select result;
+            return results.ToList();
+        }
+        catch (Exception e)
+        {
+            Logger.LogError(e, "Error getting most reported users");
+            throw;
+        }
+    }
 }

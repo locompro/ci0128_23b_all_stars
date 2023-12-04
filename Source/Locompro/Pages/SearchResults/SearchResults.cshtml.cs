@@ -27,16 +27,16 @@ namespace Locompro.Pages.SearchResults;
 public class SearchResultsModel : SearchPageModel
 {
     public SearchVm SearchVm { get; set; }
-    
+
+    private readonly IAuthService _authService;
+
+    private readonly IModerationService _moderationService;
+
     private readonly IPictureService _pictureService;
 
     private readonly ISearchService _searchService;
 
     private readonly ISubmissionService _submissionService;
-    
-    private readonly IModerationService _moderationService;
-    
-    private readonly IAuthService _authService;
 
     private IConfiguration Configuration { get; set; }
 
@@ -118,7 +118,7 @@ public class SearchResultsModel : SearchPageModel
         {
             Logger.LogError("Error when attempting to get search results: " + e.Message);
         }
-        
+
         var searchResultsJson = GetJsonFrom(
             new
             {
@@ -128,6 +128,70 @@ public class SearchResultsModel : SearchPageModel
             });
 
         return Content(searchResultsJson);
+    }
+
+    /// <summary>
+    ///     On GET, retrieves all submissions the currently logged in user has reported
+    /// </summary>
+    /// <returns>All submissions the currently logged in user has reported.</returns>
+    public async Task<IActionResult> OnGetGetUsersReportedSubmissions()
+    {
+        if (!_authService.IsLoggedIn())
+        {
+            Response.StatusCode = 302; // Redirect status code
+            return new JsonResult(Array.Empty<object>());
+        }
+
+        try
+        {
+            var userId = _authService.GetUserId();
+
+            var reportedSubmissions = await _moderationService.GetUsersReportedSubmissions(userId);
+
+            var reportedSubmissionVms = 
+                reportedSubmissions.Select(rs => new SubmissionVm(rs, GetFormattedDate));
+
+            return Content(GetJsonFrom(reportedSubmissionVms));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to get user's reported submissions");
+
+            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            return new JsonResult(new { success = false, message = ex.Message });
+        }
+    }
+
+    /// <summary>
+    ///     On GET, retrieves all submissions the currently logged in user has created
+    /// </summary>
+    /// <returns>All submissions the currently logged in user has created.</returns>
+    public async Task<IActionResult> OnGetGetUsersCreatedSubmissions()
+    {
+        if (!_authService.IsLoggedIn())
+        {
+            Response.StatusCode = 302; // Redirect status code
+            return new JsonResult(Array.Empty<object>());
+        }
+
+        try
+        {
+            var userId = _authService.GetUserId();
+
+            var createdSubmissions = await _moderationService.GetUsersCreatedSubmissions(userId);
+
+            var createdSubmissionVms = 
+                createdSubmissions.Select(rs => new SubmissionVm(rs, GetFormattedDate));
+
+            return Content(GetJsonFrom(createdSubmissionVms));
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to get user's created submissions");
+
+            Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            return new JsonResult(new { success = false, message = ex.Message });
+        }
     }
 
     /// <summary>
@@ -148,7 +212,7 @@ public class SearchResultsModel : SearchPageModel
         {
             Logger.LogError("Error when attempting to get pictures for item: " + e.Message);
         }
-        
+
         List<string> formattedPictures = new();
 
         if (pictureDtos == null || pictureDtos.IsNullOrEmpty())
@@ -174,32 +238,32 @@ public class SearchResultsModel : SearchPageModel
         return Content(GetJsonFrom(formattedPictures));
     }
 
-    
-    public async Task<JsonResult> OnPostReportSubmissionAsync(ReportVm reportVm)
+
+    public async Task<JsonResult> OnPostReportSubmissionAsync(UserReportVm userReportVm)
     {
         if (!_authService.IsLoggedIn())
         {
             Response.StatusCode = 302; // Redirect status code
             return new JsonResult(new { redirectUrl = "/Account/Login" });
         }
-        
+
         try
         {
             var reportMapper = new ReportMapper();
 
-            var reportDto = reportMapper.ToDto(reportVm);
+            var reportDto = reportMapper.ToDto(userReportVm);
 
             reportDto.UserId = _authService.GetUserId();
 
             await _moderationService.ReportSubmission(reportDto);
-            
-            Logger.LogInformation("Report submitted successfully {}", reportVm);
+
+            Logger.LogInformation("Report submitted successfully {}", userReportVm);
 
             return new JsonResult(new { success = true, message = "Report submitted successfully" });
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Failed to submit report {}", reportVm);
+            Logger.LogError(ex, "Failed to submit report {}", userReportVm);
 
             Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             return new JsonResult(new { success = false, message = ex.Message });
@@ -231,7 +295,7 @@ public class SearchResultsModel : SearchPageModel
             Response.StatusCode = 302; // Redirect status code
             return new JsonResult(new { redirectUrl = "/Account/Login" });
         }
-        
+
         var clientRatingChange = await GetDataSentByClient<RatingVm>();
 
         if (clientRatingChange == null)
@@ -247,5 +311,16 @@ public class SearchResultsModel : SearchPageModel
         }
 
         return new JsonResult(new { ok = true, message = "Ratings updated submitted successfully" });
+    }
+
+    /// <summary>
+    ///     Extracts from entry time, the date in the format yyyy-mm-dd
+    ///     to be shown in the results page
+    /// </summary>
+    /// <param name="submission"></param>
+    /// <returns></returns>
+    private static string GetFormattedDate(Submission submission)
+    {
+        return DateFormatter.GetFormattedDateFromDateTime(submission.EntryTime);
     }
 }

@@ -5,11 +5,11 @@ const select2SpanishLanguageSettings = {
         return 'No se pudieron cargar los resultados.';
     },
     inputTooLong: function (args) {
-        var remainingChars = args.input.length - args.maximum;
+        let remainingChars = args.input.length - args.maximum;
         return 'Por favor, elimine ' + remainingChars + ' caracter(es)';
     },
     inputTooShort: function (args) {
-        var remainingChars = args.minimum - args.input.length;
+        let remainingChars = args.minimum - args.input.length;
         return 'Por favor, introduzca ' + remainingChars + ' o más caracteres';
     },
     loadingMore: function () {
