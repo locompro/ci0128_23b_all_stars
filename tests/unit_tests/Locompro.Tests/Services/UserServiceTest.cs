@@ -16,12 +16,6 @@ namespace Locompro.Tests.Services;
 [TestFixture]
 public class UserServiceTests
 {
-    private Mock<IUnitOfWork> _mockUnitOfWork;
-    private Mock<IUserRepository> _mockUserRepository;
-    private Mock<ILoggerFactory> _mockLoggerFactory;
-    private UserService _userService;
-    private Mock<ISubmissionRepository> _mockSubmissionRepository;
-
     [SetUp]
     public void SetUp()
     {
@@ -30,13 +24,25 @@ public class UserServiceTests
         _mockUserRepository = new Mock<IUserRepository>();
         _mockLoggerFactory = new Mock<ILoggerFactory>();
         _mockSubmissionRepository = new Mock<ISubmissionRepository>();
+        _mockProductRepository = new Mock<IProductRepository>();
+
         // Setup mock behavior
         _mockUnitOfWork.Setup(uow => uow.GetSpecialRepository<IUserRepository>()).Returns(_mockUserRepository.Object);
         _mockUnitOfWork.Setup(uow => uow.GetSpecialRepository<ISubmissionRepository>())
             .Returns(_mockSubmissionRepository.Object);
+        _mockUnitOfWork.Setup(uow => uow.GetSpecialRepository<IProductRepository>())
+            .Returns(_mockProductRepository.Object);
+
         // Instantiate the service with mocked dependencies
         _userService = new UserService(_mockUnitOfWork.Object, _mockLoggerFactory.Object);
     }
+
+    private Mock<IUnitOfWork> _mockUnitOfWork;
+    private Mock<IUserRepository> _mockUserRepository;
+    private Mock<ILoggerFactory> _mockLoggerFactory;
+    private Mock<IProductRepository> _mockProductRepository;
+    private UserService _userService;
+    private Mock<ISubmissionRepository> _mockSubmissionRepository;
 
     /// <summary>
     ///     Test to ensure GetQualifiedUserIDs returns expected user IDs.
@@ -201,7 +207,6 @@ public class UserServiceTests
         var result = await _userService.GetShoppingList(userId);
         Assert.Multiple(() =>
         {
-
             // Assert
             Assert.That(result.UserId, Is.EqualTo(userId));
             Assert.That(result.Products, Has.Count.EqualTo(expectedProducts.Count));
@@ -229,20 +234,14 @@ public class UserServiceTests
         var expectedProducts = GenerateTestProducts(user);
         var userId = user.Id;
         user.ShoppedProducts = expectedProducts;
-        
+
         var productSummaryStoresExpected = GenerateTestProductSummaryStores();
         _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
-        
+
         var expectedSummary = GenerateTestShoppingListSummaryStoreDto();
-       _mockSubmissionRepository.Setup(repo => repo.GetProductSummaryByStore(It.IsAny<List<int>>()))
-                .ReturnsAsync(productSummaryStoresExpected);
-       
-        var expectedResult = new ShoppingListSummaryDto
-        {
-            UserId = userId,
-            Stores = expectedSummary
-        };
-        
+        _mockSubmissionRepository.Setup(repo => repo.GetProductSummaryByStore(It.IsAny<List<int>>()))
+            .ReturnsAsync(productSummaryStoresExpected);
+
         // Act
         var result = await _userService.GetShoppingListSummary(userId);
         Assert.Multiple(() =>
@@ -265,6 +264,118 @@ public class UserServiceTests
             });
         }
     }
+
+    /// Brandon Alonso Mora Umaña - Sprint 3
+    [Test]
+    public async Task AddProductToShoppingList_DeletesItemFromShoppingList()
+    {
+        // Arrange
+        var user = GenerateTestUser();
+        var product = GenerateTestProducts(user).First();
+        var userId = user.Id;
+        var productId = product.Id;
+
+        _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+        _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync(product);
+
+        // Act
+        await _userService.AddProductToShoppingList(userId, productId);
+
+        // Assert
+        Assert.That(user.ShoppedProducts, Has.Count.EqualTo(1));
+    }
+
+    /// Brandon Alonso Mora Umaña - Sprint 3
+    [Test]
+    public async Task AddProductToShoppingList_ThrowsExceptionWhenUserNotFound()
+    {
+        // Arrange
+        var user = GenerateTestUser();
+        var product = GenerateTestProducts(user).First();
+        var userId = user.Id;
+        var productId = product.Id;
+
+        _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync((User)null);
+        _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync(product);
+
+        // Act & Assert
+        Assert.ThrowsAsync<Exception>(() => _userService.AddProductToShoppingList(userId, productId));
+    }
+
+    /// Brandon Alonso Mora Umaña - Sprint 3
+    [Test]
+    public async Task AddProductToShoppingList_ThrowsExceptionWhenProductNotFound()
+    {
+        // Arrange
+        var user = GenerateTestUser();
+        var product = GenerateTestProducts(user).First();
+        var userId = user.Id;
+        var productId = product.Id;
+
+        _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+        _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync((Product)null);
+
+        // Act & Assert
+        Assert.ThrowsAsync<Exception>(() => _userService.AddProductToShoppingList(userId, productId));
+    }
+
+    /// Brandon Alonso Mora Umaña - Sprint 3
+    [Test]
+    public async Task DeleteProductFromShoppingList_DeletesItemFromShoppingList()
+    {
+        // Arrange
+        var user = GenerateTestUser();
+        var product = GenerateTestProducts(user).First();
+        user.ShoppedProducts.Add(product);
+        var userId = user.Id;
+        var productId = product.Id;
+
+        _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+        _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync(product);
+
+        // Act
+        await _userService.DeleteProductFromShoppingList(userId, productId);
+
+        // Assert
+        Assert.That(user.ShoppedProducts, Has.Count.EqualTo(0));
+    }
+
+    /// Brandon Alonso Mora Umaña - Sprint 3
+    [Test]
+    public async Task DeleteProductFromShoppingList_ThrowsExceptionWhenUserNotFound()
+    {
+        // Arrange
+        var user = GenerateTestUser();
+        var product = GenerateTestProducts(user).First();
+        user.ShoppedProducts.Add(product);
+        var userId = user.Id;
+        var productId = product.Id;
+
+        _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync((User)null);
+        _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync(product);
+
+        // Act & Assert
+        Assert.ThrowsAsync<Exception>(() => _userService.DeleteProductFromShoppingList(userId, productId));
+    }
+
+    /// Brandon Alonso Mora Umaña - Sprint 3
+    [Test]
+    public async Task DeleteProductFromShoppingList_ThrowsExceptionWhenProductNotFound()
+    {
+        // Arrange
+        var user = GenerateTestUser();
+        var product = GenerateTestProducts(user).First();
+        user.ShoppedProducts.Add(product);
+        var userId = user.Id;
+        var productId = product.Id;
+
+        _mockUserRepository.Setup(repo => repo.GetByIdAsync(userId)).ReturnsAsync(user);
+        _mockProductRepository.Setup(repo => repo.GetByIdAsync(productId)).ReturnsAsync((Product)null);
+
+        // Act & Assert
+        Assert.ThrowsAsync<Exception>(() => _userService.DeleteProductFromShoppingList(userId, productId));
+    }
+
 
     private static User GenerateTestUser()
     {
