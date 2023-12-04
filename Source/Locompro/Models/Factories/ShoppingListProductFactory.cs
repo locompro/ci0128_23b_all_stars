@@ -21,12 +21,12 @@ public class ShoppingListProductFactory : GenericEntityFactory<ShoppingListProdu
         return new ShoppingListProductDto
         {
             Id = entity.Id,
-            Name = entity.Name,
-            Model = entity.Model,
-            Brand = entity.Brand,
-            MinPrice = entity.Submissions.Min(s => s.Price),
-            MaxPrice = entity.Submissions.Max(s => s.Price),
-            TotalSubmissions = entity.Submissions.Count
+            Name = string.IsNullOrEmpty(entity.Name) ? "" : entity.Name,
+            Model =  string.IsNullOrEmpty(entity.Model) ? "" : entity.Model,
+            Brand = string.IsNullOrEmpty(entity.Brand) ? "" : entity.Brand,
+            MinPrice = entity.Submissions?.Min(s => s.Price) ?? -1,
+            MaxPrice = entity.Submissions?.Max(s => s.Price) ?? -1,
+            TotalSubmissions = entity.Submissions?.Count ?? 0
         };
     }
 }
