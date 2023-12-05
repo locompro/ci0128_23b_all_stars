@@ -158,9 +158,9 @@ class SearchResultsModal {
             // Inserting the rating cell
             const ratingCell = row.insertCell(4);
             ratingCell.innerHTML += '<span style="display: none;">' + submission.Rating;
-            ratingCell.innerHTML += submission.NumberOfRatings;
             this.submissionsRatings.push(new SearchResultsSubmissionRating(submission, ratingCell));
             this.submissionsRatings[this.submissionsRatings.length - 1].buildRating(this.isUserLoggedIn);
+            ratingCell.innerHTML += '<div style="padding-left: 10px; display: inline-block; vertical-align: 2px; text-align: right"> (' + submission.NumberOfRatings + ')';
 
             // Prepare report button
             const reportButton = document.createElement('button');
@@ -243,6 +243,14 @@ class SearchResultsModal {
         // Set transition duration (e.g., 0.5 seconds)
         this.iconText.style.transition = 'opacity 0.5s';
 
+        // Toggle animation of icon
+        this.bookmarkIcon.classList.remove('fa-regular');
+        this.bookmarkIcon.classList.add('fa-solid');
+        setTimeout(() => {
+            this.bookmarkIcon.classList.remove('fa-solid');
+            this.bookmarkIcon.classList.add('fa-regular');
+        }, 1600);
+
         // After a delay (e.g., 100 milliseconds), set opacity to 1
         setTimeout(() => {
             this.iconText.style.opacity = '1';
@@ -253,6 +261,7 @@ class SearchResultsModal {
             }, 1500);
         }, 100);
     }
+
 
     /**
      * This method triggers a fetch to add a product to the users's shopping list

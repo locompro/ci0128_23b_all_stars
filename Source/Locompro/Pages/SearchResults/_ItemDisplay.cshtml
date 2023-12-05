@@ -3,12 +3,12 @@
 }
 
 <div class="row pt-3">
-    <div class="col-md-5">
+    <div class="col-md-6">
         <div class="row">
-            <!-- First Column, First Row -->
-            <div class="col">
+            <!-- Nombre del producto -->
+            <div class="col-md-5">
                 <div class="row card-title">
-                    <div class="col-sm" style="display: flex; justify-content: center; align-items: center;">
+                    <div class="col-sm-4" style="display: flex; justify-content: center; align-items: center;">
                         <i class="fa-solid fa-box" style="color: #0a53be; font-size: 33px;"></i>
                     </div>
                     <div class="col">
@@ -18,12 +18,11 @@
                 </div>
             </div>
 
-            <!-- Second Column, First Row -->
-            <div class="col">
-                <!-- Structure for the second cell, similar to the first one -->
+            <!-- Nombre de tienda del producto -->
+            <div class="col-md">
                 <div class="row card-title">
-                    <div class="col-sm" style="display: flex; justify-content: center; align-items: center;">
-                        <i class="fa fa-shopping-cart" style="color: #0a53be; font-size: 33px;"></i>
+                    <div class="col-sm-4" style="display: flex; justify-content: center; align-items: center;">
+                        <i class="fa-solid fa-shopping-cart" style="color: #0a53be; font-size: 33px;"></i>
                     </div>
                     <div class="col">
                         <h3 style="text-align: left; color: #333;">Tienda</h3>
@@ -34,12 +33,11 @@
         </div>
 
         <div class="row">
-            <!-- First Column, Second Row -->
-            <div class="col">
-                <!-- Structure for the third cell, similar to the first one -->
+            <!-- Modelo del producto -->
+            <div class="col-md-5">
                 <div class="row card-title">
-                    <div class="col-sm" style="display: flex; justify-content: center; align-items: center;">
-                        <i class="fa fa-certificate" style="color: #0a53be; font-size: 33px;"></i>
+                    <div class="col-sm-4" style="display: flex; justify-content: center; align-items: center;">
+                        <i class="fa-solid fa-certificate" style="color: #0a53be; font-size: 33px;"></i>
                     </div>
                     <div class="col">
                         <h3 style="text-align: left; color: #333;">Modelo</h3>
@@ -48,11 +46,10 @@
                 </div>
             </div>
 
-            <!-- Second Column, Second Row -->
+            <!-- Marca del producto -->
             <div class="col">
-                <!-- Structure for the fourth cell, similar to the first one -->
                 <div class="row card-title">
-                    <div class="col-sm" style="display: flex; justify-content: center; align-items: center;">
+                    <div class="col-sm-4" style="display: flex; justify-content: center; align-items: center;">
                         <i class="fa fa-trademark" style="color: #0a53be; font-size: 33px;"></i>
                     </div>
                     <div class="col">
@@ -62,6 +59,23 @@
                 </div>
             </div>
         </div>
+        @if (isLoggedIn)
+        {
+        <div class="row">
+            <div class="col" style="display: flex; justify-content: center; align-items: center;">
+                <h5 id="iconText" class="col-10" style="padding-left: 30px; margin-top: 15px; display: inline; opacity: 0; transition: opacity 0.5s ease 0s;"> ¡Producto agregado a lista de compras!</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <div class="row card-title">
+                    <div class="col-sm-4" style="margin-top: -35px; vertical-align: 10px; display: flex; justify-content: center; align-items: center;">
+                            <i class="fade-icon fa-regular fa-bookmark" id="bookmarkIcon" style="color: #0a53be; font-size: 33px; margin-bottom: 20px;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
     </div>
     <div class="slideshow-container col" style="width: 100%; max-width: 380px; height: 220px; text-align: center;">
         <a class="prev col"
@@ -78,17 +92,6 @@
             &#10095;
         </a>
     </div>
-    @if (isLoggedIn)
-    {
-        <div class="row card-title">
-            <h4 class="col-2" style="display: flex; justify-content: center; align-items: center;">
-                <i id="bookmarkIcon" class="fa fa-bookmark" style="color: #0a53be; font-size: 33px; margin-bottom: 20px;"></i>
-            </h4>
-            <div class="col-10">
-                <h5 id="iconText" class="col-10" style="margin-top: 5px; display: none;"> ¡Producto agregado a lista de compras!</h5>
-            </div>
-        </div>
-    }
 </div>
 <div>
     <div id="submissionsModalTableContainer" class="pt-4" data-is-user-authenticated="@isLoggedIn">
