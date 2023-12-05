@@ -5,10 +5,7 @@ class SearchResultsSubmissionRating {
         this.stars = [];
     }
 
-    buildRating(IsUserLoggedIn) {
-        console.log("buildRating");
-        console.log(IsUserLoggedIn);
-        
+    buildRating(IsUserLoggedIn) {        
         const ratingStars = document.createElement("div");
         ratingStars.classList.add("rating");
 
@@ -46,7 +43,6 @@ class RatingStar {
         this.element.style.display = 'inline-block';
 
         if (canInteract) {
-            console.log("canInteract");
             // Bind the event listeners to this class instance
             this.element.addEventListener("mouseover", () => this.updateStarLook(true));
             this.element.addEventListener("mouseout", () => this.updateStarLook(false));
@@ -65,7 +61,6 @@ class RatingStar {
     }
 
     updateStarLook(isHovered) {
-        console.log("updateStarLook");
         if (isHovered) {
             let color = "gold";
 
