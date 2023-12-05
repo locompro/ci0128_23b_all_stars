@@ -12,7 +12,7 @@ public class UserReportVm
 
     public string UserName { get; set; }
 
-    public string Description { get; set; }
+    [StringLength(120)] public string Description { get; set; }
 
     public override string ToString()
     {
