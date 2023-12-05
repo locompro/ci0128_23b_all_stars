@@ -167,7 +167,7 @@ public class SearchResultsModel : SearchPageModel
     {
         if (!_authService.IsLoggedIn())
         {
-            Response.StatusCode = 302; // Redirect status code
+            Response.StatusCode = 200; // Redirect status code
             return new JsonResult(Array.Empty<object>());
         }
 

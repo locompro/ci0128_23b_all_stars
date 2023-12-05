@@ -129,13 +129,18 @@ void AddDatabaseServices(WebApplicationBuilder builder)
     try
     {
         var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ??
-                              throw new InvalidOperationException("Env environment variable not found.");
+                              Environments.Development;
 
-        string connectionString = builder.Configuration["ConnectionString:Development"];
+        string connectionString = builder.Configuration["ConnectionString:Local"];
 
         if (environmentName == "Production")
         {
             connectionString = builder.Configuration["ConnectionString:Production"];
+        }
+
+        if (environmentName == "Development")
+        {
+            connectionString = builder.Configuration["ConnectionString:Development"];
         }
 
         builder.Services.AddDbContext<LocomproContext>(options =>
