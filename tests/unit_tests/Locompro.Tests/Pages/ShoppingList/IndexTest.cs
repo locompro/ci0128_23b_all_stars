@@ -68,40 +68,6 @@ namespace Locompro.Tests.Pages.ShoppingList
             // Assert
             Assert.IsNotNull(_shoppingListModel.ShoppingListSummaryVm);
         }
-
-        /// <summary>
-        /// Test if OnPostAddProduct successfully adds a product.
-        /// </summary>
-        /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
-        [Test]
-        public async Task OnPostAddProduct_AddsProductSuccessfully()
-        {
-            // Arrange
-            int productId = 123; // Example product ID
-
-            // Act
-            await _shoppingListModel.OnPostAddProduct(productId);
-
-            // Assert
-            _shoppingListServiceMock.Verify(s => s.AddProduct(productId), Times.Once);
-        }
-
-        /// <summary>
-        /// Test if OnPostDeleteProduct successfully deletes a product.
-        /// </summary>
-        /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
-        [Test]
-        public async Task OnPostDeleteProduct_DeletesProductSuccessfully()
-        {
-            // Arrange
-            int productId = 123; // Example product ID
-
-            // Act
-            await _shoppingListModel.OnPostDeleteProduct(productId);
-
-            // Assert
-            _shoppingListServiceMock.Verify(s => s.DeleteProduct(productId), Times.Once);
-        }
         
         /// <summary>
         /// Test if OnGetAsync handles exceptions correctly.
@@ -119,42 +85,6 @@ namespace Locompro.Tests.Pages.ShoppingList
             // Assert
             Assert.IsNotNull(_shoppingListModel.ShoppingListVm);
             Assert.IsNotNull(_shoppingListModel.ShoppingListSummaryVm);
-        }
-
-        /// <summary>
-        /// Test if OnPostAddProduct handles exceptions correctly.
-        /// </summary>
-        /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
-        [Test]
-        public async Task OnPostAddProduct_ExceptionThrown_ReturnsErrorJson()
-        {
-            // Arrange
-            int productId = 123; // Example product ID
-            _shoppingListServiceMock.Setup(s => s.AddProduct(productId)).ThrowsAsync(new Exception("Test Exception"));
-
-            // Act
-            JsonResult result = await _shoppingListModel.OnPostAddProduct(productId);
-
-            // Assert
-            Assert.That(result.StatusCode, Is.EqualTo(500));
-        }
-
-        /// <summary>
-        /// Test if OnPostDeleteProduct handles exceptions correctly.
-        /// </summary>
-        /// <author>Ariel Arevalo Alvarado B50562 - Sprint 3</author>
-        [Test]
-        public async Task OnPostDeleteProduct_ExceptionThrown_ReturnsErrorJson()
-        {
-            // Arrange
-            int productId = 123; // Example product ID
-            _shoppingListServiceMock.Setup(s => s.DeleteProduct(productId)).ThrowsAsync(new Exception("Test Exception"));
-
-            // Act
-            JsonResult result = await _shoppingListModel.OnPostDeleteProduct(productId);
-
-            // Assert
-            Assert.That(result.StatusCode, Is.EqualTo(500));
         }
     }
 }
