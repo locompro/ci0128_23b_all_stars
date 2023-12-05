@@ -10,40 +10,82 @@
     var brands = await ProductService.GetBrandsAsync();
     var models = await ProductService.GetModelsAsync();
 }
-<div class="container advanced-search-modal-container" id="advancedSearchModal">
+
+<div class="container-fluid advanced-search-modal-container" id="advancedSearchModal">
     <div class="advanced-search-modal-secondary-container">
         <div class="card-body advanced-search-modal-card">
             <div class="row d-xl-flex justify-content-xxl-center advanced-search-modal-card-contents">
-                <div class="col-xl-2 col-xxl-3 d-xxl-flex justify-content-xxl-center" style="margin-right: 0px;">
-                    <div class="mb-3" style="margin-left: 5px; margin-right: 5px;margin-bottom: 0px;width: 200px; margin-top: 0px">
-                        <label class="form-label d-lg-flex justify-content-lg-start">Provincia</label>
+                <div class="mb-3 category-input-container"
+                     style="float:left;
+                        min-width: 100px; max-width: 200px;
+                        margin-right: 0">
+                    <label class="form-label d-lg-flex justify-content-xxl-center">Localización exacta</label>
+                    <div class="row justify-content-center" style="">
+                        <button class="btn btn-primary justify-content-center d-flex"
+                                style="width: 60px; height: 40px; margin-left: 0; margin-right: 30px;
+                                                    padding-top: 0;"
+                                data-bs-toggle="modal" data-bs-target="#mapModal">
+                            <i class="fa fa-map-marker justify-content-center" style="margin-top: 7px; font-size:30px"></i>
+                        </button>
+                        <button class="btn btn-primary justify-content-center d-flex"
+                                style="width: 60px; height: 40px; 
+                                                    background-color: firebrick; border: solid 1px firebrick; 
+                                                    margin-right: 0; padding-top: 4px; position: relative;"
+                                onclick="window.GetModalMap().clearLocation()">
+                            <i class="fa fa-map-marker justify-content-center"
+                               style="margin-top: 7px; font-size:20px; color: lightgrey">
+                            </i>
+                            <span class="overlay-x"
+                                  style="position: absolute; top: 0; left: 0; 
+                                                  width: 100%; height: 100%; 
+                                                  font-size: 30px; line-height: 40px; 
+                                                  text-align: center; color: white;">
+                                X
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-xxl-3 d-xxl-flex justify-content-xxl-center"
+                     style="margin-left: 0; margin-right: 0;
+                        padding-left: 0; padding-right: 0;
+                        min-width: 280px; max-width: 400px">
+                    <div class="mb-3" style="margin: 0 5px;
+                        min-width: 140px; max-width: 200px;
+                        padding-left: 0; padding-right: 0">
+                        <label class="form-label d-lg-flex  justify-content-xxl-center">Provincia</label>
                         <select class="form-select"
                                 type="submit"
                                 onchange="loadProvince(this)"
-                                style="font-family: Roboto, sans-serif;"
+                                style="font-family: Roboto, sans-serif; overflow: hidden;
+                                                                            text-overflow: ellipsis;
+                                                                            white-space: nowrap;"
                                 name="province"
                                 id="provinceDropdown">
                             <option>Todos</option>
                             @foreach (var provincia in Model.provinces)
                             {
-                                <option>@provincia.Name</option>
+                                <option style="width:10%">@provincia.Name</option>
                             }
                         </select>
                     </div>
-                    <div class="mb-3" style="margin-left: 5px; margin-right: 5px; margin-bottom: 0px;width: 200px; margin-top: 0px">
-                        <label class="form-label d-lg-flex justify-content-lg-start">Cantón</label>
+                    <div class="mb-3" style="margin: 0 5px;
+                            min-width: 140px; max-width: 200px;
+                            padding-left: 0; padding-right: 0">
+                        <label class="form-label d-lg-flex  justify-content-xxl-center">Cantón</label>
                         <select class="form-select"
-                                style="font-family: Roboto, sans-serif;padding-right: 10px;margin-right: 0px;"
+                                style="font-family: Roboto, sans-serif; padding-right: 30px;margin-right: 0;"
                                 name="canton"
                                 id="cantonDropdown">
-                            <option>Todos</option>
+                            <option style="width:10%">Todos</option>
                         </select>
                     </div>
                 </div>
-                <!--
-                -->
-                <div class="col-xxl-3 row">
-                    <div class="col-xxl mb-3 minValue-input-container">
+                <div class="col-xxl-3 row"
+                     style="min-width: 200px; max-width: 300px;
+                        margin-left: 0; margin-right: 0;
+                        padding-left: 0; padding-right: 0">
+                    <div class="col-xxl mb-3 minValue-input-container"
+                         style="max-width: 150px">
                         <label class="form-label d-lg-flex justify-content-xxl-center">Precio Mínimo</label>
                         <input class="form-control"
                                min="1"
@@ -52,7 +94,8 @@
                                onchange="validatePriceInput(this)"
                                value="0">
                     </div>
-                    <div class="col-xxl mb-3 maxValue-input-container">
+                    <div class="col-xxl mb-3 maxValue-input-container"
+                         style="max-width: 150px">
                         <label class="form-label d-lg-flex justify-content-xxl-center">Precio máximo</label>
                         <input class="form-control"
                                min="0"
@@ -62,10 +105,12 @@
                                value="0">
                     </div>
                 </div>
-                <div class="col-xxl mb-3 category-input-container">
-                    <label class="form-label d-lg-flex justify-content-lg-start">Categoría</label>
+                <div class="col-xxl mb-3 category-input-container"
+                     style="min-width: 150px; max-width: 200px;
+                        margin-left: 0">
+                    <label class="form-label d-lg-flex  justify-content-xxl-center">Categoría</label>
                     <select id="categoryDropdown"
-                            class="form-control form-select" style="font-family:Roboto, sans-serif; min-width: 210px;">
+                            class="form-control form-select" style="font-family:Roboto, sans-serif;">
                         <option value="" disabled selected hidden>Seleccionar</option>
                         @foreach (var category in categories)
                         {
@@ -75,7 +120,7 @@
                 </div>
 
                 <div class="col-xxl mb-3 brand-input-container"
-                     style="margin-left: 5px; margin-right: 5px">
+                     style="margin-left: 5px; margin-right: 5px; min-width: 150px; max-width: 200px">
                     <label class="form-label d-lg-flex justify-content-xxl-center">Marca</label>
                     <select class="form-control form-select"
                             style="font-family: Roboto, sans-serif;"
@@ -88,7 +133,7 @@
                     </select>
                 </div>
                 <div class="col-xxl mb-3 model-input-container"
-                     style="margin-left: 5px; margin-right: 5px">
+                     style="margin-left: 5px; margin-right: 5px; min-width: 150px; max-width: 200px">
                     <label class="form-label d-lg-flex justify-content-xxl-center">Modelo</label>
                     <select class="form-control form-select "
                             style="font-family: Roboto, sans-serif;"
@@ -100,6 +145,15 @@
                         }
                     </select>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="mapModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
+            <div class="modal-body">
+                @await Html.PartialAsync("Shared/Components/_map", Model.MapVm)
             </div>
         </div>
     </div>

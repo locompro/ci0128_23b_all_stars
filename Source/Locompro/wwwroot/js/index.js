@@ -3,7 +3,7 @@ var modalShown = false;
 // event listener for the advanced search button
 document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("advancedSearchButton").addEventListener("click", async function () {
-        // get button for advanced search button
+        // get button for advanced search button 
         const button = document.getElementById("advancedSearchButton");
         const buttonContainer = document.getElementById("advancedSearchButtonContainer");
 
@@ -119,29 +119,6 @@ function initSelect2() {
             language: select2SpanishLanguageSettings,
         });
     })
-
-    // $('#dropdown').select2({
-    //     ajax: {
-    //         url: '/Submissions/Create',
-    //         dataType: 'json',
-    //         delay: 100,
-    //         data: function (params) {
-    //             return {
-    //                 handler: 'FetchStores',
-    //                 partialName: params.term
-    //             };
-    //         },
-    //         processResults: function (data) {
-    //             return {
-    //                 results: data
-    //             };
-    //         },
-    //         cache: true
-    //     },
-    //     placeholder: 'Seleccionar',
-    //     minimumInputLength: 1,
-    //     language: select2SpanishLanguageSettings
-    // });
 }
 
 

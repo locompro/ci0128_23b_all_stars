@@ -1,4 +1,5 @@
-﻿using Locompro.Services.Tasks;
+﻿using Locompro.Services;
+using Locompro.Services.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 

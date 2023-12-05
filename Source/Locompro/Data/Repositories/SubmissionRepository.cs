@@ -1,4 +1,3 @@
-using Locompro.Common.Search;
 using Locompro.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,19 +30,15 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     {
         Submission submission = await Set.FirstOrDefaultAsync(submission =>
             submission.UserId == id.UserId &&
-            submission.EntryTime.Year == id.EntryTime.Year &&
-            submission.EntryTime.Month == id.EntryTime.Month &&
-            submission.EntryTime.Day == id.EntryTime.Day &&
-            submission.EntryTime.Hour == id.EntryTime.Hour &&
-            submission.EntryTime.Minute == id.EntryTime.Minute &&
-            submission.EntryTime.Second == id.EntryTime.Second);
+            submission.EntryTime == id.EntryTime);
 
         if (submission == null)
         {
-            throw new InvalidOperationException("Error loading submission! No submission for user:" + id.UserId + " and entry time: " +
+            throw new InvalidOperationException("Error loading submission! No submission for user:" + id.UserId +
+                                                " and entry time: " +
                                                 id.EntryTime + " was found.");
         }
-        
+
         return submission;
     }
 
@@ -54,6 +49,12 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
         if (entity != null) Set.Remove(entity);
     }
 
+    /// <inheritdoc />
+    public async Task<IEnumerable<Submission>> GetByUserIdAsync(string userId)
+    {
+        return await Set.Where(e => e.UserId == userId).ToListAsync();
+    }
+
     public async Task<Submission> GetByIdAsync(string userId, DateTime entryTime)
     {
         return await Set.FindAsync(userId, entryTime);
@@ -62,7 +63,7 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     public async Task UpdateAsync(string userId, DateTime entryTime, Submission entity)
     {
         if (entity == null) throw new ArgumentNullException(nameof(entity));
-        
+
         var existingEntity = await GetByIdAsync(userId, entryTime);
         if (existingEntity != null)
         {
@@ -76,21 +77,6 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
     }
 
     /// <inheritdoc />
-    public async Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries)
-    {
-        // initiate the query
-        IQueryable<Submission> submissionsResults = Set
-            .Include(submission => submission.Product);
-
-        // append the search queries to the query
-        submissionsResults =
-            searchQueries.SearchQueryFunctions.Aggregate(submissionsResults, (current, query) => current.Where(query));
-
-        // get and return the results
-        return await submissionsResults.ToListAsync();
-    }
-
-    /// <inheritdoc />
     public async Task<IEnumerable<Submission>> GetItemSubmissions(string storeName, string productName)
     {
         var submissionsResults = Set
@@ -98,5 +84,45 @@ public class SubmissionRepository : CrudRepository<Submission, SubmissionKey>, I
             .Where(submission => submission.Product.Name == productName && submission.Store.Name == storeName);
 
         return await submissionsResults.ToListAsync();
+    }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<ProductSummaryStore>> GetProductSummaryByStore(List<int> productIds)
+    {
+        int totalProductCount = productIds.Count;
+
+        var storeProductCounts = await Set
+            .Include(s => s.Product)
+            .Include(s => s.Store)
+            .ThenInclude(store => store.Canton)
+            .Where(s => productIds.Contains(s.ProductId))
+            .Select(s => new
+            {
+                s.Store.Name,
+                Province = s.Store.Canton.Province,
+                s.Store.Canton,
+                s.ProductId,
+                s.Price,
+                s.EntryTime
+            })
+            .ToListAsync();
+
+        var groupedData = storeProductCounts
+            .GroupBy(s => new { s.Name, s.Province, s.Canton })
+            .Select(group => new ProductSummaryStore
+            {
+                Name = group.Key.Name,
+                Province = group.Key.Province,
+                Canton = group.Key.Canton,
+                ProductsAvailable = group.Select(g => g.ProductId).Distinct().Count(),
+                PercentageProductsAvailable = 
+                    (int)(group.Select(g => g.ProductId).Distinct().Count() / (float)totalProductCount * 100),
+                TotalCost = group
+                    .GroupBy(g => g.ProductId)
+                    .Select(g => g.OrderByDescending(sub => sub.EntryTime).FirstOrDefault())
+                    .Sum(sub => sub.Price)
+            }).ToList();
+
+        return groupedData;
     }
 }

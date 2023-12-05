@@ -1,3 +1,4 @@
+using Locompro.Common;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services;
@@ -14,15 +15,19 @@ public abstract class SearchPageModel : BasePageModel
     ///     Helps to keep page and modal information synchronized
     /// </summary>
     private readonly AdvancedSearchInputService _advancedSearchServiceHandler;
+    
+    private readonly IApiKeyHandler _apiKeyHandler;
 
     protected SearchPageModel(
         ILoggerFactory loggerFactory,
         IHttpContextAccessor httpContextAccessor,
-        AdvancedSearchInputService advancedSearchServiceHandler)
+        AdvancedSearchInputService advancedSearchServiceHandler,
+        IApiKeyHandler apiKeyHandler)
         : base(loggerFactory, httpContextAccessor)
     {
         _advancedSearchServiceHandler = advancedSearchServiceHandler;
         _advancedSearchServiceHandler.EmptyValue = EmptyValue;
+        _apiKeyHandler = apiKeyHandler;
     }
 
     /// <summary>
@@ -77,6 +82,17 @@ public abstract class SearchPageModel : BasePageModel
         // send to client
         return Content(cantonsJson);
     }
+    
+    /// <summary>
+    /// Returns the api key for google maps
+    /// </summary>
+    /// <returns> api key </returns>
+    public IActionResult OnGetReturnMapsApiKey()
+    {
+        string apiKey = _apiKeyHandler.GetApiKey();
+        string apiKeyJson = GetJsonFrom(apiKey);
+        return Content(apiKeyJson);
+    }
 
     /// <summary>
     ///     Updates internal list of cantons according to the selected province
@@ -120,6 +136,6 @@ public abstract class SearchPageModel : BasePageModel
     /// <returns> the serialized Json </returns>
     private string GetCantonsJson()
     {
-        return GetJsonFrom(_advancedSearchServiceHandler.Cantons);
+         return GetJsonFrom(_advancedSearchServiceHandler.Cantons);
     }
 }

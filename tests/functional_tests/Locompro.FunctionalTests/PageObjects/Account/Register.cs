@@ -1,5 +1,4 @@
-﻿using System.Security.Cryptography;
-using Locompro.FunctionalTests.PageObjects.Shared;
+﻿using Locompro.FunctionalTests.PageObjects.Shared;
 using OpenQA.Selenium;
 
 namespace Locompro.FunctionalTests.PageObjects.Account;

@@ -14,10 +14,10 @@ public class ProfileVm
     public ProfileVm(User user)
     {
         Username = user.UserName;
-        Name = user.Name;
-        Address = user.Address;
+        Name = user.Name ?? "N/A";
+        Address = user.Address ?? "No fue proveído";
         Rating = user.Rating;
-        Contributions = user.Submissions.Count;
+        ContributionsCount = user.CreatedSubmissions != null ? user.CreatedSubmissions.Count : 0;
         Email = user.Email;
     }
 
@@ -33,7 +33,7 @@ public class ProfileVm
 
     public float Rating { get; set; }
 
-    public int Contributions { get; set; }
+    public int ContributionsCount { get; set; }
 
     public string Email { get; set; }
 }

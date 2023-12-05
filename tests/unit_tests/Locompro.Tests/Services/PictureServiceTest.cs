@@ -1,6 +1,7 @@
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models.Entities;
+using Locompro.Models.Results;
 using Locompro.Services.Domain;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -48,7 +49,7 @@ public class PictureServiceTest
             Name = "Test Store",
             Canton = new Canton
             {
-                Name = "Test Canton"
+                Name = "Test SubmissionByCanton"
             }
         };
 
@@ -87,7 +88,7 @@ public class PictureServiceTest
         };
 
         var testPictureAmount = 1;
-        var testProductName = "Test Product";
+        var testProductId = 1;
         var testStoreName = "Test Store";
 
         var submissions = new List<Submission>
@@ -101,27 +102,25 @@ public class PictureServiceTest
         };
 
         // Setup mock behavior
-        _picturesRepository!.Setup(p => p.GetPicturesByItem(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()))
-            .ReturnsAsync((int pictureAmount, string productName, string storeName) =>
+        _picturesRepository!.Setup(p => p.GetPicturesByItem(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string>()))
+            .ReturnsAsync((int pictureAmount, int productId, string storeName) =>
                 {
-                    return pictures.Where(p => p.Submission.Product.Name == productName)
+                    var results = pictures.Where(p => p.Submission.Product.Id == productId)
                         .Where(p => p.Submission.Store.Name == storeName)
                         .Take(pictureAmount).ToList();
+
+                    return results.Select(pic => new GetPicturesResult() { PictureTitle = pic.PictureTitle, }).ToList();
                 }
             );
 
         // Act
-        var result = await _pictureService!.GetPicturesForItem(testPictureAmount, testProductName, testStoreName);
+        var result = await _pictureService!.GetPicturesForItem(testPictureAmount, testProductId, testStoreName);
 
         // Assert
         Assert.Multiple(() =>
         {
             Assert.That(result, Has.Count.EqualTo(pictures.Count));
-            Assert.That(result[0].SubmissionUserId, Is.EqualTo(pictures[0].SubmissionUserId));
-            Assert.That(result[0].SubmissionEntryTime, Is.EqualTo(pictures[0].SubmissionEntryTime));
-            Assert.That(result[0].Index, Is.EqualTo(pictures[0].Index));
-            Assert.That(result[0].PictureTitle, Is.EqualTo(pictures[0].PictureTitle));
-            Assert.That(result[0].Submission, Is.EqualTo(pictures[0].Submission));
+            Assert.That(result[0].Name , Is.EqualTo(pictures[0].PictureTitle));
         });
     }
 }

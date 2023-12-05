@@ -1,16 +1,18 @@
 using System.Globalization;
+using Locompro.Common.Mappers;
 using Locompro.Common.Search;
-using Locompro.Common.Search.SearchMethodRegistration;
+using Locompro.Common.Search.SearchMethodRegistration.SearchMethods;
+using Locompro.Common.Search.SearchQueryParameters;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services;
 using Locompro.Services.Domain;
-using Locompro.Common.Mappers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NetTopologySuite.Geometries;
 
 namespace Locompro.Tests.Services;
 
@@ -20,21 +22,21 @@ public class SearchServiceTest
     [SetUp]
     public void Setup()
     {
-        var loggerFactoryMock = new Mock<ILoggerFactory>();
+        ILoggerFactory loggerFactoryMock = new LoggerFactory();
 
-        _submissionRepositoryMock = new Mock<ISubmissionRepository>();
+        _submissionRepositoryMock = new Mock<ICrudRepository<Submission, SubmissionKey>>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
 
-        _unitOfWorkMock.Setup(u => u.GetSpecialRepository<ISubmissionRepository>())
+        _unitOfWorkMock.Setup(u => u.GetCrudRepository<Submission, SubmissionKey>())
             .Returns(_submissionRepositoryMock.Object);
 
-        ISearchDomainService searchDomainService =
-            new SearchDomainService(_unitOfWorkMock.Object, loggerFactoryMock.Object);
+        IDomainService<Submission, SubmissionKey> searchDomainService =
+            new DomainService<Submission, SubmissionKey>(_unitOfWorkMock.Object, loggerFactoryMock);
 
-        _searchService = new SearchService(loggerFactoryMock.Object, searchDomainService, null);
+        _searchService = new SearchService(loggerFactoryMock, searchDomainService, null);
     }
 
-    private Mock<ISubmissionRepository>? _submissionRepositoryMock;
+    private Mock<ICrudRepository<Submission, SubmissionKey>>? _submissionRepositoryMock;
     private Mock<IUnitOfWork>? _unitOfWorkMock;
     private SearchService? _searchService;
 
@@ -50,28 +52,26 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
-        
+
         // Assert
         Assert.That(searchResults.Exists(i => i.Name == productSearchName), Is.True);
 
         productSearchName = "Product2";
 
         searchCriteria.Clear();
-        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
-        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
-        
+        searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
         searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -80,10 +80,10 @@ public class SearchServiceTest
 
         productSearchName = "Product3";
         searchCriteria.Clear();
-        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
-        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
-        
+        searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
         searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -91,10 +91,10 @@ public class SearchServiceTest
 
         productSearchName = "Product4";
         searchCriteria.Clear();
-        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
-        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
-        
+        searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
         searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -102,10 +102,10 @@ public class SearchServiceTest
 
         productSearchName = "Product5";
         searchCriteria.Clear();
-        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
-        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
-        
+        searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
         searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -113,10 +113,10 @@ public class SearchServiceTest
 
         productSearchName = "Product6";
         searchCriteria.Clear();
-        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
-        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
-        
+        searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
         searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -124,10 +124,10 @@ public class SearchServiceTest
 
         productSearchName = "Product7";
         searchCriteria.Clear();
-        searchCriteria.Add(new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName));
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
-        searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
-        
+        searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
         searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -147,16 +147,14 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -180,16 +178,13 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName)
-        };
-
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -216,19 +211,17 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
-        var dateTimeExpected = new DateTime(2023, 10, 6, 0, 0, 0, DateTimeKind.Utc);
+        var dateTimeExpected = new DateTime(2023, 6, 10, 0, 0, 0, DateTimeKind.Utc);
         var dateTimeReceived = DateTime.Parse(searchResults[0].LastSubmissionDate, new CultureInfo("en-US"));
 
         // Assert
@@ -246,16 +239,14 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -275,16 +266,14 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Name, productSearchName)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByName, productSearchName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -292,7 +281,7 @@ public class SearchServiceTest
         Assert.That(searchResults, Is.Not.Empty);
         Assert.That(searchResults[0].Submissions, Has.Count.EqualTo(2));
 
-        var submission1EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
+        var submission1EntryTime = new DateTime(2023, 6, 10, 12, 0, 0, DateTimeKind.Utc);
         Assert.That(submission1EntryTime.ToString(CultureInfo.InvariantCulture),
             Does.Contain(searchResults[0].Submissions[0].EntryTime));
         Assert.Multiple(() =>
@@ -300,7 +289,7 @@ public class SearchServiceTest
             Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(100));
             Assert.That(searchResults[0].Submissions[0].Description, Is.EqualTo("Description for Submission 1"));
         });
-        var submission2EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc);
+        var submission2EntryTime = new DateTime(2023, 5, 10, 12, 0, 0, DateTimeKind.Utc);
         Assert.That(submission2EntryTime.ToString(CultureInfo.InvariantCulture),
             Does.Contain(searchResults[0].Submissions[1].EntryTime));
         Assert.Multiple(() =>
@@ -322,17 +311,14 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Model, modelName)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -357,19 +343,16 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Model, modelName)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
-        
+
         // Assert
         Assert.That(searchResults, Is.Not.Null);
         Assert.That(searchResults, Is.Not.Empty);
@@ -396,17 +379,14 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Model, modelName)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -426,16 +406,14 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Model, modelName)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelName);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -457,17 +435,16 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Province, province),
-            new SearchCriterion<string>(SearchParameterTypes.Canton, canton)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByProvince, province)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCanton, canton);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var results = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -496,17 +473,16 @@ public class SearchServiceTest
         MockDataSetup();
 
         // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Province, province),
-            new SearchCriterion<string>(SearchParameterTypes.Canton, canton)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByProvince, province)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCanton, canton);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var results = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -525,14 +501,14 @@ public class SearchServiceTest
         var brand = "Brand1";
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-            { new SearchCriterion<string>(SearchParameterTypes.Brand, brand) };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brand);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var results = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -552,14 +528,14 @@ public class SearchServiceTest
         var brand = "Brand1";
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-            { new SearchCriterion<string>(SearchParameterTypes.Brand, brand) };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brand);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -570,7 +546,7 @@ public class SearchServiceTest
             Assert.That(searchResults.TrueForAll(item => item.Brand.Contains(brand)), Is.True);
             Assert.That(searchResults[0].Submissions, Has.Count.EqualTo(2));
         });
-        var submission1EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
+        var submission1EntryTime = new DateTime(2023, 6, 10, 12, 0, 0, DateTimeKind.Utc);
         Assert.Multiple(() =>
         {
             Assert.That(submission1EntryTime.ToString(CultureInfo.InvariantCulture),
@@ -578,7 +554,7 @@ public class SearchServiceTest
             Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(100));
             Assert.That(searchResults[0].Submissions[0].Description, Is.EqualTo("Description for Submission 1"));
         });
-        var submission2EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc);
+        var submission2EntryTime = new DateTime(2023, 5, 10, 12, 0, 0, DateTimeKind.Utc);
         Assert.Multiple(() =>
         {
             Assert.That(submission2EntryTime.ToString(CultureInfo.InvariantCulture),
@@ -600,14 +576,14 @@ public class SearchServiceTest
         var brand = "InvalidBrand";
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-            { new SearchCriterion<string>(SearchParameterTypes.Brand, brand) };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brand);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var results = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -627,14 +603,14 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-            { new SearchCriterion<string>(SearchParameterTypes.Brand, brand) };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brand);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var results = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -654,17 +630,16 @@ public class SearchServiceTest
         const long maxPrice = 200;
         MockDataSetup();
 
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<long>(SearchParameterTypes.Minvalue, minPrice),
-            new SearchCriterion<long>(SearchParameterTypes.Maxvalue, maxPrice)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByMinvalue, minPrice)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByMaxvalue, maxPrice);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var results = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -685,17 +660,14 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Category, category)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByCategory, category);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -718,17 +690,14 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Category, category)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByCategory, category);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -748,17 +717,16 @@ public class SearchServiceTest
 
         MockDataSetup();
 
-        // Act
-        var searchCriteria = new List<ISearchCriterion>
-        {
-            new SearchCriterion<string>(SearchParameterTypes.Category, category)
-        };
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, category)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, category);
 
         // Act
-        var searchResultsDto = await _searchService!.GetSearchResults(searchCriteria);
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
 
-        ItemMapper itemMapper = new ();
-        
+        ItemMapper itemMapper = new();
+
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
         // Assert
@@ -767,9 +735,516 @@ public class SearchServiceTest
     }
 
     /// <summary>
-    ///     Searches for an item with a specific model and the result is empty
+    ///     Searches for an item with a specific userId and the search is empty
     /// </summary>
-    /// <author> Brandon Alonso Mora Umaña C15179 </author>
+    /// <author> Gabriel Molina Bulgarelli C14826 - SPRINT 3</author>
+    [Test]
+    public async Task SearchByUserId_InvalidSearchEmptyString_EmptyResults()
+    {
+        // Arrange
+        var userIdToSearch = string.Empty;
+
+        MockDataSetup();
+
+        // Act
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch);
+
+        // Act
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
+        ItemMapper itemMapper = new();
+
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    ///     Searches for an item with a specific invalid userId and the search is empty
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli C14826 - SPRINT 3 </author>
+    [Test]
+    public async Task SearchByInvalidUserId_SubmissionsFound()
+    {
+        // Arrange
+        var userIdToSearch = "User333";
+        MockDataSetup();
+
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch);
+
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+        ItemMapper itemMapper = new();
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.EqualTo(0));
+    }
+
+    /// <summary>
+    ///     Searches for an item with a specific invalid userId and the search is empty
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli C14826 - SPRINT 3 </author>
+    [Test]
+    public async Task SearchByUserId_SubmissionsFound()
+    {
+        // Arrange
+        var userIdToSearch = "User1";
+        MockDataSetup();
+
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch);
+
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+        ItemMapper itemMapper = new();
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.EqualTo(1));
+    }
+
+    /// <summary>
+    ///     Searching for an item with a specific user and brand, but no results
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli C14826 - SPRINT 3 </author>
+    [Test]
+    public async Task SearchByUserAndBrand_NoResults()
+    {
+        // Arrange
+        var userIdToSearch = "User1";
+        var brandToSearch = "NonExistentBrand";
+        MockDataSetup();
+
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brandToSearch);
+
+        // Act
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+        ItemMapper itemMapper = new();
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.EqualTo(0));
+    }
+
+
+    /// <summary>
+    ///     Searching for an item with a specific user and brand, but no results
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli C14826 - SPRINT 3 </author>
+    [Test]
+    public async Task SearchByPriceRangeAndBrand_ValidResults()
+    {
+        // Arrange
+        var minPrice = 100;
+        var maxPrice = 200;
+        var brandToSearch = "Brand2";
+        MockDataSetup();
+
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByMinvalue, minPrice)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByMaxvalue, maxPrice)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brandToSearch);
+
+        // Act
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+        ItemMapper itemMapper = new();
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.EqualTo(3));
+    }
+
+    /// <summary>
+    ///     Searching for an item with several different criteria to be certain that it holds several at once
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli C14826 - SPRINT 3 </author>
+    [Test]
+    public async Task SearchWithMultipleCriteria_ValidResults()
+    {
+        // Arrange
+        var nameToSearch = "Product1";
+        var provinceToSearch = "Province1";
+        var cantonToSearch = "Canton1";
+        var categoryToSearch = "Category1";
+        var modelToSearch = "Model1";
+        var brandToSearch = "Brand1";
+        var userIdToSearch = "User1";
+
+        MockDataSetup();
+
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria
+            .AddQueryParameter(SearchParameterTypes.SubmissionByName, nameToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByProvince, provinceToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCanton, cantonToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByCategory, categoryToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByModel, modelToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByBrand, brandToSearch)
+            .AddQueryParameter(SearchParameterTypes.SubmissionByUserId, userIdToSearch);
+
+        // Act
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+        ItemMapper itemMapper = new();
+        var searchResults = itemMapper.ToVm(searchResultsDto);
+
+        // Assert
+        Assert.IsNotNull(searchResults);
+        Assert.That(searchResults.Count, Is.GreaterThan(0));
+    }
+
+    /// <summary>
+    ///     Searches by location within a 5 km range
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SearchWithLocationWithinFiveKm()
+    {
+        MockDataSetup();
+
+        MapVm mapVm = new MapVm(9.960912220799878, -84.08619109447427, 5);
+
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddUniqueSearch(
+            submission => MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance,
+            mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
+            mapVm);
+
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
+        ItemMapper itemMapper = new();
+
+        List<ItemVm> searchResults = itemMapper.ToVm(searchResultsDto);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(searchResults, Is.Not.Null);
+            Assert.That(searchResults, Is.Not.Empty);
+            Assert.That(searchResults, Has.Count.EqualTo(7));
+        });
+    }
+
+    /// <summary>
+    ///     Searches by location within a 4 km but no store is within that range
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SearchWithLocationWithinFourKmButIsFarther()
+    {
+        MockDataSetup();
+        MapVm mapVm = new MapVm(9.960912220799878, -84.08619109447427, 4);
+
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddUniqueSearch(
+            submission => MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance,
+            mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
+            mapVm);
+
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
+        ItemMapper itemMapper = new();
+
+        List<ItemVm> searchResults = itemMapper.ToVm(searchResultsDto);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(searchResults, Is.Not.Null);
+            Assert.That(searchResults, Is.Empty);
+        });
+    }
+
+    /// <summary>
+    ///     Searches by location on a 10 km range
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SearchWithLocationWithinTenKm()
+    {
+        MockDataSetup();
+        MapVm mapVm = new MapVm(9.960912220799878, -84.08619109447427, 10);
+
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddUniqueSearch(
+            submission => MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance,
+            mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
+            mapVm);
+
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
+        ItemMapper itemMapper = new();
+
+        List<ItemVm> searchResults = itemMapper.ToVm(searchResultsDto);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(searchResults, Is.Not.Null);
+            Assert.That(searchResults, Is.Not.Empty);
+            Assert.That(searchResults, Has.Count.EqualTo(13));
+        });
+    }
+
+    /// <summary>
+    ///     Searches by location within a 20km range
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SearchWithLocationWithinTwentyKm()
+    {
+        MockDataSetup();
+        MapVm mapVm = new MapVm(9.960912220799878, -84.08619109447427, 20);
+
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddUniqueSearch(
+            submission => MapVm.Ratio * submission.Store.Location.Distance(mapVm.Location) <= mapVm.Distance,
+            mapVmParam => mapVmParam.Location != null && mapVmParam.Distance != 0,
+            mapVm);
+
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
+        ItemMapper itemMapper = new();
+
+        List<ItemVm> searchResults = itemMapper.ToVm(searchResultsDto);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(searchResults, Is.Not.Null);
+            Assert.That(searchResults, Is.Not.Empty);
+            Assert.That(searchResults, Has.Count.EqualTo(19));
+        });
+    }
+
+    /// <summary>
+    ///     Search by filter on location
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SearchByFilterWorks()
+    {
+        MockDataSetup();
+        MapVm mapVm = new MapVm(9.960912220799878, -84.08619109447427, 20);
+
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+        searchCriteria.AddFilterParameter(SearchParameterTypes.SubmissionByLocationFilter, mapVm);
+
+        var searchResultsDto = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
+        ItemMapper itemMapper = new();
+
+        List<ItemVm> searchResults = itemMapper.ToVm(searchResultsDto);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(searchResults, Is.Not.Null);
+            Assert.That(searchResults, Is.Not.Empty);
+            Assert.That(searchResults, Has.Count.EqualTo(19));
+        });
+    }
+
+    /// <summary>
+    ///     Search on simple query with default search method
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SimpleSearchByGetSearchResults()
+    {
+        MockDataSetup();
+
+        SearchVm searchVm = new SearchVm()
+        {
+            ProductName = "Product1"
+        };
+
+        var searchResults = await _searchService!.GetSearchResultsAsync(searchVm);
+
+        ItemMapper itemMapper = new();
+
+        var results = itemMapper.ToVm(searchResults);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(results, Is.Not.Null);
+            Assert.That(results, Is.Not.Empty);
+            Assert.That(results, Has.Count.EqualTo(2));
+        });
+    }
+
+    /// <summary>
+    ///     Search on complex query on default search method
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task ComplexSearchByGetSearchResults()
+    {
+        MockDataSetup();
+
+        SearchVm searchVm = new SearchVm()
+        {
+            ProductName = "Product1",
+            ProvinceSelected = "Province1",
+            CantonSelected = "Canton1",
+            CategorySelected = "Category1",
+            ModelSelected = "Model1",
+            BrandSelected = "Brand1"
+        };
+
+        var searchResults = await _searchService!.GetSearchResultsAsync(searchVm);
+
+        ItemMapper itemMapper = new();
+
+        var results = itemMapper.ToVm(searchResults);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(results, Is.Not.Null);
+            Assert.That(results, Is.Not.Empty);
+            Assert.That(results, Has.Count.EqualTo(1));
+        });
+
+        MockDataSetup();
+    }
+
+    /// <summary>
+    ///     Searches by location on default search method
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
+    [Test]
+    public async Task SearchLocationByGetSearchResults()
+    {
+        MockDataSetup();
+
+        SearchVm searchVm = new SearchVm()
+        {
+            Latitude = 9.960912220799878,
+            Longitude = -84.08619109447427,
+            Distance = 5
+        };
+
+        var searchResults = await _searchService!.GetSearchResultsAsync(searchVm);
+
+        ItemMapper itemMapper = new();
+
+        var results = itemMapper.ToVm(searchResults);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(results, Is.Not.Null);
+            Assert.That(results, Is.Not.Empty);
+            Assert.That(results, Has.Count.EqualTo(7));
+        });
+    }
+
+    /// <author>Brandon Mora Umaña C15179 - Sprint 3</author>
+    [Test]
+    public async Task SearchAutoReportsByGetSearchResults_IsNotNull()
+    {
+        MockDataSetup();
+
+        // Create the search criteria
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+
+        // Add the search parameter
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionHasNAutoReports, 1);
+
+        var searchResults = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
+        AutoReportSubmissionsMapper itemMapper = new();
+
+        var results = itemMapper.ToVm(searchResults);
+
+        Assert.That(results, Is.Not.Null);
+    }
+
+    /// <author>Brandon Mora Umaña C15179 - Sprint 3</author>
+    [Test]
+    public async Task SearchAutoReportsByGetSearchResults_IsNotEmpty()
+    {
+        MockDataSetup();
+
+        // Create the search criteria
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+
+        // Add the search parameter
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionHasNAutoReports, 1);
+
+        var searchResults = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
+        AutoReportSubmissionsMapper itemMapper = new();
+
+        var results = itemMapper.ToVm(searchResults);
+
+        Assert.That(results, Is.Not.Empty);
+    }
+
+    /// <author>Brandon Mora Umaña C15179 - Sprint 3</author>
+    [Test]
+    public async Task SearchAutoReportsByGetSearchResults_IsNotEmptyAndHasTwo()
+    {
+        MockDataSetup();
+
+        // Create the search criteria
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+
+        // Add the search parameter
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionHasNAutoReports, 1);
+
+        var searchResults = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
+        AutoReportSubmissionsMapper itemMapper = new();
+
+        var results = itemMapper.ToVm(searchResults);
+
+        Assert.That(results, Has.Count.EqualTo(2));
+    }
+
+    /// <author>Brandon Mora Umaña C15179 - Sprint 3</author>
+    [Test]
+    public async Task SearchAutoReportsByGetSearchResults_IsEmpty()
+    {
+        MockDataSetup();
+
+        // Create the search criteria
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+
+        // Add the search parameter
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionHasNAutoReports, 2);
+
+        var searchResults = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
+        AutoReportSubmissionsMapper itemMapper = new();
+
+        var results = itemMapper.ToVm(searchResults);
+
+        Assert.That(results, Is.Empty);
+    }
+
+    /// <author>Brandon Mora Umaña C15179 - Sprint 3</author>
+    [Test]
+    public async Task SearchAutoReportsByGetSearchResults_ReturnsEighteenSubmissions()
+    {
+        MockDataSetup();
+
+        // Create the search criteria
+        ISearchQueryParameters<Submission> searchCriteria = new SearchQueryParameters<Submission>();
+
+        // Add the search parameter
+        searchCriteria.AddQueryParameter(SearchParameterTypes.SubmissionHasNAutoReports, 0);
+
+        var searchResults = await _searchService!.GetSearchSubmissionsAsync(searchCriteria);
+
+        Assert.That(searchResults.Submissions, Is.Not.Empty);
+    }
+
+
     /// <summary>
     ///     Sets up the mock for the submission service so that it behaves as expected for the tests
     /// </summary>
@@ -813,28 +1288,32 @@ public class SearchServiceTest
                 Name = "Store1",
                 Canton = canton1,
                 Address = "Address1",
-                Telephone = "Telephone1"
+                Telephone = "Telephone1",
+                Location = new Point(9.93801190922732, -84.05199796732124) { SRID = 4326 } // <5
             },
             new()
             {
                 Name = "Store2",
                 Canton = canton1,
                 Address = "Address2",
-                Telephone = "Telephone2"
+                Telephone = "Telephone2",
+                Location = new Point(9.936069142790782, -84.04010505878959) { SRID = 4326 } // > 5
             },
             new()
             {
                 Name = "Store3",
                 Canton = canton2,
                 Address = "Address3",
-                Telephone = "Telephone3"
+                Telephone = "Telephone3",
+                Location = new Point(9.924794131121706, -84.24072983843948) { SRID = 4326 } // > 10
             },
             new()
             {
                 Name = "Store4",
                 Canton = canton2,
                 Address = "Address4",
-                Telephone = "Telephone4"
+                Telephone = "Telephone4",
+                Location = new Point(10.05997217354618, -84.43718094445109) { SRID = 4326 } // > 20
             }
         };
 
@@ -913,7 +1392,17 @@ public class SearchServiceTest
                 ProductId = 1,
                 User = users[0],
                 Store = stores[0],
-                Product = products[0]
+                Product = products[0],
+                AutoReports = new List<AutoReport>
+                {
+                    new()
+                    {
+                        SubmissionUserId = "User1",
+                        SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+                        Description = "Description for Submission 1",
+                        Confidence = 0.4f
+                    }
+                }
             },
             new()
             {
@@ -926,7 +1415,17 @@ public class SearchServiceTest
                 ProductId = 2,
                 User = users[1],
                 Store = stores[1],
-                Product = products[1]
+                Product = products[1],
+                AutoReports = new List<AutoReport>
+                {
+                    new()
+                    {
+                        SubmissionUserId = "User1",
+                        SubmissionEntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc),
+                        Description = "Description for Submission 1",
+                        Confidence = 0.4f
+                    }
+                }
             },
             new()
             {
@@ -939,7 +1438,8 @@ public class SearchServiceTest
                 ProductId = 3,
                 User = users[2],
                 Store = stores[2],
-                Product = products[2]
+                Product = products[2],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -952,7 +1452,8 @@ public class SearchServiceTest
                 ProductId = 4,
                 User = users[0],
                 Store = stores[0],
-                Product = products[3]
+                Product = products[3],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -965,7 +1466,8 @@ public class SearchServiceTest
                 ProductId = 5,
                 User = users[1],
                 Store = stores[1],
-                Product = products[4]
+                Product = products[4],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -978,7 +1480,8 @@ public class SearchServiceTest
                 ProductId = 6,
                 User = users[2],
                 Store = stores[2],
-                Product = products[5]
+                Product = products[5],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -991,7 +1494,8 @@ public class SearchServiceTest
                 ProductId = 7,
                 User = users[0],
                 Store = stores[0],
-                Product = products[6]
+                Product = products[6],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1004,7 +1508,8 @@ public class SearchServiceTest
                 ProductId = 1,
                 User = users[0],
                 Store = stores[0],
-                Product = products[0]
+                Product = products[0],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1017,7 +1522,8 @@ public class SearchServiceTest
                 ProductId = 9,
                 User = users[2],
                 Store = stores[2],
-                Product = products[1]
+                Product = products[1],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1030,7 +1536,8 @@ public class SearchServiceTest
                 ProductId = 10,
                 User = users[0],
                 Store = stores[0],
-                Product = products[2]
+                Product = products[2],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1043,7 +1550,8 @@ public class SearchServiceTest
                 ProductId = 11,
                 User = users[1],
                 Store = stores[1],
-                Product = products[3]
+                Product = products[3],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1056,7 +1564,8 @@ public class SearchServiceTest
                 ProductId = 12,
                 User = users[2],
                 Store = stores[2],
-                Product = products[4]
+                Product = products[4],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1069,7 +1578,8 @@ public class SearchServiceTest
                 ProductId = 13,
                 User = users[0],
                 Store = stores[0],
-                Product = products[5]
+                Product = products[5],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1082,7 +1592,8 @@ public class SearchServiceTest
                 ProductId = 14,
                 User = users[1],
                 Store = stores[1],
-                Product = products[6]
+                Product = products[6],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1095,7 +1606,8 @@ public class SearchServiceTest
                 ProductId = 1,
                 User = users[2],
                 Store = stores[2],
-                Product = products[0]
+                Product = products[0],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1108,7 +1620,8 @@ public class SearchServiceTest
                 ProductId = 16,
                 User = users[0],
                 Store = stores[0],
-                Product = products[1]
+                Product = products[1],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1121,7 +1634,8 @@ public class SearchServiceTest
                 ProductId = 17,
                 User = users[1],
                 Store = stores[1],
-                Product = products[2]
+                Product = products[2],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1134,7 +1648,8 @@ public class SearchServiceTest
                 ProductId = 18,
                 User = users[2],
                 Store = stores[2],
-                Product = products[3]
+                Product = products[3],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1147,7 +1662,8 @@ public class SearchServiceTest
                 ProductId = 19,
                 User = users[0],
                 Store = stores[0],
-                Product = products[4]
+                Product = products[4],
+                AutoReports = new List<AutoReport>()
             },
             new()
             {
@@ -1160,27 +1676,31 @@ public class SearchServiceTest
                 ProductId = 20,
                 User = users[1],
                 Store = stores[1],
-                Product = products[5]
+                Product = products[5],
+                AutoReports = new List<AutoReport>()
             }
         };
 
         // setting up mock repository behavior requires the methods to be virtual on class being mocked or using interface, in this case
         // the methods are virtual because interface does not have the methods being implemented.
         _submissionRepositoryMock!
-            .Setup(repo => repo.GetSearchResults(It.IsAny<SearchQueries>()))
-            .ReturnsAsync((SearchQueries searchQueries) =>
+            .Setup(repo => repo.GetByDynamicQuery(It.IsAny<ISearchQueries<Submission>>()))
+            .ReturnsAsync((ISearchQueries<Submission> searchQueries) =>
             {
                 // initiate the query
-                IQueryable<Submission> submissionsResults =
+                IQueryable<Submission>? submissionsResults =
                     submissions.AsQueryable().Include(submission => submission.Product);
 
                 // append the search queries to the query
-                submissionsResults =
-                    searchQueries.SearchQueryFunctions.Aggregate(submissionsResults,
-                        (current, query) => current.Where(query));
+                submissionsResults = searchQueries.ApplySearch(submissionsResults);
+                submissionsResults = searchQueries.ApplyUniqueSearches(submissionsResults);
+
+                if (submissionsResults == null) return new List<Submission>();
+
+                var results = searchQueries.ApplySearchFilters(submissionsResults);
 
                 // get and return the results
-                return submissionsResults.ToList();
+                return results;
             });
     }
 }

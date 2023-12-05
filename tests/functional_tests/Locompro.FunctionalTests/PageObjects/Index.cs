@@ -3,39 +3,51 @@ using OpenQA.Selenium;
 
 namespace Locompro.FunctionalTests.PageObjects;
 
-public class Index : BasePage
+public class IndexPage : BasePage
 {
-    private readonly IWebDriver driver;
+    private readonly IWebDriver _driver;
 
-    public Index(IWebDriver browser) : base(browser)
+    public IndexPage(IWebDriver browser) : base(browser)
     {
-        driver = browser;
+        _driver = browser;
     }
 
     // Define By locators instead of using FindsBy
-    private By searchBoxLocator = By.Id("searchBox");
-    private By searchButtonLocator = By.Id("searchButton");
-    private By advancedSearchButtonLocator = By.Id("advancedSearchButton");
+    public IWebElement SearchBox => Driver.FindElement(By.Id("searchBox"));
 
-    // ... (Rest of your class remains the same)
+    public IWebElement SearchButton => Driver.FindElement(By.Id("searchButton"));
 
-    // Access elements through By locators within methods:
+    public IWebElement AdvancedSearchButton => Driver.FindElement(By.Id("advancedSearchButton"));
+
+    public IWebElement AdvancedSearchModal => Driver.FindElement(By.Id("advancedSearchModal"));
+    
     public void EnterSearchQuery(string query)
     {
-        var searchBox = driver.FindElement(searchBoxLocator);
-        searchBox.Clear();
-        searchBox.SendKeys(query);
+        SearchBox.SendKeys(query);
     }
 
     public void ClickSearchButton()
     {
-        var searchButton = driver.FindElement(searchButtonLocator);
-        searchButton.Click();
+        SearchButton.Click();
     }
 
     public void ClickAdvancedSearchButton()
     {
-        var advancedSearchButton = driver.FindElement(advancedSearchButtonLocator);
-        advancedSearchButton.Click();
+        AdvancedSearchButton.Click();
+    }
+    
+    public void GoTo()
+    {
+        Driver.Navigate().GoToUrl("https://localhost:7249/");
+    }
+
+    public void WaitForAdvancedSearchModalToBeVisible()
+    {
+        WaitForElementToBeVisible(By.Id("advancedSearchModal"), 5);
+    }
+    
+    public void WaitForNavigationToSearchResults()
+    {
+        WaitForPageNavigation("https://localhost:7249/SearchResults/SearchResults", 5);
     }
 }

@@ -1,0 +1,188 @@
+@page
+@using Locompro.Services.Auth
+@inject IAuthService AuthService
+@model Locompro.Pages.ShoppingList.ShoppingListModel
+
+<link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
+<link rel="stylesheet" href="~/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="~/css/bootstrap.min.css">
+
+<div class="container">
+    <div class="card border search-results-card" style="padding-top: 10px; padding-bottom: 0px; padding-left: 35px; padding-right: 25px; border-radius: 30px;">
+        <div class="card-body">
+            <h3 style="text-align: center" id="ShoppingListTitle">Lista de compras</h3>
+            @if (Model.ShoppingListVm != null && Model.ShoppingListVm.Products.Any())
+            {
+                <div class="mx-3 table-encapsulate-for-results">
+                    <table id="shoppingResults" class="display search-results-table" style="width:100%">
+                        <caption></caption>
+                        <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Modelo</th>
+                            <th>Marca</th>
+                            <th style="text-align: right">Mínimo</th>
+                            <th style="text-align: right">Máximo</th>
+                            <th style="text-align: center">Contribuciones</th>
+                            <th style="text-align: center">
+                                    <button type="button" id="showSummaryBtn" data-bs-toggle="modal" data-bs-target="#summaryModal"
+                                            class="btn btn-primary btn-md"
+                                            style="padding-right: 15px;">
+                                        Mostrar por tienda
+                                    </button>
+                             </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var product in Model.ShoppingListVm.Products)
+                        {
+                            <tr data-id=@product.Id>
+                                <td>@product.Name</td>
+                                <td>@product.Model</td>
+                                <td>@product.Brand</td>
+                                <td style="text-align: right">@product.MinPrice.ToString("#,###,##0")</td>
+                                <td style="text-align: right">@product.MaxPrice.ToString("#,###,##0")</td>
+                                <td style="text-align: center">@product.TotalSubmissions.ToString("#,###,##0")</td>
+                                <td style="text-align: center">
+                                    <button class="btn btn-primary btn-danger delete-at" type="button" data-id=@product.Id>
+                                        <svg class="d-flex" xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 24 24" width="1em" fill="currentColor">
+                                            <path d="M0 0h24v24H0V0z" fill="none"></path>
+                                            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2H8c-1.1 0-2 .9-2 2v10zM18 4h-2.5l-.71-.71c-.18-.18-.44-.29-.7-.29H9.91c-.26 0-.52.11-.7.29L8.5 4H6c-.55 0-1 .45-1 1s.45 1 1 1h12c.55 0 1-.45 1-1s-.45-1-1-1z"></path>
+                                        </svg>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <p style="font-size: 24px; text-align: center; margin-top: 30px; margin-bottom: 30px; color: #888; opacity: 0.6;">
+                        Vacía
+                    </p>
+                </div>
+            }
+            </div>
+        </div>
+</div>
+@if (Model.ShoppingListSummaryVm != null && Model.ShoppingListSummaryVm.Stores.Any())
+{
+    <div id="summaryModal"  class="modal search-results-modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="border-radius: 15px; padding-top: 5px; padding-bottom: 10px; padding-left: 8px; padding-right: 6px">
+                <div class="modal-body">
+                    <h3 style="text-align: center" id="ShoppingListTitle">Resumen de tiendas</h3>
+                    @if (Model.ShoppingListSummaryVm.Stores != null)
+                    {
+                        <partial name="_Summary" model="Model.ShoppingListSummaryVm" />
+                    }
+                    else
+                    {
+                        <div>
+                            <p style="font-size: 24px; text-align: center; margin-top: 30px; margin-bottom: 30px; color: #888; opacity: 0.6;">
+                                No se encontraron tiendas con los productos brindados
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+@section Scripts {
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/jquery/jquery.dataTables.min.js"></script>
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/search.js"></script>
+    <script src="~/js/index.js"></script>
+    <script>
+        let shoppingResults = new DataTable('#shoppingResults', {
+            info: false,
+            paging: false,
+            searching: false,
+            ordering: false,
+            scrollCollapse: true,
+            scrollX: true,
+            scrollY: '60vh',
+            "language": {
+                "emptyTable": "No hay más productos en la lista de compras"
+            }
+        });
+
+        let summaryResults = new DataTable('#summaryResults', {
+            info: false,
+            paging: false,
+            searching: false,
+            deferRender: true,
+            scrollCollapse: true,
+            scrollX: true,
+            scrollY: '70vh',
+            order: [[5, 'asc']],
+            bDestroy: true
+        });
+
+        $('#summaryModal').on('show.bs.modal', function () {
+            setTimeout(function() {
+                $('#summaryResults').DataTable().columns.adjust();
+            }, 155); // Adjust after a short delay
+        });
+        
+        // $('#summaryModal').on('shown.bs.modal', function () {
+        //     $('#summaryResults').DataTable().columns.adjust();
+        // });
+
+        $('#shoppingResults').on('click', '.delete-at', function () {
+            let rowId = $(this).data('id');
+            shoppingResults.row($('tr[data-id="' + rowId + '"]')).remove().draw();
+            
+            deleteFromShoppingList(rowId).then(() => {
+                updateSummaryShoppingList();
+            }).catch(error => {
+                console.error('Error updating shopping list:', error);
+            });
+        });
+
+        function updateSummaryShoppingList() {
+            let url = window.location.pathname + "?handler=Summary";
+            
+            // Return the $.ajax promise
+            return $.ajax({
+                url: url,
+                type: 'GET',
+                dataType: 'json'
+            })
+            .then(function(data) {
+                // Assuming 'summaryResults' is a DataTable instance
+                summaryResults.clear().rows.add(data).draw();
+            })
+            .catch(function(error) {
+                console.error('Error fetching the partial view:', error);
+            });
+        }
+
+        function deleteFromShoppingList(productSendId) {
+            let url = window.location.pathname;
+            url += "?handler=DeleteProduct";
+
+            return fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: productSendId
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    if (shoppingResults.rows().count() === 0) {
+                        location.reload();
+                    }
+                });
+        }
+    </script>
+}

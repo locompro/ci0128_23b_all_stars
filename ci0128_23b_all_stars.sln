@@ -10,7 +10,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Locompro.Tests", "Tests\Uni
 		{810C4903-CADB-4CB8-84FD-22D4FE0FBFEC} = {810C4903-CADB-4CB8-84FD-22D4FE0FBFEC}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Locompro.FunctionalTests", "tests\functional_tests\Locompro.FunctionalTests\Locompro.FunctionalTests.csproj", "{EAE3D792-05EB-40B7-91A4-F1D78D06562E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Locompro.FunctionalTests", "tests\functional_tests\Locompro.FunctionalTests\Locompro.FunctionalTests.csproj", "{EAE3D792-05EB-40B7-91A4-F1D78D06562E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

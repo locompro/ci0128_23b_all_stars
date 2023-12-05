@@ -7,12 +7,15 @@
 
 <link rel="stylesheet" href="~/css/SearchResults.css" asp-append-version="true"/>
 <link rel="stylesheet" href="~/css/ImageDisplay.css" asp-append-version="true"/>
+<link rel="stylesheet" href="~/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="~/assets/css/select2.min.css"/>
     <link rel="stylesheet" href="~/assets/css/select2-bootstrap.min.css"/>
 <link rel="stylesheet" href="~/css/custom-select2-styles.css"/>
 
-<div class="container  pt-5 search-results-page-container">
-    <div class="container">
+<div class="pt-5 search-results-page-container justify-content-center d-flex"
+     style="margin-left:0; margin-right:0; width:100%; padding-left: 0; padding-right:0">
+    <div class="justify-content-center"
+         style="margin-left:0; margin-right:0; width:75%">
         <div id="inputGroup" class="justify-content-center search-input-group">
             <div id="searchBarGroup" class="justify-content-center form-actions input-group search-bar-group-default">
                 <div class=" search-box form-control pe-4 rounded-pill input-group">
@@ -49,31 +52,22 @@
             </div>
             <button id="closeModalButton" class="close-modal-button-hidden" onclick="closeModal()"></button>
         </div>
-        <div class="container search-input-group-on-advanced-search row"
-             style="margin-top: 10px; margin-left: 0px">
+        <div class="search-input-group-on-advanced-search row"
+             style="margin-top: 10px; margin-left: 0; padding-left: 20px; padding-right: 20px; margin-right: 0">
             <div class="col align-self-center">
                 <button class="advanced-search-results-base search-results-advanced-search-button-initial btn-primary rounded-pill"
                         id="clearFiltersButton"
-                        style="padding-left: 15px; padding-right: 15px; padding-top: 7px; padding-bottom: 7px"
-                        onclick="clearFilters()"
+                        style="padding-left: 10px; padding-right: 10px; padding-top: 7px; padding-bottom: 7px"
+                        onclick="window.getPage().clearFilters()"
                         type="button">
-                    Limpiar
+                    Limpiar filtros
                 </button>
-            </div>
-            <div class="col">
-                <label class="form-label d-lg-flex justify-content-xxl-center">Nombre</label>
-                <select class="form-select"
-                        type="submit"
-                        onChange="applyFilter(this)"
-                        style="font-family: Roboto, sans-serif;"
-                        id="productNameFilter">
-                </select>
             </div>
             <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Provincia</label>
                 <select class="form-select"
                         type="submit"
-                        onChange="applyFilter(this)"
+                        onChange="window.getPage().applyFilter(this)"
                         style="font-family: Roboto, sans-serif;"
                         id="provinceFilter">
                 </select>
@@ -82,7 +76,7 @@
                 <label class="form-label d-lg-flex justify-content-xxl-center">Cantón</label>
                 <select class="form-select"
                         type="submit"
-                        onChange="applyFilter(this)"
+                        onChange="window.getPage().applyFilter(this)"
                         style="font-family: Roboto, sans-serif;"
                         id="cantonFilter">
                 </select>
@@ -92,20 +86,29 @@
                 <input type="number"
                        class="form-control"
                        id="minPriceFilter"
-                       onChange="applyFilter(this)">
+                       onChange="window.getPage().applyFilter(this)">
             </div>
             <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Precio máximo</label>
                 <input type="number"
                        class="form-control"
                        id="maxPriceFilter"
-                       onChange="applyFilter(this)">
+                       onChange="window.getPage().applyFilter(this)">
+            </div>
+            <div class="col">
+                <label class="form-label d-lg-flex justify-content-xxl-center">Categoria</label>
+                <select class="form-select"
+                        type="submit"
+                        onChange="window.getPage().applyFilter(this)"
+                        style="font-family: Roboto, sans-serif;"
+                        id="categoryFilter">
+                </select>
             </div>
             <div class="col">
                 <label class="form-label d-lg-flex justify-content-xxl-center">Marca</label>
                 <select class="form-select"
                         type="submit"
-                        onChange="applyFilter(this)"
+                        onChange="window.getPage().applyFilter(this)"
                         style="font-family: Roboto, sans-serif;"
                         id="brandFilter">
                 </select>
@@ -114,18 +117,9 @@
                 <label class="form-label d-lg-flex justify-content-xxl-center">Modelo</label>
                 <select class="form-select"
                         type="submit"
-                        onChange="applyFilter(this)"
+                        onChange="window.getPage().applyFilter(this)"
                         style="font-family: Roboto, sans-serif;"
                         id="modelFilter">
-                </select>
-            </div>
-            <div class="col">
-                <label class="form-label d-lg-flex justify-content-xxl-center">Categoria</label>
-                <select class="form-select"
-                        type="submit"
-                        onChange="applyFilter(this)"
-                        style="font-family: Roboto, sans-serif;"
-                        id="categoryFilter">
                 </select>
             </div>
         </div>
@@ -138,83 +132,19 @@
                 </div>
             </div>
         </div>
-        <div class="card border search-results-card" border="5px solid black;">
-            <div>
-                <h6 id="resultsAmountDisplay"></h6>
-                <div class="table-encapsulate-for-results">
-                    <table class="table table-hover search-results-table">
-                        <thead>
-                        <tr>
-                            <th scope="col">
-                                <a
-                                    onclick="setOrder('Name')"
-                                    id="nameSortButton"
-                                    class="no-underline-link">
-                                    Producto
-                                </a>
-                            </th>
-                            <th scope="col">Precio</th>
-                            <th scope="col" style="padding-left: 30px">Tienda</th>
-                            <th scope="col">Marca</th>
-                            <th scope="col">Modelo</th>
-                            <th scope="col">
-                                <a
-                                    onclick="setOrder('Province')"
-                                    id="provinceSortButton"
-                                    class="no-underline-link">
-                                    Provincia
-                                </a>
-                            </th>
-                            <th scope="col">
-                                <a
-                                    onclick="setOrder('Canton')"
-                                    id="cantonSortButton"
-                                    class="no-underline-link">
-                                    Cantón
-                                </a>
-                            </th>
-                            <th scope="col">Descripción</th>
-                            <th scope="col">Última Contribución </th>
-                        </tr>
-                        </thead>
-                        <tbody id="resultsTableBody">
-                        </tbody>
-                    </table>
-                </div>
-                <div class="previous-next-button-area">
-                    <button
-                        class="btn btn-primary"
-                        onclick="changeIndexButtonPressed(- 1)"
-                        id="previousIndexButton"
-                        type="button">
-                        Previo
-                    </button>
-                    <input type="number"
-                           class="number-input-pages"
-                           id="indexPageInput"
-                           onchange="changeIndexPage(this)">
-                    <button
-                        class="btn btn-primary"
-                        onclick="changeIndexButtonPressed(1)"
-                        id="nextIndexButton"
-                        type="button">
-                        Siguiente
-                    </button>
-                    <h6 id="pageAmountDisplay" class="page-amount-text"></h6>
-                </div>
-            </div>
+        <div id="resultsCard">
         </div>
     </div>
 </div>
 
-@section Scripts {
-    <script src="~/js/SearchResults/search-results.js"></script>
+@section Scripts {  
+    <script type="module" src="~/js/SearchResults/search-results.js"></script>
     <script src="~/js/search.js"></script>
     <script src="~/js/SearchResults/search-results-helpers.js"></script>
-    <script src="~/js/SearchResults/search-results-filter-menu.js"></script>
-    <script src="~/js/SearchResults/search-results-table.js"></script>
-    <script src="~/js/SearchResults/search-results-page-index-complex.js"></script>
     <script src="~/js/SearchResults/ItemDetailsModal/search-results-modal.js"></script>
     <script src="~/js/SearchResults/ItemDetailsModal/search-results-picture-container.js"></script>
     <script src="~/js/SearchResults/ItemDetailsModal/search-results-submission-rating.js"></script>
+    <script type="module" src="~/js/maps/maps-modal.js"></script>
+    <script src="~/lib/jquery/jquery.min.js"></script>
+    <script src="~/lib/jquery/jquery.dataTables.min.js"></script>
 }

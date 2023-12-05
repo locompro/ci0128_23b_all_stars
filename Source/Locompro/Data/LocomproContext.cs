@@ -4,6 +4,7 @@ using Locompro.Models.Results;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Geometries;
 
 namespace Locompro.Data;
 
@@ -27,6 +28,8 @@ public class LocomproContext : IdentityDbContext<User>
     public DbSet<Category> Categories { get; set; } = default!;
     public DbSet<Submission> Submissions { get; set; } = default!;
     public DbSet<Report> Reports { get; set; } = default!;
+    public DbSet<UserReport> UserReports { get; set; } = default!;
+    public DbSet<AutoReport> AutoReports { get; set; } = default!;
     public DbSet<Store> Stores { get; set; } = default!;
     public DbSet<Product> Products { get; set; } = default!;
     public DbSet<Picture> Pictures { get; set; } = default!;
@@ -72,45 +75,103 @@ public class LocomproContext : IdentityDbContext<User>
             .HasOne(s => s.Store)
             .WithMany()
             .HasForeignKey(s => s.StoreName)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
         builder.Entity<Submission>()
             .HasOne(s => s.Product)
             .WithMany(p => p.Submissions)
             .HasForeignKey(s => s.ProductId)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
         builder.Entity<Submission>()
             .HasOne(s => s.User)
-            .WithMany(u => u.Submissions)
+            .WithMany(u => u.CreatedSubmissions)
             .HasForeignKey(s => s.UserId)
+            .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
         builder.Entity<Submission>()
-            .HasMany(s => s.Reports)
+            .HasMany(s => s.Approvers)
+            .WithMany(u => u.ApprovedSubmissions)
+            .UsingEntity<Dictionary<string, object>>(
+                "SubmissionApprover", // Name of the join table for approvers
+                j => j.HasOne<User>().WithMany().HasForeignKey("ApproverId").OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne<Submission>().WithMany().HasForeignKey("SubmissionUserId", "SubmissionEntryTime").OnDelete(DeleteBehavior.Cascade)
+            );
+
+        builder.Entity<Submission>()
+            .HasMany(s => s.Rejecters)
+            .WithMany(u => u.RejectedSubmissions)
+            .UsingEntity<Dictionary<string, object>>(
+                "SubmissionRejecter", // Name of the join table for rejecters
+                j => j.HasOne<User>().WithMany().HasForeignKey("RejecterId").OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne<Submission>().WithMany().HasForeignKey("SubmissionUserId", "SubmissionEntryTime").OnDelete(DeleteBehavior.Cascade)
+            );
+
+        builder.Entity<Submission>()
+            .HasMany(s => s.UserReports)
             .WithOne(r => r.Submission)
             .IsRequired();
+
+        builder.Entity<User>()
+            .HasMany(u => u.CreatedSubmissions)
+            .WithOne(s => s.User)
+            .OnDelete(DeleteBehavior.NoAction);
+        
+        builder.Entity<User>()
+            .HasMany(u => u.ShoppedProducts)
+            .WithMany(p => p.Shoppers)
+            .UsingEntity<Dictionary<string, int>>(
+                "ShoppingList",
+                j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId").OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade)
+            );
+        
+        builder.Entity<Product>()
+            .HasMany(p => p.Shoppers)
+            .WithMany(u => u.ShoppedProducts)
+            .UsingEntity<Dictionary<string, int>>(
+                "ShoppingList",
+                j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId").OnDelete(DeleteBehavior.Cascade)
+            );
 
         builder.Entity<Report>()
             .HasKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime, r.UserId });
 
-        builder.Entity<Report>()
+        builder.Entity<UserReport>().HasBaseType<Report>();
+
+        builder.Entity<UserReport>()
             .HasOne(r => r.Submission)
-            .WithMany(s => s.Reports)
+            .WithMany(s => s.UserReports)
             .HasForeignKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime })
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
 
-        builder.Entity<Report>()
+        builder.Entity<UserReport>()
             .HasOne(r => r.User)
             .WithMany()
             .HasForeignKey(r => r.UserId)
             .OnDelete(DeleteBehavior.ClientSetNull)
             .IsRequired();
 
-        builder.Entity<User>()
-            .HasMany(u => u.Submissions)
-            .WithOne(s => s.User);
+        builder.Entity<AutoReport>().HasBaseType<Report>();
+
+        builder.Entity<AutoReport>()
+            .HasOne(r => r.Submission)
+            .WithMany(s => s.AutoReports)
+            .HasForeignKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime })
+            .OnDelete(DeleteBehavior.Cascade)
+            .IsRequired();
+
+        builder.Entity<AutoReport>()
+            .HasOne(r => r.User)
+            .WithMany()
+            .HasForeignKey(r => r.UserId)
+            .OnDelete(DeleteBehavior.ClientSetNull)
+            .IsRequired();
 
         builder.Entity<Picture>()
             .HasKey(p => new { p.SubmissionUserId, p.SubmissionEntryTime, p.Index });
@@ -122,16 +183,24 @@ public class LocomproContext : IdentityDbContext<User>
             .IsRequired();
         builder.Entity<GetPicturesResult>().HasNoKey();
 
+        builder.Entity<Store>(entity =>
+        {
+            entity.Property(e => e.Location)
+                .HasColumnType("geography");
+        });
+
         builder.HasDbFunction(
             typeof(LocomproContext).GetMethod(nameof(GetQualifiedUserIDs)) ??
             throw new InvalidOperationException($"Method {nameof(GetQualifiedUserIDs)} not found."));
         builder.HasDbFunction(
             typeof(LocomproContext).GetMethod(nameof(CountRatedSubmissions), new[] { typeof(string) }) ??
             throw new InvalidOperationException($"Method {nameof(CountRatedSubmissions)} not found."));
+
         builder.HasDbFunction(
             typeof(LocomproContext).GetMethod(nameof(GetPictures),
                 new[] { typeof(string), typeof(int), typeof(int) }) ??
             throw new InvalidOperationException($"Method {nameof(GetPictures)} not found."));
+
     }
 
     [DbFunction("GetPictures", "dbo")]
@@ -140,6 +209,12 @@ public class LocomproContext : IdentityDbContext<User>
         return FromExpression(() => GetPictures(storeName, productId, maxPictures));
     }
 
+    /// <summary>
+    ///   Represents a database function that counts the number of rated submissions by a specific user.
+    /// </summary>
+    /// <param name="userId"> the id of the user </param>
+    /// <returns> int with count of rated submissions </returns>
+    /// <exception cref="NotSupportedException"></exception>
     [DbFunction("CountRatedSubmissions", "dbo")]
     public int CountRatedSubmissions(string userId)
     {
@@ -150,6 +225,36 @@ public class LocomproContext : IdentityDbContext<User>
     public IQueryable<GetQualifiedUserIDsResult> GetQualifiedUserIDs()
     {
         return FromExpression(() => GetQualifiedUserIDs());
+    }
+
+    /// <summary>
+    /// Represents a database function that counts the number of reported submissions by a specific user.
+    /// </summary>
+    /// <param name="userId">The ID of the user.</param>
+    /// <returns>The count of reported submissions by the user.</returns>
+    /// <exception cref="NotSupportedException">Thrown when the method is not supported.</exception>
+    [DbFunction("CountReportedSubmissions", "dbo")]
+    public int CountReportedSubmissions(string userId)
+    {
+        throw new NotSupportedException();
+    }
+
+    /// <summary>
+    ///   Represents a database function that counts the number of submissions by a specific user.
+    /// </summary>
+    /// <param name="userId"></param>
+    /// <returns></returns>
+    /// <exception cref="NotSupportedException"></exception>
+    [DbFunction("CountSubmissions", "dbo")]
+    public int CountSubmissions(string userId)
+    {
+        throw new NotSupportedException();
+    }
+
+    [DbFunction("MostReportedUsers", "dbo")]
+    public IQueryable<MostReportedUsersResult> GetMostReportedUsersResults()
+    {
+        return FromExpression(() => GetMostReportedUsersResults());
     }
 
     /// <summary>

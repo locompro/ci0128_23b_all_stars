@@ -2,6 +2,7 @@ using Locompro.Data;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Services.Domain;
+using NetTopologySuite.Geometries;
 
 namespace Locompro.Services;
 
@@ -44,14 +45,6 @@ public class ContributionService : Service, IContributionService
     }
 
     /// <inheritdoc />
-    /// <summary>
-    /// Adds a new submission to the system based on the provided view models.
-    /// </summary>
-    /// <param name="storeVm">The view model containing the store data.</param>
-    /// <param name="productVm">The view model containing the product data.</param>
-    /// <param name="submissionVm">The view model containing the submission data.</param>
-    /// <param name="picturesVMs">The list of view models for the pictures associated with the submission.</param>
-    /// <returns>A task representing the asynchronous operation of adding a submission.</returns>
     public async Task AddSubmission(StoreVm storeVm, ProductVm productVm,
         SubmissionVm submissionVm, List<PictureVm> picturesVMs)
     {
@@ -88,8 +81,11 @@ public class ContributionService : Service, IContributionService
             Name = storeVm.SName,
             Canton = canton,
             Address = storeVm.Address,
-            Telephone = storeVm.Telephone
+            Telephone = storeVm.Telephone,
+            Location = storeVm.GetLocation()
         };
+        
+        Console.WriteLine($"Store: {store.Name} Location: {store.Location.Coordinate}");
 
         return store;
     }

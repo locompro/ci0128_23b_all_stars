@@ -1,4 +1,4 @@
-namespace Locompro.Models;
+namespace Locompro.Models.ViewModels;
 
 /// <summary>
 ///     View Model for updating the rating of a submission

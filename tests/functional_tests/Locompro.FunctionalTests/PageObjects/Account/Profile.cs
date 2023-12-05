@@ -16,6 +16,7 @@ public class Profile : BasePage
     private readonly By _address = By.Id("Address");
     private readonly By _contributions = By.Id("Contributions");
     private readonly By _rating = By.Id("Rating");
+    private readonly By _contributionsButton = By.Id("ContributionsButton");
     private readonly By _updateUserDataButton = By.Id("UpdateUserDataButton");
     private readonly By _changePasswordButton = By.Id("ChangePasswordButton");
     
@@ -35,6 +36,7 @@ public class Profile : BasePage
     public double GetRating() => double.Parse(_driver.FindElement(_rating).Text);
 
     // Methods for interacting with the page elements
+    public void ClickContributionsButton() => _driver.FindElement(_contributionsButton).Click();
     public void ClickUpdateProfile() => _driver.FindElement(_updateUserDataButton).Click();
     public void ClickChangePassword() => _driver.FindElement(_changePasswordButton).Click();
     
@@ -65,7 +67,7 @@ public class Profile : BasePage
         WaitForElementToBeVisible(By.Id("ChangePasswordModal"), 5);
     }
 
-     public bool ChechPasswordModalIsAsExpected()
+    public bool ChechPasswordModalIsAsExpected()
      {
          try
          {
@@ -117,7 +119,6 @@ public class Profile : BasePage
 // Method to fill and submit 'Update User Data' form
     public void UpdateUserData(string email, string province, string canton, string exactAddress)
     {
-            
         _driver.FindElement(By.Id("UserDataUpdate_Email")).SendKeys(email);
         _driver.FindElement(By.Id("UserDataUpdate_Province")).SendKeys(province);
         _driver.FindElement(By.Id("UserDataUpdate_Canton")).SendKeys(canton);
@@ -126,8 +127,6 @@ public class Profile : BasePage
         _driver.FindElement(By.Id("PostUserUpdateButton")).Click();
     
     }
-
-
     
     public bool WaitForElementToBeVisible(By locator, int timeoutInSeconds)
     {
@@ -162,10 +161,4 @@ public class Profile : BasePage
             return (element != null && element.Enabled && element.Displayed) ? element : throw new WebDriverException("Element not clickable");
         });
     }
-
-
-    
-
-    // You can add more methods here for interacting with the page elements and modals
-    // For example, filling forms within modals and submitting them
 }

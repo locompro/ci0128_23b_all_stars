@@ -35,7 +35,7 @@ public class ProfileTest
         {
             Assert.That(_profile.GetUserName(), Is.EqualTo(_loginData.Username));
             Assert.That(_profile.GetEmail(), Is.EqualTo(_loginData.Email));
-            Assert.That(_profile.GetAddress(), Is.Empty.Or.Null);
+            Assert.That(_profile.GetAddress(), Is.EqualTo("No fue proveído"));
             Assert.That(_profile.GetContributions(), Is.EqualTo(0));
             Assert.That(_profile.GetRating(), Is.EqualTo(0));
         });
@@ -101,6 +101,43 @@ public class ProfileTest
         driver.Quit();
     }
 
+    /// <summary>
+    /// Check if the contributions button redirects correctly
+    /// </summary>
+    /// <author> Gabriel Molina Bulgarelli - C14826 - Sprint 3</author>
+
+    [Test]
+    public void ContributionsButtonRedirectsCorrectly()
+    {
+        // arrange
+        var driver = new ChromeDriver();
+        _login = new Login(driver);
+        _login.GoTo();
+        _login.LoginAs(_loginData);
+        WaitUntilUserIsLoggedIn(driver);
+        _profile = new Profile(driver);
+
+        // act
+        _profile.GoTo();
+        _profile.ClickContributionsButton();
+
+
+        WebDriverWait wait = new WebDriverWait(driver, TimeSpan.FromSeconds(2));
+        // assert
+        wait.Until(d => new Uri(driver.Url).AbsolutePath.Contains("/Account/Contributions"));
+
+        string expectedUrl = "https://localhost:7249/Account/Contributions?query=";
+        Assert.That(driver.Url, Contains.Substring(expectedUrl));
+
+        IWebElement contributionsTitle = driver.FindElement(By.Id("ContributionsTitle"));
+
+        string titleText = contributionsTitle.Text;
+
+        Assert.That(titleText, Is.EqualTo("Mis Contribuciones"));
+        driver.Close();
+        driver.Quit();
+    }
+    
     public void WaitUntilUserIsLoggedIn(IWebDriver driver)
     {
         var wait = new WebDriverWait(driver, TimeSpan.FromSeconds(10));

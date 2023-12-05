@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using Locompro.Models.Entities;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,18 +15,22 @@ public class SubmissionVm
     {
         EntryTime = getFormattedDate(submission) ?? "";
         Price = submission.Price;
-        Description = submission.Description ?? "";
+        Description = submission.Description ?? "N/A";
         Status = submission.Status;
         UserId = submission.UserId ?? "";
+        Username = submission.User.UserName ?? "N/A";
         Rating = submission.Rating;
-        NonFormatedEntryTime = submission.EntryTime;
+        NonFormatedEntryTime =
+            submission.EntryTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture);
+        NumberOfRatings = submission.NumberOfRatings;
     }
 
-    [BindProperty] [StringLength(120)] public string Description { get; init; }
+    [BindProperty] [StringLength(140)] public string Description { get; init; }
 
     public SubmissionStatus Status { get; set; }
     
     public string UserId { get; set; }
+    public string Username { get; set; }
 
     [BindProperty]
     [Required(ErrorMessage = "Ingresar el precio del producto.")]
@@ -33,9 +38,13 @@ public class SubmissionVm
     [RegularExpression(@"^\d+$", ErrorMessage = "El precio debe contener solamente números enteros.")]
     public int Price { get; init; }
 
+    public string FormattedPrice => Price.ToString("C0").TrimStart('$');
+
     public string EntryTime { get; }
 
-    public DateTime NonFormatedEntryTime { get; set; }
+    public string NonFormatedEntryTime { get; set; }
 
     public float Rating { get; set; }
+
+    public long NumberOfRatings { get; set; }
 }

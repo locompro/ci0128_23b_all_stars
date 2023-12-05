@@ -13,6 +13,13 @@ public interface IReportRepository : ICrudRepository<Report, string>
     /// <param name="userId">Third part of the primary key</param>
     /// <returns>Entity for the passed ID.</returns>
     Task<Report> GetByIdAsync(string submissionUserId, DateTime submissionEntryTime, string userId);
+
+    /// <summary>
+    ///     Gets all entities for a given user ID asynchronously.
+    /// </summary>
+    /// <param name="userId">User Id for which to get all entities</param>
+    /// <returns>Entity for the passed ID.</returns>
+    Task<IEnumerable<Report>> GetByUserIdAsync(string userId);
     
     /// <summary>
     /// Updates an entity for this repository asynchronously. If the entity does not exist, adds it.
@@ -23,4 +30,12 @@ public interface IReportRepository : ICrudRepository<Report, string>
     /// <param name="userId">Third part of the primary key</param>
     /// <returns>The updated or added entity.</returns>
     Task UpdateAsync(string submissionUserId, DateTime submissionEntryTime, string userId, Report entity);
+
+    /// <summary>
+    /// Updates a list of entities for this repository asynchronously. If the entity does not exist, adds it.
+    /// </summary>
+    /// <param name="autoReports"></param>
+    /// <param name="reports"> A list of reports to add</param>
+    /// <returns>An async operation</returns>
+    Task AddOrUpdateManyAutomaticReports(IEnumerable<AutoReport> autoReports);
 }

@@ -1,0 +1,27 @@
+<table id="summaryResults" class="display table-condensed search-results-table" style="width:100%">
+    <caption></caption>
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Provincia</th>
+            <th>Cantón</th>
+            <th style="text-align: center">Cantidad</th>
+            <th style="text-align: center">% Disponible</th>
+            <th style="text-align: right">Costo total</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var store in Model.Stores)
+        {
+            <tr>
+                <td>@store.Name</td>
+                <td>@store.Province</td>
+                <td>@store.Canton</td>
+                <td style="text-align: center">@store.ProductsAvailable</td>
+                <td style="text-align: center">@store.PercentageProductsAvailable</td>
+                <td style="text-align: right">@store.TotalCost.ToString("#,###,##0")</td>
+        </tr>
+        }
+    </tbody>
+</table>
+

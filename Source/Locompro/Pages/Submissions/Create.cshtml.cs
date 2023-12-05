@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Locompro.Common;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 using Locompro.Pages.Util;
@@ -7,6 +8,7 @@ using Locompro.Services.Domain;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Locompro.Pages.Submissions;
 
@@ -17,19 +19,25 @@ namespace Locompro.Pages.Submissions;
 public class CreateModel : PageModel
 {
     private readonly IContributionService _contributionService;
+    
+    private readonly IApiKeyHandler _apiKeyHandler;
 
     private readonly INamedEntityDomainService<Product, int> _productService;
 
     private readonly INamedEntityDomainService<Store, string> _storeService;
 
     public CreateModel(INamedEntityDomainService<Store, string> storeService,
-        INamedEntityDomainService<Product, int> productService, IContributionService contributionService)
+        INamedEntityDomainService<Product, int> productService,
+        IContributionService contributionService,
+        IApiKeyHandler apiKeyHandler)
     {
         _storeService = storeService;
         _productService = productService;
         _contributionService = contributionService;
+        _apiKeyHandler = apiKeyHandler;
+        
     }
-
+    
     [BindProperty] public StoreVm StoreVm { get; set; }
 
     [BindProperty] public ProductVm ProductVm { get; set; }
@@ -65,7 +73,11 @@ public class CreateModel : PageModel
 
         return new JsonResult(result);
     }
-
+    public IActionResult OnGetGoogleMapsApiKey()
+    {
+        var apiKey = _apiKeyHandler.GetApiKey();
+        return new JsonResult(apiKey);
+    }
     public async Task<IActionResult> OnPostAsync()
     {
         // Remove ModelState errors for StoreVm if it's an existing store
@@ -77,6 +89,12 @@ public class CreateModel : PageModel
             ModelState.Remove("StoreVm.Canton");
         }
 
+        if (!StoreVm.IsExistingStore() && await _storeService.Get(StoreVm.SName) != null)
+        {
+            // Entity exists, add a model error
+            ModelState.AddModelError("StoreVm.SName", "Esta tienda ya existe.");
+        }
+        
         if (!ModelState.IsValid) return Page();
 
         SubmissionVm.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -84,9 +102,9 @@ public class CreateModel : PageModel
         var formFiles = Request.Form.Files;
         
         var pictureVMs = PictureParser.Parse(formFiles);
-
+        
         await _contributionService.AddSubmission(StoreVm, ProductVm, SubmissionVm, pictureVMs);
-
+        
         return RedirectToPage("/Index");
     }
 }

@@ -1,46 +1,109 @@
-<div class="row">
-    <div class="col-5">
-        <div class="row card-title">
-            <h4 class="col-2" style="display: flex; justify-content: center; align-items: center;">
-                <i class="fa fa-envelope" style="color: #0a53be">
-                </i>
-            </h4>
-            <h4 id="modalProductName" class="col-10" style="margin-top: 6px"></h4>
+@{
+    var isLoggedIn = User.Identity is {IsAuthenticated: true };
+}
+
+<div class="row pt-3">
+    <div class="col-md-6">
+        <div class="row">
+            <!-- Nombre del producto -->
+            <div class="col-md-5">
+                <div class="row card-title">
+                    <div class="col-sm-4" style="display: flex; justify-content: center; align-items: center;">
+                        <i class="fa-solid fa-box" style="color: #0a53be; font-size: 33px;"></i>
+                    </div>
+                    <div class="col">
+                        <h3 style="text-align: left; color: #333;">Producto</h3>
+                        <h5 id="modalProductName" style="opacity: 0.6;"></h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nombre de tienda del producto -->
+            <div class="col-md">
+                <div class="row card-title">
+                    <div class="col-sm-4" style="display: flex; justify-content: center; align-items: center;">
+                        <i class="fa-solid fa-shopping-cart" style="color: #0a53be; font-size: 33px;"></i>
+                    </div>
+                    <div class="col">
+                        <h3 style="text-align: left; color: #333;">Tienda</h3>
+                        <h5 id="modalStoreName" style="opacity: 0.6;"></h5>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row card-title" style="margin-bottom: 20px;">
-            <h4 class="col-2" style="display: flex; justify-content: center; align-items: center;">
-                <i class="fa fa-home" style="color: #0a53be"></i>
-            </h4>
-            <h4 id="modalStoreName" class="col-10" style="margin-top: 6px"></h4>
+
+        <div class="row">
+            <!-- Modelo del producto -->
+            <div class="col-md-5">
+                <div class="row card-title">
+                    <div class="col-sm-4" style="display: flex; justify-content: center; align-items: center;">
+                        <i class="fa-solid fa-certificate" style="color: #0a53be; font-size: 33px;"></i>
+                    </div>
+                    <div class="col">
+                        <h3 style="text-align: left; color: #333;">Modelo</h3>
+                        <h5 id="modalModel" style="opacity: 0.6;"></h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Marca del producto -->
+            <div class="col">
+                <div class="row card-title">
+                    <div class="col-sm-4" style="display: flex; justify-content: center; align-items: center;">
+                        <i class="fa fa-trademark" style="color: #0a53be; font-size: 33px;"></i>
+                    </div>
+                    <div class="col">
+                        <h3 style="text-align: left; color: #333;">Marca</h3>
+                        <h5 id="modalBrand" style="opacity: 0.6;"></h5>
+                    </div>
+                </div>
+            </div>
         </div>
-        <h6 id="modalModel"> </h6>
-        <h6 id="modalBrand" style="margin-bottom: 20px"> </h6>
+        @if (isLoggedIn)
+        {
+        <div class="row">
+            <div class="col" style="display: flex; justify-content: center; align-items: center;">
+                <h5 id="iconText" class="col-10" style="padding-left: 30px; margin-top: 15px; display: inline; opacity: 0; transition: opacity 0.5s ease 0s;"> ¡Agregado a lista de compras!</h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <div class="row card-title">
+                    <div class="col-sm-4" style="margin-top: -35px; vertical-align: 10px; display: flex; justify-content: center; align-items: center;">
+                            <i class="fade-icon fa-regular fa-bookmark" id="bookmarkIcon" style="color: #0a53be; font-size: 33px; margin-bottom: 20px;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
     </div>
-    <div class="slideshow-container col-6" style="width: 380px; height: 220px; text-align: center;">
+    <div class="slideshow-container col" style="width: 100%; max-width: 380px; height: 220px; text-align: center;">
         <a class="prev col"
            style=""
            id="prevButton"
-           onclick="plusSlides(-1)">
+           onclick="window.getPage().plusSlides(-1)">
             &#10094;
         </a>
         <div id="picturesContainer">
         </div>
         <a class="next col"
-           onclick="plusSlides(1)"
+           onclick="window.getPage().plusSlides(1)"
            id="nextButton">
             &#10095;
         </a>
     </div>
 </div>
 <div>
-    <div class="table-responsive d-xxl-flex table mb-0 pt-3 pe-2">
-        <table class="table table-striped table-sm my-0 mydatatable">
+    <div id="submissionsModalTableContainer" class="pt-4" data-is-user-authenticated="@isLoggedIn">
+        <table id="SubmissionsPerItem" class="display compact mb-0 pe-2" style="width:100%">
+            <caption></caption>
             <thead>
             <tr>
-                <th class="text-center">Fecha de Contribución&nbsp;</th>
+                <th>Usuario&nbsp;</th>
+                <th class="text-center">Fecha&nbsp;</th>
                 <th>Precio&nbsp;</th>
                 <th>Descripción&nbsp;</th>
-                <th class="text-center">Rating</th>
+                <th>Calificación</th>
                 <th class="text-center">Reportar</th>
             </tr>
             </thead>
@@ -48,8 +111,6 @@
             </tbody>
         </table>
     </div>
-    
-    <!-- Modal -->
     <div class="modal fade no-backdrop-opacity" id="descriptionModal" tabindex="-1" role="dialog" aria-labelledby="descriptionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius: 15px; padding: 5px 6px 10px 5px;">
@@ -57,17 +118,30 @@
                     <h5 class="modal-title" id="descriptionModalLabel" style="flex-grow: 1;">Descripción del reporte</h5>
                 </div>
                 <div class="modal-body" style="border-top: none; padding: 10px 15px 0px 15px;">
-                    <!-- This form will post to your OnPost method -->
                     <form id="reportForm" method="post" asp-page="/SearchResults/SearchResults" asp-page-handler="ReportSubmission">
                         <div class="form-group">
-                            <textarea class="form-control" id="descriptionInput" name="ReportVm.Description" rows="3"></textarea>
-                            <input type="hidden" name="ReportVm.SubmissionUserId" value="">
-                            <input type="hidden" name="ReportVm.SubmissionEntryTime" value="">
+                            <textarea class="form-control" id="descriptionInput" name="UserReportVm.Description" rows="3"
+                                maxlength="140"></textarea>
+                            <input type="hidden" name="UserReportVm.SubmissionUserId" value="">
+                            <input type="hidden" name="UserReportVm.SubmissionEntryTime" value="">
                         </div>
                         <div class="modal-footer" style="border-top: none; padding: 10px 15px 0px 15px;">
                             <button type="submit" class="btn btn-primary">Reportar</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="mustBeAuthenticatedModal" tabindex="-1" role="dialog" aria-labelledby="mustBeAuthenticatedModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; padding: 5px 6px 10px 5px;">
+                <div class="modal-header" style="border-bottom: none; padding: 10px 15px;">
+                    <h5 class="modal-title" id="mustBeAuthenticatedModalTitle" style="flex-grow: 1;">Debes estar identificado para poder calificar aportes</h5>
+                </div>
+                <div class="modal-footer" style="border-top: none; padding: 10px 15px 0px 15px;">
+                    <button role="button" asp-page="Account/Login" class="btn btn-primary" id="mustBeAuthenticatedSignInButton">Iniciar sesión</button>
                 </div>
             </div>
         </div>

@@ -6,6 +6,13 @@ namespace Locompro.Data.Repositories;
 public interface ISubmissionRepository : ICrudRepository<Submission, SubmissionKey>
 {
     /// <summary>
+    ///     Gets all submissions matching a given user Id
+    /// </summary>
+    /// <param name="userId">User Id for which to get all submissions</param>
+    /// <returns>Submissions create by a given user</returns>
+    Task<IEnumerable<Submission>> GetByUserIdAsync(string userId);
+    
+    /// <summary>
     ///     Gets an entity based on its ID asynchronously.
     /// </summary>
     /// <param name="userId">First part of the primary key</param>
@@ -22,17 +29,17 @@ public interface ISubmissionRepository : ICrudRepository<Submission, SubmissionK
     Task UpdateAsync(string userId, DateTime entryTime, Submission entity);
     
     /// <summary>
-    ///     Gets the search results submissions according to the list of search criteria or queries to be used
-    /// </summary>
-    /// <param name="searchQueries"> search queries, criteria or strategies to be used to find the desired submissions</param>
-    /// <returns></returns>
-    Task<IEnumerable<Submission>> GetSearchResults(SearchQueries searchQueries);
-
-    /// <summary>
     ///     Gets the submissions for a given Item
     /// </summary>
     /// <param name="storeName"></param>
     /// <param name="productName"></param>
     /// <returns></returns>
     Task<IEnumerable<Submission>> GetItemSubmissions(string storeName, string productName);
+
+    /// <summary>
+    /// Gets a summary of product availability at each store
+    /// </summary>
+    /// <param name="productIds">Ids of products to check for availability</param>
+    /// <returns>Summary of product availability at each store</returns>
+    Task<IEnumerable<ProductSummaryStore>> GetProductSummaryByStore(List<int> productIds);
 }
