@@ -1,5 +1,10 @@
+/**
+ * This script manages the advanced search maps modal for a web application.
+ * It sets up event listeners and handles interactions with the Google Maps API.
+ */
 import {GoogleMap} from "./google-map.js";
 
+// Constants representing various element IDs and country name.
 const country = "Costa Rica";
 const latitudeElementId = "latitude";
 const longitudeElementId = "longitude";
@@ -9,6 +14,10 @@ const provinceDropdownId = "provinceDropdown";
 const distanceElementId = "distanceRangeSlider";
 const elementId = "mapModal";
 
+/**
+ * Sets up a mutation observer to monitor changes in the modal container.
+ * This observer detects when new child elements are added to the modal container.
+ */
 document.addEventListener("DOMContentLoaded", function () {
     const modalContainer = document.getElementById("modalContainer");
     let hasAdded = false;
@@ -46,6 +55,10 @@ document.addEventListener("DOMContentLoaded", function () {
     modalObserver.observe(modalContainer, config);
 });
 
+/**
+ * Initializes and retrieves the advanced search maps modal.
+ * @param {string} elementId - The ID of the map modal element.
+ */
 function getAdvancedSearchMapsModal(elementId) {
     let mapModal = new MapsModal(elementId, country, provinceDropdownId, cantonDropdownId, distanceElementId,
         latitudeElementId, longitudeElementId, addressInputId);
@@ -57,7 +70,22 @@ function getAdvancedSearchMapsModal(elementId) {
     mapModal.setMapModalCreationListener().then(() => {});
 }
 
+/**
+ * Class representing a map modal.
+ * Handles the creation and interaction with the Google Map.
+ */
 class MapsModal {
+    /**
+     * Constructs a MapsModal instance.
+     * @param {string} mapModalElementId - The ID of the map modal element.
+     * @param {string} country - The name of the country.
+     * @param {string} provinceId - The ID of the province dropdown.
+     * @param {string} cantonId - The ID of the canton dropdown.
+     * @param {string} distanceElement - The ID of the distance range slider.
+     * @param {string} latitudeElementId - The ID of the latitude input element.
+     * @param {string} longitudeElementId - The ID of the longitude input element.
+     * @param {string} addressInputId - The ID of the address input element.
+     */
     constructor(mapModalElementId, country, provinceId, cantonId,
                 distanceElement, latitudeElementId, longitudeElementId, addressInputId) {
         this.country = country;
@@ -79,7 +107,11 @@ class MapsModal {
             sessionStorage.removeItem("mapApiAlreadyLoaded")
         }
     }
-    
+
+    /**
+     * Retrieves the API key for the Google Maps API.
+     * @returns {Promise<string>} A promise that resolves to the API key.
+     */
     async getApiKey() {
         let apiKey = "";
         
@@ -100,7 +132,10 @@ class MapsModal {
         
         return apiKey;
     }
-    
+
+    /**
+     * Sets up a listener for the creation of the map modal.
+     */
     async setMapModalCreationListener() {
         this.apiKey = await this.getApiKey();
         
@@ -132,7 +167,10 @@ class MapsModal {
             this.apiAlreadyLoaded = true;
         });
     }
-    
+
+    /**
+     * Initiates the map within the modal.
+     */
     initiateMap() {
         this.map = new GoogleMap(
             "StoreModalMap",
@@ -142,7 +180,10 @@ class MapsModal {
         
         this.setMapModalCreationListener().then(() => {});
     }
-    
+
+    /**
+     * Sets the location on the map based on the provided address.
+     */
     setLocationOnMap() {
         if (!this.hasPreviousAddress()) {
             return;
@@ -152,14 +193,22 @@ class MapsModal {
         
         this.map.findLocationByAddress(address);
     }
-    
+
+    /**
+     * Checks if a previous address has been provided.
+     * @returns {boolean} True if a previous address exists, false otherwise.
+     */
     hasPreviousAddress() {
         let canton = this.cantonInput.value;
         let province = this.provinceInput.value;
         
         return province !== "Todos" || canton !== "Todos";
     }
-    
+
+    /**
+     * Constructs the location address from the selected province and canton.
+     * @returns {string} The constructed address.
+     */
     getLocationAddress() {
         let canton = this.cantonInput.value;
         let province = this.provinceInput.value;
@@ -180,6 +229,9 @@ class MapsModal {
         return address;
     }
 
+    /**
+     * Clears the selected location inputs.
+     */
     clearLocation() {
         this.provinceInput.disabled = "";
         this.cantonInput.disabled = "";
@@ -189,7 +241,10 @@ class MapsModal {
         document.getElementById(this.addressInputId).value = "";
         this.distanceElement.value = 25;
     }
-    
+
+    /**
+     * Submits the selected location, updating the UI accordingly.
+     */
     submitLocation() {
         this.provinceInput.disabled = "disabled";
         this.cantonInput.disabled = "disabled";
@@ -198,6 +253,10 @@ class MapsModal {
     }
 }
 
+/**
+ * Global function to initialize the map.
+ * This function is intended to be called as a callback when the Google Maps API script is loaded.
+ */
 window.initMap = () => {
     let mapModal = window.GetModalMap();
     if (mapModal !== undefined) {

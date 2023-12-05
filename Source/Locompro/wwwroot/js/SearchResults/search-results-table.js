@@ -28,7 +28,6 @@ export default class SearchResultsTableBody extends TableBody {
             });
         }
         
-        
         let categoriesDisplayDiv = document.createElement("div");
         categoriesDisplayDiv.classList.add("cell-further-info");
         let categoriesDisplay = document.createElement("span");
@@ -45,7 +44,7 @@ export default class SearchResultsTableBody extends TableBody {
             new TableRowColumn('Model', []),
             new TableRowColumn('Province', []),
             new TableRowColumn('Canton', []),
-            new TableRowColumn('Description', []),
+            new TableRowColumn('Description', ['description-cell']),
             new TableRowColumn('LastSubmissionDate', [])
         ];
         
