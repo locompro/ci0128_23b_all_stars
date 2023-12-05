@@ -74,19 +74,28 @@ public class CreatePageTests
     {
         Assert.That(_createPage?.AddProductButton, Is.Not.Null);
     }
-
+    
+    /// <summary>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
     [Test]
     public void DescriptionTextAreaExists()
     {
         Assert.That(_createPage?.DescriptionTextArea, Is.Not.Null);
     }
 
+    /// <summary>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
     [Test]
     public void FileInputElementExists()
     {
         Assert.That(_createPage?.FileInput, Is.Not.Null);
     }
-
+    
+    /// <summary>
+    ///     <author>Joseph Stuart Valverde Kong C18100 - Sprint 3</author>
+    /// </summary>
     [Test]
     public void SubmitButtonExists()
     {

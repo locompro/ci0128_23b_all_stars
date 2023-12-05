@@ -1,3 +1,4 @@
+using System.Globalization;
 using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
@@ -11,19 +12,16 @@ public class ItemMapper : GenericMapper<SubmissionsDto, List<ItemVm>>
 {
     protected override List<ItemVm> BuildVm(SubmissionsDto dto)
     {
-        if (dto == null || dto.Submissions == null || !dto.Submissions.Any() || dto.BestSubmissionQualifier == null)
+        if (dto?.Submissions == null || !dto.Submissions.Any() || dto.BestSubmissionQualifier == null)
         {
             return new List<ItemVm>();
         }
-        
+
         return GetItems(dto).ToList();
     }
-    
-    protected override SubmissionsDto BuildDto(List<ItemVm> vm)
-    {
-        return new SubmissionsDto(null, null);
-    }
-    
+
+    protected override SubmissionsDto BuildDto(List<ItemVm> vm) => new(null, null);
+
     /// <summary>
     ///     Gets all the items to be displayed in the search results
     ///     from a list of submissionses
@@ -33,17 +31,15 @@ public class ItemMapper : GenericMapper<SubmissionsDto, List<ItemVm>>
     private static IEnumerable<ItemVm> GetItems(SubmissionsDto submissionses)
     {
         var items = new List<ItemVm>();
-        
-        if (submissionses == null || submissionses.Submissions == null) return items;
-        
+
+        if (submissionses?.Submissions == null) return items;
+
         // Group submissionses by store
         var submissionsByStore = submissionses.Submissions.GroupBy(s => s.Store);
 
-        foreach (var store in submissionsByStore)
-        {
-            var submissionsByProduct = store.GroupBy(s => s.Product);
-            foreach (var product in submissionsByProduct) items.Add(GetItem(product, submissionses.BestSubmissionQualifier));
-        }
+        items.AddRange(from store in submissionsByStore
+            from product in store.GroupBy(s => s.Product)
+            select GetItem(product, submissionses.BestSubmissionQualifier));
 
         return items;
     }
@@ -56,7 +52,7 @@ public class ItemMapper : GenericMapper<SubmissionsDto, List<ItemVm>>
     /// <param name="itemGrouping"></param>
     /// <param name="bestSubmissionQualifier"></param>
     /// <returns></returns>
-    private static  ItemVm GetItem(
+    private static ItemVm GetItem(
         IGrouping<Product, Submission> itemGrouping,
         Func<IEnumerable<Submission>, Submission> bestSubmissionQualifier)
     {
@@ -65,7 +61,7 @@ public class ItemMapper : GenericMapper<SubmissionsDto, List<ItemVm>>
 
         var categories = new List<string>();
         Dictionary<string, string> categoriesMap = null;
-        
+
         foreach (var submission in itemGrouping)
         {
             categoriesMap = submission.Product.Categories.ToDictionary(c => c.Name, c => c.Name);
@@ -108,6 +104,6 @@ public class ItemMapper : GenericMapper<SubmissionsDto, List<ItemVm>>
     /// <returns></returns>
     private static string GetFormattedDate(Submission submission)
     {
-        return DateFormatter.GetFormattedDateFromDateTime(submission.EntryTime);
+        return submission.EntryTime.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture);
     }
 }

@@ -22,6 +22,6 @@ public class Product
     public virtual ICollection<Category> Categories { get; set; }
 
     public virtual ICollection<Submission> Submissions { get; set; }
-
-    // TODO: Build pictures method automatic from DB?
+    
+    public virtual ICollection<User> Shoppers { get; set; }
 }

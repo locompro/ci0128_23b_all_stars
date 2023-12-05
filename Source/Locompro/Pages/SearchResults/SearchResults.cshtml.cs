@@ -38,6 +38,9 @@ public class SearchResultsModel : SearchPageModel
 
     private readonly ISubmissionService _submissionService;
 
+    private readonly IShoppingListService _shoppingListService;
+
+
     private IConfiguration Configuration { get; set; }
 
     /// <summary>
@@ -63,7 +66,8 @@ public class SearchResultsModel : SearchPageModel
         ISubmissionService submissionService,
         IModerationService moderationService,
         IAuthService authService,
-        IApiKeyHandler apiKeyHandler)
+        IApiKeyHandler apiKeyHandler,
+        IShoppingListService shoppingListService)
         : base(loggerFactory, httpContextAccessor, advancedSearchServiceHandler, apiKeyHandler)
     {
         _searchService = searchService;
@@ -79,6 +83,7 @@ public class SearchResultsModel : SearchPageModel
         _submissionService = submissionService;
         _moderationService = moderationService;
         _authService = authService;
+        _shoppingListService = shoppingListService;
     }
 
     /// <summary>
@@ -91,11 +96,35 @@ public class SearchResultsModel : SearchPageModel
     {
         // prevents system from crashing, but in essence, leads to a re-request where data is no longer null
         SearchVm = GetCachedDataFromSession<SearchVm>("SearchQueryViewModel", false) ?? new SearchVm();
-
+        System.Diagnostics.Debug.WriteLine("It got to here");
         ValidateInput();
 
         CacheDataInSession(SearchVm, "SearchData");
     }
+
+    public async Task<IActionResult> OnPostAddToShoppingList()
+    {
+        int productId = await GetDataSentByClient<int>();
+        Logger.LogInformation("ProductId received: " + productId);
+
+        try
+        {
+            Logger.LogInformation("ProductId parsed: " + productId);
+
+            // Perform the logic to add the product to the shopping list
+            await _shoppingListService.AddProduct(productId);
+            Logger.LogInformation("ProductId added");
+        }
+        catch (Exception e)
+        {
+            Logger.LogError("Error when attempting to add to the shopping list: " + e.Message);
+            // Return an appropriate error response
+            return new JsonResult(new { success = false, error = "An error occurred." });
+        }
+        return new JsonResult(new { success = true, message = "Product successfully added to shopping list" });
+
+    }
+
 
     /// <summary>
     ///     When requesting search results, fetches search query data and returns search results

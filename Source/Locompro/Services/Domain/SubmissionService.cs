@@ -2,6 +2,7 @@ using Locompro.Common.Search;
 using Locompro.Data;
 using Locompro.Data.Repositories;
 using Locompro.Models;
+using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 
@@ -202,5 +203,17 @@ public class SubmissionService : DomainService<Submission, SubmissionKey>, ISubm
         await _submissionRepository.UpdateAsync(submissionKey, submission);
         
         await UnitOfWork.SaveChangesAsync();
+    }
+
+    /// <inheritdoc />
+    public Task<List<ShoppingListProductDto>> GetProductSummary(List<ProductDto> products)
+    {
+        throw new NotImplementedException();
+    }
+    
+    /// <inheritdoc />
+    public Task<List<ShoppingListSummaryStoreDto>> GetStoreSummary(List<ProductDto> products)
+    {
+        throw new NotImplementedException();
     }
 }

@@ -81,7 +81,11 @@ class SearchResultsTable extends ResultsTable {
      */
     selectItem(index) {
         this.itemSelected = index;
-        this.currentModal = createSearchResultsModalInstance(this.tableData, this.itemSelected);
+        createSearchResultsModalInstance(this.tableData, this.itemSelected).then(
+            searchResultsModal => {
+                this.currentModal = searchResultsModal;
+            }
+        );
     }
 }
 

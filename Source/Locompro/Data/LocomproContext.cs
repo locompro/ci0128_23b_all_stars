@@ -119,6 +119,24 @@ public class LocomproContext : IdentityDbContext<User>
             .HasMany(u => u.CreatedSubmissions)
             .WithOne(s => s.User)
             .OnDelete(DeleteBehavior.NoAction);
+        
+        builder.Entity<User>()
+            .HasMany(u => u.ShoppedProducts)
+            .WithMany(p => p.Shoppers)
+            .UsingEntity<Dictionary<string, int>>(
+                "ShoppingList",
+                j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId").OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade)
+            );
+        
+        builder.Entity<Product>()
+            .HasMany(p => p.Shoppers)
+            .WithMany(u => u.ShoppedProducts)
+            .UsingEntity<Dictionary<string, int>>(
+                "ShoppingList",
+                j => j.HasOne<User>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade),
+                j => j.HasOne<Product>().WithMany().HasForeignKey("ProductId").OnDelete(DeleteBehavior.Cascade)
+            );
 
         builder.Entity<Report>()
             .HasKey(r => new { r.SubmissionUserId, r.SubmissionEntryTime, r.UserId });
@@ -177,12 +195,12 @@ public class LocomproContext : IdentityDbContext<User>
         builder.HasDbFunction(
             typeof(LocomproContext).GetMethod(nameof(CountRatedSubmissions), new[] { typeof(string) }) ??
             throw new InvalidOperationException($"Method {nameof(CountRatedSubmissions)} not found."));
-        
+
         builder.HasDbFunction(
             typeof(LocomproContext).GetMethod(nameof(GetPictures),
                 new[] { typeof(string), typeof(int), typeof(int) }) ??
             throw new InvalidOperationException($"Method {nameof(GetPictures)} not found."));
-        
+
     }
 
     [DbFunction("GetPictures", "dbo")]
@@ -239,7 +257,7 @@ public class LocomproContext : IdentityDbContext<User>
         return FromExpression(() => GetMostReportedUsersResults());
     }
 
-/// <summary>
+    /// <summary>
     ///     Assigns each parent category of a product to the product.
     /// </summary>
     /// <param name="categoryName"></param>
@@ -256,7 +274,7 @@ public class LocomproContext : IdentityDbContext<User>
         await Database.ExecuteSqlRawAsync("EXECUTE dbo.AddParents @category, @productId", categoryNameParameter,
             productIdParameter);
     }
-    
+
     /// <summary>
     ///     Deletes every submission that has been deemed inappropriate by a moderator.
     /// </summary>

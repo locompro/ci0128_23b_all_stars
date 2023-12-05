@@ -3,41 +3,95 @@
 }
 
 <div class="row pt-3">
-    <div class="col-5">
-        <div class="row card-title">
-            <h4 class="col-2" style="display: flex; justify-content: center; align-items: center;">
-                <i class="fa fa-envelope" style="color: #0a53be; font-size: 33px;">
-                </i>
-            </h4>
-            <h4 id="modalProductName" class="col-10"></h4>
+    <div class="col-md-5">
+        <div class="row">
+            <!-- First Column, First Row -->
+            <div class="col">
+                <div class="row card-title">
+                    <div class="col-sm" style="display: flex; justify-content: center; align-items: center;">
+                        <i class="fa-solid fa-box" style="color: #0a53be; font-size: 33px;"></i>
+                    </div>
+                    <div class="col">
+                        <h3 style="text-align: left; color: #333;">Producto</h3>
+                        <h5 id="modalProductName" style="opacity: 0.6;"></h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Column, First Row -->
+            <div class="col">
+                <!-- Structure for the second cell, similar to the first one -->
+                <div class="row card-title">
+                    <div class="col-sm" style="display: flex; justify-content: center; align-items: center;">
+                        <i class="fa fa-shopping-cart" style="color: #0a53be; font-size: 33px;"></i>
+                    </div>
+                    <div class="col">
+                        <h3 style="text-align: left; color: #333;">Tienda</h3>
+                        <h5 id="modalStoreName" style="opacity: 0.6;"></h5>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="row card-title" style="margin-bottom: 20px;">
-            <h4 class="col-2" style="display: flex; justify-content: center; align-items: center;">
-                <i class="fa fa-home" style="color: #0a53be; font-size: 33px;"></i>
-            </h4>
-            <h4 id="modalStoreName" class="col-10" style="margin-top: 6px"></h4>
+
+        <div class="row">
+            <!-- First Column, Second Row -->
+            <div class="col">
+                <!-- Structure for the third cell, similar to the first one -->
+                <div class="row card-title">
+                    <div class="col-sm" style="display: flex; justify-content: center; align-items: center;">
+                        <i class="fa fa-certificate" style="color: #0a53be; font-size: 33px;"></i>
+                    </div>
+                    <div class="col">
+                        <h3 style="text-align: left; color: #333;">Modelo</h3>
+                        <h5 id="modalModel" style="opacity: 0.6;"></h5>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Second Column, Second Row -->
+            <div class="col">
+                <!-- Structure for the fourth cell, similar to the first one -->
+                <div class="row card-title">
+                    <div class="col-sm" style="display: flex; justify-content: center; align-items: center;">
+                        <i class="fa fa-trademark" style="color: #0a53be; font-size: 33px;"></i>
+                    </div>
+                    <div class="col">
+                        <h3 style="text-align: left; color: #333;">Marca</h3>
+                        <h5 id="modalBrand" style="opacity: 0.6;"></h5>
+                    </div>
+                </div>
+            </div>
         </div>
-        <h6 id="modalModel"> </h6>
-        <h6 id="modalBrand" style="margin-bottom: 20px"> </h6>
     </div>
-    <div class="slideshow-container col-6" style="width: 380px; height: 220px; text-align: center;">
+    <div class="slideshow-container col" style="width: 100%; max-width: 380px; height: 220px; text-align: center;">
         <a class="prev col"
            style=""
            id="prevButton"
-           onclick="plusSlides(-1)">
+           onclick="window.getPage().plusSlides(-1)">
             &#10094;
         </a>
         <div id="picturesContainer">
         </div>
         <a class="next col"
-           onclick="plusSlides(1)"
+           onclick="window.getPage().plusSlides(1)"
            id="nextButton">
             &#10095;
         </a>
     </div>
+    @if (isLoggedIn)
+    {
+        <div class="row card-title">
+            <h4 class="col-2" style="display: flex; justify-content: center; align-items: center;">
+                <i id="bookmarkIcon" class="fa fa-bookmark" style="color: #0a53be; font-size: 33px; margin-bottom: 20px;"></i>
+            </h4>
+            <div class="col-10">
+                <h5 id="iconText" class="col-10" style="margin-top: 5px; display: none;"> ¡Producto agregado a lista de compras!</h5>
+            </div>
+        </div>
+    }
 </div>
 <div>
-    <div class="pt-4">
+    <div id="submissionsModalTableContainer" class="pt-4" data-is-user-authenticated="@isLoggedIn">
         <table id="SubmissionsPerItem" class="display compact mb-0 pe-2" style="width:100%">
             <caption></caption>
             <thead>
@@ -50,7 +104,7 @@
                 <th class="text-center">Reportar</th>
             </tr>
             </thead>
-            <tbody id="ItemModalSubmissionsTable" data-is-user-authenticated="@isLoggedIn">
+            <tbody id="ItemModalSubmissionsTable">
             </tbody>
         </table>
     </div>
@@ -89,3 +143,4 @@
         </div>
     </div>
 </div>
+

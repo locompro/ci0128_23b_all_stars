@@ -11,17 +11,23 @@ class SearchResultsModal {
      * @param reportedSubmissions
      */
     constructor(searchResults, itemSelected, reportedSubmissions = []) {
+        this.generateTable();
+        
         // DOM element references for displaying product information
         this.modalProductName = document.getElementById("modalProductName");
         this.modalStoreName = document.getElementById("modalStoreName");
         this.modalModel = document.getElementById("modalModel");
         this.modalBrand = document.getElementById("modalBrand");
+        this.bookmarkIcon = document.getElementById('bookmarkIcon');
+        this.iconText = document.getElementById('iconText');
+
         this.submissionsTable = document.getElementById("ItemModalSubmissionsTable");
 
         // The search results array and the index of the selected item
         this.searchResults = searchResults;
         this.itemSelected = itemSelected;
 
+        // Creating a picture container for the selected item's images
         // Creating a picture container for the selected item's images
         this.pictureContainer =
             new SearchResultsPictureContainer(
@@ -41,8 +47,13 @@ class SearchResultsModal {
 
         // Populate the modal with the selected item's details
         this.populateModal();
+        
         try {
-            new DataTable('#SubmissionsPerItem', {
+            if ($.fn.DataTable.isDataTable('#SubmissionsPerItem')) {
+                $('#SubmissionsPerItem').DataTable().clear().destroy();
+            }
+
+            new DataTable('#SubmissionsPerItem', { 
                 info: false,
                 paging: false,
                 searching: false,
@@ -59,6 +70,32 @@ class SearchResultsModal {
             alert('An error occurred while initializing the DataTable. Please try again.');
         }
     }
+    
+    generateTable() {
+        // Define the table HTML
+        let tableHTML = `
+        <table id="SubmissionsPerItem" class="display compact mb-0 pe-2" style="width:100%">
+            <caption></caption>
+            <thead>
+                <tr>
+                    <th>Usuario&nbsp;</th>
+                    <th class="text-center">Fecha&nbsp;</th>
+                    <th>Precio&nbsp;</th>
+                    <th>Descripción&nbsp;</th>
+                    <th>Calificación</th>
+                    <th class="text-center">Reportar</th>
+                </tr>
+            </thead>
+            <tbody id="ItemModalSubmissionsTable" data-is-user-authenticated="@isLoggedIn">
+            </tbody>
+        </table>`;
+
+        // Select the container div
+        let containerDiv = document.getElementById('submissionsModalTableContainer');
+
+        // Append the table to the div
+        containerDiv.innerHTML = tableHTML;
+    }
 
     /**
      * This method populates the modal with the selected item's details, including product name, store name, model, brand, and submissions.
@@ -68,18 +105,26 @@ class SearchResultsModal {
         // Setting the text content for the product details in the modal
         this.modalProductName.innerHTML = this.searchResults[this.itemSelected].Name;
         this.modalStoreName.innerHTML = this.searchResults[this.itemSelected].Store;
-        this.modalModel.innerHTML = "Modelo: " + this.searchResults[this.itemSelected].Model;
-        this.modalBrand.innerHTML = "Marca: " + this.searchResults[this.itemSelected].Brand;
+        this.modalModel.innerHTML = this.searchResults[this.itemSelected].Model;
+        this.modalBrand.innerHTML = this.searchResults[this.itemSelected].Brand;
+        this.bookmarkIcon = document.getElementById('bookmarkIcon');
+        this.iconText = document.getElementById('iconText');
 
+        if (this.bookmarkIcon && this.iconText) {
+            this.bookmarkIcon.addEventListener('click', () => {
+                this.triggerBookmarkButton(this.searchResults[this.itemSelected].ProductId);
+            });
+        }
         // Building the picture container with the product images
         this.pictureContainer.buildPictureContainer();
-
-        this.isUserLoggedIn = this.submissionsTable.getAttribute('data-is-user-authenticated') === 'True';
+        
+        let tableWithAuth = document.getElementById("submissionsModalTableContainer");
+        this.isUserLoggedIn = tableWithAuth.getAttribute('data-is-user-authenticated') === 'True';
 
         // Populating the submissions table with entries
         for (const submission of this.searchResults[this.itemSelected].Submissions) {
             const row = this.submissionsTable.insertRow();
-
+            console.log(submission);
             // Prepare "Mis Contribuciones" button
             const contributionsButton = document.createElement('a');
             contributionsButton.className = 'btn btn-primary text-center border rounded-pill flex-shrink-1 justify-content-xxl-start';
@@ -113,6 +158,7 @@ class SearchResultsModal {
             // Inserting the rating cell
             const ratingCell = row.insertCell(4);
             ratingCell.innerHTML += '<span style="display: none;">' + submission.Rating;
+            ratingCell.innerHTML += submission.NumberOfRatings;
             this.submissionsRatings.push(new SearchResultsSubmissionRating(submission, ratingCell));
             this.submissionsRatings[this.submissionsRatings.length - 1].buildRating(this.isUserLoggedIn);
 
@@ -128,7 +174,7 @@ class SearchResultsModal {
             // Append the icon to the button
             reportButton.appendChild(icon);
             
-            let isModerated = submission.Status === 1;
+            let isModerated = submission["Status"] === 1;
             let isSubmissionReported = this.isSubmissionReported(submission)
             
             if (!isModerated && this.isUserLoggedIn && !isSubmissionReported) {
@@ -164,7 +210,7 @@ class SearchResultsModal {
         }
         
     }
-
+    
     isSubmissionReported(submission) {
         for (let sub of this.reportedSubmissions) {
             if (submission.UserId === sub.UserId && submission.NonFormatedEntryTime === sub.NonFormatedEntryTime) {
@@ -174,6 +220,7 @@ class SearchResultsModal {
         return false;
     }
 
+
     /**
      * This method controls the navigation between different slides (images) in the modal.
      *
@@ -182,5 +229,52 @@ class SearchResultsModal {
     plusSlides(slideIndex) {
         // Delegating the slide navigation to the picture container's method
         this.pictureContainer.plusSlides(slideIndex);
+    }
+
+    triggerBookmarkButton(productId) {
+        this.AddToShoppingList(productId);
+
+        // Set initial opacity to 0
+        this.iconText.style.opacity = '0';
+
+        // Set display property to inline
+        this.iconText.style.display = 'inline';
+
+        // Set transition duration (e.g., 0.5 seconds)
+        this.iconText.style.transition = 'opacity 0.5s';
+
+        // After a delay (e.g., 100 milliseconds), set opacity to 1
+        setTimeout(() => {
+            this.iconText.style.opacity = '1';
+
+            // After another delay (e.g., 1500 milliseconds), set opacity back to 0
+            setTimeout(() => {
+                this.iconText.style.opacity = '0';
+            }, 1500);
+        }, 100);
+    }
+
+    /**
+     * This method triggers a fetch to add a product to the users's shopping list
+     *
+     * @param productId The id of the product to add
+     */
+    AddToShoppingList(productSendId) {
+        let url = window.location.pathname;
+        url += "?handler=AddToShoppingList";
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+            },
+            body: productSendId
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+            });
     }
 }

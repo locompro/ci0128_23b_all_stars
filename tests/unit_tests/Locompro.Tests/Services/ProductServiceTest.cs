@@ -3,9 +3,6 @@ using Locompro.Data.Repositories;
 using Locompro.Services.Domain;
 using Moq;
 using Microsoft.Extensions.Logging;
-using NUnit.Framework;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Locompro.Tests.Services
 {

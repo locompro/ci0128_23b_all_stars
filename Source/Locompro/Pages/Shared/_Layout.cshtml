@@ -32,7 +32,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="~/assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="~/assets/fonts/material-icons.min.css">
     <link rel="stylesheet" href="~/assets/css/Animated-Menu-Icon.css">
@@ -104,7 +104,12 @@
                         {
                             <li class="nav-item" style="margin-right: 10px">
                                 <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Account/Profile">
-                                    <i class="fa fa-user"></i>  Perfil
+                                    <i class="fa fa-user"></i>
+                                </a>
+                            </li>
+                            <li class="nav-item" style="margin-right: 10px">
+                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/ShoppingList/Index">
+                                    <i class="fa fa-list"></i>
                                 </a>
                             </li>
                             <form asp-page="/Account/Logout" method="post" class="d-inline-block">
