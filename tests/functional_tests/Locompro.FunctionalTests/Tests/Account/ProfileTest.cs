@@ -91,7 +91,7 @@ public class ProfileTest
         WaitUntilUserIsLoggedIn(driver);
         _profile = new Profile(driver);
         
-        // a\ct
+        // act
         _profile.GoTo();
         _profile.OpenChangePasswordModal();
         

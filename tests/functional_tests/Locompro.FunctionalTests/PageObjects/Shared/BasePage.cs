@@ -6,7 +6,8 @@ using OpenQA.Selenium;
 
 public class BasePage
 {
-    public IWebDriver Driver { get; }
+    protected IWebDriver Driver { get; }
+    private readonly string _baseUrl = "https://localhost:7249/";
 
     public BasePage(IWebDriver driver)
     {
@@ -15,18 +16,21 @@ public class BasePage
 
     // Common elements in the layout like header links, logout button, etc.
 
-    protected IWebElement ContributeButton =>
+    public IWebElement ContributeButton =>
         Driver.FindElement(By.Id("CreateSubmissionButton"));
 
-    protected IWebElement ProfileButton =>
+    public IWebElement ProfileButton =>
         Driver.FindElement(By.Id("ProfileButton"));
 
-    protected IWebElement LogoutButton =>
+    public IWebElement ShoppingListButton =>
+        Driver.FindElement(By.Id("ShoppingListButton"));
+    
+    public IWebElement LogoutButton =>
         Driver.FindElement(By.Id("LogoutButton"));
 
-    protected IWebElement LoginButton =>
+    public IWebElement LoginButton =>
         Driver.FindElement(By.Id("LoginButton"));
-
+    
     // Common methods for interacting with layout elements
 
     public void ClickContribute()
@@ -53,6 +57,12 @@ public class BasePage
     {
         return LogoutButton.Displayed;
     }
+    
+    public void GoTo()
+    {
+        Driver.Navigate().GoToUrl(_baseUrl);
+    }
+
     
     protected bool WaitForElementToBeVisible(By locator, int timeoutInSeconds)
     {

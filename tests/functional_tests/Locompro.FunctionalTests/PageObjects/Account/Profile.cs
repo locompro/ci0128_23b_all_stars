@@ -127,8 +127,7 @@ public class Profile : BasePage
         _driver.FindElement(By.Id("PostUserUpdateButton")).Click();
     
     }
-
-
+    
     public bool WaitForElementToBeVisible(By locator, int timeoutInSeconds)
     {
         var wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(timeoutInSeconds));

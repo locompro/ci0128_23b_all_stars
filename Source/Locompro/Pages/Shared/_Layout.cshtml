@@ -78,7 +78,7 @@
                             @if (isModerator)
                             {
                                 <li class="nav-item">
-                                    <a id="ProfileButton" class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Moderation/Moderator">
+                                    <a id="ModerationButton" class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Moderation/Moderator">
                                        <i class="fa fa-gavel"></i> Moderar
                                     </a>
                                 </li>
@@ -103,12 +103,12 @@
                         @if (isLoggedIn)
                         {
                             <li class="nav-item" style="margin-right: 10px">
-                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Account/Profile">
+                                <a id="ProfileButton" class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/Account/Profile">
                                     <i class="fa fa-user"></i>
                                 </a>
                             </li>
                             <li class="nav-item" style="margin-right: 10px">
-                                <a class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/ShoppingList/Index">
+                                <a id="ShoppingListButton" class="btn btn-primary ps-4 pe-4 rounded-pill" role="button" asp-page="/ShoppingList/Index">
                                     <i class="fa fa-list"></i>
                                 </a>
                             </li>

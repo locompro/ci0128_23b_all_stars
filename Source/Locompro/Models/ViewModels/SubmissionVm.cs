@@ -25,7 +25,7 @@ public class SubmissionVm
         NumberOfRatings = submission.NumberOfRatings;
     }
 
-    [BindProperty] [StringLength(120)] public string Description { get; init; }
+    [BindProperty] [StringLength(140)] public string Description { get; init; }
 
     public SubmissionStatus Status { get; set; }
     
