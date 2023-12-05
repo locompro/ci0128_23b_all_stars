@@ -35,4 +35,11 @@ public interface ISubmissionRepository : ICrudRepository<Submission, SubmissionK
     /// <param name="productName"></param>
     /// <returns></returns>
     Task<IEnumerable<Submission>> GetItemSubmissions(string storeName, string productName);
+
+    /// <summary>
+    /// Gets a summary of product availability at each store
+    /// </summary>
+    /// <param name="productIds">Ids of products to check for availability</param>
+    /// <returns>Summary of product availability at each store</returns>
+    Task<IEnumerable<ProductSummaryStore>> GetProductSummaryByStore(List<int> productIds);
 }

@@ -1,6 +1,7 @@
 using Locompro.Common.Search;
 using Locompro.Data.Repositories;
 using Locompro.Models;
+using Locompro.Models.Dtos;
 using Locompro.Models.Entities;
 using Locompro.Models.ViewModels;
 
@@ -65,4 +66,8 @@ public interface ISubmissionService : IDomainService<Submission, SubmissionKey>
     /// <param name="submissionKey">key for submission to add rejecter to.</param>
     /// <param name="userId">ID of user to add as rejecter.</param>
     Task AddSubmissionRejecter(SubmissionKey submissionKey, string userId);
+
+    Task<List<ShoppingListProductDto>> GetProductSummary(List<ProductDto> products);
+
+    Task<List<ShoppingListSummaryStoreDto>> GetStoreSummary(List<ProductDto> products);
 }

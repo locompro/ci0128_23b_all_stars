@@ -353,6 +353,23 @@ namespace Locompro.Migrations
                     b.ToTable("GetQualifiedUserIDsResult");
                 });
 
+            modelBuilder.Entity("Locompro.Models.Results.MostReportedUsersResult", b =>
+                {
+                    b.Property<int>("ReportedSubmissionCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalUserSubmissions")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("UserRating")
+                        .HasColumnType("real");
+
+                    b.ToTable("MostReportedUsersResult");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -490,6 +507,21 @@ namespace Locompro.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ShoppingList", b =>
+                {
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ProductId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ShoppingList");
+                });
+
             modelBuilder.Entity("SubmissionApprover", b =>
                 {
                     b.Property<string>("ApproverId")
@@ -530,11 +562,11 @@ namespace Locompro.Migrations
                 {
                     b.HasBaseType("Locompro.Models.Entities.Report");
 
-                    b.Property<float>("AveragePrice")
-                        .HasColumnType("real");
+                    b.Property<double>("AveragePrice")
+                        .HasColumnType("float");
 
-                    b.Property<float>("Confidence")
-                        .HasColumnType("real");
+                    b.Property<double>("Confidence")
+                        .HasColumnType("float");
 
                     b.Property<int>("MaximumPrice")
                         .HasColumnType("int");
@@ -701,6 +733,21 @@ namespace Locompro.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
+                    b.HasOne("Locompro.Models.Entities.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ShoppingList", b =>
+                {
+                    b.HasOne("Locompro.Models.Entities.Product", null)
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Locompro.Models.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")

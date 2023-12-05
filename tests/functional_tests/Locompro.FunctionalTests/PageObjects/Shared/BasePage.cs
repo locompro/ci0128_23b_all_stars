@@ -1,4 +1,6 @@
-﻿namespace Locompro.FunctionalTests.PageObjects.Shared;
+﻿using OpenQA.Selenium.Support.UI;
+
+namespace Locompro.FunctionalTests.PageObjects.Shared;
 
 using OpenQA.Selenium;
 
@@ -50,5 +52,42 @@ public class BasePage
     public bool IsLogoutDisplayed()
     {
         return LogoutButton.Displayed;
+    }
+    
+    protected bool WaitForElementToBeVisible(By locator, int timeoutInSeconds)
+    {
+        var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeoutInSeconds));
+        try
+        {
+            return wait.Until(drv =>
+            {
+                var element = drv.FindElement(locator);
+                return element.Displayed;
+            });
+        }
+        catch (WebDriverTimeoutException)
+        {
+            // If the wait times out, return false indicating the element is not visible
+            return false;
+        }
+        catch (NoSuchElementException)
+        {
+            // If the element is not found, return false
+            return false;
+        }
+    }
+    
+    protected bool WaitForPageNavigation(string expectedUrl, int timeoutInSeconds)
+    {
+        var wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(timeoutInSeconds));
+        try
+        {
+            return wait.Until(drv => drv.Url.Contains(expectedUrl));
+        }
+        catch (WebDriverTimeoutException)
+        {
+            // If the wait times out, return false indicating the URL did not change as expected
+            return false;
+        }
     }
 }
