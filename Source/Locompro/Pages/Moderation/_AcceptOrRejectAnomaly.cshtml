@@ -1,5 +1,4 @@
 @using System.Globalization
-@using Locompro.Common
 @model Locompro.Models.ViewModels.AutoReportVm
 
 
@@ -27,7 +26,7 @@
                 onclick="reportAction(1,
                  '@Model.SubmissionUserId',
                  '@Model.SubmissionEntryTime.ToString("yyyy-MM-dd HH:mm:ss.fffffff", CultureInfo.InvariantCulture)')">
-            Borrar Contribución
+            Rechazar Contribución
         </button>
     </div>
 </div>
