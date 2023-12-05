@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Locompro.Models.ViewModels;
 
@@ -12,7 +13,7 @@ public class UserReportVm
 
     public string UserName { get; set; }
 
-    [StringLength(120)] public string Description { get; set; }
+    [StringLength(140)] public string Description { get; set; }
 
     public override string ToString()
     {

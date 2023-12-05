@@ -117,7 +117,8 @@
                 <div class="modal-body" style="border-top: none; padding: 10px 15px 0px 15px;">
                     <form id="reportForm" method="post" asp-page="/SearchResults/SearchResults" asp-page-handler="ReportSubmission">
                         <div class="form-group">
-                            <textarea class="form-control" id="descriptionInput" name="UserReportVm.Description" rows="3"></textarea>
+                            <textarea class="form-control" id="descriptionInput" name="UserReportVm.Description" rows="3"
+                                maxlength="140"></textarea>
                             <input type="hidden" name="UserReportVm.SubmissionUserId" value="">
                             <input type="hidden" name="UserReportVm.SubmissionEntryTime" value="">
                         </div>
@@ -143,4 +144,3 @@
         </div>
     </div>
 </div>
-
