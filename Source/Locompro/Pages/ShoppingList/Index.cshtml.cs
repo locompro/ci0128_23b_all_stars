@@ -47,7 +47,15 @@ public class ShoppingListModel : BasePageModel
             
             Logger.LogInformation("Shopping list size is {}", ShoppingListVm.Products.Count);
             
-            await OnGetPartial();
+            var shoppingListSummaryDto = await _shoppingListService.GetSummary();
+            
+            var shoppingListSummaryMapper = new ShoppingListSummaryMapper();
+
+            ShoppingListSummaryVm = shoppingListSummaryMapper.ToVm(shoppingListSummaryDto);
+
+            Logger.LogInformation("Built shopping list summary for {}", ShoppingListSummaryVm.UserId);
+            
+            Logger.LogInformation("Shopping list summary size is {}", ShoppingListSummaryVm.Stores.Count);
         } catch (Exception e)
         {
             Logger.LogError(e, "Error while getting shopping list");
@@ -109,7 +117,7 @@ public class ShoppingListModel : BasePageModel
         };
     }
 
-    public async Task<IActionResult> OnGetPartial()
+    public async Task<JsonResult> OnGetSummary()
     {
         var shoppingListSummaryDto = await _shoppingListService.GetSummary();
         var shoppingListSummaryMapper = new ShoppingListSummaryMapper();
@@ -118,6 +126,19 @@ public class ShoppingListModel : BasePageModel
 
         Logger.LogInformation("Built shopping list summary for {}", ShoppingListSummaryVm.UserId);
         Logger.LogInformation("Shopping list summary size is {}", ShoppingListSummaryVm.Stores.Count);
-        return Partial("_Summary", ShoppingListSummaryVm);
+        
+        // Create a list of lists representing the data you want to serialize
+        var result = ShoppingListSummaryVm.Stores.Select(store => new List<object>
+        {
+            store.Name,
+            store.Province,
+            store.Canton,
+            store.ProductsAvailable,
+            store.PercentageProductsAvailable,
+            store.TotalCost
+        }).ToList();
+
+        // Return the result as a JsonResult
+        return new JsonResult(result);
     }
 }
