@@ -124,7 +124,7 @@ class SearchResultsModal {
         // Populating the submissions table with entries
         for (const submission of this.searchResults[this.itemSelected].Submissions) {
             const row = this.submissionsTable.insertRow();
-            console.log(submission);
+
             // Prepare "Mis Contribuciones" button
             const contributionsButton = document.createElement('a');
             contributionsButton.className = 'btn btn-primary text-center border rounded-pill flex-shrink-1 justify-content-xxl-start';
@@ -160,7 +160,14 @@ class SearchResultsModal {
             ratingCell.innerHTML += '<span style="display: none;">' + submission.Rating;
             this.submissionsRatings.push(new SearchResultsSubmissionRating(submission, ratingCell));
             this.submissionsRatings[this.submissionsRatings.length - 1].buildRating(this.isUserLoggedIn);
-            ratingCell.innerHTML += '<div style="padding-left: 10px; display: inline-block; vertical-align: 2px; text-align: right"> (' + submission.NumberOfRatings + ')';
+            
+            const ratingsAmount = document.createElement('div');
+            ratingsAmount.style.display = 'inline-block';
+            ratingsAmount.style.paddingLeft = '10px';
+            ratingsAmount.style.verticalAlign = '2px';
+            ratingsAmount.style.textAlign = 'right';
+            ratingsAmount.innerHTML = '(' + submission.NumberOfRatings + ')';
+            ratingCell.appendChild(ratingsAmount);
 
             // Prepare report button
             const reportButton = document.createElement('button');
