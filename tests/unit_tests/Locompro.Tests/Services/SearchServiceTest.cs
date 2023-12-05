@@ -221,7 +221,7 @@ public class SearchServiceTest
 
         var searchResults = itemMapper.ToVm(searchResultsDto);
 
-        var dateTimeExpected = new DateTime(2023, 10, 6, 0, 0, 0, DateTimeKind.Utc);
+        var dateTimeExpected = new DateTime(2023, 6, 10, 0, 0, 0, DateTimeKind.Utc);
         var dateTimeReceived = DateTime.Parse(searchResults[0].LastSubmissionDate, new CultureInfo("en-US"));
 
         // Assert
@@ -281,7 +281,7 @@ public class SearchServiceTest
         Assert.That(searchResults, Is.Not.Empty);
         Assert.That(searchResults[0].Submissions, Has.Count.EqualTo(2));
 
-        var submission1EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
+        var submission1EntryTime = new DateTime(2023, 6, 10, 12, 0, 0, DateTimeKind.Utc);
         Assert.That(submission1EntryTime.ToString(CultureInfo.InvariantCulture),
             Does.Contain(searchResults[0].Submissions[0].EntryTime));
         Assert.Multiple(() =>
@@ -289,7 +289,7 @@ public class SearchServiceTest
             Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(100));
             Assert.That(searchResults[0].Submissions[0].Description, Is.EqualTo("Description for Submission 1"));
         });
-        var submission2EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc);
+        var submission2EntryTime = new DateTime(2023, 5, 10, 12, 0, 0, DateTimeKind.Utc);
         Assert.That(submission2EntryTime.ToString(CultureInfo.InvariantCulture),
             Does.Contain(searchResults[0].Submissions[1].EntryTime));
         Assert.Multiple(() =>
@@ -546,7 +546,7 @@ public class SearchServiceTest
             Assert.That(searchResults.TrueForAll(item => item.Brand.Contains(brand)), Is.True);
             Assert.That(searchResults[0].Submissions, Has.Count.EqualTo(2));
         });
-        var submission1EntryTime = new DateTime(2023, 10, 6, 12, 0, 0, DateTimeKind.Utc);
+        var submission1EntryTime = new DateTime(2023, 6, 10, 12, 0, 0, DateTimeKind.Utc);
         Assert.Multiple(() =>
         {
             Assert.That(submission1EntryTime.ToString(CultureInfo.InvariantCulture),
@@ -554,7 +554,7 @@ public class SearchServiceTest
             Assert.That(searchResults[0].Submissions[0].Price, Is.EqualTo(100));
             Assert.That(searchResults[0].Submissions[0].Description, Is.EqualTo("Description for Submission 1"));
         });
-        var submission2EntryTime = new DateTime(2023, 10, 5, 12, 0, 0, DateTimeKind.Utc);
+        var submission2EntryTime = new DateTime(2023, 5, 10, 12, 0, 0, DateTimeKind.Utc);
         Assert.Multiple(() =>
         {
             Assert.That(submission2EntryTime.ToString(CultureInfo.InvariantCulture),
