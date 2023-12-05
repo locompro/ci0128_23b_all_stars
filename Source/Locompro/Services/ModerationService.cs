@@ -207,13 +207,13 @@ public class ModerationService : Service, IModerationService
         var user = await _userManagerService.FindByIdAsync(userID);
         if (user == null)
         {
-            Logger.LogError($"Could not find user with ID '{userID}'.");
+            Logger.LogError("Could not find user with ID '{}'", userID);
             return;
         }
 
         if (await IsUserInAnyIncompatibleRoleAsync(user, _rolesIncompatibleWithPossibleModerator))
         {
-            Logger.LogInformation($"User with ID '{userID}' is already in an incompatible role.");
+            Logger.LogInformation("User with ID '{}' is already in an incompatible role", userID);
             return;
         }
 
@@ -221,9 +221,9 @@ public class ModerationService : Service, IModerationService
             await _userManagerService.AddClaimAsync(user, new Claim(ClaimTypes.Role, RoleNames.PossibleModerator));
 
         if (!result.Succeeded)
-            Logger.LogError($"Could not assign 'PossibleModerator' role to user with ID '{userID}'.");
+            Logger.LogError("Could not assign 'PossibleModerator' role to user with ID '{}'", userID);
         else
-            Logger.LogInformation($"Assigned 'PossibleModerator' role to user with ID '{userID}'.");
+            Logger.LogInformation("Assigned 'PossibleModerator' role to user with ID '{}'", userID);
     }
 
     /// <summary>
