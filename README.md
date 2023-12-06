@@ -102,8 +102,7 @@ Para registrarse, la persona usuaria puede desde cualquier lugar de la aplicaci�
 
 ![InicioDeSesionPagina](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/07ac034e-60ba-40e1-ac97-b7d58186c5be)
 
-
-Al presionar el enlace "Registrese" la persona usuaria será redirigida a la página del formulario de registro, donde podrá ingresar sus datos. Luego de ingresados los datos, presiona el botón "crear un cuenta" y esto realizará el registro.
+Al presionar el enlace "Regístrese" la persona usuaria será redirigida a la página del formulario de registro, donde podrá ingresar sus datos. Luego de ingresados los datos, presiona el botón "crear un cuenta" y esto realizará el registro.
 
 ![Registro](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/817dd592-0bd8-4cc1-825d-4bc48ff1a6fe)
 
@@ -115,7 +114,6 @@ Para iniciar sesión, desde cualquier lugar de la aplicación, se puede presiona
 
 ![InicioDeSesion](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/853ef2e6-ea6b-427a-b9f0-5d41fa792845)
 
-
 Al presionar sobre el botón se redirige a una página con un formulario para iniciar la sesión, allí la persona usuaria debe ingresar su nombre de usuario y su contraseña tal y como fueron puestas durante el registro con el fin de iniciar su sesión.
 
 ![InicioDeSesionPagina](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/07ac034e-60ba-40e1-ac97-b7d58186c5be)
@@ -123,84 +121,135 @@ Al presionar sobre el botón se redirige a una página con un formulario para in
 #### Cerrar sesión
 Luego de haber iniciado sesión, para cerrar sesión se debe presionar el botón "Cerrar Sesión" disponible desde cualquier parte de la aplicación. Al cerrar sesión la persona usuaria será redirigida a la página de inicio.
 
-![paginaprincipal](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/fd5558c5-2c63-433b-9bff-b8f8b4f81082)
+![PaginaPrincipal](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/b7239879-0c9c-4542-a1f1-37e58fe28b7d)
+
 
 ### Ver mi perfil
 La persona usuaria también puede ver su perfil e información relacionada como contribuciones y calificaciones. 
-![Perfil](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/a994c352-9179-48d1-aba1-a0ab659e09c4)
+![Perfil](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/3a8018b1-d70a-4697-aa28-bfdf02050055)
+
 
 ### Modificar los datos personales
 Si fuera necesario dentro de mi perfil, la persona usuaria puede modificar su contraseña, su correo y su dirección, haciendo uso de los botones bien identificados en la interfaz.
 
-![PerfilModificar](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/b0da8442-7609-4a4c-a9e5-e589d3312b9f)
+![PerfilModificar](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/d903679c-1733-4212-b4b8-432f380c8283)
 
-![PerfilCambiarContrasena](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/efb15109-80fc-433c-a095-acc7d27edd49)
+
+![PerfilCambiarContrasena](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/8a74d75e-d857-48b1-a328-1461e2d1d7bf)
+
 
 Al modificar los datos la persona usuaria verá notificaciones en su pantalla de perfil indicandoles el exito de la operación o mensajes de error significativos en los formularios de que salió mal.
 
+### Acceder a mis contribuciones
 
-### 2. Funcionalidad de búsqueda 
+Al presionar el botón de la esquina inferior izquierda se podrá acceder a una vista de contribuciones personal. Esta contiene la lista completa de contribuciones realizadas en la plataforma
 
+![MisContribuciones](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/91059deb-9734-48b8-9b52-912f06d2107f)
+
+
+
+### 2. Funcionalidad de Aportar
+
+**Vista general de aportar**
+![Aportar](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/f3b120de-bae2-4be8-b894-52c74aa8feb6)
+
+
+Para hacer un aporte la persona usuaria puede presionar el botón de **Aportar** desde cualquier lugar de la página. Aquí encontra un formulario para hacer su aporte. Los campos como producto y tienda se autocompletan conforme se escribe. Además se permite agregar imágenes
+
+**Agregar una tienda nueva**
+
+![AportesAgregarTienda](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/2de14ab4-7dd5-4892-b6e5-a540567d97f9)
+
+
+Cuando la tienda no existe ya en la base de datos de lo compro, la persona usuaria puede usar el formulario de agregar tienda para introducirla al sistema y al finalizar, continuar justo donde estaba en la creación de su aporte. Por defecto la tienda se creará con la posición actual de la persona usuaria, pero puede cambiarse usando el mapa y los seleccionadores de provincia y cantón. También se puede seleccionar la ubicación por medio de un mapa interactivo el cual actualiza por su cuenta la provincia y el cantón.
+
+**Agregar un producto nuevo**
+
+![AportesAgregarProducto](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/b1d5294d-d521-41ee-9b66-d8b9c8688170)
+
+Cuando el producto no existe ya en la base de datos de lo compro, la persona usuaria puede usar el formulario de agregar un producto nuevo al sistema y al finalizar, continuar justo donde estaba en la creación de su aporte.
+
+
+
+### 3. Funcionalidad de búsqueda 
 
 #### Búsqueda simple y Búsqueda avanzada
 En la página principal y en la página de resultados se pueden realizar tanto las busquedas simples como las busquedas avanzadas.
 
 **Vista en la página principal**
 
-![paginaprincipal](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/fd5558c5-2c63-433b-9bff-b8f8b4f81082)
+![PaginaPrincipal](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/b7239879-0c9c-4542-a1f1-37e58fe28b7d)
 
 La página principal es lo primero que ve el usuario a la hora de ingresar a la aplicación. En ella se encuentran diversas opciones para realizar busquedas. Primero se puede observar la barra de busqueda donde se ingresa en nombre del producto que el usuario desea buscar. Posteriormente, dentro de este se encuentra el botón para realizar la busqueda. Cuando solo se encuentra el nombre del producto, la busqueda será realizada solamente en terminos de esta. Inferior a estos se encuentra el botón de búsqueda avanzada, el cual al presionarlo despliega un menú de opciones para realizar búsquedas más especificas.
 
 **Vista de la página principal con menú de busqueda avanzada**
 
-![paginaprincipalavanzada](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/a8b9063c-631f-4623-9340-a89db2715d2e)
+![PaginaPrincipalAvanzada](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/53141c68-d037-4e46-93ee-1d531230449b)
 
+De presionar el botón de búsqueda avanzada, se despliega el menu de busqueda avanzada. Dentro de este se pueden realizar busquedas por nombre de producto, nombre de tienda, provincia, canton, precio minimo y precio maximo. Al presionar el boton de buscar, se realizara la busqueda con los parametros ingresados. Siendo esta entrega los que se pueden ver en la imagen adjunta. Un usuario puede elegir solamente una de estos parametros de busqueda o por combinación de estos. Por ejemplo uno puede buscar solamente por marca y sin ingresar un nombre de producto en la barra de busqueda, con lo cual solo se realizará una busqueda por el parametro de marca. 
 
-De presionar el boton de busqueda avanzada, se despliega el menu de busqueda avanzada. Dentro de este se pueden realizar busquedas por nombre de producto, nombre de tienda, provincia, canton, precio minimo y precio maximo. Al presionar el boton de buscar, se realizara la busqueda con los parametros ingresados. Siendo esta entrega los que se pueden ver en la imagen adjunta. Un usuario puede elegir solamente una de estos parametros de busqueda o por combinación de estos. Por ejemplo uno puede buscar solamente por marca y sin ingresar un nombre de producto en la barra de busqueda, con lo cual solo se realizará una busqueda por el parametro de marca. 
+**Vista de ubicación en menú de búsqueda avanzada**
 
-**Vista en la página de resultados**
+De querer seleccionar un rango especifico en donde se encuentren productos, se cuenta con un mapa interactivo en el cual seleccionar la zona específica y el radio de kilómetros en donde aplica la búsqueda.
 
-![resultadodebusqueda](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/bdb4f0e1-be58-4fc8-bea2-d11077bedefe)
+![MapaDeBúsqueda](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/1647d177-b243-4327-8011-dd5edb0d9dad)
 
-Dentro de la página de resultados, al igual que en la página principal, se encuentra la barra de busqueda y el botón de busqueda avanzada. Las busquedas correspondientes se pueden realizar de la misma manera que en la página principal. Además se muestra la barra de filtros, con ellos la persona usuaria puede organizar y obtener información más especifica de resultados ya obtenidos. 
-
-**Vista en la página de resultados con menú de busqueda avanzada**
+**Vista en la página de resultados con menú de búsqueda avanzada**
 
 La busqueda avanzada en la página de resultados se realiza de la misma manera que en la página principal. Es importante recordar que la búsqueda avanzada y los filtros son distintos, pues la primera hacer consultas a los servidores de lo compro, mientras que la segunda solo filtra sobre los resultados ya obtenidos por la persona usuaria.
 
-![ResultadodeBusquedaAvanzada](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/d185d5c9-4ee1-48ec-af67-2435ab7c8f07)
-
-### 3. Funcionalidad de Aportar
-
-**Vista general de aportar**
-![Aportes](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/a355c92c-c40c-49de-a430-aa16272b2423)
-
-Para hacer un aporte la persona usuaria puede presionar el botón de **Aportar** desde cualquier lugar de la página. Aquí encontra un formulario para hacer su aporte. Los campos como producto y tienda se autocompletan conforme se escribe. Además se permite agregar imágenes
-
-**Agregar una tienda nueva**
-
-![AportesAgregarTienda](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/a82d4234-48ec-495f-af92-778ebd691165)
+![ResultadodeBusquedaAvanzada](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/0329a164-7d25-48bb-920a-a613d46ffbf9)
 
 
-Cuando la tienda no existe ya en la base de datos de lo compro, la persona usuaria puede usar el formulario de agregar tienda para introducirla al sistema y al finalizar, continuar justo donde estaba en la creación de su aporte. Por defecto la tienda se creara con la posición actual de la persona usuaria, pero puede cambiarse usando el mapa y los seleccionadores de provincia y cantón.
+**Vista en la página de resultados**
 
-**Agregar un producto nuevo**
+![ResultadoDeBusqueda](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/06ce5c30-e22e-4c92-9e38-ae2bde689458)
 
-![AportesAgregarProducto](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/3eb27e18-d7d3-4f36-915d-8b6478bec639)
+Dentro de la página de resultados, al igual que en la página principal, se encuentra la barra de busqueda y el botón de busqueda avanzada. Las busquedas correspondientes se pueden realizar de la misma manera que en la página principal. Además se muestra la barra de filtros, con ellos la persona usuaria puede organizar y obtener información más especifica de resultados ya obtenidos. 
 
-Cuando el producto no existe ya en la base de datos de lo compro, la persona usuaria puede usar el formulario de agregar un producto nuevo al sistema y al finalizar, continuar justo donde estaba en la creación de su aporte.
+### 4. Historial de contribuidores, imágenes, calificiones y reportar
+
+![ModalDeRegistros](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/1e746116-53f1-434c-9423-6171e6abcfb9)
+
+Al hacer click sobre un resultado de búsqueda específico se abrira un modal que permite ver todos los aportes que forman ese resultado. Al presionar el botón de perfil en la columna de usuario, a la izquierda del nombre de usuario, se podrá acceder a una página que muestra todas las contribuciones de ese usuario.
+
+![HistorialDeContribuidor](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/63b946d3-133c-4167-98f4-38eca8df278b)
+
+En este mismo modal, la persona usuaria puede votar seleccionando calificación que desea darle al aporte con las estrellas. Las filas se pueden reorganizar ascendente o descendentemente presionando el título de la columna.
+Al mismo tiempo el botón bandera permite reportar un aporte que se considera debe ser reportado a moderación. Este botón abre un formulario para describir el problema y enviar el reporte como se muestre a continuación.
+
+![Reportar](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/4d28d3c4-8adb-4491-8d60-e1f20dccc6f2)
+
+Si un producto tiene registros con imágenes, se mostrarán en un carrusel de imágenes las cuales se pueden ver presionando las flechas respectivas
+
+![ModalImagen1](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/b9f51e1e-6e95-4b24-8f67-775ee4982c9d)
+
+![ModalImagen2](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/e2a232d8-2433-4710-9527-9a296b498675)
 
 
-### 4. Calificiones y Reportar
 
-![resultadodebusquedaVotarYModerar](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/10b499de-0ff0-408d-87c8-a955ab87b762)
+### 5. Lista de compras y búsqueda en tiendas
 
-Al hacer click sobre un resultado de búsqueda específico se abrira un modal que permite ver todos los aportes que forman ese resultado. Allí, la persona usuaria puede votar seleccionando calificación que desea darle al aporte con las estrellas. 
-Al mismo tiempo el botón bandera permite reportar un aporte que se considera debe ser reportado a moderación. Este botón abre un formulario para describir el problema y enviar el reporte como se muestre acontinuación.
+Desde el mismo modal que muestra los registros de un resultado, se pueden agregar productos a una lista de compras presionando un botón de marcador.
 
-![Reportar](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/ddeb91ac-2dbb-44fd-8e98-6e641f507b6c)
+![PresionarMarcador](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/08677d7c-9e2d-45e7-a3b2-a68b978fff2c)
 
-### 5. Moderación
+Al agregarse se mostrará una guía visual temporarl antes de desaparecer.
+
+![PresionadoMarcador](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/97947450-8e21-448f-8db3-2f84ffa75605)
+
+Se pueden agregar todos los productos que se deseen y se pueden acceder desde el botón a la izquierda del de Cerrar Sesión.
+
+![ListaDeCompras](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/aa1f1d34-adce-4ce6-941e-fbd1fccce877)
+
+Presionando el botón de basurero rojo se eliminarán de la lista.
+
+Si se desea ver qué tiendas poseen estos productos y el precio total de comprarlos en tal lugar, se puede presionar el botón de Mostrar por tienda para mostrar un modal con todas las tiendas que tienen al menos un 25% de los productos en ella. Los resultados pueden ser reorganizados ascendente o descendentemente presionando el título de las columnas.
+
+![MostrarTiendas](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/0965c758-2135-40cf-aac6-064b1be56792)
+
+
+### 6. Moderación
 
 Cuando una persona usuaria cumple con los requisitos de tener más de 10 aportes y una calificación de 4.9 en promedio sobre los aportes, esta es elegida por el sistema para ser moderadora. Esto genera una notificación en la página de mi perfil. Esta notificación es persitente, es decir, aparece cada vez que se entrá al perfil, al menos que se rechace o se acepte. Sin embargo, la persona puede dar click fuera de la notificación y ver su perfil, la notificación volverá a aparecer cuando vuelva a visitar su perfil.
 
@@ -208,15 +257,23 @@ Cuando una persona usuaria cumple con los requisitos de tener más de 10 aportes
 
 Al aceptar la notificación, la persona tendrá esta interfaz y una nueva acción en su página de perfil para dejar el rol de moderador.
 
-![PerfilModeradores](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/b1899f66-09e3-4cb7-84b8-0b6ddf1833ec)
+![PerfilModeradores](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/2a65ccfa-c6bf-41e3-b197-a0040485d281)
 
 Con el botón de moderar en la barra de navegación disponible desde cualquier parte de la aplicación las personas moderadores tiene acceso al tablero de moderación donde ver aportes reportados y donde pueden tomar acciones de aceptar el reporte, lo que borra el aporte reportado, o solo moderarlo.
 
-![ModeracionYa](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/93e09108-2ace-49fa-9918-b5ba1e2f7f8f)
+![ModeracionYa](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/29a16cc8-83b0-4a6c-9a26-2a3f607d8730)
 
-Al darle click a un reporte muestra las opciones de moderación.
+De igual forma se pueden ver estadísticas sobre registros cuyos que se salen de la norma al presionar el botón de Precios Anómalos. Estos se revisan automáticamente por el sistema y son agregados conforme se agregan los registros.
 
-![ModeracionAporte](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/c2732ab8-c089-4655-bcf2-f62c2f8f97d3)
+![ModeracionPreciosAnomalos](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/3895926c-8e2e-4cfb-a3da-767f82d28688)
+
+Al darle click a cualquier reporte, se mostrarán las opciones de moderación.
+
+![ModeracionAporte](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/56ef7cb4-4ac0-4f5a-bbb2-d8871335563a)
+
+También existe un botón para mostrar las personas más reportadas con un ranking de veces reportados, cantidad de contribuciones y sus calificaciones respectivas como usuarios.
+
+![RankingDeReportes](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/bb136aa1-a249-45e5-a0f5-ad3d092f7341)
 
 
 ## Manual técnico
