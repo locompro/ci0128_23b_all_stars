@@ -271,6 +271,10 @@ Al darle click a cualquier reporte, se mostrarán las opciones de moderación.
 
 ![ModeracionAporte](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/56ef7cb4-4ac0-4f5a-bbb2-d8871335563a)
 
+También existe un botón para mostrar las personas más reportadas con un ranking de veces reportados, cantidad de contribuciones y sus calificaciones respectivas como usuarios.
+
+![RankingDeReportes](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/bb136aa1-a249-45e5-a0f5-ad3d092f7341)
+
 
 ## Manual técnico
 
