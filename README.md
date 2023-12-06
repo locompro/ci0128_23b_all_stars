@@ -257,15 +257,19 @@ Cuando una persona usuaria cumple con los requisitos de tener más de 10 aportes
 
 Al aceptar la notificación, la persona tendrá esta interfaz y una nueva acción en su página de perfil para dejar el rol de moderador.
 
-![PerfilModeradores](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/b1899f66-09e3-4cb7-84b8-0b6ddf1833ec)
+![PerfilModeradores](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/2a65ccfa-c6bf-41e3-b197-a0040485d281)
 
 Con el botón de moderar en la barra de navegación disponible desde cualquier parte de la aplicación las personas moderadores tiene acceso al tablero de moderación donde ver aportes reportados y donde pueden tomar acciones de aceptar el reporte, lo que borra el aporte reportado, o solo moderarlo.
 
-![ModeracionYa](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/93e09108-2ace-49fa-9918-b5ba1e2f7f8f)
+![ModeracionYa](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/29a16cc8-83b0-4a6c-9a26-2a3f607d8730)
 
-Al darle click a un reporte muestra las opciones de moderación.
+De igual forma se pueden ver estadísticas sobre registros cuyos que se salen de la norma al presionar el botón de Precios Anómalos. Estos se revisan automáticamente por el sistema y son agregados conforme se agregan los registros.
 
-![ModeracionAporte](https://github.com/locompro/ci0128_23b_all_stars/assets/84429050/c2732ab8-c089-4655-bcf2-f62c2f8f97d3)
+![ModeracionPreciosAnomalos](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/3895926c-8e2e-4cfb-a3da-767f82d28688)
+
+Al darle click a cualquier reporte, se mostrarán las opciones de moderación.
+
+![ModeracionAporte](https://github.com/locompro/ci0128_23b_all_stars/assets/112010851/56ef7cb4-4ac0-4f5a-bbb2-d8871335563a)
 
 
 ## Manual técnico
